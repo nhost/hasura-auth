@@ -23,7 +23,9 @@ export const ENV = {
   get HASURA_GRAPHQL_GRAPHQL_URL() {
     return castStringEnv('HASURA_GRAPHQL_GRAPHQL_URL', '');
   },
-
+  get HASURA_SKIP_MIGRATIONS() {
+    return castBooleanEnv('HASURA_SKIP_MIGRATIONS', false);
+  },
   // SERVER
   get AUTH_HOST() {
     return castStringEnv('AUTH_HOST', '0.0.0.0');

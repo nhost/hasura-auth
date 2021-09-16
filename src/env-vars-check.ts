@@ -21,6 +21,15 @@ const errors: string[] = [];
   }
 });
 
+if (
+  isUnset(process.env['HASURA_GRAPHQL_DATABASE_URL']) &&
+  !ENV.HASURA_SKIP_MIGRATIONS
+) {
+  errors.push(
+    `No value was provided for required env var HASURA_GRAPHQL_DATABASE_URL`
+  );
+}
+
 if (PROVIDERS.apple) {
   [
     'AUTH_APPLE_CLIENT_ID',

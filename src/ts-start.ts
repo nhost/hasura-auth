@@ -71,8 +71,10 @@ const start = async (): Promise<void> => {
   const metadataShouldBeApplied =
     process.env.NODE_ENV === 'development' || (await getIsFirstRound());
 
-  // apply migrations
-  await applyMigrations();
+  if (!ENV.HASURA_SKIP_MIGRATIONS) {
+    // apply migrations
+    await applyMigrations();
+  }
 
   if (metadataShouldBeApplied) {
     await applyMetadata();
