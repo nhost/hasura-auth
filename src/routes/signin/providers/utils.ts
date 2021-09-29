@@ -66,6 +66,8 @@ const manageProviderStrategy =
     // check if user exists, using profile.id
     const { id, email, displayName, avatarUrl } = transformProfile(profile);
 
+    // TODO: validate email
+
     // check if user already exist with `id` (unique id from provider)
     const userProvider = await gqlSdk
       .authUserProviders({

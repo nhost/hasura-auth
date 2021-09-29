@@ -60,8 +60,6 @@ describe('email-password', () => {
     await await request.post('/change-env').send({
       AUTH_DISABLE_NEW_USERS: false,
       AUTH_HIBP_ENABLED: true,
-      AUTH_ACCESS_CONTROL_ALLOW_LIST: '',
-      AUTH_ACCESS_CONTROL_BLOCK_LIST: '',
     });
 
     await request
@@ -75,8 +73,6 @@ describe('email-password', () => {
     await await request.post('/change-env').send({
       AUTH_DISABLE_NEW_USERS: false,
       AUTH_HIBP_ENABLED: false,
-      AUTH_ACCESS_CONTROL_ALLOW_LIST: '',
-      AUTH_ACCESS_CONTROL_BLOCK_LIST: '',
     });
 
     await request
