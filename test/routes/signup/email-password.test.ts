@@ -9,9 +9,6 @@ describe('email-password', () => {
   let client: any;
 
   beforeAll(async () => {
-    console.log('database url:');
-    console.log(ENV.HASURA_GRAPHQL_DATABASE_URL);
-
     client = new Client({
       connectionString: ENV.HASURA_GRAPHQL_DATABASE_URL,
     });
@@ -56,87 +53,6 @@ describe('email-password', () => {
       .post('/signup/email-password')
       .send({ email: 'joedoe@example.com', password: '123456' })
       .expect(409);
-  });
-
-  it('should only allow email domains that are allowed', async () => {
-    // set env vars
-    await await request.post('/change-env').send({
-      AUTH_DISABLE_NEW_USERS: false,
-      AUTH_ACCESS_CONTROL_ALLOW_LIST: '*@nhost.io',
-      AUTH_ACCESS_CONTROL_BLOCK_LIST: '',
-    });
-
-    await request
-      .post('/signup/email-password')
-      .send({ email: 'joedoe@example.com', password: '123456' })
-      .expect(403);
-
-    await request
-      .post('/signup/email-password')
-      .send({ email: 'joedoe@nhost.io', password: '123456' })
-      .expect(200);
-  });
-
-  it('should fail sign up if email is not allowed', async () => {
-    // set env vars
-    await await request.post('/change-env').send({
-      AUTH_DISABLE_NEW_USERS: false,
-      AUTH_ACCESS_CONTROL_ALLOW_LIST: 'vip@example.com',
-      AUTH_ACCESS_CONTROL_BLOCK_LIST: '',
-    });
-
-    await request
-      .post('/signup/email-password')
-      .send({ email: 'joedoe@example.com', password: '123456' })
-      .expect(403);
-
-    await request
-      .post('/signup/email-password')
-      .send({ email: 'vip@example.com', password: '123456' })
-      .expect(200);
-  });
-
-  it('should fail sign up if email domain is blocked', async () => {
-    // set env vars
-    await await request.post('/change-env').send({
-      AUTH_DISABLE_NEW_USERS: false,
-      AUTH_ACCESS_CONTROL_ALLOW_LIST: '',
-      AUTH_ACCESS_CONTROL_BLOCK_LIST: '*@example.com',
-    });
-
-    await request
-      .post('/signup/email-password')
-      .send({ email: 'joedoe@example.com', password: '123456' })
-      .expect(403);
-
-    await request
-      .post('/signup/email-password')
-      .send({ email: 'joedoe@nhost.io', password: '123456' })
-      .expect(200);
-  });
-
-  it('should fail sign up if email is blocked', async () => {
-    // set env vars
-    await await request.post('/change-env').send({
-      AUTH_DISABLE_NEW_USERS: false,
-      AUTH_ACCESS_CONTROL_ALLOW_LIST: '',
-      AUTH_ACCESS_CONTROL_BLOCK_LIST: 'joedoe@example.com',
-    });
-
-    await request
-      .post('/signup/email-password')
-      .send({ email: 'joedoe@example.com', password: '123456' })
-      .expect(403);
-
-    await request
-      .post('/signup/email-password')
-      .send({ email: 'joedoe2@example.com', password: '123456' })
-      .expect(200);
-
-    await request
-      .post('/signup/email-password')
-      .send({ email: 'joedoe@nhost.io', password: '123456' })
-      .expect(200);
   });
 
   it('should fail with weak password', async () => {
@@ -266,6 +182,235 @@ describe('email-password', () => {
     await request
       .post('/signin/email-password')
       .send({ email, password })
+      .expect(200);
+  });
+});
+
+describe('email-password access control lists', () => {
+  let client: any;
+  beforeAll(async () => {
+    client = new Client({
+      connectionString: ENV.HASURA_GRAPHQL_DATABASE_URL,
+    });
+    await client.connect();
+    await deleteAllMailHogEmails();
+  });
+
+  afterAll(() => {
+    client.end();
+  });
+
+  beforeEach(async () => {
+    await client.query(`DELETE FROM auth.users;`);
+  });
+
+  it('should only allow emails that are allowed', async () => {
+    // set env vars
+    await await request.post('/change-env').send({
+      AUTH_DISABLE_NEW_USERS: false,
+      AUTH_ACCESS_CONTROL_ALLOWED_EMAILS: 'aaa@nhost.io, bbb@nhost.io',
+      AUTH_ACCESS_CONTROL_ALLOWED_EMAIL_DOMAINS: '',
+      AUTH_ACCESS_CONTROL_BLOCKED_EMAILS: '',
+      AUTH_ACCESS_CONTROL_BLOCKED_EMAIL_DOMAINS: '',
+    });
+
+    await request
+      .post('/signup/email-password')
+      .send({ email: 'aaa@nhost.io', password: '123456' })
+      .expect(200);
+
+    await request
+      .post('/signup/email-password')
+      .send({ email: 'bbb@nhost.io', password: '123456' })
+      .expect(200);
+
+    await request
+      .post('/signup/email-password')
+      .send({ email: 'ccc@nhost.io', password: '123456' })
+      .expect(403);
+
+    await request
+      .post('/signup/email-password')
+      .send({ email: 'aaa@other.io', password: '123456' })
+      .expect(403);
+  });
+
+  it('should only allow email domains that are allowed', async () => {
+    await await request.post('/change-env').send({
+      AUTH_DISABLE_NEW_USERS: false,
+      AUTH_ACCESS_CONTROL_ALLOWED_EMAILS: '',
+      AUTH_ACCESS_CONTROL_ALLOWED_EMAIL_DOMAINS: 'nhost.io',
+      AUTH_ACCESS_CONTROL_BLOCKED_EMAILS: '',
+      AUTH_ACCESS_CONTROL_BLOCKED_EMAIL_DOMAINS: '',
+    });
+
+    console.log('1');
+
+    let res;
+    res = await request
+      .post('/signup/email-password')
+      .send({ email: 'joedoe@example.com', password: '123456' })
+      .expect(403);
+
+    console.log(res);
+
+    console.log('2');
+    res = await request
+      .post('/signup/email-password')
+      .send({ email: 'joedoe@nhost.io', password: '123456' })
+      .expect(200);
+
+    console.log('3');
+    await request
+      .post('/signup/email-password')
+      .send({ email: 'joedoe@other.io', password: '123456' })
+      .expect(403);
+  });
+
+  it('should block blocked emails', async () => {
+    await await request.post('/change-env').send({
+      AUTH_DISABLE_NEW_USERS: false,
+      AUTH_ACCESS_CONTROL_ALLOWED_EMAILS: '',
+      AUTH_ACCESS_CONTROL_ALLOWED_EMAIL_DOMAINS: '',
+      AUTH_ACCESS_CONTROL_BLOCKED_EMAILS: 'aaa@nhost.io, bbb@nhost.io',
+      AUTH_ACCESS_CONTROL_BLOCKED_EMAIL_DOMAINS: '',
+    });
+
+    await request
+      .post('/signup/email-password')
+      .send({ email: 'joedoe@example.com', password: '123456' })
+      .expect(200);
+
+    await request
+      .post('/signup/email-password')
+      .send({ email: 'aaa@nhost.io', password: '123456' })
+      .expect(403);
+
+    await request
+      .post('/signup/email-password')
+      .send({ email: 'bbb@nhost.io', password: '123456' })
+      .expect(403);
+
+    await request
+      .post('/signup/email-password')
+      .send({ email: 'ccc@nhost.io', password: '123456' })
+      .expect(200);
+
+    await request
+      .post('/signup/email-password')
+      .send({ email: 'joedoe@other.io', password: '123456' })
+      .expect(200);
+  });
+
+  it('should block blocked email domains', async () => {
+    await await request.post('/change-env').send({
+      AUTH_DISABLE_NEW_USERS: false,
+      AUTH_ACCESS_CONTROL_ALLOWED_EMAILS: '',
+      AUTH_ACCESS_CONTROL_ALLOWED_EMAIL_DOMAINS: '',
+      AUTH_ACCESS_CONTROL_BLOCKED_EMAILS: '',
+      AUTH_ACCESS_CONTROL_BLOCKED_EMAIL_DOMAINS: 'tesla.com, ikea.se',
+    });
+
+    await request
+      .post('/signup/email-password')
+      .send({ email: 'joedoe@example.com', password: '123456' })
+      .expect(200);
+
+    await request
+      .post('/signup/email-password')
+      .send({ email: 'aaa@nhost.io', password: '123456' })
+      .expect(200);
+
+    await request
+      .post('/signup/email-password')
+      .send({ email: 'bbb@nhost.io', password: '123456' })
+      .expect(200);
+
+    await request
+      .post('/signup/email-password')
+      .send({ email: 'aaa@tesla.com', password: '123456' })
+      .expect(403);
+
+    await request
+      .post('/signup/email-password')
+      .send({ email: 'bbb@tesla.com', password: '123456' })
+      .expect(403);
+
+    await request
+      .post('/signup/email-password')
+      .send({ email: 'aaa@ikea.se', password: '123456' })
+      .expect(403);
+
+    await request
+      .post('/signup/email-password')
+      .send({ email: 'bbb@ikea.se', password: '123456' })
+      .expect(403);
+
+    await request
+      .post('/signup/email-password')
+      .send({ email: 'aaa@ikeaa.se', password: '123456' })
+      .expect(200);
+  });
+
+  it('should fail sign up if email is not allowed', async () => {
+    // set env vars
+    await await request.post('/change-env').send({
+      AUTH_DISABLE_NEW_USERS: false,
+      AUTH_ACCESS_CONTROL_ALLOW_LIST: 'vip@example.com',
+      AUTH_ACCESS_CONTROL_BLOCK_LIST: '',
+    });
+
+    await request
+      .post('/signup/email-password')
+      .send({ email: 'joedoe@example.com', password: '123456' })
+      .expect(403);
+
+    await request
+      .post('/signup/email-password')
+      .send({ email: 'vip@example.com', password: '123456' })
+      .expect(200);
+  });
+
+  it('should fail sign up if email domain is blocked', async () => {
+    // set env vars
+    await await request.post('/change-env').send({
+      AUTH_DISABLE_NEW_USERS: false,
+      AUTH_ACCESS_CONTROL_ALLOW_LIST: '',
+      AUTH_ACCESS_CONTROL_BLOCK_LIST: '*@example.com',
+    });
+
+    await request
+      .post('/signup/email-password')
+      .send({ email: 'joedoe@example.com', password: '123456' })
+      .expect(403);
+
+    await request
+      .post('/signup/email-password')
+      .send({ email: 'joedoe@nhost.io', password: '123456' })
+      .expect(200);
+  });
+
+  it('should fail sign up if email is blocked', async () => {
+    // set env vars
+    await await request.post('/change-env').send({
+      AUTH_DISABLE_NEW_USERS: false,
+      AUTH_ACCESS_CONTROL_ALLOW_LIST: '',
+      AUTH_ACCESS_CONTROL_BLOCK_LIST: 'joedoe@example.com',
+    });
+
+    await request
+      .post('/signup/email-password')
+      .send({ email: 'joedoe@example.com', password: '123456' })
+      .expect(403);
+
+    await request
+      .post('/signup/email-password')
+      .send({ email: 'joedoe2@example.com', password: '123456' })
+      .expect(200);
+
+    await request
+      .post('/signup/email-password')
+      .send({ email: 'joedoe@nhost.io', password: '123456' })
       .expect(200);
   });
 });

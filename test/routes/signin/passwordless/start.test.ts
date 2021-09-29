@@ -91,8 +91,10 @@ describe('passwordless email (magic link)', () => {
       AUTH_SIGNUP_PROFILE_FIELDS: '',
       AUTH_PROFILE_SESSION_VARIABLE_FIELDS: '',
       AUTH_USER_SESSION_VARIABLE_FIELDS: '',
-      AUTH_ACCESS_CONTROL_ALLOW_LIST: 'vip@example.com',
-      AUTH_ACCESS_CONTROL_BLOCK_LIST: '',
+      AUTH_ACCESS_CONTROL_ALLOWED_EMAILS: 'vip@example.com',
+      AUTH_ACCESS_CONTROL_ALLOWED_EMAIL_DOMAINS: '',
+      AUTH_ACCESS_CONTROL_BLOCKED_EMAILS: '',
+      AUTH_ACCESS_CONTROL_BLOCKED_EMAIL_DOMAINS: '',
     });
 
     await request
