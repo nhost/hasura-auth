@@ -69,7 +69,7 @@ const manageProviderStrategy =
 
     // check email
     if (!(await isValidEmail({ email }))) {
-      throw new Error('Email is not allowed');
+      return done(new Error('email is not allowed'));
     }
 
     // check if user already exist with `id` (unique id from provider)
