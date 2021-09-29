@@ -5,7 +5,7 @@ import { ENV } from './env';
 
 type IsValidEmailParams = {
   email: string;
-  res: Response;
+  res?: Response;
 };
 
 // ok
@@ -15,7 +15,9 @@ export const isValidEmail = async ({
 }: IsValidEmailParams): Promise<boolean> => {
   // check if email is valid
   if (!EmailValidator.validate(email)) {
-    res.boom.badRequest('The email is not a valid email address');
+    if (res) {
+      res.boom.badRequest('The email is not a valid email address');
+    }
     return false;
   }
 
@@ -33,12 +35,16 @@ export const isValidEmail = async ({
 
   // check if email is blocked
   if (ENV.AUTH_ACCESS_CONTROL_BLOCKED_EMAIL_DOMAINS.includes(emailDomain)) {
-    res.boom.forbidden('Email domain is not allowed');
+    if (res) {
+      res.boom.forbidden('Email domain is not allowed');
+    }
     return false;
   }
 
   if (ENV.AUTH_ACCESS_CONTROL_BLOCKED_EMAILS.includes(email)) {
-    res.boom.forbidden('Email is not allowed');
+    if (res) {
+      res.boom.forbidden('Email is not allowed');
+    }
     return false;
   }
 
@@ -64,6 +70,8 @@ export const isValidEmail = async ({
     return true;
   }
 
-  res.boom.forbidden('Email is not allowed');
+  if (res) {
+    res.boom.forbidden('Email is not allowed');
+  }
   return false;
 };

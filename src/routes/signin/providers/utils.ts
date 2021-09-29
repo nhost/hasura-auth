@@ -28,6 +28,7 @@ import { getNewRefreshToken } from '@/utils/tokens';
 import { UserFieldsFragment } from '@/utils/__generated__/graphql-request';
 import { gqlSdk } from '@/utils/gqlSDK';
 import { ENV } from '@/utils/env';
+import { isValidEmail } from '@/utils/email';
 
 interface RequestWithState<T extends ValidatedRequestSchema>
   extends ValidatedRequest<T> {
@@ -66,7 +67,10 @@ const manageProviderStrategy =
     // check if user exists, using profile.id
     const { id, email, displayName, avatarUrl } = transformProfile(profile);
 
-    // TODO: validate email
+    // check email
+    if (!(await isValidEmail({ email }))) {
+      throw new Error('Email is not allowed');
+    }
 
     // check if user already exist with `id` (unique id from provider)
     const userProvider = await gqlSdk
