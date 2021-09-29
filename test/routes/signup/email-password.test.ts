@@ -351,68 +351,6 @@ describe('email-password access control lists', () => {
       .send({ email: 'aaa@ikeaa.se', password: '123456' })
       .expect(200);
   });
-
-  it('should fail sign up if email is not allowed', async () => {
-    // set env vars
-    await await request.post('/change-env').send({
-      AUTH_DISABLE_NEW_USERS: false,
-      AUTH_ACCESS_CONTROL_ALLOW_LIST: 'vip@example.com',
-      AUTH_ACCESS_CONTROL_BLOCK_LIST: '',
-    });
-
-    await request
-      .post('/signup/email-password')
-      .send({ email: 'joedoe@example.com', password: '123456' })
-      .expect(403);
-
-    await request
-      .post('/signup/email-password')
-      .send({ email: 'vip@example.com', password: '123456' })
-      .expect(200);
-  });
-
-  it('should fail sign up if email domain is blocked', async () => {
-    // set env vars
-    await await request.post('/change-env').send({
-      AUTH_DISABLE_NEW_USERS: false,
-      AUTH_ACCESS_CONTROL_ALLOW_LIST: '',
-      AUTH_ACCESS_CONTROL_BLOCK_LIST: '*@example.com',
-    });
-
-    await request
-      .post('/signup/email-password')
-      .send({ email: 'joedoe@example.com', password: '123456' })
-      .expect(403);
-
-    await request
-      .post('/signup/email-password')
-      .send({ email: 'joedoe@nhost.io', password: '123456' })
-      .expect(200);
-  });
-
-  it('should fail sign up if email is blocked', async () => {
-    // set env vars
-    await await request.post('/change-env').send({
-      AUTH_DISABLE_NEW_USERS: false,
-      AUTH_ACCESS_CONTROL_ALLOW_LIST: '',
-      AUTH_ACCESS_CONTROL_BLOCK_LIST: 'joedoe@example.com',
-    });
-
-    await request
-      .post('/signup/email-password')
-      .send({ email: 'joedoe@example.com', password: '123456' })
-      .expect(403);
-
-    await request
-      .post('/signup/email-password')
-      .send({ email: 'joedoe2@example.com', password: '123456' })
-      .expect(200);
-
-    await request
-      .post('/signup/email-password')
-      .send({ email: 'joedoe@nhost.io', password: '123456' })
-      .expect(200);
-  });
 });
 
 describe('email-password with profile table', () => {
