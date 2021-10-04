@@ -7,7 +7,6 @@ import { ENV } from '../../../src/utils/env';
 import { app } from '../../../src/server';
 import { isValidAccessToken } from '../../utils';
 import { SignInResponse } from '../../../src/types';
-import { trackTable, setTableCustomization } from '../../../src/metadata';
 
 let request: SuperTest<Test>;
 

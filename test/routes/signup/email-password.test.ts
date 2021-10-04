@@ -3,7 +3,6 @@ import { Client } from 'pg';
 import { ENV } from '../../../src/utils/env';
 import { request } from '../../server';
 import { mailHogSearch, deleteAllMailHogEmails } from '../../utils';
-import { trackTable, setTableCustomization } from '../../../src/metadata';
 
 describe('email-password', () => {
   let client: any;
