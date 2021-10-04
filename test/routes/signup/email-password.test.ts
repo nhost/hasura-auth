@@ -31,7 +31,6 @@ describe('email-password', () => {
     // set env vars
     await request.post('/change-env').send({
       AUTH_DISABLE_NEW_USERS: false,
-      AUTH_SIGNUP_PROFILE_FIELDS: '',
       AUTH_EMAILS_ENABLED: true,
     });
 

@@ -43,8 +43,6 @@ describe('anonymous', () => {
     await request.post('/change-env').send({
       AUTH_DISABLE_NEW_USERS: false,
       AUTH_ANONYMOUS_USERS_ENABLED: true,
-      AUTH_SIGNUP_PROFILE_FIELDS: '',
-      AUTH_PROFILE_SESSION_VARIABLE_FIELDS: '',
       AUTH_USER_SESSION_VARIABLE_FIELDS: '',
     });
 
@@ -81,8 +79,6 @@ describe('anonymous', () => {
     await request.post('/change-env').send({
       AUTH_DISABLE_NEW_USERS: false,
       AUTH_ANONYMOUS_USERS_ENABLED: false,
-      AUTH_SIGNUP_PROFILE_FIELDS: '',
-      AUTH_PROFILE_SESSION_VARIABLE_FIELDS: '',
       AUTH_USER_SESSION_VARIABLE_FIELDS: '',
     });
 
