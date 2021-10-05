@@ -119,9 +119,6 @@ export const ENV = {
   get AUTH_ACCESS_CONTROL_BLOCKED_EMAIL_DOMAINS() {
     return castStringArrayEnv('AUTH_ACCESS_CONTROL_BLOCKED_EMAIL_DOMAINS', []);
   },
-  get AUTH_SIGNUP_PROFILE_FIELDS() {
-    return castStringArrayEnv('AUTH_SIGNUP_PROFILE_FIELDS', []);
-  },
   get AUTH_MIN_PASSWORD_LENGTH() {
     return castIntEnv('AUTH_MIN_PASSWORD_LENGTH', 3);
   },
@@ -181,9 +178,6 @@ export const ENV = {
   },
   get AUTH_USER_SESSION_VARIABLE_FIELDS() {
     return castStringArrayEnv('AUTH_USER_SESSION_VARIABLE_FIELDS', []);
-  },
-  get AUTH_PROFILE_SESSION_VARIABLE_FIELDS() {
-    return castStringArrayEnv('AUTH_PROFILE_SESSION_VARIABLE_FIELDS', []);
   },
 
   // EMAIL TEMPLATES
