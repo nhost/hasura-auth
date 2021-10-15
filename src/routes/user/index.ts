@@ -16,8 +16,8 @@ import { userPasswordHandler } from './password';
 import { userPasswordResetHandler } from './password-reset';
 import { userDeanonymizeHandler } from './deanonymize';
 import { userProviderTokensHandler } from './provider-tokens';
-import { userEmailSendVerificationEmailHandler } from './email/send-verification-email';
-import { userEmailChange } from './email/change';
+import { userEmailSendVerificationEmailHandler } from './email';
+import { userEmailChange } from './email';
 
 const router = Router();
 
