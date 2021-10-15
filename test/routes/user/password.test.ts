@@ -96,12 +96,9 @@ describe('user password', () => {
     const ticket = message.Content.Headers['X-Ticket'][0];
 
     // use password reset link
-    const data = await request
+    await request
       .get(`/verify?ticket=${ticket}&type=signinPasswordless`)
       .expect(302);
-
-    console.log('data:');
-    console.log({ data });
 
     // TODO
     // get refershToken from previous request
