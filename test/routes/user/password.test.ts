@@ -94,40 +94,51 @@ describe('user password', () => {
     expect(message).toBeTruthy();
 
     const ticket = message.Content.Headers['X-Ticket'][0];
-    expect(ticket.startsWith('passwordReset:')).toBeTruthy();
 
-    const emailType = message.Content.Headers['X-Email-Template'][0];
-    expect(emailType).toBe('password-reset');
+    // use password reset link
+    const data = await request
+      .get(`/verify?ticket=${ticket}&type=signinPasswordless`)
+      .expect(302);
 
-    const oldPassword = password;
-    const newPassword = '543543543';
+    console.log('data:');
+    console.log({ data });
 
-    await request
-      .post('/user/password')
-      .set('Authorization', `Bearer ${accessToken}`)
-      .send({ ticket: 'incorrect', newPassword })
-      .expect(400);
+    // TODO
+    // get refershToken from previous request
 
-    await request
-      .post('/user/password')
-      .set('Authorization', `Bearer ${accessToken}`)
-      .send({ ticket: `passwordReset:${uuidv4()}`, newPassword })
-      .expect(401);
+    // request new access token
 
-    await request
-      .post('/user/password')
-      .set('Authorization', `Bearer ${accessToken}`)
-      .send({ ticket, newPassword })
-      .expect(200);
+    // use access token to update password
 
-    await request
-      .post('/signin/email-password')
-      .send({ email, password: oldPassword })
-      .expect(401);
+    // const oldPassword = password;
+    // const newPassword = '543543543';
 
-    await request
-      .post('/signin/email-password')
-      .send({ email, password: newPassword })
-      .expect(200);
+    // await request
+    //   .post('/user/password')
+    //   .set('Authorization', `Bearer ${accessToken}`)
+    //   .send({ ticket: 'incorrect', newPassword })
+    //   .expect(400);
+
+    // await request
+    //   .post('/user/password')
+    //   .set('Authorization', `Bearer ${accessToken}`)
+    //   .send({ ticket: `passwordReset:${uuidv4()}`, newPassword })
+    //   .expect(401);
+
+    // await request
+    //   .post('/user/password')
+    //   .set('Authorization', `Bearer ${accessToken}`)
+    //   .send({ ticket, newPassword })
+    //   .expect(200);
+
+    // await request
+    //   .post('/signin/email-password')
+    //   .send({ email, password: oldPassword })
+    //   .expect(401);
+
+    // await request
+    //   .post('/signin/email-password')
+    //   .send({ email, password: newPassword })
+    //   .expect(200);
   });
 });
