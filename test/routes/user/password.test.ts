@@ -1,5 +1,5 @@
 import { Client } from 'pg';
-import { v4 as uuidv4 } from 'uuid';
+// import { v4 as uuidv4 } from 'uuid';
 
 import { ENV } from '../../../src/utils/env';
 import { request } from '../../server';
@@ -77,7 +77,7 @@ describe('user password', () => {
       AUTH_SIGNIN_EMAIL_VERIFIED_REQUIRED: false,
     });
 
-    const accessToken = '';
+    // const accessToken = '';
 
     const email = 'asdasd@asdasd.com';
     const password = '123123123';
