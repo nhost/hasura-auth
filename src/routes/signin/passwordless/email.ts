@@ -1,15 +1,16 @@
 import { Response } from 'express';
-import twilio from 'twilio';
 
+import { getGravatarUrl, getUserByEmail } from '@/helpers';
 import { gqlSdk } from '@/utils/gqlSDK';
+import { emailClient } from '@/email';
 import { ENV } from '@/utils/env';
+import { isValidEmail } from '@/utils/email';
 import { isRolesValid } from '@/utils/roles';
 import { getNewOneTimePasswordData } from '@/utils/otp';
-import { PasswordLessSmsBody } from '@/types';
-import { getUserByPhoneNumber } from '@/utils/user';
+import { PasswordLessEmailBody } from '@/types';
 
-export const signInPasswordlessStartSmsHandler = async (
-  body: PasswordLessSmsBody,
+export const signInPasswordlessEmailHandler = async (
+  body: PasswordLessEmailBody,
   res: Response
 ): Promise<unknown> => {
   if (!ENV.AUTH_PASSWORDLESS_EMAIL_ENABLED) {
@@ -20,15 +21,21 @@ export const signInPasswordlessStartSmsHandler = async (
     return res.boom.internal('SMTP settings unavailable');
   }
 
-  const { phoneNumber, options } = body;
+  const { email, options } = body;
 
   // check if email already exist
-  let user = await getUserByPhoneNumber({ phoneNumber });
+  let user = await getUserByEmail(email);
 
   let userId = user ? user.id : undefined;
 
   // if no user exists, create the user
   if (!user) {
+    // check email
+    if (!(await isValidEmail({ email, res }))) {
+      // function send potential error via `res`
+      return;
+    }
+
     // check roles
     const defaultRole = options?.defaultRole ?? ENV.AUTH_DEFAULT_USER_ROLE;
     const allowedRoles =
@@ -42,9 +49,9 @@ export const signInPasswordlessStartSmsHandler = async (
     // restructure user roles to be inserted in GraphQL mutation
     const userRoles = allowedRoles.map((role: string) => ({ role }));
 
-    const displayName = options?.displayName ?? '';
+    const displayName = options?.displayName ?? email;
     const locale = options?.locale ?? ENV.AUTH_DEFAULT_LOCALE;
-    const avatarUrl = '';
+    const avatarUrl = getGravatarUrl(email);
 
     // create new user
     const insertedUser = await gqlSdk
@@ -53,7 +60,7 @@ export const signInPasswordlessStartSmsHandler = async (
           disabled: ENV.AUTH_DISABLE_NEW_USERS,
           displayName,
           avatarUrl,
-          phoneNumber,
+          email,
           locale,
           defaultRole,
           roles: {
@@ -78,35 +85,40 @@ export const signInPasswordlessStartSmsHandler = async (
   await gqlSdk.updateUser({
     id: userId,
     user: {
-      otpMethodLastUsed: 'sms',
+      otpMethodLastUsed: 'email',
       otpHash,
       otpHashExpiresAt,
     },
   });
 
-  if (ENV.AUTH_SMS_PROVIDER === 'twilio') {
-    const twilioClient = twilio(
-      ENV.AUTH_TWILIO_ACCOUNT_SID,
-      ENV.AUTH_TWILIO_AUTH_TOKEN
-    );
-
-    await twilioClient.messages
-      .create({
-        body: `Your code is ${otp}`,
-        messagingServiceSid: ENV.AUTH_TWILIO_MESSAGING_SERVICE_ID,
-        to: phoneNumber,
-      })
-      .catch(async (error) => {
-        console.log(error);
-
-        // delete user that was inserted because we were not able to send the SMS
-        await gqlSdk.deleteUser({
-          userId,
-        });
-
-        return res.boom.internal('Error sending SMS');
-      });
-  }
+  await emailClient.send({
+    template: 'passwordless',
+    message: {
+      to: email,
+      headers: {
+        'x-email': {
+          prepared: true,
+          value: email,
+        },
+        'x-otp': {
+          prepared: true,
+          value: otp,
+        },
+        'x-email-template': {
+          prepared: true,
+          value: 'passwordless',
+        },
+      },
+    },
+    locals: {
+      displayName: user.displayName,
+      email,
+      otp,
+      locale: user.locale,
+      serverUrl: ENV.AUTH_SERVER_URL,
+      clientUrl: ENV.AUTH_CLIENT_URL,
+    },
+  });
 
   return res.send('ok');
 };

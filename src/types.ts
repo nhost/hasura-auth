@@ -95,14 +95,7 @@ export type PasswordLessSmsBody = {
   };
 };
 
-export type OtpEmailBody = {
-  connection: 'email';
-  email: string;
-  otp: string;
-};
-
 export type OtpSmsBody = {
-  connection: 'sms';
   phoneNumber: string;
   otp: string;
 };

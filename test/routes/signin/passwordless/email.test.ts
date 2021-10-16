@@ -34,9 +34,8 @@ describe('passwordless email (magic link)', () => {
     const email = 'joedoe@example.com';
 
     await request
-      .post('/signin/passwordless/start')
+      .post('/signin/passwordless/email')
       .send({
-        connection: 'email',
         email,
       })
       .expect(200);

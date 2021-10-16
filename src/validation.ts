@@ -32,10 +32,18 @@ export const signInEmailPasswordSchema = Joi.object({
   }),
 });
 
-export const signInPasswordlessSchema = Joi.object({
-  connection: Joi.string(),
-  email: Joi.string(),
-  phoneNumber: Joi.string(),
+export const signInPasswordlessEmailSchema = Joi.object({
+  email: emailRule.required(),
+  options: Joi.object({
+    locale: localeRule,
+    defaultRole: Joi.string(),
+    allowedRoles: Joi.array().items(Joi.string()),
+    displayName: Joi.string(),
+  }),
+});
+
+export const signInPasswordlessSmsSchema = Joi.object({
+  phoneNumber: Joi.string().required(),
   options: Joi.object({
     locale: localeRule,
     defaultRole: Joi.string(),
@@ -45,9 +53,7 @@ export const signInPasswordlessSchema = Joi.object({
 });
 
 export const signInOtpSchema = Joi.object({
-  connection: Joi.string().required(),
-  email: emailRule,
-  phoneNumber: Joi.string(),
+  phoneNumber: Joi.string().required(),
   otp: Joi.string().required(),
 });
 
