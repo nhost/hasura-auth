@@ -1,7 +1,7 @@
 import { Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 
-import { getGravatarUrl, getUserByEmail } from '@/helpers';
+import { getGravatarUrl, getUserByEmail, isValidRedirectTo } from '@/helpers';
 import { gqlSdk } from '@/utils/gqlSDK';
 import { emailClient } from '@/email';
 import { ENV } from '@/utils/env';
@@ -32,6 +32,12 @@ export const signInPasswordlessEmailHandler = async (
   }
 
   const { email, options } = req.body;
+
+  // check if redirectTo is valid
+  const redirectTo = options?.redirectTo ?? ENV.AUTH_CLIENT_URL;
+  if (!isValidRedirectTo({ redirectTo })) {
+    return res.boom.badRequest(`'redirectTo' is not allowed`);
+  }
 
   // check if email already exist
   let user = await getUserByEmail(email);
@@ -111,6 +117,10 @@ export const signInPasswordlessEmailHandler = async (
           prepared: true,
           value: ticket,
         },
+        'x-redirect-to': {
+          prepared: true,
+          value: redirectTo,
+        },
         'x-email-template': {
           prepared: true,
           value: template,
@@ -121,6 +131,7 @@ export const signInPasswordlessEmailHandler = async (
       displayName: user.displayName,
       email,
       ticket,
+      redirectTo,
       locale: user.locale,
       serverUrl: ENV.AUTH_SERVER_URL,
       clientUrl: ENV.AUTH_CLIENT_URL,

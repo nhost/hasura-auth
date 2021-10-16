@@ -64,6 +64,7 @@ describe('email-password', () => {
     expect(message).toBeTruthy();
 
     const ticket = message.Content.Headers['X-Ticket'][0];
+    const redirectTo = message.Content.Headers['X-Redirect-To'][0];
 
     // should not be abel to login before email is verified
     await request
@@ -76,7 +77,9 @@ describe('email-password', () => {
 
     // should verify email using ticket from email
     await request
-      .get(`/verify?ticket=${ticket}&type=signinPasswordless`)
+      .get(
+        `/verify?ticket=${ticket}&type=signinPasswordless&redirectTo=${redirectTo}`
+      )
       .expect(302);
 
     // should be able to sign in after activated account
@@ -125,13 +128,16 @@ describe('email-password', () => {
     expect(message).toBeTruthy();
 
     const ticket = message.Content.Headers['X-Ticket'][0];
+    const redirectTo = message.Content.Headers['X-Redirect-To'][0];
 
     // should not be able to reuse old refresh token
     await request.post('/token').send({ refreshToken }).expect(401);
 
     // verify
     await request
-      .get(`/verify?ticket=${ticket}&type=signinPasswordless`)
+      .get(
+        `/verify?ticket=${ticket}&type=signinPasswordless&redirectTo=${redirectTo}`
+      )
       .expect(302);
 
     // should be able to sign in using passwordless email

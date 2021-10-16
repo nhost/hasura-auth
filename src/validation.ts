@@ -17,6 +17,7 @@ export const signUpEmailPasswordSchema = Joi.object({
     defaultRole: Joi.string(),
     allowedRoles: Joi.array().items(Joi.string()),
     displayName: Joi.string(),
+    redirectTo: Joi.string(),
   }),
 });
 
@@ -39,6 +40,7 @@ export const signInPasswordlessEmailSchema = Joi.object({
     defaultRole: Joi.string(),
     allowedRoles: Joi.array().items(Joi.string()),
     displayName: Joi.string(),
+    redirectTo: Joi.string(),
   }),
 });
 
@@ -92,10 +94,16 @@ export const userPasswordSchema = Joi.object({
 
 export const userEmailChangeSchema = Joi.object({
   newEmail: emailRule,
+  options: {
+    redirecTo: Joi.string(),
+  },
 });
 
 export const userEmailSendVerificationEmailSchema = Joi.object({
   email: emailRule.required(),
+  options: {
+    redirecTo: Joi.string(),
+  },
 });
 
 const userActivateTicketPattern = new RegExp(

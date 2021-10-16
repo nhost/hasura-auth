@@ -81,6 +81,7 @@ export type PasswordLessEmailBody = {
     allowedRoles?: string[];
     defaultRole?: string;
     displayName?: string;
+    redirectTo?: string;
   };
 };
 

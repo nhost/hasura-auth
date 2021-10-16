@@ -49,9 +49,12 @@ describe('passwordless email (magic link)', () => {
     expect(emailTemplate).toBe('signin-passwordless');
 
     const ticket = message.Content.Headers['X-Ticket'][0];
+    const redirectTo = message.Content.Headers['X-Redirect-To'][0];
 
     await request
-      .get(`/verify?ticket=${ticket}&type=signinPasswordless`)
+      .get(
+        `/verify?ticket=${ticket}&type=signinPasswordless&redirectTo=${redirectTo}`
+      )
       .expect(302);
   });
 
