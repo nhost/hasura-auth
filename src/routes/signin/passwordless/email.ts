@@ -9,9 +9,18 @@ import { isValidEmail } from '@/utils/email';
 import { isRolesValid } from '@/utils/roles';
 import { PasswordLessEmailBody } from '@/types';
 import { generateTicketExpiresAt } from '@/utils/ticket';
+import {
+  ContainerTypes,
+  ValidatedRequest,
+  ValidatedRequestSchema,
+} from 'express-joi-validation';
+
+interface Schema extends ValidatedRequestSchema {
+  [ContainerTypes.Body]: PasswordLessEmailBody;
+}
 
 export const signInPasswordlessEmailHandler = async (
-  body: PasswordLessEmailBody,
+  req: ValidatedRequest<Schema>,
   res: Response
 ): Promise<unknown> => {
   if (!ENV.AUTH_PASSWORDLESS_EMAIL_ENABLED) {
@@ -22,7 +31,7 @@ export const signInPasswordlessEmailHandler = async (
     return res.boom.internal('SMTP settings unavailable');
   }
 
-  const { email, options } = body;
+  const { email, options } = req.body;
 
   // check if email already exist
   let user = await getUserByEmail(email);

@@ -64,9 +64,8 @@ describe('passwordless email (magic link)', () => {
     });
 
     await request
-      .post('/signin/passwordless/start')
+      .post('/signin/passwordless/email')
       .send({
-        connection: 'email',
         email: 'joedoe@example.com',
       })
       .expect(404);
@@ -85,9 +84,8 @@ describe('passwordless email (magic link)', () => {
     });
 
     await request
-      .post('/signin/passwordless/start')
+      .post('/signin/passwordless/email')
       .send({
-        connection: 'email',
         email: 'joedoe@example.com',
       })
       .expect(403);
@@ -106,17 +104,15 @@ describe('passwordless email (magic link)', () => {
     });
 
     await request
-      .post('/signin/passwordless/start')
+      .post('/signin/passwordless/email')
       .send({
-        connection: 'email',
         email: 'joedoe@example.com',
       })
       .expect(200);
 
     await request
-      .post('/signin/passwordless/start')
+      .post('/signin/passwordless/email')
       .send({
-        connection: 'email',
         email: 'joedoe@example.com',
       })
       .expect(200);
@@ -131,9 +127,8 @@ describe('passwordless email (magic link)', () => {
     });
 
     await request
-      .post('/signin/passwordless/start')
+      .post('/signin/passwordless/email')
       .send({
-        connection: 'email',
         email: 'joedoe@example.com',
         options: {
           defaultRole: 'user',
@@ -153,9 +148,8 @@ describe('passwordless email (magic link)', () => {
     });
 
     await request
-      .post('/signin/passwordless/start')
+      .post('/signin/passwordless/email')
       .send({
-        connection: 'email',
         email: 'joedoe@example.com',
         options: {
           allowedRoles: ['incorrect'],
@@ -174,9 +168,8 @@ describe('passwordless email (magic link)', () => {
     });
 
     await request
-      .post('/signin/passwordless/start')
+      .post('/signin/passwordless/email')
       .send({
-        connection: 'email',
         email: 'joedoe@example.com',
       })
       .expect(500);

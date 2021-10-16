@@ -136,9 +136,8 @@ describe('email-password', () => {
 
     // should be able to sign in using passwordless email
     await request
-      .post('/signin/passwordless/start')
+      .post('/signin/passwordless/email')
       .send({
-        connection: 'email',
         email,
       })
       .expect(200);

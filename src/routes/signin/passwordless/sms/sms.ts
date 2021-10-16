@@ -7,9 +7,18 @@ import { isRolesValid } from '@/utils/roles';
 import { getNewOneTimePasswordData } from '@/utils/otp';
 import { PasswordLessSmsBody } from '@/types';
 import { getUserByPhoneNumber } from '@/utils/user';
+import {
+  ContainerTypes,
+  ValidatedRequest,
+  ValidatedRequestSchema,
+} from 'express-joi-validation';
+
+interface Schema extends ValidatedRequestSchema {
+  [ContainerTypes.Body]: PasswordLessSmsBody;
+}
 
 export const signInPasswordlessSmsHandler = async (
-  body: PasswordLessSmsBody,
+  req: ValidatedRequest<Schema>,
   res: Response
 ): Promise<unknown> => {
   if (!ENV.AUTH_PASSWORDLESS_EMAIL_ENABLED) {
@@ -20,7 +29,7 @@ export const signInPasswordlessSmsHandler = async (
     return res.boom.internal('SMTP settings unavailable');
   }
 
-  const { phoneNumber, options } = body;
+  const { phoneNumber, options } = req.body;
 
   // check if email already exist
   let user = await getUserByPhoneNumber({ phoneNumber });
