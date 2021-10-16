@@ -150,7 +150,7 @@ export function isValidRedirectTo({
 }: {
   redirectTo: string;
 }): boolean {
-  if (ENV.AUTH_CLIENT_URL.startsWith(redirectTo)) {
+  if (redirectTo.startsWith(ENV.AUTH_CLIENT_URL)) {
     return true;
   }
 
