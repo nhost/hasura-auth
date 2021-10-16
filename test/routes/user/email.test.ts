@@ -75,6 +75,7 @@ describe('user email', () => {
     expect(message).toBeTruthy();
 
     const ticket = message.Content.Headers['X-Ticket'][0];
+    console.log(message.Content.Headers);
     const redirectTo = message.Content.Headers['X-Redirect-To'][0];
     // expect(ticket.startsWith('emailReset:')).toBeTruthy();
 
