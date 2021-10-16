@@ -67,9 +67,6 @@ export const userEmailChange = async (
   }
 
   const template = 'email-confirm-change';
-  console.log({ template });
-  console.log({ redirectTo });
-
   await emailClient.send({
     template,
     locals: {
