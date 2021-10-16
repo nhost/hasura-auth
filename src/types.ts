@@ -74,7 +74,6 @@ export type SignInResponse = {
 };
 
 export type PasswordLessEmailBody = {
-  connection: 'email';
   email: string;
   options?: {
     locale?: string;
@@ -86,7 +85,6 @@ export type PasswordLessEmailBody = {
 };
 
 export type PasswordLessSmsBody = {
-  connection: 'sms';
   phoneNumber: string;
   options?: {
     locale?: string;
