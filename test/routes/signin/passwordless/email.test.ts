@@ -160,21 +160,4 @@ describe('passwordless email (magic link)', () => {
       })
       .expect(400);
   });
-
-  it('should fail if sending emails is not enabled', async () => {
-    // set env vars
-    await request.post('/change-env').send({
-      AUTH_EMAILS_ENABLED: false,
-      AUTH_DISABLE_NEW_USERS: false,
-      AUTH_PASSWORDLESS_EMAIL_ENABLED: true,
-      AUTH_USER_SESSION_VARIABLE_FIELDS: '',
-    });
-
-    await request
-      .post('/signin/passwordless/email')
-      .send({
-        email: 'joedoe@example.com',
-      })
-      .expect(500);
-  });
 });

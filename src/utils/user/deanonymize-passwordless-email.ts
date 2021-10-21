@@ -93,10 +93,6 @@ export const handleDeanonymizeUserPasswordlessEmail = async (
   });
 
   if (!ENV.AUTH_DISABLE_NEW_USERS && ENV.AUTH_SIGNIN_EMAIL_VERIFIED_REQUIRED) {
-    if (!ENV.AUTH_EMAILS_ENABLED) {
-      throw new Error('SMTP settings unavailable');
-    }
-
     // create ticket
     const ticket = `passwordlessEmai:${uuidv4()}`;
     const ticketExpiresAt = generateTicketExpiresAt(60 * 60);

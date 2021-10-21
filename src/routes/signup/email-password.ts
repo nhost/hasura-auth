@@ -122,10 +122,6 @@ export const signUpEmailPasswordHandler = async (
 
   // user is now inserted. Continue sending out activation email
   if (!ENV.AUTH_DISABLE_NEW_USERS && ENV.AUTH_SIGNIN_EMAIL_VERIFIED_REQUIRED) {
-    if (!ENV.AUTH_EMAILS_ENABLED) {
-      throw new Error('SMTP settings unavailable');
-    }
-
     const template = 'email-verify';
     await emailClient.send({
       template,

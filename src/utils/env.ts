@@ -51,9 +51,6 @@ export const ENV = {
   get AUTH_SMTP_AUTH_METHOD() {
     return castStringEnv('AUTH_SMTP_AUTH_METHOD', 'PLAIN');
   },
-  get AUTH_EMAILS_ENABLED() {
-    return castBooleanEnv('AUTH_EMAILS_ENABLED', false);
-  },
   get AUTH_SMTP_PORT() {
     return castIntEnv('AUTH_SMTP_PORT', 587);
   },

@@ -27,10 +27,6 @@ export const signInPasswordlessEmailHandler = async (
     return res.boom.notFound('Passwordless sign in with email is not enabled');
   }
 
-  if (!ENV.AUTH_EMAILS_ENABLED) {
-    return res.boom.internal('SMTP settings unavailable');
-  }
-
   const { email, options } = req.body;
 
   // check if redirectTo is valid
