@@ -90,14 +90,14 @@ export const signInPasswordlessSmsHandler = async (
 
   if (ENV.AUTH_SMS_PROVIDER === 'twilio') {
     const twilioClient = twilio(
-      ENV.AUTH_TWILIO_ACCOUNT_SID,
-      ENV.AUTH_TWILIO_AUTH_TOKEN
+      ENV.AUTH_SMS_TWILIO_ACCOUNT_SID,
+      ENV.AUTH_SMS_TWILIO_AUTH_TOKEN
     );
 
     try {
       await twilioClient.messages.create({
         body: `Your code is ${otp}`,
-        messagingServiceSid: ENV.AUTH_TWILIO_MESSAGING_SERVICE_ID,
+        messagingServiceSid: ENV.AUTH_SMS_TWILIO_MESSAGING_SERVICE_ID,
         to: phoneNumber,
       });
     } catch (error) {

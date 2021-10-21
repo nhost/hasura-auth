@@ -65,17 +65,17 @@ export const ENV = {
   },
 
   // TWILIO
-  get AUTH_TWILIO_ACCOUNT_SID() {
-    return castStringEnv('AUTH_TWILIO_ACCOUNT_SID', '');
+  get AUTH_SMS_TWILIO_ACCOUNT_SID() {
+    return castStringEnv('AUTH_SMS_TWILIO_ACCOUNT_SID', '');
   },
-  get AUTH_TWILIO_AUTH_TOKEN() {
-    return castStringEnv('AUTH_TWILIO_AUTH_TOKEN', '');
+  get AUTH_SMS_TWILIO_AUTH_TOKEN() {
+    return castStringEnv('AUTH_SMS_TWILIO_AUTH_TOKEN', '');
   },
-  get AUTH_TWILIO_MESSAGING_SERVICE_ID() {
-    return castStringEnv('AUTH_TWILIO_MESSAGING_SERVICE_ID', '');
+  get AUTH_SMS_TWILIO_MESSAGING_SERVICE_ID() {
+    return castStringEnv('AUTH_SMS_TWILIO_MESSAGING_SERVICE_ID', '');
   },
-  get AUTH_TWILIO_FROM() {
-    return castStringEnv('AUTH_TWILIO_FROM', '');
+  get AUTH_SMS_TWILIO_FROM() {
+    return castStringEnv('AUTH_SMS_TWILIO_FROM', '');
   },
 
   // GRAVATAR
