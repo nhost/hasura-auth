@@ -22,10 +22,10 @@ const errors: string[] = [];
 
 if (PROVIDERS.apple) {
   [
-    'AUTH_APPLE_CLIENT_ID',
-    'AUTH_APPLE_TEAM_ID',
-    'AUTH_APPLE_KEY_ID',
-    'AUTH_APPLE_PRIVATE_KEY',
+    'AUTH_PROVIDER_APPLE_CLIENT_ID',
+    'AUTH_PROVIDER_APPLE_TEAM_ID',
+    'AUTH_PROVIDER_APPLE_KEY_ID',
+    'AUTH_PROVIDER_APPLE_PRIVATE_KEY',
   ].forEach((env) => {
     if (isUnset(process.env[env])) {
       errors.push(
@@ -36,19 +36,23 @@ if (PROVIDERS.apple) {
 }
 
 if (PROVIDERS.windowslive) {
-  ['AUTH_WINDOWS_LIVE_CLIENT_ID', 'AUTH_WINDOWS_LIVE_CLIENT_SECRET'].forEach(
-    (env) => {
-      if (isUnset(process.env[env])) {
-        errors.push(
-          `Env var ${env} is required when the Windows Live provider is enabled but no value was provided`
-        );
-      }
+  [
+    'AUTH_PROVIDER_WINDOWS_LIVE_CLIENT_ID',
+    'AUTH_PROVIDER_WINDOWS_LIVE_CLIENT_SECRET',
+  ].forEach((env) => {
+    if (isUnset(process.env[env])) {
+      errors.push(
+        `Env var ${env} is required when the Windows Live provider is enabled but no value was provided`
+      );
     }
-  );
+  });
 }
 
 if (PROVIDERS.gitlab) {
-  ['AUTH_GITLAB_CLIENT_ID', 'AUTH_GITLAB_CLIENT_SECRET'].forEach((env) => {
+  [
+    'AUTH_PROVIDER_GITLAB_CLIENT_ID',
+    'AUTH_PROVIDER_GITLAB_CLIENT_SECRET',
+  ].forEach((env) => {
     if (isUnset(process.env[env])) {
       errors.push(
         `Env var ${env} is required when the Gitlab provider is enabled but no value was provided`
@@ -58,19 +62,23 @@ if (PROVIDERS.gitlab) {
 }
 
 if (PROVIDERS.bitbucket) {
-  ['AUTH_BITBUCKET_CLIENT_ID', 'AUTH_BITBUCKET_CLIENT_SECRET'].forEach(
-    (env) => {
-      if (isUnset(process.env[env])) {
-        errors.push(
-          `Env var ${env} is required when the Bitbucket provider is enabled but no value was provided`
-        );
-      }
+  [
+    'AUTH_PROVIDER_BITBUCKET_CLIENT_ID',
+    'AUTH_PROVIDER_BITBUCKET_CLIENT_SECRET',
+  ].forEach((env) => {
+    if (isUnset(process.env[env])) {
+      errors.push(
+        `Env var ${env} is required when the Bitbucket provider is enabled but no value was provided`
+      );
     }
-  );
+  });
 }
 
 if (PROVIDERS.spotify) {
-  ['AUTH_SPOTIFY_CLIENT_ID', 'AUTH_SPOTIFY_CLIENT_SECRET'].forEach((env) => {
+  [
+    'AUTH_PROVIDER_SPOTIFY_CLIENT_ID',
+    'AUTH_PROVIDER_SPOTIFY_CLIENT_SECRET',
+  ].forEach((env) => {
     if (isUnset(process.env[env])) {
       errors.push(
         `Env var ${env} is required when the Spotify provider is enabled but no value was provided`
@@ -80,7 +88,10 @@ if (PROVIDERS.spotify) {
 }
 
 if (PROVIDERS.linkedin) {
-  ['AUTH_LINKEDIN_CLIENT_ID', 'AUTH_LINKEDIN_CLIENT_SECRET'].forEach((env) => {
+  [
+    'AUTH_PROVIDER_LINKEDIN_CLIENT_ID',
+    'AUTH_PROVIDER_LINKEDIN_CLIENT_SECRET',
+  ].forEach((env) => {
     if (isUnset(process.env[env])) {
       errors.push(
         `Env var ${env} is required when the LinkedIn provider is enabled but no value was provided`
@@ -90,19 +101,23 @@ if (PROVIDERS.linkedin) {
 }
 
 if (PROVIDERS.twitter) {
-  ['AUTH_TWITTER_CONSUMER_KEY', 'AUTH_TWITTER_CONSUMER_SECRET'].forEach(
-    (env) => {
-      if (isUnset(process.env[env])) {
-        errors.push(
-          `Env var ${env} is required when the Twitter provider is enabled but no value was provided`
-        );
-      }
+  [
+    'AUTH_PROVIDER_TWITTER_CONSUMER_KEY',
+    'AUTH_PROVIDER_TWITTER_CONSUMER_SECRET',
+  ].forEach((env) => {
+    if (isUnset(process.env[env])) {
+      errors.push(
+        `Env var ${env} is required when the Twitter provider is enabled but no value was provided`
+      );
     }
-  );
+  });
 }
 
 if (PROVIDERS.facebook) {
-  ['AUTH_FACEBOOK_CLIENT_ID', 'AUTH_FACEBOOK_CLIENT_SECRET'].forEach((env) => {
+  [
+    'AUTH_PROVIDER_FACEBOOK_CLIENT_ID',
+    'AUTH_PROVIDER_FACEBOOK_CLIENT_SECRET',
+  ].forEach((env) => {
     if (isUnset(process.env[env])) {
       errors.push(
         `Env var ${env} is required when the Facebook provider is enabled but no value was provided`
@@ -112,7 +127,10 @@ if (PROVIDERS.facebook) {
 }
 
 if (PROVIDERS.google) {
-  ['AUTH_GOOGLE_CLIENT_ID', 'AUTH_GOOGLE_CLIENT_SECRET'].forEach((env) => {
+  [
+    'AUTH_PROVIDER_GOOGLE_CLIENT_ID',
+    'AUTH_PROVIDER_GOOGLE_CLIENT_SECRET',
+  ].forEach((env) => {
     if (isUnset(process.env[env])) {
       errors.push(
         `Env var ${env} is required when the Google provider is enabled but no value was provided`
@@ -122,7 +140,10 @@ if (PROVIDERS.google) {
 }
 
 if (PROVIDERS.github) {
-  ['AUTH_GITHUB_CLIENT_ID', 'AUTH_GITHUB_CLIENT_SECRET'].forEach((env) => {
+  [
+    'AUTH_PROVIDER_GITHUB_CLIENT_ID',
+    'AUTH_PROVIDER_GITHUB_CLIENT_SECRET',
+  ].forEach((env) => {
     if (isUnset(process.env[env])) {
       errors.push(
         `Env var ${env} is required when the Github provider is enabled but no value was provided`
