@@ -113,11 +113,11 @@ export const ENV = {
   get AUTH_ACCESS_CONTROL_BLOCKED_EMAIL_DOMAINS() {
     return castStringArrayEnv('AUTH_ACCESS_CONTROL_BLOCKED_EMAIL_DOMAINS', []);
   },
-  get AUTH_MIN_PASSWORD_LENGTH() {
-    return castIntEnv('AUTH_MIN_PASSWORD_LENGTH', 3);
+  get AUTH_PASSWORD_MIN_LENGTH() {
+    return castIntEnv('AUTH_PASSWORD_MIN_LENGTH', 3);
   },
-  get AUTH_HIBP_ENABLED() {
-    return castBooleanEnv('AUTH_HIBP_ENABLED', false);
+  get AUTH_PASSWORD_HIBP_ENABLED() {
+    return castBooleanEnv('AUTH_PASSWORD_HIBP_ENABLED', false);
   },
   get AUTH_DEFAULT_USER_ROLE() {
     return castStringEnv('AUTH_DEFAULT_USER_ROLE', 'user');
