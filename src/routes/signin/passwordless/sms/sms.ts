@@ -21,7 +21,7 @@ export const signInPasswordlessSmsHandler = async (
   req: ValidatedRequest<Schema>,
   res: Response
 ): Promise<unknown> => {
-  if (!ENV.AUTH_PASSWORDLESS_SMS_ENABLED) {
+  if (!ENV.AUTH_SMS_PASSWORDLESS_ENABLED) {
     return res.boom.notFound('Passwordless sign in with sms is not enabled');
   }
 
@@ -48,7 +48,7 @@ export const signInPasswordlessSmsHandler = async (
     const userRoles = allowedRoles.map((role: string) => ({ role }));
 
     const displayName = options?.displayName ?? '';
-    const locale = options?.locale ?? ENV.AUTH_DEFAULT_LOCALE;
+    const locale = options?.locale ?? ENV.AUTH_LOCALE_DEFAULT;
     const avatarUrl = '';
 
     // create new user

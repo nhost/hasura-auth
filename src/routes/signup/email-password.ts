@@ -50,8 +50,7 @@ export const signUpEmailPasswordHandler = async (
     return res.boom.badRequest(`'redirectTo' is not allowed`);
   }
 
-  const locale = options?.locale ?? ENV.AUTH_DEFAULT_LOCALE;
-
+  const locale = options?.locale ?? ENV.AUTH_LOCALE_DEFAULT;
   // check email
   if (!(await isValidEmail({ email, res }))) {
     // function send potential error via `res`

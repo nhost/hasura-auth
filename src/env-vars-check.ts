@@ -132,19 +132,6 @@ if (PROVIDERS.github) {
   });
 }
 
-if (
-  ENV.AUTH_SIGNIN_EMAIL_VERIFIED_REQUIRED ||
-  ENV.AUTH_PASSWORDLESS_EMAIL_ENABLED
-) {
-  ['AUTH_SMTP_HOST', 'AUTH_SMTP_USER', 'AUTH_SMTP_PASS'].forEach((env) => {
-    if (isUnset(process.env[env])) {
-      errors.push(
-        `Env var ${env} is required when emails are enabled but no value was provided`
-      );
-    }
-  });
-}
-
 if (errors.length) {
   logger.error(errors.join('\n'));
   throw new Error('Invalid configuration');
