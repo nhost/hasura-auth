@@ -146,7 +146,7 @@ describe('passwordless email (magic link)', () => {
       AUTH_DISABLE_NEW_USERS: false,
       AUTH_PASSWORDLESS_EMAIL_ENABLED: true,
       AUTH_USER_SESSION_VARIABLE_FIELDS: '',
-      AUTH_DEFAULT_USER_ROLE: 'user',
+      AUTH_USER_DEFAULT_ROLE: 'user',
       AUTH_DEFAULT_ALLOWED_USER_ROLES: 'user',
     });
 

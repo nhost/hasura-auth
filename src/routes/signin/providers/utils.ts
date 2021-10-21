@@ -126,10 +126,10 @@ const manageProviderStrategy =
           email,
           passwordHash: null,
           emailVerified: true,
-          defaultRole: ENV.AUTH_DEFAULT_USER_ROLE,
+          defaultRole: ENV.AUTH_USER_DEFAULT_ROLE,
           locale: ENV.AUTH_DEFAULT_LOCALE,
           roles: {
-            data: ENV.AUTH_DEFAULT_ALLOWED_USER_ROLES.map((role) => ({
+            data: ENV.AUTH_USER_DEFAULT_ALLOWED_ROLES.map((role) => ({
               role,
             })),
           },

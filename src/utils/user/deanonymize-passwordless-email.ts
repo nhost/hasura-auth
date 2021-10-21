@@ -53,9 +53,9 @@ export const handleDeanonymizeUserPasswordlessEmail = async (
   }
 
   // check roles
-  const defaultRole = options?.defaultRole ?? ENV.AUTH_DEFAULT_USER_ROLE;
+  const defaultRole = options?.defaultRole ?? ENV.AUTH_USER_DEFAULT_ROLE;
   const allowedRoles =
-    options?.allowedRoles ?? ENV.AUTH_DEFAULT_ALLOWED_USER_ROLES;
+    options?.allowedRoles ?? ENV.AUTH_USER_DEFAULT_ALLOWED_ROLES;
   if (!(await isRolesValid({ defaultRole, allowedRoles, res }))) {
     return;
   }
