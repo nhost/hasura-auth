@@ -154,8 +154,8 @@ export const ENV = {
   // get AUTH_SIGNIN_PHONE_NUMBER_VERIFIED_REQUIRED() {
   //   return castBooleanEnv('AUTH_SIGNIN_PHONE_NUMBER_VERIFIED_REQUIRED', true);
   // },
-  get AUTH_ALLOWED_REDIRECT_URLS() {
-    return castStringArrayEnv('AUTH_ALLOWED_REDIRECT_URLS');
+  get AUTH_ACCESS_CONTROL_ALLOWED_REDIRECT_URLS() {
+    return castStringArrayEnv('AUTH_ACCESS_CONTROL_ALLOWED_REDIRECT_URLS');
   },
   get AUTH_MFA_ENABLED() {
     return castBooleanEnv('AUTH_MFA_ENABLED', false);

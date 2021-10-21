@@ -87,12 +87,12 @@ export const handleDeanonymizeUserPasswordlessEmail = async (
     },
   });
 
-  // delete old refresh tokens for user
-  await gqlSdk.deleteUserRefreshTokens({
-    userId,
-  });
-
-  if (!ENV.AUTH_DISABLE_NEW_USERS && ENV.AUTH_SIGNIN_EMAIL_VERIFIED_REQUIRED) {
+  // Delete old refresh token and send email if email must be verified
+  if (ENV.AUTH_EMAIL_SIGNIN_EMAIL_VERIFIED_REQUIRED) {
+    // delete old refresh tokens for user
+    await gqlSdk.deleteUserRefreshTokens({
+      userId,
+    });
     // create ticket
     const ticket = `passwordlessEmai:${uuidv4()}`;
     const ticketExpiresAt = generateTicketExpiresAt(60 * 60);

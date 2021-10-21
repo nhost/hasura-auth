@@ -263,10 +263,10 @@ export const initProvider = <T extends Strategy>(
 
         if (
           ENV.AUTH_CLIENT_URL !== redirectTo &&
-          !ENV.AUTH_ALLOWED_REDIRECT_URLS.includes(redirectTo)
+          !ENV.AUTH_ACCESS_CONTROL_ALLOWED_REDIRECT_URLS.includes(redirectTo)
         ) {
           return res.boom.badRequest(
-            `'redirectTo' is not the same as AUTH_CLIENT_URL nor is it in ALLOWED_REDIRECT_URLS`
+            `'redirectTo' is not the same as AUTH_CLIENT_URL nor is it in AUTH_ACCSS_CONTROL_ALLOWED_REDIRECT_URLS`
           );
         }
 

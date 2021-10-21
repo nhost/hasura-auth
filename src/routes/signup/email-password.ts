@@ -120,7 +120,10 @@ export const signUpEmailPasswordHandler = async (
   }
 
   // user is now inserted. Continue sending out activation email
-  if (!ENV.AUTH_DISABLE_NEW_USERS && ENV.AUTH_SIGNIN_EMAIL_VERIFIED_REQUIRED) {
+  if (
+    !ENV.AUTH_DISABLE_NEW_USERS &&
+    ENV.AUTH_EMAIL_SIGNIN_EMAIL_VERIFIED_REQUIRED
+  ) {
     const template = 'email-verify';
     await emailClient.send({
       template,
@@ -157,7 +160,7 @@ export const signUpEmailPasswordHandler = async (
   // SIGNIN_EMAIL_VERIFIED_REQUIRED = true => Don't have to verify email before
   // sign in
 
-  if (!ENV.AUTH_SIGNIN_EMAIL_VERIFIED_REQUIRED) {
+  if (!ENV.AUTH_EMAIL_SIGNIN_EMAIL_VERIFIED_REQUIRED) {
     const signInResponse = await getSignInResponse({
       userId: user.id,
       checkMFA: false,

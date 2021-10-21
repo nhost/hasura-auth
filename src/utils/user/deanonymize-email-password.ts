@@ -97,15 +97,13 @@ export const handleDeanonymizeUserEmailPassword = async (
     },
   });
 
-  // delete old refresh tokens if user must verify their email before they can
-  // sign in.
-  if (ENV.AUTH_SIGNIN_EMAIL_VERIFIED_REQUIRED) {
+  // delete old refresh tokens and send email if user must verify their email
+  // before they can sign in.
+  if (ENV.AUTH_EMAIL_SIGNIN_EMAIL_VERIFIED_REQUIRED) {
     await gqlSdk.deleteUserRefreshTokens({
       userId,
     });
-  }
 
-  if (!ENV.AUTH_DISABLE_NEW_USERS && ENV.AUTH_SIGNIN_EMAIL_VERIFIED_REQUIRED) {
     const template = 'email-verify';
     await emailClient.send({
       template,

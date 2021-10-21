@@ -88,7 +88,7 @@ describe('email-password', () => {
     await await request.post('/change-env').send({
       AUTH_DISABLE_NEW_USERS: false,
       AUTH_HIBP_ENABLED: false,
-      AUTH_SIGNIN_EMAIL_VERIFIED_REQUIRED: true,
+      AUTH_EMAIL_SIGNIN_EMAIL_VERIFIED_REQUIRED: true,
     });
 
     const email = 'joedoe@example.com';
@@ -142,7 +142,7 @@ describe('email-password', () => {
     // set env vars
     await request.post('/change-env').send({
       AUTH_DISABLE_NEW_USERS: false,
-      AUTH_SIGNIN_EMAIL_VERIFIED_REQUIRED: true,
+      AUTH_EMAIL_SIGNIN_EMAIL_VERIFIED_REQUIRED: true,
     });
 
     const email = 'joedoe@example.com';
