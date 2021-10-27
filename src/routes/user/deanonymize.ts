@@ -45,7 +45,7 @@ export const userDeanonymizeHandler = async (
 
   if (body.signInMethod === 'email-password') {
     await handleDeanonymizeUserEmailPassword(body, userId, res);
-    return;
+    return.send('ok');
   }
 
   if (body.signInMethod === 'passwordless' && body.connection === 'email') {
