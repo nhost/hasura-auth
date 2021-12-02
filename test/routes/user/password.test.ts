@@ -87,7 +87,13 @@ describe('user password', () => {
       .send({ email, password })
       .expect(200);
 
-    await request.post('/user/password/reset').send({ email }).expect(200);
+    const options = {
+      redirectTo: 'http://localhost:3000/my-redirect'
+    }
+
+    await request.post('/user/password/reset').send({
+      email, options
+    }).expect(200);
 
     // get ticket from email
     const [message] = await mailHogSearch(email);
@@ -102,6 +108,8 @@ describe('user password', () => {
         `/verify?ticket=${ticket}&type=signinPasswordless&redirectTo=${redirectTo}`
       )
       .expect(302);
+
+    expect(redirectTo).toStrictEqual(options.redirectTo)
 
     // TODO
     // get refershToken from previous request
