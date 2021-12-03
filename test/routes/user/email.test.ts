@@ -199,8 +199,5 @@ describe('user email', () => {
       )
       .expect(302);
     expect(redirectTo).toStrictEqual(options.redirectTo)
-
-    expect(redirectTo).toStrictEqual(options.redirectTo)
-
   });
 });
