@@ -8,6 +8,10 @@ import { mailHogSearch } from '../../utils';
 
 describe('user password', () => {
   let client: any;
+  let accessToken: string | undefined;
+  let body: SignInResponse | undefined;
+  const email = 'asdasd@asdasd.com';
+  const password = '123123123';
 
   beforeAll(async () => {
     client = new Client({
@@ -22,35 +26,30 @@ describe('user password', () => {
 
   beforeEach(async () => {
     await client.query(`DELETE FROM auth.users;`);
-  });
-
-  it('should change password with old password', async () => {
     await request.post('/change-env').send({
       AUTH_DISABLE_NEW_USERS: false,
       AUTH_EMAIL_SIGNIN_EMAIL_VERIFIED_REQUIRED: false,
     });
-
-    const email = 'asdasd@asdasd.com';
-    const password = '123123123';
 
     await request
       .post('/signup/email-password')
       .send({ email, password })
       .expect(200);
 
-    const { body }: { body: SignInResponse } = await request
+    const response = await request
       .post('/signin/email-password')
       .send({ email, password })
       .expect(200);
 
-    expect(body.session).toBeTruthy();
+    body = response.body;
 
-    if (!body.session) {
+    if (!body?.session) {
       throw new Error('session is not set');
     }
+    accessToken = body.session.accessToken;
+  });
 
-    const { accessToken } = body.session;
-
+  it('should change password with old password', async () => {
     const oldPassword = password;
     const newPassword = '543543543';
 
@@ -72,28 +71,7 @@ describe('user password', () => {
   });
 
   it('should change password with ticket', async () => {
-    await request.post('/change-env').send({
-      AUTH_DISABLE_NEW_USERS: false,
-      AUTH_EMAIL_SIGNIN_EMAIL_VERIFIED_REQUIRED: false,
-    });
-
-    // const accessToken = '';
-
-    const email = 'asdasd@asdasd.com';
-    const password = '123123123';
-
-    await request
-      .post('/signup/email-password')
-      .send({ email, password })
-      .expect(200);
-
-    const options = {
-      redirectTo: 'http://localhost:3000/my-redirect'
-    }
-
-    await request.post('/user/password/reset').send({
-      email, options
-    }).expect(200);
+    await request.post('/user/password/reset').send({ email }).expect(200);
 
     // get ticket from email
     const [message] = await mailHogSearch(email);
@@ -108,8 +86,6 @@ describe('user password', () => {
         `/verify?ticket=${ticket}&type=signinPasswordless&redirectTo=${redirectTo}`
       )
       .expect(302);
-
-    expect(redirectTo).toStrictEqual(options.redirectTo)
 
     // TODO
     // get refershToken from previous request
@@ -148,5 +124,32 @@ describe('user password', () => {
     //   .post('/signin/email-password')
     //   .send({ email, password: newPassword })
     //   .expect(200);
+  });
+
+  it('should be able to pass "redirectTo" when changing password with ticket when ', async () => {
+    const options = {
+      redirectTo: 'http://localhost:3000/change-password-redirect',
+    };
+
+    await request
+      .post('/user/password/reset')
+      .send({ email, options })
+      .expect(200);
+
+    // get ticket from email
+    const [message] = await mailHogSearch(email);
+    expect(message).toBeTruthy();
+
+    const ticket = message.Content.Headers['X-Ticket'][0];
+    const redirectTo = message.Content.Headers['X-Redirect-To'][0];
+
+    // use password reset link
+    await request
+      .get(
+        `/verify?ticket=${ticket}&type=signinPasswordless&redirectTo=${redirectTo}`
+      )
+      .expect(302);
+
+    expect(redirectTo).toStrictEqual(options.redirectTo);
   });
 });
