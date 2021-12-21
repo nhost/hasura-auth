@@ -5,11 +5,9 @@ import {
   ValidatedRequest,
   ValidatedRequestSchema,
 } from 'express-joi-validation';
-import { pwnedPassword } from 'hibp';
 
 import { hashPassword } from '@/helpers';
 import { gqlSdk } from '@/utils/gqlSDK';
-import { ENV } from '@/utils/env';
 import { isPasswordValid } from '@/utils/password';
 
 type BodyType = {
