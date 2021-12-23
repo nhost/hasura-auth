@@ -26,6 +26,9 @@ describe('user password', () => {
 
   beforeEach(async () => {
     await client.query(`DELETE FROM auth.users;`);
+  });
+
+  it('should change password with password', async () => {
     await request.post('/change-env').send({
       AUTH_DISABLE_NEW_USERS: false,
       AUTH_EMAIL_SIGNIN_EMAIL_VERIFIED_REQUIRED: false,
@@ -56,7 +59,7 @@ describe('user password', () => {
     await request
       .post('/user/password')
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({ oldPassword, newPassword })
+      .send({ newPassword })
       .expect(200);
 
     await request
