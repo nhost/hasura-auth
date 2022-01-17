@@ -1,9 +1,9 @@
+import './env-vars-check';
 import axios from 'axios';
 
 import { app } from './server';
 import { applyMigrations } from '@/migrations';
 import { applyMetadata } from '@/metadata';
-import './env-vars-check';
 import { ENV } from './utils/env';
 import { logger } from './logger';
 
