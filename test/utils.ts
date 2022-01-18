@@ -71,7 +71,6 @@ export const registerAccount = async (
             customRegisterData,
           })
           .then((r) => {
-            if (r.body.error) console.log('zzzz', r.body);
             done(userLoginData);
           })
           .catch(reject);
