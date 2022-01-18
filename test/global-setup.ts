@@ -1,9 +1,13 @@
 require('tsconfig-paths/register');
 import { Client } from 'pg';
 
-import { ENV } from '../src/utils/env';
+import { applyMetadata } from '@/metadata';
+import { applyMigrations } from '@/migrations';
+import { ENV } from '@/utils/env';
 
 export default async (): Promise<void> => {
+  await applyMigrations();
+  await applyMetadata();
   const client = new Client({
     connectionString: ENV.HASURA_GRAPHQL_DATABASE_URL,
   });
