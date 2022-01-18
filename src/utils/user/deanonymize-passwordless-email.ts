@@ -38,7 +38,7 @@ export const handleDeanonymizeUserPasswordlessEmail = async (
   // check if redirectTo is valid
   const redirectTo = options?.redirectTo ?? ENV.AUTH_CLIENT_URL;
   if (!isValidRedirectTo({ redirectTo })) {
-    return res.boom.badRequest(`'redirectTo' is not allowed`);
+    return res.boom.badRequest(`'redirectTo' is not valid`);
   }
 
   // check email
@@ -94,7 +94,7 @@ export const handleDeanonymizeUserPasswordlessEmail = async (
       userId,
     });
     // create ticket
-    const ticket = `passwordlessEmai:${uuidv4()}`;
+    const ticket = `passwordlessEmail:${uuidv4()}`;
     const ticketExpiresAt = generateTicketExpiresAt(60 * 60);
 
     await gqlSdk.updateUser({

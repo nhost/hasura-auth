@@ -27,14 +27,12 @@ export const userEmailChange = async (
   req: ValidatedRequest<Schema>,
   res: Response
 ): Promise<unknown> => {
-  console.log('inside user email reset handler');
-
   const { newEmail, options } = req.body;
 
   // check if redirectTo is valid
   const redirectTo = options?.redirectTo ?? ENV.AUTH_CLIENT_URL;
   if (!isValidRedirectTo({ redirectTo })) {
-    return res.boom.badRequest(`'redirectTo' is not allowed`);
+    return res.boom.badRequest(`'redirectTo' is not valid`);
   }
 
   if (!req.auth?.userId) {

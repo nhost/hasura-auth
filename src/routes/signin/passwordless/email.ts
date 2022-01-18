@@ -32,7 +32,7 @@ export const signInPasswordlessEmailHandler = async (
   // check if redirectTo is valid
   const redirectTo = options?.redirectTo ?? ENV.AUTH_CLIENT_URL;
   if (!isValidRedirectTo({ redirectTo })) {
-    return res.boom.badRequest(`'redirectTo' is not allowed`);
+    return res.boom.badRequest(`'redirectTo' is not valid.`);
   }
 
   // check if email already exist
@@ -83,7 +83,6 @@ export const signInPasswordlessEmailHandler = async (
       .then((res) => res.insertUser);
 
     if (!insertedUser) {
-      console.log('unable to insert new user');
       throw new Error('Unable to insert new user');
     }
 
@@ -92,7 +91,7 @@ export const signInPasswordlessEmailHandler = async (
   }
 
   // create ticket
-  const ticket = `passwordlessEmai:${uuidv4()}`;
+  const ticket = `passwordlessEmail:${uuidv4()}`;
   const ticketExpiresAt = generateTicketExpiresAt(60 * 60);
 
   await gqlSdk.updateUser({

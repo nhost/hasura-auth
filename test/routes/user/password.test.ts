@@ -7,7 +7,7 @@ import { SignInResponse } from '../../../src/types';
 import { mailHogSearch } from '../../utils';
 
 describe('user password', () => {
-  let client: any;
+  let client: Client;
   let accessToken: string | undefined;
   let body: SignInResponse | undefined;
   const email = 'asdasd@asdasd.com';

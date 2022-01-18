@@ -5,7 +5,7 @@ import { request } from '../../../server';
 import { mailHogSearch, deleteAllMailHogEmails } from '../../../utils';
 
 describe('passwordless email (magic link)', () => {
-  let client: any;
+  let client: Client;
 
   beforeAll(async () => {
     client = new Client({
@@ -74,7 +74,7 @@ describe('passwordless email (magic link)', () => {
       .expect(404);
   });
 
-  it('should fail to sign if email is not allowed', async () => {
+  it('should fail to sign if email is not valid', async () => {
     // set env vars
     await request.post('/change-env').send({
       AUTH_DISABLE_NEW_USERS: false,
