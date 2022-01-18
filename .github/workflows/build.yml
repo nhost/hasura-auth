@@ -110,6 +110,7 @@ jobs:
           file: ./coverage/clover.xml
   publish:
     needs: test
+    if: ${{ github.event_name == 'push' || github.pull_request.head.repo.full_name == 'nhost/hasura-auth' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
