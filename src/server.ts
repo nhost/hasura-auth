@@ -41,7 +41,7 @@ export const start = async (): Promise<Server> => {
   await applyMigrations();
   await applyMetadata();
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const server = app.listen(ENV.AUTH_PORT, ENV.AUTH_HOST, () => {
       logger.info('Log level');
       logger.info(ENV.AUTH_LOG_LEVEL);
