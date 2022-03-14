@@ -8,6 +8,6 @@ DROP COLUMN redirect_url;
 ALTER TABLE
   auth.provider_requests
 ADD
-  COLUMN metadata JSONB;
+  COLUMN options JSONB;
 
 COMMIT;

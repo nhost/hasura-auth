@@ -69,11 +69,11 @@ const manageProviderStrategy =
   ): Promise<void> => {
     const state = req.query.state as string;
 
-    const requestMetadata = await gqlSdk
+    const requestOptions = await gqlSdk
       .providerRequest({
         id: state,
       })
-      .then((res) => res.authProviderRequest?.metadata);
+      .then((res) => res.authProviderRequest?.options);
 
     // find or create the user
     // check if user exists, using profile.id
@@ -132,7 +132,7 @@ const manageProviderStrategy =
       }
     }
 
-    const { defaultRole, locale, allowedRoles, metadata } = requestMetadata;
+    const { defaultRole, locale, allowedRoles, metadata } = requestOptions;
 
     const insertedUser = await insertUser({
       email,
@@ -145,7 +145,7 @@ const manageProviderStrategy =
           role,
         })),
       },
-      displayName: requestMetadata.displayName || displayName || email,
+      displayName: requestOptions.displayName || displayName || email,
       avatarUrl,
       metadata,
       userProviders: {
@@ -173,18 +173,18 @@ const providerCallback = asyncWrapper(
 
     req.state = req.query.state as string;
 
-    const requestMetadata = await gqlSdk
+    const requestOptions = await gqlSdk
       .deleteProviderRequest({
         id: req.state,
       })
-      .then((res) => res.deleteAuthProviderRequest?.metadata);
+      .then((res) => res.deleteAuthProviderRequest?.options);
 
     const user = req.user as UserFieldsFragment;
 
     const refreshToken = await getNewRefreshToken(user.id);
 
     // redirect back user to app url
-    res.redirect(`${requestMetadata.redirectTo}#refreshToken=${refreshToken}`);
+    res.redirect(`${requestOptions.redirectTo}#refreshToken=${refreshToken}`);
   }
 );
 
@@ -262,7 +262,7 @@ export const initProvider = <T extends Strategy>(
         req.state = uuidv4();
 
         // create request metadata object
-        const requestMetadata: UserRegistrationOptions & {
+        const requestOptions: UserRegistrationOptions & {
           redirectTo?: string;
         } = {};
 
@@ -282,11 +282,11 @@ export const initProvider = <T extends Strategy>(
           );
         }
 
-        requestMetadata.redirectTo = redirectTo;
+        requestOptions.redirectTo = redirectTo;
 
         // locale
         const locale = (req.query.locale as string) ?? ENV.AUTH_LOCALE_DEFAULT;
-        requestMetadata.locale = locale;
+        requestOptions.locale = locale;
 
         // roles
         const defaultRole = req.query.defaultRole ?? ENV.AUTH_USER_DEFAULT_ROLE;
@@ -300,18 +300,18 @@ export const initProvider = <T extends Strategy>(
           return;
         }
 
-        requestMetadata.defaultRole = defaultRole;
-        requestMetadata.allowedRoles = allowedRoles;
+        requestOptions.defaultRole = defaultRole;
+        requestOptions.allowedRoles = allowedRoles;
 
         // displayName
         if (req.query.displayName) {
-          requestMetadata.displayName = req.query.displayName;
+          requestOptions.displayName = req.query.displayName;
         }
 
         // metadata
         if (req.query.metadata) {
           try {
-            requestMetadata.metadata = JSON.parse(req.query.metadata as string);
+            requestOptions.metadata = JSON.parse(req.query.metadata as string);
           } catch (error) {
             return res.boom.badRequest('metadata is not valid JSON');
           }
@@ -321,7 +321,7 @@ export const initProvider = <T extends Strategy>(
         await gqlSdk.insertProviderRequest({
           providerRequest: {
             id: req.state,
-            metadata: requestMetadata,
+            options: requestOptions,
           },
         });
 

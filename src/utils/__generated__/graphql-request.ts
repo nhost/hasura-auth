@@ -70,12 +70,12 @@ export type String_Comparison_Exp = {
 export type AuthProviderRequests = {
   __typename?: 'authProviderRequests';
   id: Scalars['uuid'];
-  metadata: Scalars['jsonb'];
+  options?: Maybe<Scalars['jsonb']>;
 };
 
 
 /** columns and relationships of "auth.provider_requests" */
-export type AuthProviderRequestsMetadataArgs = {
+export type AuthProviderRequestsOptionsArgs = {
   path?: InputMaybe<Scalars['String']>;
 };
 
@@ -103,7 +103,7 @@ export type AuthProviderRequests_Aggregate_FieldsCountArgs = {
 
 /** append existing jsonb value of filtered columns with new jsonb value */
 export type AuthProviderRequests_Append_Input = {
-  metadata?: InputMaybe<Scalars['jsonb']>;
+  options?: InputMaybe<Scalars['jsonb']>;
 };
 
 /** Boolean expression to filter rows from the table "auth.provider_requests". All fields are combined with a logical 'AND'. */
@@ -112,7 +112,7 @@ export type AuthProviderRequests_Bool_Exp = {
   _not?: InputMaybe<AuthProviderRequests_Bool_Exp>;
   _or?: InputMaybe<Array<AuthProviderRequests_Bool_Exp>>;
   id?: InputMaybe<Uuid_Comparison_Exp>;
-  metadata?: InputMaybe<Jsonb_Comparison_Exp>;
+  options?: InputMaybe<Jsonb_Comparison_Exp>;
 };
 
 /** unique or primary key constraints on table "auth.provider_requests" */
@@ -123,23 +123,23 @@ export enum AuthProviderRequests_Constraint {
 
 /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
 export type AuthProviderRequests_Delete_At_Path_Input = {
-  metadata?: InputMaybe<Array<Scalars['String']>>;
+  options?: InputMaybe<Array<Scalars['String']>>;
 };
 
 /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
 export type AuthProviderRequests_Delete_Elem_Input = {
-  metadata?: InputMaybe<Scalars['Int']>;
+  options?: InputMaybe<Scalars['Int']>;
 };
 
 /** delete key/value pair or string element. key/value pairs are matched based on their key value */
 export type AuthProviderRequests_Delete_Key_Input = {
-  metadata?: InputMaybe<Scalars['String']>;
+  options?: InputMaybe<Scalars['String']>;
 };
 
 /** input type for inserting data into table "auth.provider_requests" */
 export type AuthProviderRequests_Insert_Input = {
   id?: InputMaybe<Scalars['uuid']>;
-  metadata?: InputMaybe<Scalars['jsonb']>;
+  options?: InputMaybe<Scalars['jsonb']>;
 };
 
 /** aggregate max on columns */
@@ -173,7 +173,7 @@ export type AuthProviderRequests_On_Conflict = {
 /** Ordering options when selecting data from "auth.provider_requests". */
 export type AuthProviderRequests_Order_By = {
   id?: InputMaybe<Order_By>;
-  metadata?: InputMaybe<Order_By>;
+  options?: InputMaybe<Order_By>;
 };
 
 /** primary key columns input for table: authProviderRequests */
@@ -183,7 +183,7 @@ export type AuthProviderRequests_Pk_Columns_Input = {
 
 /** prepend existing jsonb value of filtered columns with new jsonb value */
 export type AuthProviderRequests_Prepend_Input = {
-  metadata?: InputMaybe<Scalars['jsonb']>;
+  options?: InputMaybe<Scalars['jsonb']>;
 };
 
 /** select columns of table "auth.provider_requests" */
@@ -191,13 +191,13 @@ export enum AuthProviderRequests_Select_Column {
   /** column name */
   Id = 'id',
   /** column name */
-  Metadata = 'metadata'
+  Options = 'options'
 }
 
 /** input type for updating data in table "auth.provider_requests" */
 export type AuthProviderRequests_Set_Input = {
   id?: InputMaybe<Scalars['uuid']>;
-  metadata?: InputMaybe<Scalars['jsonb']>;
+  options?: InputMaybe<Scalars['jsonb']>;
 };
 
 /** update columns of table "auth.provider_requests" */
@@ -205,7 +205,7 @@ export enum AuthProviderRequests_Update_Column {
   /** column name */
   Id = 'id',
   /** column name */
-  Metadata = 'metadata'
+  Options = 'options'
 }
 
 /** columns and relationships of "auth.providers" */
@@ -2524,21 +2524,21 @@ export type InsertProviderRequestMutationVariables = Exact<{
 }>;
 
 
-export type InsertProviderRequestMutation = { __typename?: 'mutation_root', insertAuthProviderRequest?: { __typename?: 'authProviderRequests', id: any, metadata: any } | null };
+export type InsertProviderRequestMutation = { __typename?: 'mutation_root', insertAuthProviderRequest?: { __typename?: 'authProviderRequests', id: any, options?: any | null } | null };
 
 export type DeleteProviderRequestMutationVariables = Exact<{
   id: Scalars['uuid'];
 }>;
 
 
-export type DeleteProviderRequestMutation = { __typename?: 'mutation_root', deleteAuthProviderRequest?: { __typename?: 'authProviderRequests', id: any, metadata: any } | null };
+export type DeleteProviderRequestMutation = { __typename?: 'mutation_root', deleteAuthProviderRequest?: { __typename?: 'authProviderRequests', id: any, options?: any | null } | null };
 
 export type ProviderRequestQueryVariables = Exact<{
   id: Scalars['uuid'];
 }>;
 
 
-export type ProviderRequestQuery = { __typename?: 'query_root', authProviderRequest?: { __typename?: 'authProviderRequests', id: any, metadata: any } | null };
+export type ProviderRequestQuery = { __typename?: 'query_root', authProviderRequest?: { __typename?: 'authProviderRequests', id: any, options?: any | null } | null };
 
 export type InsertRefreshTokenMutationVariables = Exact<{
   refreshToken: AuthRefreshTokens_Insert_Input;
@@ -2744,7 +2744,7 @@ export const InsertProviderRequestDocument = gql`
     mutation insertProviderRequest($providerRequest: authProviderRequests_insert_input!) {
   insertAuthProviderRequest(object: $providerRequest) {
     id
-    metadata
+    options
   }
 }
     `;
@@ -2752,7 +2752,7 @@ export const DeleteProviderRequestDocument = gql`
     mutation deleteProviderRequest($id: uuid!) {
   deleteAuthProviderRequest(id: $id) {
     id
-    metadata
+    options
   }
 }
     `;
@@ -2760,7 +2760,7 @@ export const ProviderRequestDocument = gql`
     query providerRequest($id: uuid!) {
   authProviderRequest(id: $id) {
     id
-    metadata
+    options
   }
 }
     `;
