@@ -18,7 +18,7 @@ export const verifyHandler = async (
 
   if (!ticket) {
     const redirectUrl = generateRedirectUrl(redirectTo, {
-      error: 'missingVerificationTicket',
+      error: 'MissingVerificationTicket',
       errorDescription: 'Missing verification ticket',
     });
 
@@ -27,7 +27,7 @@ export const verifyHandler = async (
 
   if (!type) {
     const redirectUrl = generateRedirectUrl(redirectTo, {
-      error: 'missingVerificationType',
+      error: 'MissingVerificationType',
       errorDescription: 'Missing verification type',
     });
 
@@ -56,7 +56,7 @@ export const verifyHandler = async (
 
   if (!user) {
     const redirectUrl = generateRedirectUrl(redirectTo, {
-      error: 'invalidOrExpiredVerificationTicket',
+      error: 'InvalidOrExpiredVerificationTicket',
       errorDescription: 'Invalid or expired verification ticket',
     });
 
