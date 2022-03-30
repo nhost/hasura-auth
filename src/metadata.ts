@@ -1,6 +1,6 @@
-import axios from 'axios';
-import { logger } from './logger';
-import { ENV } from './utils/env';
+import axios from "axios";
+import { logger } from "./logger";
+import { ENV } from "./utils/env";
 
 /**
  * https://hasura.io/docs/latest/graphql/core/api-reference/schema-metadata-api/relationship.html
@@ -247,6 +247,7 @@ export const applyMetadata = async (): Promise<void> => {
   });
 
   // customization
+  console.log(111);
   await setTableCustomization({
     source: 'default',
     table: {
@@ -297,6 +298,7 @@ export const applyMetadata = async (): Promise<void> => {
       },
     },
   });
+  console.log(1221);
 
   await setTableCustomization({
     source: 'default',
@@ -327,6 +329,9 @@ export const applyMetadata = async (): Promise<void> => {
       },
     },
   });
+  console.log(
+    33);
+  
   await setTableCustomization({
     source: 'default',
     table: {

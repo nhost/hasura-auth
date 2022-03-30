@@ -1,11 +1,11 @@
-import { JWT } from 'jose';
-import { ClaimValueType, JwtSecret } from '@/types';
-import { UserFieldsFragment } from '../__generated__/graphql-request';
-import { ENV } from '../env';
-import { generateCustomClaims } from './custom-claims';
+import { JWT } from "jose";
+import { ClaimValueType, JwtSecret } from "@/types";
+import { UserFieldsFragment } from "../__generated__/graphql-request";
+import { ENV } from "../env";
+import { generateCustomClaims } from "./custom-claims";
 
-// const RSA_TYPES = ["RS256", "RS384", "RS512"];
-const ALLOWED_JWT_TYPES = ['HS256', 'HS384', 'HS512'];
+const RSA_TYPES = ["RS256", "RS384", "RS512"];
+const ALLOWED_JWT_TYPES = ['HS256', 'HS384', 'HS512', ...RSA_TYPES];
 
 const jwt = JSON.parse(ENV.HASURA_GRAPHQL_JWT_SECRET) as JwtSecret;
 
@@ -29,6 +29,8 @@ export const sign = ({
 }) => {
   const jwt = JSON.parse(ENV.HASURA_GRAPHQL_JWT_SECRET) as JwtSecret;
 
+  console.log(jwt.key);
+  
   return JWT.sign(payload, jwt.key, {
     algorithm: jwt.type,
     expiresIn: `${ENV.AUTH_ACCESS_TOKEN_EXPIRES_IN}s`,

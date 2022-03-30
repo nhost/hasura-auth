@@ -1,0 +1,3848 @@
+# This file was generated based on ".graphqlconfig". Do not edit manually.
+
+schema {
+  query: query_root
+  mutation: mutation_root
+  subscription: subscription_root
+}
+
+"whether this query should be cached (Hasura Cloud only)"
+directive @cached(
+  "refresh the cache entry"
+  refresh: Boolean! = false,
+  "measured in seconds"
+  ttl: Int! = 60
+) on QUERY
+
+"columns and relationships of \"block\""
+type block {
+  "An array relationship"
+  block_children(
+    "distinct select on columns"
+    distinct_on: [block_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [block_order_by!],
+    "filter the rows returned"
+    where: block_bool_exp
+  ): [block!]!
+  "An aggregate relationship"
+  block_children_aggregate(
+    "distinct select on columns"
+    distinct_on: [block_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [block_order_by!],
+    "filter the rows returned"
+    where: block_bool_exp
+  ): block_aggregate!
+  "An array relationship"
+  block_followers(
+    "distinct select on columns"
+    distinct_on: [block_follower_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [block_follower_order_by!],
+    "filter the rows returned"
+    where: block_follower_bool_exp
+  ): [block_follower!]!
+  "An aggregate relationship"
+  block_followers_aggregate(
+    "distinct select on columns"
+    distinct_on: [block_follower_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [block_follower_order_by!],
+    "filter the rows returned"
+    where: block_follower_bool_exp
+  ): block_follower_aggregate!
+  "An array relationship"
+  block_likes(
+    "distinct select on columns"
+    distinct_on: [block_like_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [block_like_order_by!],
+    "filter the rows returned"
+    where: block_like_bool_exp
+  ): [block_like!]!
+  "An aggregate relationship"
+  block_likes_aggregate(
+    "distinct select on columns"
+    distinct_on: [block_like_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [block_like_order_by!],
+    "filter the rows returned"
+    where: block_like_bool_exp
+  ): block_like_aggregate!
+  "An object relationship"
+  block_parent: block
+  "Block parent id for hierarchy. If null, the block will be at the root"
+  block_parent_id: uuid
+  "An array relationship"
+  block_referees(
+    "distinct select on columns"
+    distinct_on: [block_reference_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [block_reference_order_by!],
+    "filter the rows returned"
+    where: block_reference_bool_exp
+  ): [block_reference!]!
+  "An aggregate relationship"
+  block_referees_aggregate(
+    "distinct select on columns"
+    distinct_on: [block_reference_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [block_reference_order_by!],
+    "filter the rows returned"
+    where: block_reference_bool_exp
+  ): block_reference_aggregate!
+  "An array relationship"
+  block_referrers(
+    "distinct select on columns"
+    distinct_on: [block_reference_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [block_reference_order_by!],
+    "filter the rows returned"
+    where: block_reference_bool_exp
+  ): [block_reference!]!
+  "An aggregate relationship"
+  block_referrers_aggregate(
+    "distinct select on columns"
+    distinct_on: [block_reference_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [block_reference_order_by!],
+    "filter the rows returned"
+    where: block_reference_bool_exp
+  ): block_reference_aggregate!
+  "An array relationship"
+  block_reposts(
+    "distinct select on columns"
+    distinct_on: [block_repost_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [block_repost_order_by!],
+    "filter the rows returned"
+    where: block_repost_bool_exp
+  ): [block_repost!]!
+  "An aggregate relationship"
+  block_reposts_aggregate(
+    "distinct select on columns"
+    distinct_on: [block_repost_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [block_repost_order_by!],
+    "filter the rows returned"
+    where: block_repost_bool_exp
+  ): block_repost_aggregate!
+  "Slate children. If null, empty text"
+  children(
+    "JSON select path"
+    path: String
+  ): jsonb
+  created_at: timestamptz!
+  "Slate properties"
+  data(
+    "JSON select path"
+    path: String
+  ): jsonb
+  "An object relationship"
+  fork_parent: block
+  "Forked from"
+  fork_parent_id: uuid
+  "An array relationship"
+  forks(
+    "distinct select on columns"
+    distinct_on: [block_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [block_order_by!],
+    "filter the rows returned"
+    where: block_bool_exp
+  ): [block!]!
+  "An aggregate relationship"
+  forks_aggregate(
+    "distinct select on columns"
+    distinct_on: [block_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [block_order_by!],
+    "filter the rows returned"
+    where: block_bool_exp
+  ): block_aggregate!
+  id: uuid!
+  is_posted: Boolean
+  "Lexicographical order of the block inside the parent block"
+  order: String
+  path: ltree
+  "Full text without marks"
+  text: String
+  title: String
+  "Type of the block. If null, it's a paragraph"
+  type: String
+  updated_at: timestamptz!
+  "An object relationship"
+  user: users!
+  "Author id"
+  user_id: uuid!
+}
+
+"aggregated selection of \"block\""
+type block_aggregate {
+  aggregate: block_aggregate_fields
+  nodes: [block!]!
+}
+
+"aggregate fields of \"block\""
+type block_aggregate_fields {
+  count(columns: [block_select_column!], distinct: Boolean): Int!
+  max: block_max_fields
+  min: block_min_fields
+}
+
+"columns and relationships of \"block_comment\""
+type block_comment {
+  block_id: uuid!
+  created_at: timestamptz!
+  id: uuid!
+  text: String!
+  user_id: uuid!
+}
+
+"aggregated selection of \"block_comment\""
+type block_comment_aggregate {
+  aggregate: block_comment_aggregate_fields
+  nodes: [block_comment!]!
+}
+
+"aggregate fields of \"block_comment\""
+type block_comment_aggregate_fields {
+  count(columns: [block_comment_select_column!], distinct: Boolean): Int!
+  max: block_comment_max_fields
+  min: block_comment_min_fields
+}
+
+"aggregate max on columns"
+type block_comment_max_fields {
+  block_id: uuid
+  created_at: timestamptz
+  id: uuid
+  text: String
+  user_id: uuid
+}
+
+"aggregate min on columns"
+type block_comment_min_fields {
+  block_id: uuid
+  created_at: timestamptz
+  id: uuid
+  text: String
+  user_id: uuid
+}
+
+"response of any mutation on the table \"block_comment\""
+type block_comment_mutation_response {
+  "number of rows affected by the mutation"
+  affected_rows: Int!
+  "data from the rows affected by the mutation"
+  returning: [block_comment!]!
+}
+
+"columns and relationships of \"block_follower\""
+type block_follower {
+  "An object relationship"
+  block: block!
+  block_id: uuid!
+  created_at: timestamptz!
+  "An object relationship"
+  user: users!
+  user_id: uuid!
+}
+
+"aggregated selection of \"block_follower\""
+type block_follower_aggregate {
+  aggregate: block_follower_aggregate_fields
+  nodes: [block_follower!]!
+}
+
+"aggregate fields of \"block_follower\""
+type block_follower_aggregate_fields {
+  count(columns: [block_follower_select_column!], distinct: Boolean): Int!
+  max: block_follower_max_fields
+  min: block_follower_min_fields
+}
+
+"aggregate max on columns"
+type block_follower_max_fields {
+  block_id: uuid
+  created_at: timestamptz
+  user_id: uuid
+}
+
+"aggregate min on columns"
+type block_follower_min_fields {
+  block_id: uuid
+  created_at: timestamptz
+  user_id: uuid
+}
+
+"response of any mutation on the table \"block_follower\""
+type block_follower_mutation_response {
+  "number of rows affected by the mutation"
+  affected_rows: Int!
+  "data from the rows affected by the mutation"
+  returning: [block_follower!]!
+}
+
+"columns and relationships of \"block_like\""
+type block_like {
+  "An object relationship"
+  block: block!
+  block_id: uuid!
+  created_at: timestamptz!
+  "An object relationship"
+  user: users!
+  user_id: uuid!
+}
+
+"aggregated selection of \"block_like\""
+type block_like_aggregate {
+  aggregate: block_like_aggregate_fields
+  nodes: [block_like!]!
+}
+
+"aggregate fields of \"block_like\""
+type block_like_aggregate_fields {
+  count(columns: [block_like_select_column!], distinct: Boolean): Int!
+  max: block_like_max_fields
+  min: block_like_min_fields
+}
+
+"aggregate max on columns"
+type block_like_max_fields {
+  block_id: uuid
+  created_at: timestamptz
+  user_id: uuid
+}
+
+"aggregate min on columns"
+type block_like_min_fields {
+  block_id: uuid
+  created_at: timestamptz
+  user_id: uuid
+}
+
+"response of any mutation on the table \"block_like\""
+type block_like_mutation_response {
+  "number of rows affected by the mutation"
+  affected_rows: Int!
+  "data from the rows affected by the mutation"
+  returning: [block_like!]!
+}
+
+"aggregate max on columns"
+type block_max_fields {
+  "Block parent id for hierarchy. If null, the block will be at the root"
+  block_parent_id: uuid
+  created_at: timestamptz
+  "Forked from"
+  fork_parent_id: uuid
+  id: uuid
+  "Lexicographical order of the block inside the parent block"
+  order: String
+  path: ltree
+  "Full text without marks"
+  text: String
+  title: String
+  "Type of the block. If null, it's a paragraph"
+  type: String
+  updated_at: timestamptz
+  "Author id"
+  user_id: uuid
+}
+
+"aggregate min on columns"
+type block_min_fields {
+  "Block parent id for hierarchy. If null, the block will be at the root"
+  block_parent_id: uuid
+  created_at: timestamptz
+  "Forked from"
+  fork_parent_id: uuid
+  id: uuid
+  "Lexicographical order of the block inside the parent block"
+  order: String
+  path: ltree
+  "Full text without marks"
+  text: String
+  title: String
+  "Type of the block. If null, it's a paragraph"
+  type: String
+  updated_at: timestamptz
+  "Author id"
+  user_id: uuid
+}
+
+"response of any mutation on the table \"block\""
+type block_mutation_response {
+  "number of rows affected by the mutation"
+  affected_rows: Int!
+  "data from the rows affected by the mutation"
+  returning: [block!]!
+}
+
+"columns and relationships of \"block_reference\""
+type block_reference {
+  "An object relationship"
+  block_referee: block!
+  block_referee_id: uuid!
+  "An object relationship"
+  block_referrer: block!
+  block_referrer_id: uuid!
+  created_at: timestamptz!
+}
+
+"aggregated selection of \"block_reference\""
+type block_reference_aggregate {
+  aggregate: block_reference_aggregate_fields
+  nodes: [block_reference!]!
+}
+
+"aggregate fields of \"block_reference\""
+type block_reference_aggregate_fields {
+  count(columns: [block_reference_select_column!], distinct: Boolean): Int!
+  max: block_reference_max_fields
+  min: block_reference_min_fields
+}
+
+"aggregate max on columns"
+type block_reference_max_fields {
+  block_referee_id: uuid
+  block_referrer_id: uuid
+  created_at: timestamptz
+}
+
+"aggregate min on columns"
+type block_reference_min_fields {
+  block_referee_id: uuid
+  block_referrer_id: uuid
+  created_at: timestamptz
+}
+
+"response of any mutation on the table \"block_reference\""
+type block_reference_mutation_response {
+  "number of rows affected by the mutation"
+  affected_rows: Int!
+  "data from the rows affected by the mutation"
+  returning: [block_reference!]!
+}
+
+"columns and relationships of \"block_repost\""
+type block_repost {
+  "An object relationship"
+  block: block!
+  block_id: uuid!
+  created_at: timestamptz!
+  "An object relationship"
+  user: users!
+  user_id: uuid!
+}
+
+"aggregated selection of \"block_repost\""
+type block_repost_aggregate {
+  aggregate: block_repost_aggregate_fields
+  nodes: [block_repost!]!
+}
+
+"aggregate fields of \"block_repost\""
+type block_repost_aggregate_fields {
+  count(columns: [block_repost_select_column!], distinct: Boolean): Int!
+  max: block_repost_max_fields
+  min: block_repost_min_fields
+}
+
+"aggregate max on columns"
+type block_repost_max_fields {
+  block_id: uuid
+  created_at: timestamptz
+  user_id: uuid
+}
+
+"aggregate min on columns"
+type block_repost_min_fields {
+  block_id: uuid
+  created_at: timestamptz
+  user_id: uuid
+}
+
+"response of any mutation on the table \"block_repost\""
+type block_repost_mutation_response {
+  "number of rows affected by the mutation"
+  affected_rows: Int!
+  "data from the rows affected by the mutation"
+  returning: [block_repost!]!
+}
+
+"columns and relationships of \"follower\""
+type follower {
+  created_at: timestamptz
+  "An object relationship"
+  follower: users!
+  follower_id: uuid!
+  "An object relationship"
+  following: users!
+  following_id: uuid!
+}
+
+"aggregated selection of \"follower\""
+type follower_aggregate {
+  aggregate: follower_aggregate_fields
+  nodes: [follower!]!
+}
+
+"aggregate fields of \"follower\""
+type follower_aggregate_fields {
+  count(columns: [follower_select_column!], distinct: Boolean): Int!
+  max: follower_max_fields
+  min: follower_min_fields
+}
+
+"aggregate max on columns"
+type follower_max_fields {
+  created_at: timestamptz
+  follower_id: uuid
+  following_id: uuid
+}
+
+"aggregate min on columns"
+type follower_min_fields {
+  created_at: timestamptz
+  follower_id: uuid
+  following_id: uuid
+}
+
+"response of any mutation on the table \"follower\""
+type follower_mutation_response {
+  "number of rows affected by the mutation"
+  affected_rows: Int!
+  "data from the rows affected by the mutation"
+  returning: [follower!]!
+}
+
+"mutation root"
+type mutation_root {
+  "delete data from the table: \"block\""
+  delete_block(
+    "filter the rows which have to be deleted"
+    where: block_bool_exp!
+  ): block_mutation_response
+  "delete single row from the table: \"block\""
+  delete_block_by_pk(id: uuid!): block
+  "delete data from the table: \"block_comment\""
+  delete_block_comment(
+    "filter the rows which have to be deleted"
+    where: block_comment_bool_exp!
+  ): block_comment_mutation_response
+  "delete single row from the table: \"block_comment\""
+  delete_block_comment_by_pk(id: uuid!): block_comment
+  "delete data from the table: \"block_follower\""
+  delete_block_follower(
+    "filter the rows which have to be deleted"
+    where: block_follower_bool_exp!
+  ): block_follower_mutation_response
+  "delete single row from the table: \"block_follower\""
+  delete_block_follower_by_pk(block_id: uuid!, user_id: uuid!): block_follower
+  "delete data from the table: \"block_like\""
+  delete_block_like(
+    "filter the rows which have to be deleted"
+    where: block_like_bool_exp!
+  ): block_like_mutation_response
+  "delete single row from the table: \"block_like\""
+  delete_block_like_by_pk(block_id: uuid!, user_id: uuid!): block_like
+  "delete data from the table: \"block_reference\""
+  delete_block_reference(
+    "filter the rows which have to be deleted"
+    where: block_reference_bool_exp!
+  ): block_reference_mutation_response
+  "delete single row from the table: \"block_reference\""
+  delete_block_reference_by_pk(block_referee_id: uuid!, block_referrer_id: uuid!): block_reference
+  "delete data from the table: \"block_repost\""
+  delete_block_repost(
+    "filter the rows which have to be deleted"
+    where: block_repost_bool_exp!
+  ): block_repost_mutation_response
+  "delete single row from the table: \"block_repost\""
+  delete_block_repost_by_pk(block_id: uuid!, user_id: uuid!): block_repost
+  "delete data from the table: \"follower\""
+  delete_follower(
+    "filter the rows which have to be deleted"
+    where: follower_bool_exp!
+  ): follower_mutation_response
+  "delete single row from the table: \"follower\""
+  delete_follower_by_pk(follower_id: uuid!, following_id: uuid!): follower
+  "delete data from the table: \"user_online\""
+  delete_user_online(
+    "filter the rows which have to be deleted"
+    where: user_online_bool_exp!
+  ): user_online_mutation_response
+  "delete data from the table: \"user_private\""
+  delete_user_private(
+    "filter the rows which have to be deleted"
+    where: user_private_bool_exp!
+  ): user_private_mutation_response
+  "delete data from the table: \"user_typing\""
+  delete_user_typing(
+    "filter the rows which have to be deleted"
+    where: user_typing_bool_exp!
+  ): user_typing_mutation_response
+  "delete data from the table: \"users\""
+  delete_users(
+    "filter the rows which have to be deleted"
+    where: users_bool_exp!
+  ): users_mutation_response
+  "delete single row from the table: \"users\""
+  delete_users_by_pk(id: uuid!): users
+  "delete data from the table: \"workspace\""
+  delete_workspace(
+    "filter the rows which have to be deleted"
+    where: workspace_bool_exp!
+  ): workspace_mutation_response
+  "delete single row from the table: \"workspace\""
+  delete_workspace_by_pk(id: uuid!): workspace
+  "insert data into the table: \"block\""
+  insert_block(
+    "the rows to be inserted"
+    objects: [block_insert_input!]!,
+    "on conflict condition"
+    on_conflict: block_on_conflict
+  ): block_mutation_response
+  "insert data into the table: \"block_comment\""
+  insert_block_comment(
+    "the rows to be inserted"
+    objects: [block_comment_insert_input!]!,
+    "on conflict condition"
+    on_conflict: block_comment_on_conflict
+  ): block_comment_mutation_response
+  "insert a single row into the table: \"block_comment\""
+  insert_block_comment_one(
+    "the row to be inserted"
+    object: block_comment_insert_input!,
+    "on conflict condition"
+    on_conflict: block_comment_on_conflict
+  ): block_comment
+  "insert data into the table: \"block_follower\""
+  insert_block_follower(
+    "the rows to be inserted"
+    objects: [block_follower_insert_input!]!,
+    "on conflict condition"
+    on_conflict: block_follower_on_conflict
+  ): block_follower_mutation_response
+  "insert a single row into the table: \"block_follower\""
+  insert_block_follower_one(
+    "the row to be inserted"
+    object: block_follower_insert_input!,
+    "on conflict condition"
+    on_conflict: block_follower_on_conflict
+  ): block_follower
+  "insert data into the table: \"block_like\""
+  insert_block_like(
+    "the rows to be inserted"
+    objects: [block_like_insert_input!]!,
+    "on conflict condition"
+    on_conflict: block_like_on_conflict
+  ): block_like_mutation_response
+  "insert a single row into the table: \"block_like\""
+  insert_block_like_one(
+    "the row to be inserted"
+    object: block_like_insert_input!,
+    "on conflict condition"
+    on_conflict: block_like_on_conflict
+  ): block_like
+  "insert a single row into the table: \"block\""
+  insert_block_one(
+    "the row to be inserted"
+    object: block_insert_input!,
+    "on conflict condition"
+    on_conflict: block_on_conflict
+  ): block
+  "insert data into the table: \"block_reference\""
+  insert_block_reference(
+    "the rows to be inserted"
+    objects: [block_reference_insert_input!]!,
+    "on conflict condition"
+    on_conflict: block_reference_on_conflict
+  ): block_reference_mutation_response
+  "insert a single row into the table: \"block_reference\""
+  insert_block_reference_one(
+    "the row to be inserted"
+    object: block_reference_insert_input!,
+    "on conflict condition"
+    on_conflict: block_reference_on_conflict
+  ): block_reference
+  "insert data into the table: \"block_repost\""
+  insert_block_repost(
+    "the rows to be inserted"
+    objects: [block_repost_insert_input!]!,
+    "on conflict condition"
+    on_conflict: block_repost_on_conflict
+  ): block_repost_mutation_response
+  "insert a single row into the table: \"block_repost\""
+  insert_block_repost_one(
+    "the row to be inserted"
+    object: block_repost_insert_input!,
+    "on conflict condition"
+    on_conflict: block_repost_on_conflict
+  ): block_repost
+  "insert data into the table: \"follower\""
+  insert_follower(
+    "the rows to be inserted"
+    objects: [follower_insert_input!]!,
+    "on conflict condition"
+    on_conflict: follower_on_conflict
+  ): follower_mutation_response
+  "insert a single row into the table: \"follower\""
+  insert_follower_one(
+    "the row to be inserted"
+    object: follower_insert_input!,
+    "on conflict condition"
+    on_conflict: follower_on_conflict
+  ): follower
+  "insert data into the table: \"user_online\""
+  insert_user_online(
+    "the rows to be inserted"
+    objects: [user_online_insert_input!]!
+  ): user_online_mutation_response
+  "insert a single row into the table: \"user_online\""
+  insert_user_online_one(
+    "the row to be inserted"
+    object: user_online_insert_input!
+  ): user_online
+  "insert data into the table: \"user_private\""
+  insert_user_private(
+    "the rows to be inserted"
+    objects: [user_private_insert_input!]!
+  ): user_private_mutation_response
+  "insert a single row into the table: \"user_private\""
+  insert_user_private_one(
+    "the row to be inserted"
+    object: user_private_insert_input!
+  ): user_private
+  "insert data into the table: \"user_typing\""
+  insert_user_typing(
+    "the rows to be inserted"
+    objects: [user_typing_insert_input!]!
+  ): user_typing_mutation_response
+  "insert a single row into the table: \"user_typing\""
+  insert_user_typing_one(
+    "the row to be inserted"
+    object: user_typing_insert_input!
+  ): user_typing
+  "insert data into the table: \"users\""
+  insert_users(
+    "the rows to be inserted"
+    objects: [users_insert_input!]!,
+    "on conflict condition"
+    on_conflict: users_on_conflict
+  ): users_mutation_response
+  "insert a single row into the table: \"users\""
+  insert_users_one(
+    "the row to be inserted"
+    object: users_insert_input!,
+    "on conflict condition"
+    on_conflict: users_on_conflict
+  ): users
+  "insert data into the table: \"workspace\""
+  insert_workspace(
+    "the rows to be inserted"
+    objects: [workspace_insert_input!]!,
+    "on conflict condition"
+    on_conflict: workspace_on_conflict
+  ): workspace_mutation_response
+  "insert a single row into the table: \"workspace\""
+  insert_workspace_one(
+    "the row to be inserted"
+    object: workspace_insert_input!,
+    "on conflict condition"
+    on_conflict: workspace_on_conflict
+  ): workspace
+  save_tags(tags: [save_tags_input!]!): save_tags_output
+  "update data of the table: \"block\""
+  update_block(
+    "append existing jsonb value of filtered columns with new jsonb value"
+    _append: block_append_input,
+    "delete the field or element with specified path (for JSON arrays, negative integers count from the end)"
+    _delete_at_path: block_delete_at_path_input,
+    "delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array"
+    _delete_elem: block_delete_elem_input,
+    "delete key/value pair or string element. key/value pairs are matched based on their key value"
+    _delete_key: block_delete_key_input,
+    "prepend existing jsonb value of filtered columns with new jsonb value"
+    _prepend: block_prepend_input,
+    "sets the columns of the filtered rows to the given values"
+    _set: block_set_input,
+    "filter the rows which have to be updated"
+    where: block_bool_exp!
+  ): block_mutation_response
+  "update single row of the table: \"block\""
+  update_block_by_pk(
+    "append existing jsonb value of filtered columns with new jsonb value"
+    _append: block_append_input,
+    "delete the field or element with specified path (for JSON arrays, negative integers count from the end)"
+    _delete_at_path: block_delete_at_path_input,
+    "delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array"
+    _delete_elem: block_delete_elem_input,
+    "delete key/value pair or string element. key/value pairs are matched based on their key value"
+    _delete_key: block_delete_key_input,
+    "prepend existing jsonb value of filtered columns with new jsonb value"
+    _prepend: block_prepend_input,
+    "sets the columns of the filtered rows to the given values"
+    _set: block_set_input,
+    pk_columns: block_pk_columns_input!
+  ): block
+  "update data of the table: \"block_comment\""
+  update_block_comment(
+    "sets the columns of the filtered rows to the given values"
+    _set: block_comment_set_input,
+    "filter the rows which have to be updated"
+    where: block_comment_bool_exp!
+  ): block_comment_mutation_response
+  "update single row of the table: \"block_comment\""
+  update_block_comment_by_pk(
+    "sets the columns of the filtered rows to the given values"
+    _set: block_comment_set_input,
+    pk_columns: block_comment_pk_columns_input!
+  ): block_comment
+  "update data of the table: \"block_follower\""
+  update_block_follower(
+    "sets the columns of the filtered rows to the given values"
+    _set: block_follower_set_input,
+    "filter the rows which have to be updated"
+    where: block_follower_bool_exp!
+  ): block_follower_mutation_response
+  "update single row of the table: \"block_follower\""
+  update_block_follower_by_pk(
+    "sets the columns of the filtered rows to the given values"
+    _set: block_follower_set_input,
+    pk_columns: block_follower_pk_columns_input!
+  ): block_follower
+  "update data of the table: \"block_like\""
+  update_block_like(
+    "sets the columns of the filtered rows to the given values"
+    _set: block_like_set_input,
+    "filter the rows which have to be updated"
+    where: block_like_bool_exp!
+  ): block_like_mutation_response
+  "update single row of the table: \"block_like\""
+  update_block_like_by_pk(
+    "sets the columns of the filtered rows to the given values"
+    _set: block_like_set_input,
+    pk_columns: block_like_pk_columns_input!
+  ): block_like
+  "update data of the table: \"block_reference\""
+  update_block_reference(
+    "sets the columns of the filtered rows to the given values"
+    _set: block_reference_set_input,
+    "filter the rows which have to be updated"
+    where: block_reference_bool_exp!
+  ): block_reference_mutation_response
+  "update single row of the table: \"block_reference\""
+  update_block_reference_by_pk(
+    "sets the columns of the filtered rows to the given values"
+    _set: block_reference_set_input,
+    pk_columns: block_reference_pk_columns_input!
+  ): block_reference
+  "update data of the table: \"block_repost\""
+  update_block_repost(
+    "sets the columns of the filtered rows to the given values"
+    _set: block_repost_set_input,
+    "filter the rows which have to be updated"
+    where: block_repost_bool_exp!
+  ): block_repost_mutation_response
+  "update single row of the table: \"block_repost\""
+  update_block_repost_by_pk(
+    "sets the columns of the filtered rows to the given values"
+    _set: block_repost_set_input,
+    pk_columns: block_repost_pk_columns_input!
+  ): block_repost
+  "update data of the table: \"follower\""
+  update_follower(
+    "sets the columns of the filtered rows to the given values"
+    _set: follower_set_input,
+    "filter the rows which have to be updated"
+    where: follower_bool_exp!
+  ): follower_mutation_response
+  "update single row of the table: \"follower\""
+  update_follower_by_pk(
+    "sets the columns of the filtered rows to the given values"
+    _set: follower_set_input,
+    pk_columns: follower_pk_columns_input!
+  ): follower
+  "update data of the table: \"user_online\""
+  update_user_online(
+    "sets the columns of the filtered rows to the given values"
+    _set: user_online_set_input,
+    "filter the rows which have to be updated"
+    where: user_online_bool_exp!
+  ): user_online_mutation_response
+  "update data of the table: \"user_private\""
+  update_user_private(
+    "sets the columns of the filtered rows to the given values"
+    _set: user_private_set_input,
+    "filter the rows which have to be updated"
+    where: user_private_bool_exp!
+  ): user_private_mutation_response
+  "update data of the table: \"user_typing\""
+  update_user_typing(
+    "sets the columns of the filtered rows to the given values"
+    _set: user_typing_set_input,
+    "filter the rows which have to be updated"
+    where: user_typing_bool_exp!
+  ): user_typing_mutation_response
+  "update data of the table: \"users\""
+  update_users(
+    "sets the columns of the filtered rows to the given values"
+    _set: users_set_input,
+    "filter the rows which have to be updated"
+    where: users_bool_exp!
+  ): users_mutation_response
+  "update single row of the table: \"users\""
+  update_users_by_pk(
+    "sets the columns of the filtered rows to the given values"
+    _set: users_set_input,
+    pk_columns: users_pk_columns_input!
+  ): users
+  "update data of the table: \"workspace\""
+  update_workspace(
+    "sets the columns of the filtered rows to the given values"
+    _set: workspace_set_input,
+    "filter the rows which have to be updated"
+    where: workspace_bool_exp!
+  ): workspace_mutation_response
+  "update single row of the table: \"workspace\""
+  update_workspace_by_pk(
+    "sets the columns of the filtered rows to the given values"
+    _set: workspace_set_input,
+    pk_columns: workspace_pk_columns_input!
+  ): workspace
+}
+
+type query_root {
+  "fetch data from the table: \"block\""
+  block(
+    "distinct select on columns"
+    distinct_on: [block_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [block_order_by!],
+    "filter the rows returned"
+    where: block_bool_exp
+  ): [block!]!
+  "fetch aggregated fields from the table: \"block\""
+  block_aggregate(
+    "distinct select on columns"
+    distinct_on: [block_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [block_order_by!],
+    "filter the rows returned"
+    where: block_bool_exp
+  ): block_aggregate!
+  "fetch data from the table: \"block\" using primary key columns"
+  block_by_pk(id: uuid!): block
+  "fetch data from the table: \"block_comment\""
+  block_comment(
+    "distinct select on columns"
+    distinct_on: [block_comment_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [block_comment_order_by!],
+    "filter the rows returned"
+    where: block_comment_bool_exp
+  ): [block_comment!]!
+  "fetch aggregated fields from the table: \"block_comment\""
+  block_comment_aggregate(
+    "distinct select on columns"
+    distinct_on: [block_comment_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [block_comment_order_by!],
+    "filter the rows returned"
+    where: block_comment_bool_exp
+  ): block_comment_aggregate!
+  "fetch data from the table: \"block_comment\" using primary key columns"
+  block_comment_by_pk(id: uuid!): block_comment
+  "fetch data from the table: \"block_follower\""
+  block_follower(
+    "distinct select on columns"
+    distinct_on: [block_follower_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [block_follower_order_by!],
+    "filter the rows returned"
+    where: block_follower_bool_exp
+  ): [block_follower!]!
+  "fetch aggregated fields from the table: \"block_follower\""
+  block_follower_aggregate(
+    "distinct select on columns"
+    distinct_on: [block_follower_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [block_follower_order_by!],
+    "filter the rows returned"
+    where: block_follower_bool_exp
+  ): block_follower_aggregate!
+  "fetch data from the table: \"block_follower\" using primary key columns"
+  block_follower_by_pk(block_id: uuid!, user_id: uuid!): block_follower
+  "fetch data from the table: \"block_like\""
+  block_like(
+    "distinct select on columns"
+    distinct_on: [block_like_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [block_like_order_by!],
+    "filter the rows returned"
+    where: block_like_bool_exp
+  ): [block_like!]!
+  "fetch aggregated fields from the table: \"block_like\""
+  block_like_aggregate(
+    "distinct select on columns"
+    distinct_on: [block_like_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [block_like_order_by!],
+    "filter the rows returned"
+    where: block_like_bool_exp
+  ): block_like_aggregate!
+  "fetch data from the table: \"block_like\" using primary key columns"
+  block_like_by_pk(block_id: uuid!, user_id: uuid!): block_like
+  "fetch data from the table: \"block_reference\""
+  block_reference(
+    "distinct select on columns"
+    distinct_on: [block_reference_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [block_reference_order_by!],
+    "filter the rows returned"
+    where: block_reference_bool_exp
+  ): [block_reference!]!
+  "fetch aggregated fields from the table: \"block_reference\""
+  block_reference_aggregate(
+    "distinct select on columns"
+    distinct_on: [block_reference_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [block_reference_order_by!],
+    "filter the rows returned"
+    where: block_reference_bool_exp
+  ): block_reference_aggregate!
+  "fetch data from the table: \"block_reference\" using primary key columns"
+  block_reference_by_pk(block_referee_id: uuid!, block_referrer_id: uuid!): block_reference
+  "fetch data from the table: \"block_repost\""
+  block_repost(
+    "distinct select on columns"
+    distinct_on: [block_repost_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [block_repost_order_by!],
+    "filter the rows returned"
+    where: block_repost_bool_exp
+  ): [block_repost!]!
+  "fetch aggregated fields from the table: \"block_repost\""
+  block_repost_aggregate(
+    "distinct select on columns"
+    distinct_on: [block_repost_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [block_repost_order_by!],
+    "filter the rows returned"
+    where: block_repost_bool_exp
+  ): block_repost_aggregate!
+  "fetch data from the table: \"block_repost\" using primary key columns"
+  block_repost_by_pk(block_id: uuid!, user_id: uuid!): block_repost
+  "fetch data from the table: \"follower\""
+  follower(
+    "distinct select on columns"
+    distinct_on: [follower_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [follower_order_by!],
+    "filter the rows returned"
+    where: follower_bool_exp
+  ): [follower!]!
+  "fetch aggregated fields from the table: \"follower\""
+  follower_aggregate(
+    "distinct select on columns"
+    distinct_on: [follower_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [follower_order_by!],
+    "filter the rows returned"
+    where: follower_bool_exp
+  ): follower_aggregate!
+  "fetch data from the table: \"follower\" using primary key columns"
+  follower_by_pk(follower_id: uuid!, following_id: uuid!): follower
+  "fetch data from the table: \"timeline_event\""
+  timeline_event(
+    "distinct select on columns"
+    distinct_on: [timeline_event_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [timeline_event_order_by!],
+    "filter the rows returned"
+    where: timeline_event_bool_exp
+  ): [timeline_event!]!
+  "fetch aggregated fields from the table: \"timeline_event\""
+  timeline_event_aggregate(
+    "distinct select on columns"
+    distinct_on: [timeline_event_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [timeline_event_order_by!],
+    "filter the rows returned"
+    where: timeline_event_bool_exp
+  ): timeline_event_aggregate!
+  "fetch data from the table: \"user_online\""
+  user_online(
+    "distinct select on columns"
+    distinct_on: [user_online_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [user_online_order_by!],
+    "filter the rows returned"
+    where: user_online_bool_exp
+  ): [user_online!]!
+  "fetch aggregated fields from the table: \"user_online\""
+  user_online_aggregate(
+    "distinct select on columns"
+    distinct_on: [user_online_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [user_online_order_by!],
+    "filter the rows returned"
+    where: user_online_bool_exp
+  ): user_online_aggregate!
+  "fetch data from the table: \"user_private\""
+  user_private(
+    "distinct select on columns"
+    distinct_on: [user_private_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [user_private_order_by!],
+    "filter the rows returned"
+    where: user_private_bool_exp
+  ): [user_private!]!
+  "fetch aggregated fields from the table: \"user_private\""
+  user_private_aggregate(
+    "distinct select on columns"
+    distinct_on: [user_private_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [user_private_order_by!],
+    "filter the rows returned"
+    where: user_private_bool_exp
+  ): user_private_aggregate!
+  "fetch data from the table: \"user_typing\""
+  user_typing(
+    "distinct select on columns"
+    distinct_on: [user_typing_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [user_typing_order_by!],
+    "filter the rows returned"
+    where: user_typing_bool_exp
+  ): [user_typing!]!
+  "fetch aggregated fields from the table: \"user_typing\""
+  user_typing_aggregate(
+    "distinct select on columns"
+    distinct_on: [user_typing_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [user_typing_order_by!],
+    "filter the rows returned"
+    where: user_typing_bool_exp
+  ): user_typing_aggregate!
+  "fetch data from the table: \"users\""
+  users(
+    "distinct select on columns"
+    distinct_on: [users_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [users_order_by!],
+    "filter the rows returned"
+    where: users_bool_exp
+  ): [users!]!
+  "fetch aggregated fields from the table: \"users\""
+  users_aggregate(
+    "distinct select on columns"
+    distinct_on: [users_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [users_order_by!],
+    "filter the rows returned"
+    where: users_bool_exp
+  ): users_aggregate!
+  "fetch data from the table: \"users\" using primary key columns"
+  users_by_pk(id: uuid!): users
+  "fetch data from the table: \"workspace\""
+  workspace(
+    "distinct select on columns"
+    distinct_on: [workspace_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [workspace_order_by!],
+    "filter the rows returned"
+    where: workspace_bool_exp
+  ): [workspace!]!
+  "fetch aggregated fields from the table: \"workspace\""
+  workspace_aggregate(
+    "distinct select on columns"
+    distinct_on: [workspace_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [workspace_order_by!],
+    "filter the rows returned"
+    where: workspace_bool_exp
+  ): workspace_aggregate!
+  "fetch data from the table: \"workspace\" using primary key columns"
+  workspace_by_pk(id: uuid!): workspace
+}
+
+type save_tags_output {
+  msg: String
+}
+
+type subscription_root {
+  "fetch data from the table: \"block\""
+  block(
+    "distinct select on columns"
+    distinct_on: [block_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [block_order_by!],
+    "filter the rows returned"
+    where: block_bool_exp
+  ): [block!]!
+  "fetch aggregated fields from the table: \"block\""
+  block_aggregate(
+    "distinct select on columns"
+    distinct_on: [block_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [block_order_by!],
+    "filter the rows returned"
+    where: block_bool_exp
+  ): block_aggregate!
+  "fetch data from the table: \"block\" using primary key columns"
+  block_by_pk(id: uuid!): block
+  "fetch data from the table: \"block_comment\""
+  block_comment(
+    "distinct select on columns"
+    distinct_on: [block_comment_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [block_comment_order_by!],
+    "filter the rows returned"
+    where: block_comment_bool_exp
+  ): [block_comment!]!
+  "fetch aggregated fields from the table: \"block_comment\""
+  block_comment_aggregate(
+    "distinct select on columns"
+    distinct_on: [block_comment_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [block_comment_order_by!],
+    "filter the rows returned"
+    where: block_comment_bool_exp
+  ): block_comment_aggregate!
+  "fetch data from the table: \"block_comment\" using primary key columns"
+  block_comment_by_pk(id: uuid!): block_comment
+  "fetch data from the table: \"block_follower\""
+  block_follower(
+    "distinct select on columns"
+    distinct_on: [block_follower_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [block_follower_order_by!],
+    "filter the rows returned"
+    where: block_follower_bool_exp
+  ): [block_follower!]!
+  "fetch aggregated fields from the table: \"block_follower\""
+  block_follower_aggregate(
+    "distinct select on columns"
+    distinct_on: [block_follower_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [block_follower_order_by!],
+    "filter the rows returned"
+    where: block_follower_bool_exp
+  ): block_follower_aggregate!
+  "fetch data from the table: \"block_follower\" using primary key columns"
+  block_follower_by_pk(block_id: uuid!, user_id: uuid!): block_follower
+  "fetch data from the table: \"block_like\""
+  block_like(
+    "distinct select on columns"
+    distinct_on: [block_like_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [block_like_order_by!],
+    "filter the rows returned"
+    where: block_like_bool_exp
+  ): [block_like!]!
+  "fetch aggregated fields from the table: \"block_like\""
+  block_like_aggregate(
+    "distinct select on columns"
+    distinct_on: [block_like_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [block_like_order_by!],
+    "filter the rows returned"
+    where: block_like_bool_exp
+  ): block_like_aggregate!
+  "fetch data from the table: \"block_like\" using primary key columns"
+  block_like_by_pk(block_id: uuid!, user_id: uuid!): block_like
+  "fetch data from the table: \"block_reference\""
+  block_reference(
+    "distinct select on columns"
+    distinct_on: [block_reference_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [block_reference_order_by!],
+    "filter the rows returned"
+    where: block_reference_bool_exp
+  ): [block_reference!]!
+  "fetch aggregated fields from the table: \"block_reference\""
+  block_reference_aggregate(
+    "distinct select on columns"
+    distinct_on: [block_reference_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [block_reference_order_by!],
+    "filter the rows returned"
+    where: block_reference_bool_exp
+  ): block_reference_aggregate!
+  "fetch data from the table: \"block_reference\" using primary key columns"
+  block_reference_by_pk(block_referee_id: uuid!, block_referrer_id: uuid!): block_reference
+  "fetch data from the table: \"block_repost\""
+  block_repost(
+    "distinct select on columns"
+    distinct_on: [block_repost_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [block_repost_order_by!],
+    "filter the rows returned"
+    where: block_repost_bool_exp
+  ): [block_repost!]!
+  "fetch aggregated fields from the table: \"block_repost\""
+  block_repost_aggregate(
+    "distinct select on columns"
+    distinct_on: [block_repost_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [block_repost_order_by!],
+    "filter the rows returned"
+    where: block_repost_bool_exp
+  ): block_repost_aggregate!
+  "fetch data from the table: \"block_repost\" using primary key columns"
+  block_repost_by_pk(block_id: uuid!, user_id: uuid!): block_repost
+  "fetch data from the table: \"follower\""
+  follower(
+    "distinct select on columns"
+    distinct_on: [follower_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [follower_order_by!],
+    "filter the rows returned"
+    where: follower_bool_exp
+  ): [follower!]!
+  "fetch aggregated fields from the table: \"follower\""
+  follower_aggregate(
+    "distinct select on columns"
+    distinct_on: [follower_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [follower_order_by!],
+    "filter the rows returned"
+    where: follower_bool_exp
+  ): follower_aggregate!
+  "fetch data from the table: \"follower\" using primary key columns"
+  follower_by_pk(follower_id: uuid!, following_id: uuid!): follower
+  "fetch data from the table: \"timeline_event\""
+  timeline_event(
+    "distinct select on columns"
+    distinct_on: [timeline_event_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [timeline_event_order_by!],
+    "filter the rows returned"
+    where: timeline_event_bool_exp
+  ): [timeline_event!]!
+  "fetch aggregated fields from the table: \"timeline_event\""
+  timeline_event_aggregate(
+    "distinct select on columns"
+    distinct_on: [timeline_event_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [timeline_event_order_by!],
+    "filter the rows returned"
+    where: timeline_event_bool_exp
+  ): timeline_event_aggregate!
+  "fetch data from the table: \"user_online\""
+  user_online(
+    "distinct select on columns"
+    distinct_on: [user_online_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [user_online_order_by!],
+    "filter the rows returned"
+    where: user_online_bool_exp
+  ): [user_online!]!
+  "fetch aggregated fields from the table: \"user_online\""
+  user_online_aggregate(
+    "distinct select on columns"
+    distinct_on: [user_online_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [user_online_order_by!],
+    "filter the rows returned"
+    where: user_online_bool_exp
+  ): user_online_aggregate!
+  "fetch data from the table: \"user_private\""
+  user_private(
+    "distinct select on columns"
+    distinct_on: [user_private_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [user_private_order_by!],
+    "filter the rows returned"
+    where: user_private_bool_exp
+  ): [user_private!]!
+  "fetch aggregated fields from the table: \"user_private\""
+  user_private_aggregate(
+    "distinct select on columns"
+    distinct_on: [user_private_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [user_private_order_by!],
+    "filter the rows returned"
+    where: user_private_bool_exp
+  ): user_private_aggregate!
+  "fetch data from the table: \"user_typing\""
+  user_typing(
+    "distinct select on columns"
+    distinct_on: [user_typing_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [user_typing_order_by!],
+    "filter the rows returned"
+    where: user_typing_bool_exp
+  ): [user_typing!]!
+  "fetch aggregated fields from the table: \"user_typing\""
+  user_typing_aggregate(
+    "distinct select on columns"
+    distinct_on: [user_typing_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [user_typing_order_by!],
+    "filter the rows returned"
+    where: user_typing_bool_exp
+  ): user_typing_aggregate!
+  "fetch data from the table: \"users\""
+  users(
+    "distinct select on columns"
+    distinct_on: [users_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [users_order_by!],
+    "filter the rows returned"
+    where: users_bool_exp
+  ): [users!]!
+  "fetch aggregated fields from the table: \"users\""
+  users_aggregate(
+    "distinct select on columns"
+    distinct_on: [users_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [users_order_by!],
+    "filter the rows returned"
+    where: users_bool_exp
+  ): users_aggregate!
+  "fetch data from the table: \"users\" using primary key columns"
+  users_by_pk(id: uuid!): users
+  "fetch data from the table: \"workspace\""
+  workspace(
+    "distinct select on columns"
+    distinct_on: [workspace_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [workspace_order_by!],
+    "filter the rows returned"
+    where: workspace_bool_exp
+  ): [workspace!]!
+  "fetch aggregated fields from the table: \"workspace\""
+  workspace_aggregate(
+    "distinct select on columns"
+    distinct_on: [workspace_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [workspace_order_by!],
+    "filter the rows returned"
+    where: workspace_bool_exp
+  ): workspace_aggregate!
+  "fetch data from the table: \"workspace\" using primary key columns"
+  workspace_by_pk(id: uuid!): workspace
+}
+
+"columns and relationships of \"timeline_event\""
+type timeline_event {
+  created_at: timestamptz
+  id: uuid
+  type: String
+  user_id: uuid
+}
+
+"aggregated selection of \"timeline_event\""
+type timeline_event_aggregate {
+  aggregate: timeline_event_aggregate_fields
+  nodes: [timeline_event!]!
+}
+
+"aggregate fields of \"timeline_event\""
+type timeline_event_aggregate_fields {
+  count(columns: [timeline_event_select_column!], distinct: Boolean): Int!
+  max: timeline_event_max_fields
+  min: timeline_event_min_fields
+}
+
+"aggregate max on columns"
+type timeline_event_max_fields {
+  created_at: timestamptz
+  id: uuid
+  type: String
+  user_id: uuid
+}
+
+"aggregate min on columns"
+type timeline_event_min_fields {
+  created_at: timestamptz
+  id: uuid
+  type: String
+  user_id: uuid
+}
+
+"columns and relationships of \"user_online\""
+type user_online {
+  id: uuid
+  last_seen: timestamptz
+  last_typed: timestamptz
+  username: String
+}
+
+"aggregated selection of \"user_online\""
+type user_online_aggregate {
+  aggregate: user_online_aggregate_fields
+  nodes: [user_online!]!
+}
+
+"aggregate fields of \"user_online\""
+type user_online_aggregate_fields {
+  count(columns: [user_online_select_column!], distinct: Boolean): Int!
+  max: user_online_max_fields
+  min: user_online_min_fields
+}
+
+"aggregate max on columns"
+type user_online_max_fields {
+  id: uuid
+  last_seen: timestamptz
+  last_typed: timestamptz
+  username: String
+}
+
+"aggregate min on columns"
+type user_online_min_fields {
+  id: uuid
+  last_seen: timestamptz
+  last_typed: timestamptz
+  username: String
+}
+
+"response of any mutation on the table \"user_online\""
+type user_online_mutation_response {
+  "number of rows affected by the mutation"
+  affected_rows: Int!
+  "data from the rows affected by the mutation"
+  returning: [user_online!]!
+}
+
+"columns and relationships of \"user_private\""
+type user_private {
+  birthdate: date
+  gender: String
+  id: uuid
+  is_username_set: Boolean
+  lang: String
+  phone: String
+}
+
+"aggregated selection of \"user_private\""
+type user_private_aggregate {
+  aggregate: user_private_aggregate_fields
+  nodes: [user_private!]!
+}
+
+"aggregate fields of \"user_private\""
+type user_private_aggregate_fields {
+  count(columns: [user_private_select_column!], distinct: Boolean): Int!
+  max: user_private_max_fields
+  min: user_private_min_fields
+}
+
+"aggregate max on columns"
+type user_private_max_fields {
+  birthdate: date
+  gender: String
+  id: uuid
+  lang: String
+  phone: String
+}
+
+"aggregate min on columns"
+type user_private_min_fields {
+  birthdate: date
+  gender: String
+  id: uuid
+  lang: String
+  phone: String
+}
+
+"response of any mutation on the table \"user_private\""
+type user_private_mutation_response {
+  "number of rows affected by the mutation"
+  affected_rows: Int!
+  "data from the rows affected by the mutation"
+  returning: [user_private!]!
+}
+
+"columns and relationships of \"user_typing\""
+type user_typing {
+  id: uuid
+  last_seen: timestamptz
+  last_typed: timestamptz
+  username: String
+}
+
+"aggregated selection of \"user_typing\""
+type user_typing_aggregate {
+  aggregate: user_typing_aggregate_fields
+  nodes: [user_typing!]!
+}
+
+"aggregate fields of \"user_typing\""
+type user_typing_aggregate_fields {
+  count(columns: [user_typing_select_column!], distinct: Boolean): Int!
+  max: user_typing_max_fields
+  min: user_typing_min_fields
+}
+
+"aggregate max on columns"
+type user_typing_max_fields {
+  id: uuid
+  last_seen: timestamptz
+  last_typed: timestamptz
+  username: String
+}
+
+"aggregate min on columns"
+type user_typing_min_fields {
+  id: uuid
+  last_seen: timestamptz
+  last_typed: timestamptz
+  username: String
+}
+
+"response of any mutation on the table \"user_typing\""
+type user_typing_mutation_response {
+  "number of rows affected by the mutation"
+  affected_rows: Int!
+  "data from the rows affected by the mutation"
+  returning: [user_typing!]!
+}
+
+"columns and relationships of \"users\""
+type users {
+  avatar_url: String
+  banner_url: String
+  bio: String
+  birthdate: date
+  "An array relationship"
+  block_likes(
+    "distinct select on columns"
+    distinct_on: [block_like_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [block_like_order_by!],
+    "filter the rows returned"
+    where: block_like_bool_exp
+  ): [block_like!]!
+  "An aggregate relationship"
+  block_likes_aggregate(
+    "distinct select on columns"
+    distinct_on: [block_like_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [block_like_order_by!],
+    "filter the rows returned"
+    where: block_like_bool_exp
+  ): block_like_aggregate!
+  "An array relationship"
+  block_reposts(
+    "distinct select on columns"
+    distinct_on: [block_repost_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [block_repost_order_by!],
+    "filter the rows returned"
+    where: block_repost_bool_exp
+  ): [block_repost!]!
+  "An aggregate relationship"
+  block_reposts_aggregate(
+    "distinct select on columns"
+    distinct_on: [block_repost_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [block_repost_order_by!],
+    "filter the rows returned"
+    where: block_repost_bool_exp
+  ): block_repost_aggregate!
+  "An array relationship"
+  blocks(
+    "distinct select on columns"
+    distinct_on: [block_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [block_order_by!],
+    "filter the rows returned"
+    where: block_bool_exp
+  ): [block!]!
+  "An aggregate relationship"
+  blocks_aggregate(
+    "distinct select on columns"
+    distinct_on: [block_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [block_order_by!],
+    "filter the rows returned"
+    where: block_bool_exp
+  ): block_aggregate!
+  created_at: timestamptz!
+  deleted_at: timestamptz
+  facebook_id: String
+  "An array relationship"
+  followers(
+    "distinct select on columns"
+    distinct_on: [follower_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [follower_order_by!],
+    "filter the rows returned"
+    where: follower_bool_exp
+  ): [follower!]!
+  "An aggregate relationship"
+  followers_aggregate(
+    "distinct select on columns"
+    distinct_on: [follower_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [follower_order_by!],
+    "filter the rows returned"
+    where: follower_bool_exp
+  ): follower_aggregate!
+  "An array relationship"
+  following(
+    "distinct select on columns"
+    distinct_on: [follower_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [follower_order_by!],
+    "filter the rows returned"
+    where: follower_bool_exp
+  ): [follower!]!
+  "An aggregate relationship"
+  following_aggregate(
+    "distinct select on columns"
+    distinct_on: [follower_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [follower_order_by!],
+    "filter the rows returned"
+    where: follower_bool_exp
+  ): follower_aggregate!
+  "An array relationship"
+  following_tags(
+    "distinct select on columns"
+    distinct_on: [block_follower_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [block_follower_order_by!],
+    "filter the rows returned"
+    where: block_follower_bool_exp
+  ): [block_follower!]!
+  "An aggregate relationship"
+  following_tags_aggregate(
+    "distinct select on columns"
+    distinct_on: [block_follower_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [block_follower_order_by!],
+    "filter the rows returned"
+    where: block_follower_bool_exp
+  ): block_follower_aggregate!
+  gender: String
+  github_username: String
+  google_id: String
+  id: uuid!
+  is_username_set: Boolean
+  lang: String
+  last_seen: timestamptz
+  last_typed: timestamptz
+  location: String
+  name: String
+  phone: String
+  "An object relationship"
+  private: user_private
+  twitter_username: String
+  updated_at: timestamptz!
+  username: String!
+  website_url: String
+  "An array relationship"
+  workspaces(
+    "distinct select on columns"
+    distinct_on: [workspace_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [workspace_order_by!],
+    "filter the rows returned"
+    where: workspace_bool_exp
+  ): [workspace!]!
+  "An aggregate relationship"
+  workspaces_aggregate(
+    "distinct select on columns"
+    distinct_on: [workspace_select_column!],
+    "limit the number of rows returned"
+    limit: Int,
+    "skip the first n rows. Use only with order_by"
+    offset: Int,
+    "sort the rows by one or more columns"
+    order_by: [workspace_order_by!],
+    "filter the rows returned"
+    where: workspace_bool_exp
+  ): workspace_aggregate!
+}
+
+"aggregated selection of \"users\""
+type users_aggregate {
+  aggregate: users_aggregate_fields
+  nodes: [users!]!
+}
+
+"aggregate fields of \"users\""
+type users_aggregate_fields {
+  count(columns: [users_select_column!], distinct: Boolean): Int!
+  max: users_max_fields
+  min: users_min_fields
+}
+
+"aggregate max on columns"
+type users_max_fields {
+  avatar_url: String
+  banner_url: String
+  bio: String
+  birthdate: date
+  created_at: timestamptz
+  deleted_at: timestamptz
+  facebook_id: String
+  gender: String
+  github_username: String
+  google_id: String
+  id: uuid
+  lang: String
+  last_seen: timestamptz
+  last_typed: timestamptz
+  location: String
+  name: String
+  phone: String
+  twitter_username: String
+  updated_at: timestamptz
+  username: String
+  website_url: String
+}
+
+"aggregate min on columns"
+type users_min_fields {
+  avatar_url: String
+  banner_url: String
+  bio: String
+  birthdate: date
+  created_at: timestamptz
+  deleted_at: timestamptz
+  facebook_id: String
+  gender: String
+  github_username: String
+  google_id: String
+  id: uuid
+  lang: String
+  last_seen: timestamptz
+  last_typed: timestamptz
+  location: String
+  name: String
+  phone: String
+  twitter_username: String
+  updated_at: timestamptz
+  username: String
+  website_url: String
+}
+
+"response of any mutation on the table \"users\""
+type users_mutation_response {
+  "number of rows affected by the mutation"
+  affected_rows: Int!
+  "data from the rows affected by the mutation"
+  returning: [users!]!
+}
+
+"columns and relationships of \"workspace\""
+type workspace {
+  created_at: timestamptz!
+  id: uuid!
+  name: String!
+  updated_at: timestamptz!
+  "An object relationship"
+  user: users!
+  user_id: uuid!
+}
+
+"aggregated selection of \"workspace\""
+type workspace_aggregate {
+  aggregate: workspace_aggregate_fields
+  nodes: [workspace!]!
+}
+
+"aggregate fields of \"workspace\""
+type workspace_aggregate_fields {
+  count(columns: [workspace_select_column!], distinct: Boolean): Int!
+  max: workspace_max_fields
+  min: workspace_min_fields
+}
+
+"aggregate max on columns"
+type workspace_max_fields {
+  created_at: timestamptz
+  id: uuid
+  name: String
+  updated_at: timestamptz
+  user_id: uuid
+}
+
+"aggregate min on columns"
+type workspace_min_fields {
+  created_at: timestamptz
+  id: uuid
+  name: String
+  updated_at: timestamptz
+  user_id: uuid
+}
+
+"response of any mutation on the table \"workspace\""
+type workspace_mutation_response {
+  "number of rows affected by the mutation"
+  affected_rows: Int!
+  "data from the rows affected by the mutation"
+  returning: [workspace!]!
+}
+
+"unique or primary key constraints on table \"block_comment\""
+enum block_comment_constraint {
+  "unique or primary key constraint"
+  block_comment_pkey
+}
+
+"select columns of table \"block_comment\""
+enum block_comment_select_column {
+  "column name"
+  block_id
+  "column name"
+  created_at
+  "column name"
+  id
+  "column name"
+  text
+  "column name"
+  user_id
+}
+
+"update columns of table \"block_comment\""
+enum block_comment_update_column {
+  "column name"
+  block_id
+  "column name"
+  created_at
+  "column name"
+  id
+  "column name"
+  text
+  "column name"
+  user_id
+}
+
+"unique or primary key constraints on table \"block\""
+enum block_constraint {
+  "unique or primary key constraint"
+  block_pkey
+}
+
+"unique or primary key constraints on table \"block_follower\""
+enum block_follower_constraint {
+  "unique or primary key constraint"
+  block_follower_pkey
+}
+
+"select columns of table \"block_follower\""
+enum block_follower_select_column {
+  "column name"
+  block_id
+  "column name"
+  created_at
+  "column name"
+  user_id
+}
+
+"update columns of table \"block_follower\""
+enum block_follower_update_column {
+  "column name"
+  block_id
+  "column name"
+  created_at
+  "column name"
+  user_id
+}
+
+"unique or primary key constraints on table \"block_like\""
+enum block_like_constraint {
+  "unique or primary key constraint"
+  block_like_pkey
+}
+
+"select columns of table \"block_like\""
+enum block_like_select_column {
+  "column name"
+  block_id
+  "column name"
+  created_at
+  "column name"
+  user_id
+}
+
+"update columns of table \"block_like\""
+enum block_like_update_column {
+  "column name"
+  block_id
+  "column name"
+  created_at
+  "column name"
+  user_id
+}
+
+"unique or primary key constraints on table \"block_reference\""
+enum block_reference_constraint {
+  "unique or primary key constraint"
+  block_reference_pkey
+}
+
+"select columns of table \"block_reference\""
+enum block_reference_select_column {
+  "column name"
+  block_referee_id
+  "column name"
+  block_referrer_id
+  "column name"
+  created_at
+}
+
+"update columns of table \"block_reference\""
+enum block_reference_update_column {
+  "column name"
+  block_referee_id
+  "column name"
+  block_referrer_id
+  "column name"
+  created_at
+}
+
+"unique or primary key constraints on table \"block_repost\""
+enum block_repost_constraint {
+  "unique or primary key constraint"
+  block_post_pkey
+}
+
+"select columns of table \"block_repost\""
+enum block_repost_select_column {
+  "column name"
+  block_id
+  "column name"
+  created_at
+  "column name"
+  user_id
+}
+
+"update columns of table \"block_repost\""
+enum block_repost_update_column {
+  "column name"
+  block_id
+  "column name"
+  created_at
+  "column name"
+  user_id
+}
+
+"select columns of table \"block\""
+enum block_select_column {
+  "column name"
+  block_parent_id
+  "column name"
+  children
+  "column name"
+  created_at
+  "column name"
+  data
+  "column name"
+  fork_parent_id
+  "column name"
+  id
+  "column name"
+  is_posted
+  "column name"
+  order
+  "column name"
+  path
+  "column name"
+  text
+  "column name"
+  title
+  "column name"
+  type
+  "column name"
+  updated_at
+  "column name"
+  user_id
+}
+
+"update columns of table \"block\""
+enum block_update_column {
+  "column name"
+  block_parent_id
+  "column name"
+  children
+  "column name"
+  created_at
+  "column name"
+  data
+  "column name"
+  fork_parent_id
+  "column name"
+  id
+  "column name"
+  is_posted
+  "column name"
+  order
+  "column name"
+  path
+  "column name"
+  text
+  "column name"
+  title
+  "column name"
+  type
+  "column name"
+  updated_at
+  "column name"
+  user_id
+}
+
+"unique or primary key constraints on table \"follower\""
+enum follower_constraint {
+  "unique or primary key constraint"
+  follower_pkey
+}
+
+"select columns of table \"follower\""
+enum follower_select_column {
+  "column name"
+  created_at
+  "column name"
+  follower_id
+  "column name"
+  following_id
+}
+
+"update columns of table \"follower\""
+enum follower_update_column {
+  "column name"
+  created_at
+  "column name"
+  follower_id
+  "column name"
+  following_id
+}
+
+"column ordering options"
+enum order_by {
+  "in ascending order, nulls last"
+  asc
+  "in ascending order, nulls first"
+  asc_nulls_first
+  "in ascending order, nulls last"
+  asc_nulls_last
+  "in descending order, nulls first"
+  desc
+  "in descending order, nulls first"
+  desc_nulls_first
+  "in descending order, nulls last"
+  desc_nulls_last
+}
+
+"select columns of table \"timeline_event\""
+enum timeline_event_select_column {
+  "column name"
+  created_at
+  "column name"
+  id
+  "column name"
+  type
+  "column name"
+  user_id
+}
+
+"select columns of table \"user_online\""
+enum user_online_select_column {
+  "column name"
+  id
+  "column name"
+  last_seen
+  "column name"
+  last_typed
+  "column name"
+  username
+}
+
+"select columns of table \"user_private\""
+enum user_private_select_column {
+  "column name"
+  birthdate
+  "column name"
+  gender
+  "column name"
+  id
+  "column name"
+  is_username_set
+  "column name"
+  lang
+  "column name"
+  phone
+}
+
+"select columns of table \"user_typing\""
+enum user_typing_select_column {
+  "column name"
+  id
+  "column name"
+  last_seen
+  "column name"
+  last_typed
+  "column name"
+  username
+}
+
+"unique or primary key constraints on table \"users\""
+enum users_constraint {
+  "unique or primary key constraint"
+  users_id_key
+  "unique or primary key constraint"
+  users_pkey
+  "unique or primary key constraint"
+  users_username_key
+}
+
+"select columns of table \"users\""
+enum users_select_column {
+  "column name"
+  avatar_url
+  "column name"
+  banner_url
+  "column name"
+  bio
+  "column name"
+  birthdate
+  "column name"
+  created_at
+  "column name"
+  deleted_at
+  "column name"
+  facebook_id
+  "column name"
+  gender
+  "column name"
+  github_username
+  "column name"
+  google_id
+  "column name"
+  id
+  "column name"
+  is_username_set
+  "column name"
+  lang
+  "column name"
+  last_seen
+  "column name"
+  last_typed
+  "column name"
+  location
+  "column name"
+  name
+  "column name"
+  phone
+  "column name"
+  twitter_username
+  "column name"
+  updated_at
+  "column name"
+  username
+  "column name"
+  website_url
+}
+
+"update columns of table \"users\""
+enum users_update_column {
+  "column name"
+  avatar_url
+  "column name"
+  banner_url
+  "column name"
+  bio
+  "column name"
+  birthdate
+  "column name"
+  created_at
+  "column name"
+  deleted_at
+  "column name"
+  facebook_id
+  "column name"
+  gender
+  "column name"
+  github_username
+  "column name"
+  google_id
+  "column name"
+  id
+  "column name"
+  is_username_set
+  "column name"
+  lang
+  "column name"
+  last_seen
+  "column name"
+  last_typed
+  "column name"
+  location
+  "column name"
+  name
+  "column name"
+  phone
+  "column name"
+  twitter_username
+  "column name"
+  updated_at
+  "column name"
+  username
+  "column name"
+  website_url
+}
+
+"unique or primary key constraints on table \"workspace\""
+enum workspace_constraint {
+  "unique or primary key constraint"
+  workspace_pkey
+}
+
+"select columns of table \"workspace\""
+enum workspace_select_column {
+  "column name"
+  created_at
+  "column name"
+  id
+  "column name"
+  name
+  "column name"
+  updated_at
+  "column name"
+  user_id
+}
+
+"update columns of table \"workspace\""
+enum workspace_update_column {
+  "column name"
+  created_at
+  "column name"
+  id
+  "column name"
+  name
+  "column name"
+  updated_at
+  "column name"
+  user_id
+}
+
+scalar date
+
+scalar jsonb
+
+scalar lquery
+
+scalar ltree
+
+scalar ltxtquery
+
+scalar timestamptz
+
+scalar uuid
+
+"Boolean expression to compare columns of type \"Boolean\". All fields are combined with logical 'AND'."
+input Boolean_comparison_exp {
+  _eq: Boolean
+  _gt: Boolean
+  _gte: Boolean
+  _in: [Boolean!]
+  _is_null: Boolean
+  _lt: Boolean
+  _lte: Boolean
+  _neq: Boolean
+  _nin: [Boolean!]
+}
+
+"Boolean expression to compare columns of type \"String\". All fields are combined with logical 'AND'."
+input String_comparison_exp {
+  _eq: String
+  _gt: String
+  _gte: String
+  "does the column match the given case-insensitive pattern"
+  _ilike: String
+  _in: [String!]
+  "does the column match the given POSIX regular expression, case insensitive"
+  _iregex: String
+  _is_null: Boolean
+  "does the column match the given pattern"
+  _like: String
+  _lt: String
+  _lte: String
+  _neq: String
+  "does the column NOT match the given case-insensitive pattern"
+  _nilike: String
+  _nin: [String!]
+  "does the column NOT match the given POSIX regular expression, case insensitive"
+  _niregex: String
+  "does the column NOT match the given pattern"
+  _nlike: String
+  "does the column NOT match the given POSIX regular expression, case sensitive"
+  _nregex: String
+  "does the column NOT match the given SQL regular expression"
+  _nsimilar: String
+  "does the column match the given POSIX regular expression, case sensitive"
+  _regex: String
+  "does the column match the given SQL regular expression"
+  _similar: String
+}
+
+"order by aggregate values of table \"block\""
+input block_aggregate_order_by {
+  count: order_by
+  max: block_max_order_by
+  min: block_min_order_by
+}
+
+"append existing jsonb value of filtered columns with new jsonb value"
+input block_append_input {
+  "Slate children. If null, empty text"
+  children: jsonb
+  "Slate properties"
+  data: jsonb
+}
+
+"input type for inserting array relation for remote table \"block\""
+input block_arr_rel_insert_input {
+  data: [block_insert_input!]!
+  "on conflict condition"
+  on_conflict: block_on_conflict
+}
+
+"Boolean expression to filter rows from the table \"block\". All fields are combined with a logical 'AND'."
+input block_bool_exp {
+  _and: [block_bool_exp!]
+  _not: block_bool_exp
+  _or: [block_bool_exp!]
+  block_children: block_bool_exp
+  block_followers: block_follower_bool_exp
+  block_likes: block_like_bool_exp
+  block_parent: block_bool_exp
+  block_parent_id: uuid_comparison_exp
+  block_referees: block_reference_bool_exp
+  block_referrers: block_reference_bool_exp
+  block_reposts: block_repost_bool_exp
+  children: jsonb_comparison_exp
+  created_at: timestamptz_comparison_exp
+  data: jsonb_comparison_exp
+  fork_parent: block_bool_exp
+  fork_parent_id: uuid_comparison_exp
+  forks: block_bool_exp
+  id: uuid_comparison_exp
+  is_posted: Boolean_comparison_exp
+  order: String_comparison_exp
+  path: ltree_comparison_exp
+  text: String_comparison_exp
+  title: String_comparison_exp
+  type: String_comparison_exp
+  updated_at: timestamptz_comparison_exp
+  user: users_bool_exp
+  user_id: uuid_comparison_exp
+}
+
+"Boolean expression to filter rows from the table \"block_comment\". All fields are combined with a logical 'AND'."
+input block_comment_bool_exp {
+  _and: [block_comment_bool_exp!]
+  _not: block_comment_bool_exp
+  _or: [block_comment_bool_exp!]
+  block_id: uuid_comparison_exp
+  created_at: timestamptz_comparison_exp
+  id: uuid_comparison_exp
+  text: String_comparison_exp
+  user_id: uuid_comparison_exp
+}
+
+"input type for inserting data into table \"block_comment\""
+input block_comment_insert_input {
+  block_id: uuid
+  created_at: timestamptz
+  id: uuid
+  text: String
+  user_id: uuid
+}
+
+"on conflict condition type for table \"block_comment\""
+input block_comment_on_conflict {
+  constraint: block_comment_constraint!
+  update_columns: [block_comment_update_column!]! = []
+  where: block_comment_bool_exp
+}
+
+"Ordering options when selecting data from \"block_comment\"."
+input block_comment_order_by {
+  block_id: order_by
+  created_at: order_by
+  id: order_by
+  text: order_by
+  user_id: order_by
+}
+
+"primary key columns input for table: block_comment"
+input block_comment_pk_columns_input {
+  id: uuid!
+}
+
+"input type for updating data in table \"block_comment\""
+input block_comment_set_input {
+  block_id: uuid
+  created_at: timestamptz
+  id: uuid
+  text: String
+  user_id: uuid
+}
+
+"delete the field or element with specified path (for JSON arrays, negative integers count from the end)"
+input block_delete_at_path_input {
+  "Slate children. If null, empty text"
+  children: [String!]
+  "Slate properties"
+  data: [String!]
+}
+
+"delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array"
+input block_delete_elem_input {
+  "Slate children. If null, empty text"
+  children: Int
+  "Slate properties"
+  data: Int
+}
+
+"delete key/value pair or string element. key/value pairs are matched based on their key value"
+input block_delete_key_input {
+  "Slate children. If null, empty text"
+  children: String
+  "Slate properties"
+  data: String
+}
+
+"order by aggregate values of table \"block_follower\""
+input block_follower_aggregate_order_by {
+  count: order_by
+  max: block_follower_max_order_by
+  min: block_follower_min_order_by
+}
+
+"input type for inserting array relation for remote table \"block_follower\""
+input block_follower_arr_rel_insert_input {
+  data: [block_follower_insert_input!]!
+  "on conflict condition"
+  on_conflict: block_follower_on_conflict
+}
+
+"Boolean expression to filter rows from the table \"block_follower\". All fields are combined with a logical 'AND'."
+input block_follower_bool_exp {
+  _and: [block_follower_bool_exp!]
+  _not: block_follower_bool_exp
+  _or: [block_follower_bool_exp!]
+  block: block_bool_exp
+  block_id: uuid_comparison_exp
+  created_at: timestamptz_comparison_exp
+  user: users_bool_exp
+  user_id: uuid_comparison_exp
+}
+
+"input type for inserting data into table \"block_follower\""
+input block_follower_insert_input {
+  block: block_obj_rel_insert_input
+  block_id: uuid
+  created_at: timestamptz
+  user: users_obj_rel_insert_input
+  user_id: uuid
+}
+
+"order by max() on columns of table \"block_follower\""
+input block_follower_max_order_by {
+  block_id: order_by
+  created_at: order_by
+  user_id: order_by
+}
+
+"order by min() on columns of table \"block_follower\""
+input block_follower_min_order_by {
+  block_id: order_by
+  created_at: order_by
+  user_id: order_by
+}
+
+"on conflict condition type for table \"block_follower\""
+input block_follower_on_conflict {
+  constraint: block_follower_constraint!
+  update_columns: [block_follower_update_column!]! = []
+  where: block_follower_bool_exp
+}
+
+"Ordering options when selecting data from \"block_follower\"."
+input block_follower_order_by {
+  block: block_order_by
+  block_id: order_by
+  created_at: order_by
+  user: users_order_by
+  user_id: order_by
+}
+
+"primary key columns input for table: block_follower"
+input block_follower_pk_columns_input {
+  block_id: uuid!
+  user_id: uuid!
+}
+
+"input type for updating data in table \"block_follower\""
+input block_follower_set_input {
+  block_id: uuid
+  created_at: timestamptz
+  user_id: uuid
+}
+
+"input type for inserting data into table \"block\""
+input block_insert_input {
+  block_children: block_arr_rel_insert_input
+  block_followers: block_follower_arr_rel_insert_input
+  block_likes: block_like_arr_rel_insert_input
+  block_parent: block_obj_rel_insert_input
+  "Block parent id for hierarchy. If null, the block will be at the root"
+  block_parent_id: uuid
+  block_referees: block_reference_arr_rel_insert_input
+  block_referrers: block_reference_arr_rel_insert_input
+  block_reposts: block_repost_arr_rel_insert_input
+  "Slate children. If null, empty text"
+  children: jsonb
+  created_at: timestamptz
+  "Slate properties"
+  data: jsonb
+  fork_parent: block_obj_rel_insert_input
+  "Forked from"
+  fork_parent_id: uuid
+  forks: block_arr_rel_insert_input
+  id: uuid
+  is_posted: Boolean
+  "Lexicographical order of the block inside the parent block"
+  order: String
+  path: ltree
+  "Full text without marks"
+  text: String
+  title: String
+  "Type of the block. If null, it's a paragraph"
+  type: String
+  updated_at: timestamptz
+  user: users_obj_rel_insert_input
+  "Author id"
+  user_id: uuid
+}
+
+"order by aggregate values of table \"block_like\""
+input block_like_aggregate_order_by {
+  count: order_by
+  max: block_like_max_order_by
+  min: block_like_min_order_by
+}
+
+"input type for inserting array relation for remote table \"block_like\""
+input block_like_arr_rel_insert_input {
+  data: [block_like_insert_input!]!
+  "on conflict condition"
+  on_conflict: block_like_on_conflict
+}
+
+"Boolean expression to filter rows from the table \"block_like\". All fields are combined with a logical 'AND'."
+input block_like_bool_exp {
+  _and: [block_like_bool_exp!]
+  _not: block_like_bool_exp
+  _or: [block_like_bool_exp!]
+  block: block_bool_exp
+  block_id: uuid_comparison_exp
+  created_at: timestamptz_comparison_exp
+  user: users_bool_exp
+  user_id: uuid_comparison_exp
+}
+
+"input type for inserting data into table \"block_like\""
+input block_like_insert_input {
+  block: block_obj_rel_insert_input
+  block_id: uuid
+  created_at: timestamptz
+  user: users_obj_rel_insert_input
+  user_id: uuid
+}
+
+"order by max() on columns of table \"block_like\""
+input block_like_max_order_by {
+  block_id: order_by
+  created_at: order_by
+  user_id: order_by
+}
+
+"order by min() on columns of table \"block_like\""
+input block_like_min_order_by {
+  block_id: order_by
+  created_at: order_by
+  user_id: order_by
+}
+
+"on conflict condition type for table \"block_like\""
+input block_like_on_conflict {
+  constraint: block_like_constraint!
+  update_columns: [block_like_update_column!]! = []
+  where: block_like_bool_exp
+}
+
+"Ordering options when selecting data from \"block_like\"."
+input block_like_order_by {
+  block: block_order_by
+  block_id: order_by
+  created_at: order_by
+  user: users_order_by
+  user_id: order_by
+}
+
+"primary key columns input for table: block_like"
+input block_like_pk_columns_input {
+  block_id: uuid!
+  user_id: uuid!
+}
+
+"input type for updating data in table \"block_like\""
+input block_like_set_input {
+  block_id: uuid
+  created_at: timestamptz
+  user_id: uuid
+}
+
+"order by max() on columns of table \"block\""
+input block_max_order_by {
+  "Block parent id for hierarchy. If null, the block will be at the root"
+  block_parent_id: order_by
+  created_at: order_by
+  "Forked from"
+  fork_parent_id: order_by
+  id: order_by
+  "Lexicographical order of the block inside the parent block"
+  order: order_by
+  path: order_by
+  "Full text without marks"
+  text: order_by
+  title: order_by
+  "Type of the block. If null, it's a paragraph"
+  type: order_by
+  updated_at: order_by
+  "Author id"
+  user_id: order_by
+}
+
+"order by min() on columns of table \"block\""
+input block_min_order_by {
+  "Block parent id for hierarchy. If null, the block will be at the root"
+  block_parent_id: order_by
+  created_at: order_by
+  "Forked from"
+  fork_parent_id: order_by
+  id: order_by
+  "Lexicographical order of the block inside the parent block"
+  order: order_by
+  path: order_by
+  "Full text without marks"
+  text: order_by
+  title: order_by
+  "Type of the block. If null, it's a paragraph"
+  type: order_by
+  updated_at: order_by
+  "Author id"
+  user_id: order_by
+}
+
+"input type for inserting object relation for remote table \"block\""
+input block_obj_rel_insert_input {
+  data: block_insert_input!
+  "on conflict condition"
+  on_conflict: block_on_conflict
+}
+
+"on conflict condition type for table \"block\""
+input block_on_conflict {
+  constraint: block_constraint!
+  update_columns: [block_update_column!]! = []
+  where: block_bool_exp
+}
+
+"Ordering options when selecting data from \"block\"."
+input block_order_by {
+  block_children_aggregate: block_aggregate_order_by
+  block_followers_aggregate: block_follower_aggregate_order_by
+  block_likes_aggregate: block_like_aggregate_order_by
+  block_parent: block_order_by
+  block_parent_id: order_by
+  block_referees_aggregate: block_reference_aggregate_order_by
+  block_referrers_aggregate: block_reference_aggregate_order_by
+  block_reposts_aggregate: block_repost_aggregate_order_by
+  children: order_by
+  created_at: order_by
+  data: order_by
+  fork_parent: block_order_by
+  fork_parent_id: order_by
+  forks_aggregate: block_aggregate_order_by
+  id: order_by
+  is_posted: order_by
+  order: order_by
+  path: order_by
+  text: order_by
+  title: order_by
+  type: order_by
+  updated_at: order_by
+  user: users_order_by
+  user_id: order_by
+}
+
+"primary key columns input for table: block"
+input block_pk_columns_input {
+  id: uuid!
+}
+
+"prepend existing jsonb value of filtered columns with new jsonb value"
+input block_prepend_input {
+  "Slate children. If null, empty text"
+  children: jsonb
+  "Slate properties"
+  data: jsonb
+}
+
+"order by aggregate values of table \"block_reference\""
+input block_reference_aggregate_order_by {
+  count: order_by
+  max: block_reference_max_order_by
+  min: block_reference_min_order_by
+}
+
+"input type for inserting array relation for remote table \"block_reference\""
+input block_reference_arr_rel_insert_input {
+  data: [block_reference_insert_input!]!
+  "on conflict condition"
+  on_conflict: block_reference_on_conflict
+}
+
+"Boolean expression to filter rows from the table \"block_reference\". All fields are combined with a logical 'AND'."
+input block_reference_bool_exp {
+  _and: [block_reference_bool_exp!]
+  _not: block_reference_bool_exp
+  _or: [block_reference_bool_exp!]
+  block_referee: block_bool_exp
+  block_referee_id: uuid_comparison_exp
+  block_referrer: block_bool_exp
+  block_referrer_id: uuid_comparison_exp
+  created_at: timestamptz_comparison_exp
+}
+
+"input type for inserting data into table \"block_reference\""
+input block_reference_insert_input {
+  block_referee: block_obj_rel_insert_input
+  block_referee_id: uuid
+  block_referrer: block_obj_rel_insert_input
+  block_referrer_id: uuid
+  created_at: timestamptz
+}
+
+"order by max() on columns of table \"block_reference\""
+input block_reference_max_order_by {
+  block_referee_id: order_by
+  block_referrer_id: order_by
+  created_at: order_by
+}
+
+"order by min() on columns of table \"block_reference\""
+input block_reference_min_order_by {
+  block_referee_id: order_by
+  block_referrer_id: order_by
+  created_at: order_by
+}
+
+"on conflict condition type for table \"block_reference\""
+input block_reference_on_conflict {
+  constraint: block_reference_constraint!
+  update_columns: [block_reference_update_column!]! = []
+  where: block_reference_bool_exp
+}
+
+"Ordering options when selecting data from \"block_reference\"."
+input block_reference_order_by {
+  block_referee: block_order_by
+  block_referee_id: order_by
+  block_referrer: block_order_by
+  block_referrer_id: order_by
+  created_at: order_by
+}
+
+"primary key columns input for table: block_reference"
+input block_reference_pk_columns_input {
+  block_referee_id: uuid!
+  block_referrer_id: uuid!
+}
+
+"input type for updating data in table \"block_reference\""
+input block_reference_set_input {
+  block_referee_id: uuid
+  block_referrer_id: uuid
+  created_at: timestamptz
+}
+
+"order by aggregate values of table \"block_repost\""
+input block_repost_aggregate_order_by {
+  count: order_by
+  max: block_repost_max_order_by
+  min: block_repost_min_order_by
+}
+
+"input type for inserting array relation for remote table \"block_repost\""
+input block_repost_arr_rel_insert_input {
+  data: [block_repost_insert_input!]!
+  "on conflict condition"
+  on_conflict: block_repost_on_conflict
+}
+
+"Boolean expression to filter rows from the table \"block_repost\". All fields are combined with a logical 'AND'."
+input block_repost_bool_exp {
+  _and: [block_repost_bool_exp!]
+  _not: block_repost_bool_exp
+  _or: [block_repost_bool_exp!]
+  block: block_bool_exp
+  block_id: uuid_comparison_exp
+  created_at: timestamptz_comparison_exp
+  user: users_bool_exp
+  user_id: uuid_comparison_exp
+}
+
+"input type for inserting data into table \"block_repost\""
+input block_repost_insert_input {
+  block: block_obj_rel_insert_input
+  block_id: uuid
+  created_at: timestamptz
+  user: users_obj_rel_insert_input
+  user_id: uuid
+}
+
+"order by max() on columns of table \"block_repost\""
+input block_repost_max_order_by {
+  block_id: order_by
+  created_at: order_by
+  user_id: order_by
+}
+
+"order by min() on columns of table \"block_repost\""
+input block_repost_min_order_by {
+  block_id: order_by
+  created_at: order_by
+  user_id: order_by
+}
+
+"on conflict condition type for table \"block_repost\""
+input block_repost_on_conflict {
+  constraint: block_repost_constraint!
+  update_columns: [block_repost_update_column!]! = []
+  where: block_repost_bool_exp
+}
+
+"Ordering options when selecting data from \"block_repost\"."
+input block_repost_order_by {
+  block: block_order_by
+  block_id: order_by
+  created_at: order_by
+  user: users_order_by
+  user_id: order_by
+}
+
+"primary key columns input for table: block_repost"
+input block_repost_pk_columns_input {
+  block_id: uuid!
+  user_id: uuid!
+}
+
+"input type for updating data in table \"block_repost\""
+input block_repost_set_input {
+  block_id: uuid
+  created_at: timestamptz
+  user_id: uuid
+}
+
+"input type for updating data in table \"block\""
+input block_set_input {
+  "Block parent id for hierarchy. If null, the block will be at the root"
+  block_parent_id: uuid
+  "Slate children. If null, empty text"
+  children: jsonb
+  created_at: timestamptz
+  "Slate properties"
+  data: jsonb
+  "Forked from"
+  fork_parent_id: uuid
+  id: uuid
+  is_posted: Boolean
+  "Lexicographical order of the block inside the parent block"
+  order: String
+  path: ltree
+  "Full text without marks"
+  text: String
+  title: String
+  "Type of the block. If null, it's a paragraph"
+  type: String
+  updated_at: timestamptz
+  "Author id"
+  user_id: uuid
+}
+
+"Boolean expression to compare columns of type \"date\". All fields are combined with logical 'AND'."
+input date_comparison_exp {
+  _eq: date
+  _gt: date
+  _gte: date
+  _in: [date!]
+  _is_null: Boolean
+  _lt: date
+  _lte: date
+  _neq: date
+  _nin: [date!]
+}
+
+"order by aggregate values of table \"follower\""
+input follower_aggregate_order_by {
+  count: order_by
+  max: follower_max_order_by
+  min: follower_min_order_by
+}
+
+"input type for inserting array relation for remote table \"follower\""
+input follower_arr_rel_insert_input {
+  data: [follower_insert_input!]!
+  "on conflict condition"
+  on_conflict: follower_on_conflict
+}
+
+"Boolean expression to filter rows from the table \"follower\". All fields are combined with a logical 'AND'."
+input follower_bool_exp {
+  _and: [follower_bool_exp!]
+  _not: follower_bool_exp
+  _or: [follower_bool_exp!]
+  created_at: timestamptz_comparison_exp
+  follower: users_bool_exp
+  follower_id: uuid_comparison_exp
+  following: users_bool_exp
+  following_id: uuid_comparison_exp
+}
+
+"input type for inserting data into table \"follower\""
+input follower_insert_input {
+  created_at: timestamptz
+  follower: users_obj_rel_insert_input
+  follower_id: uuid
+  following: users_obj_rel_insert_input
+  following_id: uuid
+}
+
+"order by max() on columns of table \"follower\""
+input follower_max_order_by {
+  created_at: order_by
+  follower_id: order_by
+  following_id: order_by
+}
+
+"order by min() on columns of table \"follower\""
+input follower_min_order_by {
+  created_at: order_by
+  follower_id: order_by
+  following_id: order_by
+}
+
+"on conflict condition type for table \"follower\""
+input follower_on_conflict {
+  constraint: follower_constraint!
+  update_columns: [follower_update_column!]! = []
+  where: follower_bool_exp
+}
+
+"Ordering options when selecting data from \"follower\"."
+input follower_order_by {
+  created_at: order_by
+  follower: users_order_by
+  follower_id: order_by
+  following: users_order_by
+  following_id: order_by
+}
+
+"primary key columns input for table: follower"
+input follower_pk_columns_input {
+  follower_id: uuid!
+  following_id: uuid!
+}
+
+"input type for updating data in table \"follower\""
+input follower_set_input {
+  created_at: timestamptz
+  follower_id: uuid
+  following_id: uuid
+}
+
+"Boolean expression to compare columns of type \"jsonb\". All fields are combined with logical 'AND'."
+input jsonb_comparison_exp {
+  "is the column contained in the given json value"
+  _contained_in: jsonb
+  "does the column contain the given json value at the top level"
+  _contains: jsonb
+  _eq: jsonb
+  _gt: jsonb
+  _gte: jsonb
+  "does the string exist as a top-level key in the column"
+  _has_key: String
+  "do all of these strings exist as top-level keys in the column"
+  _has_keys_all: [String!]
+  "do any of these strings exist as top-level keys in the column"
+  _has_keys_any: [String!]
+  _in: [jsonb!]
+  _is_null: Boolean
+  _lt: jsonb
+  _lte: jsonb
+  _neq: jsonb
+  _nin: [jsonb!]
+}
+
+"Boolean expression to compare columns of type \"ltree\". All fields are combined with logical 'AND'."
+input ltree_comparison_exp {
+  "is the left argument an ancestor of right (or equal)?"
+  _ancestor: ltree
+  "does array contain an ancestor of `ltree`?"
+  _ancestor_any: [ltree!]
+  "is the left argument a descendant of right (or equal)?"
+  _descendant: ltree
+  "does array contain a descendant of `ltree`?"
+  _descendant_any: [ltree!]
+  _eq: ltree
+  _gt: ltree
+  _gte: ltree
+  _in: [ltree!]
+  _is_null: Boolean
+  _lt: ltree
+  _lte: ltree
+  "does `ltree` match `lquery`?"
+  _matches: lquery
+  "does `ltree` match any `lquery` in array?"
+  _matches_any: [String!]
+  "does `ltree` match `ltxtquery`?"
+  _matches_fulltext: ltxtquery
+  _neq: ltree
+  _nin: [ltree!]
+}
+
+input save_tags_input {
+  block_id: uuid!
+  value: String!
+}
+
+"Boolean expression to filter rows from the table \"timeline_event\". All fields are combined with a logical 'AND'."
+input timeline_event_bool_exp {
+  _and: [timeline_event_bool_exp!]
+  _not: timeline_event_bool_exp
+  _or: [timeline_event_bool_exp!]
+  created_at: timestamptz_comparison_exp
+  id: uuid_comparison_exp
+  type: String_comparison_exp
+  user_id: uuid_comparison_exp
+}
+
+"Ordering options when selecting data from \"timeline_event\"."
+input timeline_event_order_by {
+  created_at: order_by
+  id: order_by
+  type: order_by
+  user_id: order_by
+}
+
+"Boolean expression to compare columns of type \"timestamptz\". All fields are combined with logical 'AND'."
+input timestamptz_comparison_exp {
+  _eq: timestamptz
+  _gt: timestamptz
+  _gte: timestamptz
+  _in: [timestamptz!]
+  _is_null: Boolean
+  _lt: timestamptz
+  _lte: timestamptz
+  _neq: timestamptz
+  _nin: [timestamptz!]
+}
+
+"Boolean expression to filter rows from the table \"user_online\". All fields are combined with a logical 'AND'."
+input user_online_bool_exp {
+  _and: [user_online_bool_exp!]
+  _not: user_online_bool_exp
+  _or: [user_online_bool_exp!]
+  id: uuid_comparison_exp
+  last_seen: timestamptz_comparison_exp
+  last_typed: timestamptz_comparison_exp
+  username: String_comparison_exp
+}
+
+"input type for inserting data into table \"user_online\""
+input user_online_insert_input {
+  id: uuid
+  last_seen: timestamptz
+  last_typed: timestamptz
+  username: String
+}
+
+"Ordering options when selecting data from \"user_online\"."
+input user_online_order_by {
+  id: order_by
+  last_seen: order_by
+  last_typed: order_by
+  username: order_by
+}
+
+"input type for updating data in table \"user_online\""
+input user_online_set_input {
+  id: uuid
+  last_seen: timestamptz
+  last_typed: timestamptz
+  username: String
+}
+
+"Boolean expression to filter rows from the table \"user_private\". All fields are combined with a logical 'AND'."
+input user_private_bool_exp {
+  _and: [user_private_bool_exp!]
+  _not: user_private_bool_exp
+  _or: [user_private_bool_exp!]
+  birthdate: date_comparison_exp
+  gender: String_comparison_exp
+  id: uuid_comparison_exp
+  is_username_set: Boolean_comparison_exp
+  lang: String_comparison_exp
+  phone: String_comparison_exp
+}
+
+"input type for inserting data into table \"user_private\""
+input user_private_insert_input {
+  birthdate: date
+  gender: String
+  id: uuid
+  is_username_set: Boolean
+  lang: String
+  phone: String
+}
+
+"input type for inserting object relation for remote table \"user_private\""
+input user_private_obj_rel_insert_input {
+  data: user_private_insert_input!
+}
+
+"Ordering options when selecting data from \"user_private\"."
+input user_private_order_by {
+  birthdate: order_by
+  gender: order_by
+  id: order_by
+  is_username_set: order_by
+  lang: order_by
+  phone: order_by
+}
+
+"input type for updating data in table \"user_private\""
+input user_private_set_input {
+  birthdate: date
+  gender: String
+  id: uuid
+  is_username_set: Boolean
+  lang: String
+  phone: String
+}
+
+"Boolean expression to filter rows from the table \"user_typing\". All fields are combined with a logical 'AND'."
+input user_typing_bool_exp {
+  _and: [user_typing_bool_exp!]
+  _not: user_typing_bool_exp
+  _or: [user_typing_bool_exp!]
+  id: uuid_comparison_exp
+  last_seen: timestamptz_comparison_exp
+  last_typed: timestamptz_comparison_exp
+  username: String_comparison_exp
+}
+
+"input type for inserting data into table \"user_typing\""
+input user_typing_insert_input {
+  id: uuid
+  last_seen: timestamptz
+  last_typed: timestamptz
+  username: String
+}
+
+"Ordering options when selecting data from \"user_typing\"."
+input user_typing_order_by {
+  id: order_by
+  last_seen: order_by
+  last_typed: order_by
+  username: order_by
+}
+
+"input type for updating data in table \"user_typing\""
+input user_typing_set_input {
+  id: uuid
+  last_seen: timestamptz
+  last_typed: timestamptz
+  username: String
+}
+
+"Boolean expression to filter rows from the table \"users\". All fields are combined with a logical 'AND'."
+input users_bool_exp {
+  _and: [users_bool_exp!]
+  _not: users_bool_exp
+  _or: [users_bool_exp!]
+  avatar_url: String_comparison_exp
+  banner_url: String_comparison_exp
+  bio: String_comparison_exp
+  birthdate: date_comparison_exp
+  block_likes: block_like_bool_exp
+  block_reposts: block_repost_bool_exp
+  blocks: block_bool_exp
+  created_at: timestamptz_comparison_exp
+  deleted_at: timestamptz_comparison_exp
+  facebook_id: String_comparison_exp
+  followers: follower_bool_exp
+  following: follower_bool_exp
+  following_tags: block_follower_bool_exp
+  gender: String_comparison_exp
+  github_username: String_comparison_exp
+  google_id: String_comparison_exp
+  id: uuid_comparison_exp
+  is_username_set: Boolean_comparison_exp
+  lang: String_comparison_exp
+  last_seen: timestamptz_comparison_exp
+  last_typed: timestamptz_comparison_exp
+  location: String_comparison_exp
+  name: String_comparison_exp
+  phone: String_comparison_exp
+  private: user_private_bool_exp
+  twitter_username: String_comparison_exp
+  updated_at: timestamptz_comparison_exp
+  username: String_comparison_exp
+  website_url: String_comparison_exp
+  workspaces: workspace_bool_exp
+}
+
+"input type for inserting data into table \"users\""
+input users_insert_input {
+  avatar_url: String
+  banner_url: String
+  bio: String
+  birthdate: date
+  block_likes: block_like_arr_rel_insert_input
+  block_reposts: block_repost_arr_rel_insert_input
+  blocks: block_arr_rel_insert_input
+  created_at: timestamptz
+  deleted_at: timestamptz
+  facebook_id: String
+  followers: follower_arr_rel_insert_input
+  following: follower_arr_rel_insert_input
+  following_tags: block_follower_arr_rel_insert_input
+  gender: String
+  github_username: String
+  google_id: String
+  id: uuid
+  is_username_set: Boolean
+  lang: String
+  last_seen: timestamptz
+  last_typed: timestamptz
+  location: String
+  name: String
+  phone: String
+  private: user_private_obj_rel_insert_input
+  twitter_username: String
+  updated_at: timestamptz
+  username: String
+  website_url: String
+  workspaces: workspace_arr_rel_insert_input
+}
+
+"input type for inserting object relation for remote table \"users\""
+input users_obj_rel_insert_input {
+  data: users_insert_input!
+  "on conflict condition"
+  on_conflict: users_on_conflict
+}
+
+"on conflict condition type for table \"users\""
+input users_on_conflict {
+  constraint: users_constraint!
+  update_columns: [users_update_column!]! = []
+  where: users_bool_exp
+}
+
+"Ordering options when selecting data from \"users\"."
+input users_order_by {
+  avatar_url: order_by
+  banner_url: order_by
+  bio: order_by
+  birthdate: order_by
+  block_likes_aggregate: block_like_aggregate_order_by
+  block_reposts_aggregate: block_repost_aggregate_order_by
+  blocks_aggregate: block_aggregate_order_by
+  created_at: order_by
+  deleted_at: order_by
+  facebook_id: order_by
+  followers_aggregate: follower_aggregate_order_by
+  following_aggregate: follower_aggregate_order_by
+  following_tags_aggregate: block_follower_aggregate_order_by
+  gender: order_by
+  github_username: order_by
+  google_id: order_by
+  id: order_by
+  is_username_set: order_by
+  lang: order_by
+  last_seen: order_by
+  last_typed: order_by
+  location: order_by
+  name: order_by
+  phone: order_by
+  private: user_private_order_by
+  twitter_username: order_by
+  updated_at: order_by
+  username: order_by
+  website_url: order_by
+  workspaces_aggregate: workspace_aggregate_order_by
+}
+
+"primary key columns input for table: users"
+input users_pk_columns_input {
+  id: uuid!
+}
+
+"input type for updating data in table \"users\""
+input users_set_input {
+  avatar_url: String
+  banner_url: String
+  bio: String
+  birthdate: date
+  created_at: timestamptz
+  deleted_at: timestamptz
+  facebook_id: String
+  gender: String
+  github_username: String
+  google_id: String
+  id: uuid
+  is_username_set: Boolean
+  lang: String
+  last_seen: timestamptz
+  last_typed: timestamptz
+  location: String
+  name: String
+  phone: String
+  twitter_username: String
+  updated_at: timestamptz
+  username: String
+  website_url: String
+}
+
+"Boolean expression to compare columns of type \"uuid\". All fields are combined with logical 'AND'."
+input uuid_comparison_exp {
+  _eq: uuid
+  _gt: uuid
+  _gte: uuid
+  _in: [uuid!]
+  _is_null: Boolean
+  _lt: uuid
+  _lte: uuid
+  _neq: uuid
+  _nin: [uuid!]
+}
+
+"order by aggregate values of table \"workspace\""
+input workspace_aggregate_order_by {
+  count: order_by
+  max: workspace_max_order_by
+  min: workspace_min_order_by
+}
+
+"input type for inserting array relation for remote table \"workspace\""
+input workspace_arr_rel_insert_input {
+  data: [workspace_insert_input!]!
+  "on conflict condition"
+  on_conflict: workspace_on_conflict
+}
+
+"Boolean expression to filter rows from the table \"workspace\". All fields are combined with a logical 'AND'."
+input workspace_bool_exp {
+  _and: [workspace_bool_exp!]
+  _not: workspace_bool_exp
+  _or: [workspace_bool_exp!]
+  created_at: timestamptz_comparison_exp
+  id: uuid_comparison_exp
+  name: String_comparison_exp
+  updated_at: timestamptz_comparison_exp
+  user: users_bool_exp
+  user_id: uuid_comparison_exp
+}
+
+"input type for inserting data into table \"workspace\""
+input workspace_insert_input {
+  created_at: timestamptz
+  id: uuid
+  name: String
+  updated_at: timestamptz
+  user: users_obj_rel_insert_input
+  user_id: uuid
+}
+
+"order by max() on columns of table \"workspace\""
+input workspace_max_order_by {
+  created_at: order_by
+  id: order_by
+  name: order_by
+  updated_at: order_by
+  user_id: order_by
+}
+
+"order by min() on columns of table \"workspace\""
+input workspace_min_order_by {
+  created_at: order_by
+  id: order_by
+  name: order_by
+  updated_at: order_by
+  user_id: order_by
+}
+
+"on conflict condition type for table \"workspace\""
+input workspace_on_conflict {
+  constraint: workspace_constraint!
+  update_columns: [workspace_update_column!]! = []
+  where: workspace_bool_exp
+}
+
+"Ordering options when selecting data from \"workspace\"."
+input workspace_order_by {
+  created_at: order_by
+  id: order_by
+  name: order_by
+  updated_at: order_by
+  user: users_order_by
+  user_id: order_by
+}
+
+"primary key columns input for table: workspace"
+input workspace_pk_columns_input {
+  id: uuid!
+}
+
+"input type for updating data in table \"workspace\""
+input workspace_set_input {
+  created_at: timestamptz
+  id: uuid
+  name: String
+  updated_at: timestamptz
+  user_id: uuid
+}

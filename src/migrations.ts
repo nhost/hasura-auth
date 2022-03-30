@@ -1,7 +1,7 @@
-import { migrate } from '@djgrant/postgres-migrations';
-import { Client } from 'pg';
+import { migrate } from "@djgrant/postgres-migrations";
+import { Client } from "pg";
 // import logger from './logger';
-import { ENV } from './utils/env';
+import { ENV } from "./utils/env";
 
 export async function applyMigrations(): Promise<void> {
   // logger.info('Applying migrations');
