@@ -29,7 +29,7 @@ export const sign = ({
 }) => {
   const jwt = JSON.parse(ENV.HASURA_GRAPHQL_JWT_SECRET) as JwtSecret;
 
-  console.log(jwt.key);
+  console.log('start');
   
   return JWT.sign(payload, jwt.key, {
     algorithm: jwt.type,

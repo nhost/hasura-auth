@@ -43,6 +43,7 @@
     "express-joi-validation": "^5.0.0",
     "express-jsdoc-swagger": "^1.6.7",
     "express-pino-logger": "^6.0.0",
+    "google-auth-library": "^7.14.1",
     "graphql": "16.2.0",
     "graphql-request": "^3.7.0",
     "graphql-tag": "2.12.6",

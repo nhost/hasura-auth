@@ -1,16 +1,12 @@
-import { Response } from 'express';
-import { v4 as uuidv4 } from 'uuid';
-import {
-  ContainerTypes,
-  ValidatedRequest,
-  ValidatedRequestSchema,
-} from 'express-joi-validation';
+import { Response } from "express";
+import { v4 as uuidv4 } from "uuid";
+import { ContainerTypes, ValidatedRequest, ValidatedRequestSchema } from "express-joi-validation";
 
-import { gqlSdk } from '@/utils/gqlSDK';
-import { generateTicketExpiresAt } from '@/utils/ticket';
-import { emailClient } from '@/email';
-import { ENV } from '@/utils/env';
-import { isValidRedirectTo } from '@/helpers';
+import { gqlSdk } from "@/utils/gqlSDK";
+import { generateTicketExpiresAt } from "@/utils/ticket";
+import { emailClient } from "@/email";
+import { ENV } from "@/utils/env";
+import { isValidRedirectTo } from "@/helpers";
 
 type BodyType = {
   newEmail: string;
@@ -54,7 +50,7 @@ export const userEmailChange = async (
     },
   });
 
-  const user = updatedUserResponse.updateUser;
+  const user = updatedUserResponse.update_users_by_pk;
 
   if (!user) {
     throw new Error('Unable to get user');

@@ -247,7 +247,6 @@ export const applyMetadata = async (): Promise<void> => {
   });
 
   // customization
-  console.log(111);
   await setTableCustomization({
     source: 'default',
     table: {
@@ -256,17 +255,17 @@ export const applyMetadata = async (): Promise<void> => {
     },
     configuration: {
       custom_name: 'users',
-      custom_root_fields: {
-        select: 'users',
-        select_by_pk: 'user',
-        select_aggregate: 'usersAggregate',
-        insert: 'insertUsers',
-        insert_one: 'insertUser',
-        update: 'updateUsers',
-        update_by_pk: 'updateUser',
-        delete: 'deleteUsers',
-        delete_by_pk: 'deleteUser',
-      },
+      // custom_root_fields: {
+      //   select: 'users',
+      //   select_by_pk: 'user',
+      //   select_aggregate: 'usersAggregate',
+      //   insert: 'insertUsers',
+      //   insert_one: 'insertUser',
+      //   update: 'updateUsers',
+      //   update_by_pk: 'updateUser',
+      //   delete: 'deleteUsers',
+      //   delete_by_pk: 'deleteUser',
+      // },
       custom_column_names: {
         // * See: https://github.com/hasura/graphql-engine/issues/8020
         // id: 'id',
@@ -298,7 +297,6 @@ export const applyMetadata = async (): Promise<void> => {
       },
     },
   });
-  console.log(1221);
 
   await setTableCustomization({
     source: 'default',
@@ -329,8 +327,6 @@ export const applyMetadata = async (): Promise<void> => {
       },
     },
   });
-  console.log(
-    33);
   
   await setTableCustomization({
     source: 'default',

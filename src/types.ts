@@ -1,4 +1,4 @@
-import { UserQuery } from './utils/__generated__/graphql-request';
+import { UserQuery } from "./utils/__generated__/graphql-request";
 
 export type ClaimValueType =
   | string
@@ -71,6 +71,9 @@ export type User = Pick<
 
 export type Session = {
   accessToken: string;
+  /**
+   * (seconds)
+   */
   accessTokenExpiresIn: number;
   refreshToken: string;
   user?: User;

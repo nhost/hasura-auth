@@ -1,13 +1,13 @@
-import { Response } from 'express';
-import { v4 as uuidv4 } from 'uuid';
+import { Response } from "express";
+import { v4 as uuidv4 } from "uuid";
 
-import { gqlSdk } from '../gqlSDK';
-import { isValidEmail } from '../email';
-import { getUserByEmail, isValidRedirectTo } from '@/helpers';
-import { isRolesValid } from '../roles';
-import { ENV } from '../env';
-import { emailClient } from '@/email';
-import { generateTicketExpiresAt } from '../ticket';
+import { gqlSdk } from "../gqlSDK";
+import { isValidEmail } from "../email";
+import { getUserByEmail, isValidRedirectTo } from "@/helpers";
+import { isRolesValid } from "../roles";
+import { ENV } from "../env";
+import { emailClient } from "@/email";
+import { generateTicketExpiresAt } from "../ticket";
 
 export type BodyTypePasswordlessEmail = {
   signInMethod: 'passwordless';
@@ -25,7 +25,7 @@ export const handleDeanonymizeUserPasswordlessEmail = async (
   userId: string,
   res: Response
 ): Promise<unknown> => {
-  const { user } = await gqlSdk.user({
+  const { users_by_pk: user } = await gqlSdk.user({
     id: userId,
   });
 

@@ -1,42 +1,21 @@
-import express, {
-  NextFunction,
-  RequestHandler,
-  Response,
-  Router,
-} from 'express';
-import {
-  ContainerTypes,
-  createValidator,
-  ValidatedRequest,
-  ValidatedRequestSchema,
-} from 'express-joi-validation';
-import passport, { Profile } from 'passport';
-import { VerifyCallback } from 'passport-oauth2';
-import refresh from 'passport-oauth2-refresh';
-import { Strategy } from 'passport';
-import { v4 as uuidv4 } from 'uuid';
+import express, { NextFunction, RequestHandler, Response, Router } from "express";
+import { ContainerTypes, createValidator, ValidatedRequest, ValidatedRequestSchema } from "express-joi-validation";
+import passport, { Profile, Strategy } from "passport";
+import { VerifyCallback } from "passport-oauth2";
+import refresh from "passport-oauth2-refresh";
+import { v4 as uuidv4 } from "uuid";
 
-import { UserRegistrationOptions } from '@/types';
-import { PROVIDERS } from '@config/index';
-import {
-  asyncWrapper,
-  getGravatarUrl,
-  getUserByEmail,
-  isValidRedirectTo,
-} from '@/helpers';
-import {
-  ProviderCallbackQuery,
-  providerCallbackQuery,
-  ProviderQuery,
-  providerQuery,
-} from '@/validation';
-import { getNewRefreshToken } from '@/utils/tokens';
-import { UserFieldsFragment } from '@/utils/__generated__/graphql-request';
-import { gqlSdk } from '@/utils/gqlSDK';
-import { ENV } from '@/utils/env';
-import { isValidEmail } from '@/utils/email';
-import { insertUser } from '@/utils/user';
-import { isRolesValid } from '@/utils/roles';
+import { UserRegistrationOptions } from "@/types";
+import { PROVIDERS } from "@/config";
+import { asyncWrapper, getGravatarUrl, getUserByEmail, isValidRedirectTo } from "@/helpers";
+import { ProviderCallbackQuery, providerCallbackQuery, ProviderQuery, providerQuery } from "@/validation";
+import { getNewRefreshToken } from "@/utils/tokens";
+import { UserFieldsFragment } from "@/utils/__generated__/graphql-request";
+import { gqlSdk } from "@/utils/gqlSDK";
+import { ENV } from "@/utils/env";
+import { isValidEmail } from "@/utils/email";
+import { insertUser } from "@/utils/user";
+import { isRolesValid } from "@/utils/roles";
 
 interface RequestWithState<T extends ValidatedRequestSchema>
   extends ValidatedRequest<T> {
@@ -58,7 +37,7 @@ interface InitProviderSettings {
   callbackMethod: 'GET' | 'POST';
 }
 
-const manageProviderStrategy =
+export const manageProviderStrategy =
   (provider: string, transformProfile: TransformProfileFunction) =>
   async (
     req: RequestWithState<ProviderCallbackQuerySchema>,
@@ -270,7 +249,7 @@ export const initProvider = <T extends Strategy>(
         const redirectTo =
           'redirectTo' in req.query
             ? (req.query.redirectTo as string)
-            : ENV.AUTH_CLIENT_URL;
+            : ENV.AUTH_CLIENT_URL + '/oauth/callback';
 
         if (!redirectTo) {
           return res.boom.badRequest('Redirect URL is undefined');
@@ -285,8 +264,7 @@ export const initProvider = <T extends Strategy>(
         requestOptions.redirectTo = redirectTo;
 
         // locale
-        const locale = (req.query.locale as string) ?? ENV.AUTH_LOCALE_DEFAULT;
-        requestOptions.locale = locale;
+        requestOptions.locale = (req.query.locale as string) ?? ENV.AUTH_LOCALE_DEFAULT;
 
         // roles
         const defaultRole = req.query.defaultRole ?? ENV.AUTH_USER_DEFAULT_ROLE;
@@ -295,6 +273,11 @@ export const initProvider = <T extends Strategy>(
         const allowedRoles =
           (req.query.allowedRoles as string)?.split(',') ??
           ENV.AUTH_USER_DEFAULT_ALLOWED_ROLES;
+        
+        // TODO
+        // if (ADMIN_EMAILS.includes(email)) {
+        //   allowedRoles.push({ role: 'admin' })
+        //   }
 
         if (!(await isRolesValid({ defaultRole, allowedRoles, res }))) {
           return;

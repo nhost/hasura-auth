@@ -1,12 +1,12 @@
-import { NextFunction, Response, Request } from 'express';
-import * as gravatar from 'gravatar';
-import QRCode from 'qrcode';
-import bcrypt from 'bcryptjs';
-import { gqlSdk } from './utils/gqlSDK';
+import { NextFunction, Request, Response } from "express";
+import * as gravatar from "gravatar";
+import QRCode from "qrcode";
+import bcrypt from "bcryptjs";
+import { gqlSdk } from "./utils/gqlSDK";
 // import { UserFieldsFragment } from './utils/__generated__/graphql-request';
-import { ENV } from './utils/env';
-import { logger } from './logger';
-import axios from 'axios';
+import { ENV } from "./utils/env";
+import { logger } from "./logger";
+import axios from "axios";
 
 /**
  * Create QR code.
@@ -71,7 +71,7 @@ export const getUserById = async (userId: string | undefined) => {
     throw new Error('User does not exists');
   }
 
-  const { user } = await gqlSdk.user({
+  const { users_by_pk: user } = await gqlSdk.user({
     id: userId,
   });
 
@@ -101,7 +101,7 @@ export const userWithEmailExists = async (email: string) => {
 };
 
 export const userIsAnonymous = async (userId: string) => {
-  const { user } = await gqlSdk.user({
+  const { users_by_pk: user } = await gqlSdk.user({
     id: userId,
   });
 

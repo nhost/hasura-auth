@@ -1,11 +1,7 @@
-import { gqlSdk } from '@/utils/gqlSDK';
-import { Response } from 'express';
-import {
-  ContainerTypes,
-  ValidatedRequest,
-  ValidatedRequestSchema,
-} from 'express-joi-validation';
-import { authenticator } from 'otplib';
+import { gqlSdk } from "@/utils/gqlSDK";
+import { Response } from "express";
+import { ContainerTypes, ValidatedRequest, ValidatedRequestSchema } from "express-joi-validation";
+import { authenticator } from "otplib";
 
 type BodyType = {
   code: string;
@@ -35,7 +31,7 @@ export const userMFAHandler = async (
 
   const { userId } = req.auth;
 
-  const { user } = await gqlSdk.user({
+  const { users_by_pk: user } = await gqlSdk.user({
     id: userId,
   });
 

@@ -1,13 +1,9 @@
-import { Response } from 'express';
-import {
-  ContainerTypes,
-  ValidatedRequest,
-  ValidatedRequestSchema,
-} from 'express-joi-validation';
+import { Response } from "express";
+import { ContainerTypes, ValidatedRequest, ValidatedRequestSchema } from "express-joi-validation";
 
-import { hashPassword } from '@/helpers';
-import { gqlSdk } from '@/utils/gqlSDK';
-import { isPasswordValid } from '@/utils/password';
+import { hashPassword } from "@/helpers";
+import { gqlSdk } from "@/utils/gqlSDK";
+import { isPasswordValid } from "@/utils/password";
 
 type BodyType = {
   newPassword: string;
@@ -38,7 +34,7 @@ export const userPasswordHandler = async (
 
   const { userId } = req.auth;
 
-  const { user } = await gqlSdk.user({
+  const { users_by_pk: user } = await gqlSdk.user({
     id: userId,
   });
 

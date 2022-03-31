@@ -1,11 +1,11 @@
-import { v4 as uuidv4 } from 'uuid';
-import { gqlSdk } from '@/utils/gqlSDK';
-import { SignInResponse, Session } from '../types';
-import { UserFieldsFragment } from './__generated__/graphql-request';
-import { generateTicketExpiresAt } from './ticket';
-import { ENV } from './env';
-import { getUser } from './user';
-import { createHasuraAccessToken } from './jwt';
+import { v4 as uuidv4 } from "uuid";
+import { gqlSdk } from "@/utils/gqlSDK";
+import { Session, SignInResponse } from "../types";
+import { UserFieldsFragment } from "./__generated__/graphql-request";
+import { generateTicketExpiresAt } from "./ticket";
+import { ENV } from "./env";
+import { getUser } from "./user";
+import { createHasuraAccessToken } from "./jwt";
 
 export function newRefreshExpiry() {
   const date = new Date();
@@ -48,7 +48,9 @@ export const getNewSession = async ({
   const sessionUser = await getUser({ userId: user.id });
 
   const accessToken = await createHasuraAccessToken(user);
+  console.log('acc', accessToken);
   const refreshToken = await getNewRefreshToken(user.id);
+  console.log('refr', refreshToken);
 
   return {
     accessToken,
@@ -65,7 +67,7 @@ export const getSignInResponse = async ({
   userId: string;
   checkMFA: boolean;
 }): Promise<SignInResponse> => {
-  const { user } = await gqlSdk.user({
+  const { users_by_pk: user } = await gqlSdk.user({
     id: userId,
   });
 

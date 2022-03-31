@@ -1,14 +1,14 @@
-import { Response } from 'express';
-import { v4 as uuidv4 } from 'uuid';
+import { Response } from "express";
+import { v4 as uuidv4 } from "uuid";
 
-import { gqlSdk } from '../gqlSDK';
-import { isValidEmail } from '../email';
-import { getUserByEmail, hashPassword, isValidRedirectTo } from '@/helpers';
-import { isPasswordValid } from '../password';
-import { isRolesValid } from '../roles';
-import { ENV } from '../env';
-import { emailClient } from '@/email';
-import { generateTicketExpiresAt } from '../ticket';
+import { gqlSdk } from "../gqlSDK";
+import { isValidEmail } from "../email";
+import { getUserByEmail, hashPassword, isValidRedirectTo } from "@/helpers";
+import { isPasswordValid } from "../password";
+import { isRolesValid } from "../roles";
+import { ENV } from "../env";
+import { emailClient } from "@/email";
+import { generateTicketExpiresAt } from "../ticket";
 
 export type BodyTypeEmailPassword = {
   signInMethod: 'email-password';
@@ -27,7 +27,7 @@ export const handleDeanonymizeUserEmailPassword = async (
   userId: string,
   res: Response
 ): Promise<unknown> => {
-  const { user } = await gqlSdk.user({
+  const { users_by_pk: user } = await gqlSdk.user({
     id: userId,
   });
 

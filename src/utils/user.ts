@@ -1,9 +1,6 @@
-import { User } from '@/types';
-import { gqlSdk } from './gqlSDK';
-import {
-  InsertUserMutation,
-  InsertUserMutationVariables,
-} from './__generated__/graphql-request';
+import { User } from "@/types";
+import { gqlSdk } from "./gqlSDK";
+import { InsertUserMutation, InsertUserMutationVariables } from "./__generated__/graphql-request";
 
 export const getUserByPhoneNumber = async ({
   phoneNumber,
@@ -26,7 +23,7 @@ export const getUser = async ({
 }: {
   userId: string;
 }): Promise<User> => {
-  const { user } = await gqlSdk.user({
+  const { users_by_pk: user } = await gqlSdk.user({
     id: userId,
   });
 
@@ -64,10 +61,10 @@ export const getUser = async ({
 };
 
 type UserInput = InsertUserMutationVariables['user'];
-type UserOutput = NonNullable<InsertUserMutation['insertUser']>;
+type UserOutput = NonNullable<InsertUserMutation['insert_users_one']>;
 
 export const insertUser = async (user: UserInput): Promise<UserOutput> => {
-  const { insertUser } = await gqlSdk.insertUser({
+  const { insert_users_one: insertUser } = await gqlSdk.insertUser({
     user,
   });
   if (!insertUser) {
