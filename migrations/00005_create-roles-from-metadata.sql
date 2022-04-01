@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION auth.update_roles_from_metadata () RETURNS TRIGGER LANGUAGE plpgsql AS $$ BEGIN
+CREATE OR REPLACE FUNCTION auth.update_roles_from_metadata() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN
 INSERT INTO auth.roles(role)
 SELECT DISTINCT jsonb_array_elements_text(
         jsonb_path_query_array(
@@ -18,5 +18,6 @@ SELECT DISTINCT jsonb_array_elements_text(
 RETURN new;
 END;
 $$;
-CREATE OR REPLACE TRIGGER update_roles_from_metadata BEFORE
+DROP TRIGGER IF EXISTS update_roles_from_metadata ON hdb_catalog.hdb_metadata;
+CREATE TRIGGER update_roles_from_metadata BEFORE
 UPDATE ON hdb_catalog.hdb_metadata FOR EACH ROW EXECUTE FUNCTION auth.update_roles_from_metadata ();
