@@ -2,6 +2,7 @@ import { Router } from "express";
 
 import github from "./github";
 import google from "./google";
+import googleOneTap from "./google-one-tap";
 import facebook from "./facebook";
 import twitter from "./twitter";
 import apple from "./apple";
@@ -18,7 +19,7 @@ const router = Router();
 
 github(router);
 google(router);
-// TODO: google-one-tap
+googleOneTap(router);
 facebook(router);
 twitter(router);
 apple(router);

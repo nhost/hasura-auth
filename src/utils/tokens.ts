@@ -48,9 +48,7 @@ export const getNewSession = async ({
   const sessionUser = await getUser({ userId: user.id });
 
   const accessToken = await createHasuraAccessToken(user);
-  console.log('acc', accessToken);
   const refreshToken = await getNewRefreshToken(user.id);
-  console.log('refr', refreshToken);
 
   return {
     accessToken,

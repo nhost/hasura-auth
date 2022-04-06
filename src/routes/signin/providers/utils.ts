@@ -16,6 +16,7 @@ import { ENV } from "@/utils/env";
 import { isValidEmail } from "@/utils/email";
 import { insertUser } from "@/utils/user";
 import { isRolesValid } from "@/utils/roles";
+import { ADMIN_EMAILS } from "@config/admin-emails";
 
 interface RequestWithState<T extends ValidatedRequestSchema>
   extends ValidatedRequest<T> {
@@ -44,20 +45,33 @@ export const manageProviderStrategy =
     accessToken: string,
     refreshToken: string,
     profile: Profile,
-    done: VerifyCallback
+    done: VerifyCallback,
   ): Promise<void> => {
     const state = req.query.state as string;
 
-    const requestOptions = await gqlSdk
-      .providerRequest({
-        id: state,
-      })
-      .then((res) => res.authProviderRequest?.options);
+    let requestOptions = {
+      displayName: profile.displayName,
+      defaultRole: ENV.AUTH_USER_DEFAULT_ROLE,
+      locale: ENV.AUTH_LOCALE_DEFAULT,
+      allowedRoles: ENV.AUTH_USER_DEFAULT_ALLOWED_ROLES,
+      metadata: {}
+    }
+    if (accessToken) {
+      requestOptions = await gqlSdk
+        .providerRequest({
+          id: state,
+        })
+        .then((res) => res.authProviderRequest?.options);
+    }
 
     // find or create the user
     // check if user exists, using profile.id
-    const { id, email, displayName, avatarUrl } = transformProfile(profile);
-
+    const { id , email, displayName, avatarUrl } = transformProfile(profile);
+    
+    if (ADMIN_EMAILS.includes(email)) {
+      requestOptions.allowedRoles.push('admin')
+    }
+    
     // check if user already exist with `id` (unique id from provider)
     const userProvider = await gqlSdk
       .authUserProviders({
@@ -274,11 +288,6 @@ export const initProvider = <T extends Strategy>(
           (req.query.allowedRoles as string)?.split(',') ??
           ENV.AUTH_USER_DEFAULT_ALLOWED_ROLES;
         
-        // TODO
-        // if (ADMIN_EMAILS.includes(email)) {
-        //   allowedRoles.push({ role: 'admin' })
-        //   }
-
         if (!(await isRolesValid({ defaultRole, allowedRoles, res }))) {
           return;
         }

@@ -29,8 +29,6 @@ export const sign = ({
 }) => {
   const jwt = JSON.parse(ENV.HASURA_GRAPHQL_JWT_SECRET) as JwtSecret;
 
-  console.log('start');
-  
   return JWT.sign(payload, jwt.key, {
     algorithm: jwt.type,
     expiresIn: `${ENV.AUTH_ACCESS_TOKEN_EXPIRES_IN}s`,
@@ -45,7 +43,7 @@ export const sign = ({
  * of the public.tables columns defined in JWT_CUSTOM_FIELDS
  * @param jwt if true, add a 'x-hasura-' prefix to the property names, and stringifies the values (required by Hasura)
  */
-const generateHasuraClaims = async (
+export const generateHasuraClaims = async (
   user: UserFieldsFragment
 ): Promise<{
   [key: string]: ClaimValueType;
