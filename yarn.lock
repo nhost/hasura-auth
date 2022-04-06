@@ -2447,15 +2447,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/express-boom@npm:^3.0.0":
-  version: 3.0.1
-  resolution: "@types/express-boom@npm:3.0.1"
-  dependencies:
-    "@types/express": "*"
-  checksum: 8260c2e4a9d560b3d977523705f8fe3a7425b9c77cca434c8a8b0b9795ed523214ad3c0a739922adaed9356b798eb3b90ab8c9dd1bbbc834cb6324a6d446e1a4
-  languageName: node
-  linkType: hard
-
 "@types/express-pino-logger@npm:^4.0.2":
   version: 4.0.3
   resolution: "@types/express-pino-logger@npm:4.0.3"
@@ -4004,15 +3995,6 @@ __metadata:
   version: 3.0.1
   resolution: "boolean@npm:3.0.1"
   checksum: 29ce8d985ff8ae0d8cdc57001ad8aed736345edc1b0513c3619117f076706809d83e33a8e130262bbd41b7bbce6f1390c9211c266bbbac4fb1050975a3c6adea
-  languageName: node
-  linkType: hard
-
-"boom@npm:^7.3.x":
-  version: 7.3.0
-  resolution: "boom@npm:7.3.0"
-  dependencies:
-    hoek: 6.x.x
-  checksum: 86d22bef321d3907a5a8f9188e3004efd1bf9e4aff21e358e3a2a8061a8ff5e442843cf5c43041ae5324496fc881562070c65040a59b7265ee84130fb1a8eae3
   languageName: node
   linkType: hard
 
@@ -6638,24 +6620,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"express-boom@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "express-boom@npm:3.0.0"
-  dependencies:
-    boom: ^7.3.x
-  checksum: 5476addeebf651efc5bc07326fdb36352367ed8bae4995352f5e5955ef554064b98e09e2bc2befa75ba88f638e6a95d6ce16c6cf2de0809d3f9e22337f7302bc
-  languageName: node
-  linkType: hard
-
-"express-joi-validation@npm:^5.0.0":
-  version: 5.0.1
-  resolution: "express-joi-validation@npm:5.0.1"
-  peerDependencies:
-    joi: 17
-  checksum: bfc633554f8e46ba52144b63344db9112d7a946e24c675cb33a54282589ec107e40672ccdc306bbbcf8aebd4e31caf33e1cf1cb4ea939027c6112936557ae5ac
-  languageName: node
-  linkType: hard
-
 "express-jsdoc-swagger@npm:^1.6.7":
   version: 1.6.7
   resolution: "express-jsdoc-swagger@npm:1.6.7"
@@ -8075,7 +8039,6 @@ __metadata:
     "@types/ejs": 3.0.2
     "@types/email-templates": 7.0.1
     "@types/express": 4.17.6
-    "@types/express-boom": ^3.0.0
     "@types/express-pino-logger": ^4.0.2
     "@types/faker": ^5.5.7
     "@types/gravatar": ^1.8.1
@@ -8122,8 +8085,6 @@ __metadata:
     eslint-plugin-jest: 23.8.2
     eslint-plugin-prettier: 3.1.3
     express: 4.17.1
-    express-boom: ^3.0.0
-    express-joi-validation: ^5.0.0
     express-jsdoc-swagger: ^1.6.7
     express-pino-logger: ^6.0.0
     faker: ^5.5.3
@@ -8136,6 +8097,7 @@ __metadata:
     gravatar: ^1.8.1
     helmet: 3.22.0
     hibp: 9.0.0
+    http-status-codes: ^2.2.0
     husky: ^7.0.4
     jest: ^27.4.7
     jest-extended: 0.11.5
@@ -8151,6 +8113,7 @@ __metadata:
     nodemailer: 6.4.16
     npm-run-all: ^4.1.5
     otplib: 12.0.1
+    pascal-case: ^3.1.2
     passport: 0.4.1
     passport-bitbucket-oauth2: ^0.1.2
     passport-facebook: ^3.0.0
@@ -8264,13 +8227,6 @@ __metadata:
   version: 1.1.0
   resolution: "hide-powered-by@npm:1.1.0"
   checksum: 6c6a5f2205c614e1f6d2aa487cedde9c51fd1a0bab04e3c06f4d557e0cd365b92c9a2f474780734cf243bfb1aaebc0f34fa815cabec0412c8f72d8da23ede855
-  languageName: node
-  linkType: hard
-
-"hoek@npm:6.x.x":
-  version: 6.1.3
-  resolution: "hoek@npm:6.1.3"
-  checksum: d0af183df1b710290de440142d3650268ab2402c0f6cc28de044fc806a78ea5b91ed763ccffc2306204c1191724e80610c11dc4d7c259af55ad87ff9613abfec
   languageName: node
   linkType: hard
 
@@ -8447,6 +8403,13 @@ __metadata:
     jsprim: ^1.2.2
     sshpk: ^1.7.0
   checksum: 3324598712266a9683585bb84a75dec4fd550567d5e0dd4a0fff6ff3f74348793404d3eeac4918fa0902c810eeee1a86419e4a2e92a164132dfe6b26743fb47c
+  languageName: node
+  linkType: hard
+
+"http-status-codes@npm:^2.2.0":
+  version: 2.2.0
+  resolution: "http-status-codes@npm:2.2.0"
+  checksum: 31e1d730856210445da0907d9b484629e69e4fe92ac032478a7aa4d89e5b215e2b4e75d7ebce40d0537b6850bd281b2f65c7cc36cc2677e5de056d6cea1045ce
   languageName: node
   linkType: hard
 

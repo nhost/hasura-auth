@@ -49,15 +49,15 @@ export type Token = {
 type Metadata = Record<string, unknown>;
 
 export type UserRegistrationOptions = {
-  locale?: string;
-  allowedRoles?: string[];
-  defaultRole?: string;
+  locale: string;
+  allowedRoles: string[];
+  defaultRole: string;
   displayName?: string;
-  metadata?: Metadata;
+  metadata: Metadata;
 };
 
 export type User = Pick<
-  NonNullable<UserQuery['user']>,
+  NonNullable<UserQuery['users_by_pk']>,
   | 'id'
   | 'createdAt'
   | 'displayName'
@@ -67,6 +67,10 @@ export type User = Pick<
   | 'isAnonymous'
   | 'defaultRole'
   | 'metadata'
+  | 'emailVerified'
+  | 'phoneNumber'
+  | 'phoneNumberVerified'
+  | 'activeMfaType'
 > & { roles: string[] };
 
 export type Session = {
@@ -90,14 +94,14 @@ export type SignInResponse = {
 
 export type PasswordLessEmailBody = {
   email: string;
-  options?: UserRegistrationOptions & {
-    redirectTo?: string;
+  options: UserRegistrationOptions & {
+    redirectTo: string;
   };
 };
 
 export type PasswordLessSmsBody = {
   phoneNumber: string;
-  options?: UserRegistrationOptions;
+  options: UserRegistrationOptions;
 };
 
 export type OtpSmsBody = {
@@ -118,3 +122,11 @@ export type JwtSecret = {
   allowed_skew?: string;
   header?: string;
 };
+
+export const EMAIL_TYPES = {
+  VERIFY: 'emailVerify',
+  CONFIRM_CHANGE: 'emailConfirmChange',
+  SIGNIN_PASSWORDLESS: 'signinPasswordless',
+  PASSWORD_RESET: 'passwordReset',
+} as const;
+export type EmailType = typeof EMAIL_TYPES[keyof typeof EMAIL_TYPES];

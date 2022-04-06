@@ -3,8 +3,8 @@ import { manageProviderStrategy } from "./utils";
 import { PROVIDERS } from "@/config";
 import { OAuth2Client } from "google-auth-library";
 import { getSignInResponse } from "@/utils/tokens";
-import { asyncWrapper as aw } from "@/helpers";
 import { User } from "@/types";
+import { asyncWrapper } from "@/utils";
 
 const options = PROVIDERS.google;
 
@@ -57,7 +57,7 @@ const googleOneTap = async (req: Request, res: Response): Promise<unknown> => {
 
   // COPY: login
   if (!account) {
-    return res.boom.unauthorized('Invalid code');
+    return (res as any).boom.unauthorized('Invalid code');
   }
   
   // if (account.disabled) {
@@ -78,7 +78,7 @@ const googleOneTap = async (req: Request, res: Response): Promise<unknown> => {
 //   createValidator().body(signInPasswordlessSmsSchema),
 //   aw(signInPasswordlessSmsHandler)
 // );
-export default (router: Router) => router.post('/google-one-tap', aw(googleOneTap))
+export default (router: Router) => router.post('/google-one-tap', asyncWrapper(googleOneTap))
 
 
 

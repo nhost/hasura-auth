@@ -1,27 +1,31 @@
-import express, { NextFunction, RequestHandler, Response, Router } from "express";
-import { ContainerTypes, createValidator, ValidatedRequest, ValidatedRequestSchema } from "express-joi-validation";
+import express, { NextFunction, Request, RequestHandler, Response, Router } from "express";
 import passport, { Profile, Strategy } from "passport";
 import { VerifyCallback } from "passport-oauth2";
 import refresh from "passport-oauth2-refresh";
 import { v4 as uuidv4 } from "uuid";
 
-import { UserRegistrationOptions } from "@/types";
-import { PROVIDERS } from "@/config";
-import { asyncWrapper, getGravatarUrl, getUserByEmail, isValidRedirectTo } from "@/helpers";
-import { ProviderCallbackQuery, providerCallbackQuery, ProviderQuery, providerQuery } from "@/validation";
-import { getNewRefreshToken } from "@/utils/tokens";
+import { PROVIDERS } from "@config";
+import { email as emailValidator, Joi, queryValidator, registrationOptions, uuid } from "@/validation";
 import { UserFieldsFragment } from "@/utils/__generated__/graphql-request";
-import { gqlSdk } from "@/utils/gqlSDK";
-import { ENV } from "@/utils/env";
-import { isValidEmail } from "@/utils/email";
-import { insertUser } from "@/utils/user";
-import { isRolesValid } from "@/utils/roles";
-import { ADMIN_EMAILS } from "@config/admin-emails";
+import { asyncWrapper, ENV, getGravatarUrl, getNewRefreshToken, getUserByEmail, gqlSdk, insertUser } from "@/utils";
+import { UserRegistrationOptions } from "@/types";
+import { ADMIN_EMAILS } from "@/config/admin-emails";
 
-interface RequestWithState<T extends ValidatedRequestSchema>
-  extends ValidatedRequest<T> {
+export const providerCallbackQuerySchema = Joi.object({
+  state: uuid.required(),
+}).unknown(true);
+
+type ProviderQuery = UserRegistrationOptions & {
+  redirectTo: string;
+};
+
+type ProviderCallbackQuery = Record<string, unknown> & {
   state: string;
-}
+};
+
+type RequestWithState<Q = {}> = Request<{}, {}, {}, Q & { state: string }> & {
+  state: string;
+};
 
 interface Constructable<T> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -41,13 +45,13 @@ interface InitProviderSettings {
 export const manageProviderStrategy =
   (provider: string, transformProfile: TransformProfileFunction) =>
   async (
-    req: RequestWithState<ProviderCallbackQuerySchema>,
+    req: RequestWithState<ProviderCallbackQuery>,
     accessToken: string,
     refreshToken: string,
     profile: Profile,
-    done: VerifyCallback,
+    done: VerifyCallback
   ): Promise<void> => {
-    const state = req.query.state as string;
+    const state = req.query.state;
 
     let requestOptions = {
       displayName: profile.displayName,
@@ -96,8 +100,9 @@ export const manageProviderStrategy =
     }
 
     if (email) {
-      // check email
-      if (!(await isValidEmail({ email }))) {
+      try {
+        await emailValidator.validateAsync(email);
+      } catch {
         return done(new Error('email is not allowed'));
       }
 
@@ -131,7 +136,7 @@ export const manageProviderStrategy =
       email,
       passwordHash: null,
       emailVerified: !!email,
-      defaultRole: defaultRole,
+      defaultRole,
       locale,
       roles: {
         data: (allowedRoles as string[]).map((role) => ({
@@ -157,10 +162,7 @@ export const manageProviderStrategy =
   };
 
 const providerCallback = asyncWrapper(
-  async (
-    req: RequestWithState<ProviderCallbackQuerySchema>,
-    res: Response
-  ): Promise<void> => {
+  async (req: RequestWithState, res: Response): Promise<void> => {
     // Successful authentication, redirect home.
     // generate tokens and redirect back home
 
@@ -176,6 +178,8 @@ const providerCallback = asyncWrapper(
 
     const refreshToken = await getNewRefreshToken(user.id);
 
+    requestOptions.redirectTo = ENV.AUTH_CLIENT_URL + '/oauth/callback'
+    
     // redirect back user to app url
     res.redirect(`${requestOptions.redirectTo}#refreshToken=${refreshToken}`);
   }
@@ -245,83 +249,27 @@ export const initProvider = <T extends Strategy>(
   }
 
   subRouter.get('/', [
-    createValidator().query(providerQuery),
+    queryValidator(registrationOptions),
     asyncWrapper(
       async (
-        req: RequestWithState<ProviderQuerySchema>,
+        req: RequestWithState<ProviderQuery>,
         res: Response,
         next: NextFunction
       ) => {
         req.state = uuidv4();
-
-        // create request metadata object
-        const requestOptions: UserRegistrationOptions & {
-          redirectTo?: string;
-        } = {};
-
-        // redirectTo
-        const redirectTo =
-          'redirectTo' in req.query
-            ? (req.query.redirectTo as string)
-            : ENV.AUTH_CLIENT_URL + '/oauth/callback';
-
-        if (!redirectTo) {
-          return res.boom.badRequest('Redirect URL is undefined');
-        }
-
-        if (!isValidRedirectTo(redirectTo)) {
-          return res.boom.badRequest(
-            `'redirectTo' is not the same as AUTH_CLIENT_URL nor is it in AUTH_ACCSS_CONTROL_ALLOWED_REDIRECT_URLS`
-          );
-        }
-
-        requestOptions.redirectTo = redirectTo;
-
-        // locale
-        requestOptions.locale = (req.query.locale as string) ?? ENV.AUTH_LOCALE_DEFAULT;
-
-        // roles
-        const defaultRole = req.query.defaultRole ?? ENV.AUTH_USER_DEFAULT_ROLE;
-
-        // req.query.allowedRoles is a string with comma separated roles
-        const allowedRoles =
-          (req.query.allowedRoles as string)?.split(',') ??
-          ENV.AUTH_USER_DEFAULT_ALLOWED_ROLES;
-        
-        if (!(await isRolesValid({ defaultRole, allowedRoles, res }))) {
-          return;
-        }
-
-        requestOptions.defaultRole = defaultRole;
-        requestOptions.allowedRoles = allowedRoles;
-
-        // displayName
-        if (req.query.displayName) {
-          requestOptions.displayName = req.query.displayName;
-        }
-
-        // metadata
-        if (req.query.metadata) {
-          try {
-            requestOptions.metadata = JSON.parse(req.query.metadata as string);
-          } catch (error) {
-            return res.boom.badRequest('metadata is not valid JSON');
-          }
-        }
-
         // insert request metadata object with the request state as id
         await gqlSdk.insertProviderRequest({
           providerRequest: {
             id: req.state,
-            options: requestOptions,
+            options: req.query,
           },
         });
 
-        await next();
+        next();
       }
     ),
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (req: RequestWithState<ProviderQuerySchema>, ...rest: any) => {
+    (req: RequestWithState<ProviderQuery>, ...rest: any) => {
       return passport.authenticate(strategyName, {
         session: false,
         state: req.state,
@@ -334,7 +282,7 @@ export const initProvider = <T extends Strategy>(
     passport.authenticate(strategyName, {
       session: false,
     }),
-    createValidator().query(providerCallbackQuery),
+    queryValidator(providerCallbackQuerySchema),
     providerCallback,
   ];
 
@@ -351,11 +299,3 @@ export const initProvider = <T extends Strategy>(
 
   router.use(`/${strategyName}`, subRouter);
 };
-
-interface ProviderQuerySchema extends ValidatedRequestSchema {
-  [ContainerTypes.Query]: ProviderQuery;
-}
-
-interface ProviderCallbackQuerySchema extends ValidatedRequestSchema {
-  [ContainerTypes.Query]: ProviderCallbackQuery;
-}
