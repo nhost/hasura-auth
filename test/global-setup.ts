@@ -1,8 +1,8 @@
 require('tsconfig-paths/register');
 require('dotenv').config();
-import { Client } from 'pg';
+import { Client } from "pg";
 
-import { ENV } from '@/utils';
+import { ENV } from "@/utils";
 
 export default async (): Promise<void> => {
   // await applyMigrations();
