@@ -1,6 +1,7 @@
 export const generateRedirectUrl = (
   redirectTo: string,
-  queryParameters: { [key: string]: string }
+  queryParameters: { [key: string]: string },
+  hashTag?: string
 ): string => {
   let finalRedirectTo = redirectTo;
 
@@ -28,5 +29,9 @@ export const generateRedirectUrl = (
     }
   }
 
+  // add hash tag
+  if (hashTag) {
+    finalRedirectTo += '#' + hashTag;
+  }
   return finalRedirectTo;
 };
