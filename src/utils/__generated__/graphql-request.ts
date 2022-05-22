@@ -167,7 +167,7 @@ export type AuthProviderRequests_Mutation_Response = {
   returning: Array<AuthProviderRequests>;
 };
 
-/** on conflict condition type for table "auth.provider_requests" */
+/** on_conflict condition type for table "auth.provider_requests" */
 export type AuthProviderRequests_On_Conflict = {
   constraint: AuthProviderRequests_Constraint;
   update_columns?: Array<AuthProviderRequests_Update_Column>;
@@ -220,6 +220,10 @@ export type AuthProviders = {
   userProviders: Array<AuthUserProviders>;
   /** An aggregate relationship */
   userProviders_aggregate: AuthUserProviders_Aggregate;
+  /** An array relationship */
+  user_providers: Array<AuthUserProviders>;
+  /** An aggregate relationship */
+  user_providers_aggregate: AuthUserProviders_Aggregate;
 };
 
 
@@ -235,6 +239,26 @@ export type AuthProvidersUserProvidersArgs = {
 
 /** columns and relationships of "auth.providers" */
 export type AuthProvidersUserProviders_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<AuthUserProviders_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<AuthUserProviders_Order_By>>;
+  where?: InputMaybe<AuthUserProviders_Bool_Exp>;
+};
+
+
+/** columns and relationships of "auth.providers" */
+export type AuthProvidersUser_ProvidersArgs = {
+  distinct_on?: InputMaybe<Array<AuthUserProviders_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<AuthUserProviders_Order_By>>;
+  where?: InputMaybe<AuthUserProviders_Bool_Exp>;
+};
+
+
+/** columns and relationships of "auth.providers" */
+export type AuthProvidersUser_Providers_AggregateArgs = {
   distinct_on?: InputMaybe<Array<AuthUserProviders_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
@@ -271,6 +295,7 @@ export type AuthProviders_Bool_Exp = {
   _or?: InputMaybe<Array<AuthProviders_Bool_Exp>>;
   id?: InputMaybe<String_Comparison_Exp>;
   userProviders?: InputMaybe<AuthUserProviders_Bool_Exp>;
+  user_providers?: InputMaybe<AuthUserProviders_Bool_Exp>;
 };
 
 /** unique or primary key constraints on table "auth.providers" */
@@ -283,6 +308,7 @@ export enum AuthProviders_Constraint {
 export type AuthProviders_Insert_Input = {
   id?: InputMaybe<Scalars['String']>;
   userProviders?: InputMaybe<AuthUserProviders_Arr_Rel_Insert_Input>;
+  user_providers?: InputMaybe<AuthUserProviders_Arr_Rel_Insert_Input>;
 };
 
 /** aggregate max on columns */
@@ -309,11 +335,11 @@ export type AuthProviders_Mutation_Response = {
 /** input type for inserting object relation for remote table "auth.providers" */
 export type AuthProviders_Obj_Rel_Insert_Input = {
   data: AuthProviders_Insert_Input;
-  /** on conflict condition */
+  /** upsert condition */
   on_conflict?: InputMaybe<AuthProviders_On_Conflict>;
 };
 
-/** on conflict condition type for table "auth.providers" */
+/** on_conflict condition type for table "auth.providers" */
 export type AuthProviders_On_Conflict = {
   constraint: AuthProviders_Constraint;
   update_columns?: Array<AuthProviders_Update_Column>;
@@ -324,6 +350,7 @@ export type AuthProviders_On_Conflict = {
 export type AuthProviders_Order_By = {
   id?: InputMaybe<Order_By>;
   userProviders_aggregate?: InputMaybe<AuthUserProviders_Aggregate_Order_By>;
+  user_providers_aggregate?: InputMaybe<AuthUserProviders_Aggregate_Order_By>;
 };
 
 /** primary key columns input for table: authProviders */
@@ -391,7 +418,7 @@ export type AuthRefreshTokens_Aggregate_Order_By = {
 /** input type for inserting array relation for remote table "auth.refresh_tokens" */
 export type AuthRefreshTokens_Arr_Rel_Insert_Input = {
   data: Array<AuthRefreshTokens_Insert_Input>;
-  /** on conflict condition */
+  /** upsert condition */
   on_conflict?: InputMaybe<AuthRefreshTokens_On_Conflict>;
 };
 
@@ -465,7 +492,7 @@ export type AuthRefreshTokens_Mutation_Response = {
   returning: Array<AuthRefreshTokens>;
 };
 
-/** on conflict condition type for table "auth.refresh_tokens" */
+/** on_conflict condition type for table "auth.refresh_tokens" */
 export type AuthRefreshTokens_On_Conflict = {
   constraint: AuthRefreshTokens_Constraint;
   update_columns?: Array<AuthRefreshTokens_Update_Column>;
@@ -527,9 +554,17 @@ export type AuthRoles = {
   /** An aggregate relationship */
   userRoles_aggregate: AuthUserRoles_Aggregate;
   /** An array relationship */
+  user_roles: Array<AuthUserRoles>;
+  /** An aggregate relationship */
+  user_roles_aggregate: AuthUserRoles_Aggregate;
+  /** An array relationship */
+  users: Array<Users>;
+  /** An array relationship */
   usersByDefaultRole: Array<Users>;
   /** An aggregate relationship */
   usersByDefaultRole_aggregate: Users_Aggregate;
+  /** An aggregate relationship */
+  users_aggregate: Users_Aggregate;
 };
 
 
@@ -554,6 +589,36 @@ export type AuthRolesUserRoles_AggregateArgs = {
 
 
 /** columns and relationships of "auth.roles" */
+export type AuthRolesUser_RolesArgs = {
+  distinct_on?: InputMaybe<Array<AuthUserRoles_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<AuthUserRoles_Order_By>>;
+  where?: InputMaybe<AuthUserRoles_Bool_Exp>;
+};
+
+
+/** columns and relationships of "auth.roles" */
+export type AuthRolesUser_Roles_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<AuthUserRoles_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<AuthUserRoles_Order_By>>;
+  where?: InputMaybe<AuthUserRoles_Bool_Exp>;
+};
+
+
+/** columns and relationships of "auth.roles" */
+export type AuthRolesUsersArgs = {
+  distinct_on?: InputMaybe<Array<Users_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<Users_Order_By>>;
+  where?: InputMaybe<Users_Bool_Exp>;
+};
+
+
+/** columns and relationships of "auth.roles" */
 export type AuthRolesUsersByDefaultRoleArgs = {
   distinct_on?: InputMaybe<Array<Users_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']>;
@@ -565,6 +630,16 @@ export type AuthRolesUsersByDefaultRoleArgs = {
 
 /** columns and relationships of "auth.roles" */
 export type AuthRolesUsersByDefaultRole_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Users_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<Users_Order_By>>;
+  where?: InputMaybe<Users_Bool_Exp>;
+};
+
+
+/** columns and relationships of "auth.roles" */
+export type AuthRolesUsers_AggregateArgs = {
   distinct_on?: InputMaybe<Array<Users_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
@@ -601,6 +676,8 @@ export type AuthRoles_Bool_Exp = {
   _or?: InputMaybe<Array<AuthRoles_Bool_Exp>>;
   role?: InputMaybe<String_Comparison_Exp>;
   userRoles?: InputMaybe<AuthUserRoles_Bool_Exp>;
+  user_roles?: InputMaybe<AuthUserRoles_Bool_Exp>;
+  users?: InputMaybe<Users_Bool_Exp>;
   usersByDefaultRole?: InputMaybe<Users_Bool_Exp>;
 };
 
@@ -614,6 +691,8 @@ export enum AuthRoles_Constraint {
 export type AuthRoles_Insert_Input = {
   role?: InputMaybe<Scalars['String']>;
   userRoles?: InputMaybe<AuthUserRoles_Arr_Rel_Insert_Input>;
+  user_roles?: InputMaybe<AuthUserRoles_Arr_Rel_Insert_Input>;
+  users?: InputMaybe<Users_Arr_Rel_Insert_Input>;
   usersByDefaultRole?: InputMaybe<Users_Arr_Rel_Insert_Input>;
 };
 
@@ -641,11 +720,11 @@ export type AuthRoles_Mutation_Response = {
 /** input type for inserting object relation for remote table "auth.roles" */
 export type AuthRoles_Obj_Rel_Insert_Input = {
   data: AuthRoles_Insert_Input;
-  /** on conflict condition */
+  /** upsert condition */
   on_conflict?: InputMaybe<AuthRoles_On_Conflict>;
 };
 
-/** on conflict condition type for table "auth.roles" */
+/** on_conflict condition type for table "auth.roles" */
 export type AuthRoles_On_Conflict = {
   constraint: AuthRoles_Constraint;
   update_columns?: Array<AuthRoles_Update_Column>;
@@ -656,7 +735,9 @@ export type AuthRoles_On_Conflict = {
 export type AuthRoles_Order_By = {
   role?: InputMaybe<Order_By>;
   userRoles_aggregate?: InputMaybe<AuthUserRoles_Aggregate_Order_By>;
+  user_roles_aggregate?: InputMaybe<AuthUserRoles_Aggregate_Order_By>;
   usersByDefaultRole_aggregate?: InputMaybe<Users_Aggregate_Order_By>;
+  users_aggregate?: InputMaybe<Users_Aggregate_Order_By>;
 };
 
 /** primary key columns input for table: authRoles */
@@ -730,7 +811,7 @@ export type AuthUserProviders_Aggregate_Order_By = {
 /** input type for inserting array relation for remote table "auth.user_providers" */
 export type AuthUserProviders_Arr_Rel_Insert_Input = {
   data: Array<AuthUserProviders_Insert_Input>;
-  /** on conflict condition */
+  /** upsert condition */
   on_conflict?: InputMaybe<AuthUserProviders_On_Conflict>;
 };
 
@@ -834,7 +915,7 @@ export type AuthUserProviders_Mutation_Response = {
   returning: Array<AuthUserProviders>;
 };
 
-/** on conflict condition type for table "auth.user_providers" */
+/** on_conflict condition type for table "auth.user_providers" */
 export type AuthUserProviders_On_Conflict = {
   constraint: AuthUserProviders_Constraint;
   update_columns?: Array<AuthUserProviders_Update_Column>;
@@ -957,7 +1038,7 @@ export type AuthUserRoles_Aggregate_Order_By = {
 /** input type for inserting array relation for remote table "auth.user_roles" */
 export type AuthUserRoles_Arr_Rel_Insert_Input = {
   data: Array<AuthUserRoles_Insert_Input>;
-  /** on conflict condition */
+  /** upsert condition */
   on_conflict?: InputMaybe<AuthUserRoles_On_Conflict>;
 };
 
@@ -1035,7 +1116,7 @@ export type AuthUserRoles_Mutation_Response = {
   returning: Array<AuthUserRoles>;
 };
 
-/** on conflict condition type for table "auth.user_roles" */
+/** on_conflict condition type for table "auth.user_roles" */
 export type AuthUserRoles_On_Conflict = {
   constraint: AuthUserRoles_Constraint;
   update_columns?: Array<AuthUserRoles_Update_Column>;
@@ -1097,6 +1178,7 @@ export type Auth_User_Private = {
   gender?: Maybe<Scalars['String']>;
   id?: Maybe<Scalars['uuid']>;
   is_username_set?: Maybe<Scalars['Boolean']>;
+  lang?: Maybe<Scalars['String']>;
   phone_number?: Maybe<Scalars['String']>;
 };
 
@@ -1132,6 +1214,7 @@ export type Auth_User_Private_Bool_Exp = {
   gender?: InputMaybe<String_Comparison_Exp>;
   id?: InputMaybe<Uuid_Comparison_Exp>;
   is_username_set?: InputMaybe<Boolean_Comparison_Exp>;
+  lang?: InputMaybe<String_Comparison_Exp>;
   phone_number?: InputMaybe<String_Comparison_Exp>;
 };
 
@@ -1142,6 +1225,7 @@ export type Auth_User_Private_Insert_Input = {
   gender?: InputMaybe<Scalars['String']>;
   id?: InputMaybe<Scalars['uuid']>;
   is_username_set?: InputMaybe<Scalars['Boolean']>;
+  lang?: InputMaybe<Scalars['String']>;
   phone_number?: InputMaybe<Scalars['String']>;
 };
 
@@ -1152,6 +1236,7 @@ export type Auth_User_Private_Max_Fields = {
   email?: Maybe<Scalars['citext']>;
   gender?: Maybe<Scalars['String']>;
   id?: Maybe<Scalars['uuid']>;
+  lang?: Maybe<Scalars['String']>;
   phone_number?: Maybe<Scalars['String']>;
 };
 
@@ -1162,6 +1247,7 @@ export type Auth_User_Private_Min_Fields = {
   email?: Maybe<Scalars['citext']>;
   gender?: Maybe<Scalars['String']>;
   id?: Maybe<Scalars['uuid']>;
+  lang?: Maybe<Scalars['String']>;
   phone_number?: Maybe<Scalars['String']>;
 };
 
@@ -1186,6 +1272,7 @@ export type Auth_User_Private_Order_By = {
   gender?: InputMaybe<Order_By>;
   id?: InputMaybe<Order_By>;
   is_username_set?: InputMaybe<Order_By>;
+  lang?: InputMaybe<Order_By>;
   phone_number?: InputMaybe<Order_By>;
 };
 
@@ -1202,6 +1289,8 @@ export enum Auth_User_Private_Select_Column {
   /** column name */
   IsUsernameSet = 'is_username_set',
   /** column name */
+  Lang = 'lang',
+  /** column name */
   PhoneNumber = 'phone_number'
 }
 
@@ -1212,6 +1301,7 @@ export type Auth_User_Private_Set_Input = {
   gender?: InputMaybe<Scalars['String']>;
   id?: InputMaybe<Scalars['uuid']>;
   is_username_set?: InputMaybe<Scalars['Boolean']>;
+  lang?: InputMaybe<Scalars['String']>;
   phone_number?: InputMaybe<Scalars['String']>;
 };
 
@@ -1226,6 +1316,8 @@ export type Block = {
   block_followers: Array<Block_Follower>;
   /** An aggregate relationship */
   block_followers_aggregate: Block_Follower_Aggregate;
+  /** An object relationship */
+  block_fork_parent?: Maybe<Block>;
   /** An array relationship */
   block_likes: Array<Block_Like>;
   /** An aggregate relationship */
@@ -1251,8 +1343,6 @@ export type Block = {
   created_at: Scalars['timestamptz'];
   /** Slate properties */
   data?: Maybe<Scalars['jsonb']>;
-  /** An object relationship */
-  fork_parent?: Maybe<Block>;
   /** Forked from */
   fork_parent_id?: Maybe<Scalars['uuid']>;
   /** An array relationship */
@@ -1468,7 +1558,7 @@ export type Block_Append_Input = {
 /** input type for inserting array relation for remote table "block" */
 export type Block_Arr_Rel_Insert_Input = {
   data: Array<Block_Insert_Input>;
-  /** on conflict condition */
+  /** upsert condition */
   on_conflict?: InputMaybe<Block_On_Conflict>;
 };
 
@@ -1479,6 +1569,7 @@ export type Block_Bool_Exp = {
   _or?: InputMaybe<Array<Block_Bool_Exp>>;
   block_children?: InputMaybe<Block_Bool_Exp>;
   block_followers?: InputMaybe<Block_Follower_Bool_Exp>;
+  block_fork_parent?: InputMaybe<Block_Bool_Exp>;
   block_likes?: InputMaybe<Block_Like_Bool_Exp>;
   block_parent?: InputMaybe<Block_Bool_Exp>;
   block_parent_id?: InputMaybe<Uuid_Comparison_Exp>;
@@ -1488,7 +1579,6 @@ export type Block_Bool_Exp = {
   children?: InputMaybe<Jsonb_Comparison_Exp>;
   created_at?: InputMaybe<Timestamptz_Comparison_Exp>;
   data?: InputMaybe<Jsonb_Comparison_Exp>;
-  fork_parent?: InputMaybe<Block_Bool_Exp>;
   fork_parent_id?: InputMaybe<Uuid_Comparison_Exp>;
   forks?: InputMaybe<Block_Bool_Exp>;
   id?: InputMaybe<Uuid_Comparison_Exp>;
@@ -1547,7 +1637,7 @@ export type Block_Comment_Aggregate_Order_By = {
 /** input type for inserting array relation for remote table "block_comment" */
 export type Block_Comment_Arr_Rel_Insert_Input = {
   data: Array<Block_Comment_Insert_Input>;
-  /** on conflict condition */
+  /** upsert condition */
   on_conflict?: InputMaybe<Block_Comment_On_Conflict>;
 };
 
@@ -1627,7 +1717,7 @@ export type Block_Comment_Mutation_Response = {
   returning: Array<Block_Comment>;
 };
 
-/** on conflict condition type for table "block_comment" */
+/** on_conflict condition type for table "block_comment" */
 export type Block_Comment_On_Conflict = {
   constraint: Block_Comment_Constraint;
   update_columns?: Array<Block_Comment_Update_Column>;
@@ -1760,7 +1850,7 @@ export type Block_Follower_Aggregate_Order_By = {
 /** input type for inserting array relation for remote table "block_follower" */
 export type Block_Follower_Arr_Rel_Insert_Input = {
   data: Array<Block_Follower_Insert_Input>;
-  /** on conflict condition */
+  /** upsert condition */
   on_conflict?: InputMaybe<Block_Follower_On_Conflict>;
 };
 
@@ -1830,7 +1920,7 @@ export type Block_Follower_Mutation_Response = {
   returning: Array<Block_Follower>;
 };
 
-/** on conflict condition type for table "block_follower" */
+/** on_conflict condition type for table "block_follower" */
 export type Block_Follower_On_Conflict = {
   constraint: Block_Follower_Constraint;
   update_columns?: Array<Block_Follower_Update_Column>;
@@ -1883,6 +1973,7 @@ export enum Block_Follower_Update_Column {
 export type Block_Insert_Input = {
   block_children?: InputMaybe<Block_Arr_Rel_Insert_Input>;
   block_followers?: InputMaybe<Block_Follower_Arr_Rel_Insert_Input>;
+  block_fork_parent?: InputMaybe<Block_Obj_Rel_Insert_Input>;
   block_likes?: InputMaybe<Block_Like_Arr_Rel_Insert_Input>;
   block_parent?: InputMaybe<Block_Obj_Rel_Insert_Input>;
   /** Block parent id for hierarchy. If null, the block will be at the root */
@@ -1895,7 +1986,6 @@ export type Block_Insert_Input = {
   created_at?: InputMaybe<Scalars['timestamptz']>;
   /** Slate properties */
   data?: InputMaybe<Scalars['jsonb']>;
-  fork_parent?: InputMaybe<Block_Obj_Rel_Insert_Input>;
   /** Forked from */
   fork_parent_id?: InputMaybe<Scalars['uuid']>;
   forks?: InputMaybe<Block_Arr_Rel_Insert_Input>;
@@ -1959,7 +2049,7 @@ export type Block_Like_Aggregate_Order_By = {
 /** input type for inserting array relation for remote table "block_like" */
 export type Block_Like_Arr_Rel_Insert_Input = {
   data: Array<Block_Like_Insert_Input>;
-  /** on conflict condition */
+  /** upsert condition */
   on_conflict?: InputMaybe<Block_Like_On_Conflict>;
 };
 
@@ -2029,7 +2119,7 @@ export type Block_Like_Mutation_Response = {
   returning: Array<Block_Like>;
 };
 
-/** on conflict condition type for table "block_like" */
+/** on_conflict condition type for table "block_like" */
 export type Block_Like_On_Conflict = {
   constraint: Block_Like_Constraint;
   update_columns?: Array<Block_Like_Update_Column>;
@@ -2176,11 +2266,11 @@ export type Block_Mutation_Response = {
 /** input type for inserting object relation for remote table "block" */
 export type Block_Obj_Rel_Insert_Input = {
   data: Block_Insert_Input;
-  /** on conflict condition */
+  /** upsert condition */
   on_conflict?: InputMaybe<Block_On_Conflict>;
 };
 
-/** on conflict condition type for table "block" */
+/** on_conflict condition type for table "block" */
 export type Block_On_Conflict = {
   constraint: Block_Constraint;
   update_columns?: Array<Block_Update_Column>;
@@ -2191,6 +2281,7 @@ export type Block_On_Conflict = {
 export type Block_Order_By = {
   block_children_aggregate?: InputMaybe<Block_Aggregate_Order_By>;
   block_followers_aggregate?: InputMaybe<Block_Follower_Aggregate_Order_By>;
+  block_fork_parent?: InputMaybe<Block_Order_By>;
   block_likes_aggregate?: InputMaybe<Block_Like_Aggregate_Order_By>;
   block_parent?: InputMaybe<Block_Order_By>;
   block_parent_id?: InputMaybe<Order_By>;
@@ -2200,7 +2291,6 @@ export type Block_Order_By = {
   children?: InputMaybe<Order_By>;
   created_at?: InputMaybe<Order_By>;
   data?: InputMaybe<Order_By>;
-  fork_parent?: InputMaybe<Block_Order_By>;
   fork_parent_id?: InputMaybe<Order_By>;
   forks_aggregate?: InputMaybe<Block_Aggregate_Order_By>;
   id?: InputMaybe<Order_By>;
@@ -2272,7 +2362,7 @@ export type Block_Reference_Aggregate_Order_By = {
 /** input type for inserting array relation for remote table "block_reference" */
 export type Block_Reference_Arr_Rel_Insert_Input = {
   data: Array<Block_Reference_Insert_Input>;
-  /** on conflict condition */
+  /** upsert condition */
   on_conflict?: InputMaybe<Block_Reference_On_Conflict>;
 };
 
@@ -2342,7 +2432,7 @@ export type Block_Reference_Mutation_Response = {
   returning: Array<Block_Reference>;
 };
 
-/** on conflict condition type for table "block_reference" */
+/** on_conflict condition type for table "block_reference" */
 export type Block_Reference_On_Conflict = {
   constraint: Block_Reference_Constraint;
   update_columns?: Array<Block_Reference_Update_Column>;
@@ -2435,7 +2525,7 @@ export type Block_Repost_Aggregate_Order_By = {
 /** input type for inserting array relation for remote table "block_repost" */
 export type Block_Repost_Arr_Rel_Insert_Input = {
   data: Array<Block_Repost_Insert_Input>;
-  /** on conflict condition */
+  /** upsert condition */
   on_conflict?: InputMaybe<Block_Repost_On_Conflict>;
 };
 
@@ -2505,7 +2595,7 @@ export type Block_Repost_Mutation_Response = {
   returning: Array<Block_Repost>;
 };
 
-/** on conflict condition type for table "block_repost" */
+/** on_conflict condition type for table "block_repost" */
 export type Block_Repost_On_Conflict = {
   constraint: Block_Repost_Constraint;
   update_columns?: Array<Block_Repost_Update_Column>;
@@ -2694,12 +2784,12 @@ export type Date_Comparison_Exp = {
 export type Follower = {
   __typename?: 'follower';
   created_at?: Maybe<Scalars['timestamptz']>;
-  /** An object relationship */
-  follower: Users;
   follower_id: Scalars['uuid'];
-  /** An object relationship */
-  following: Users;
   following_id: Scalars['uuid'];
+  /** An object relationship */
+  user: Users;
+  /** An object relationship */
+  userByFollowingId: Users;
 };
 
 /** aggregated selection of "follower" */
@@ -2734,7 +2824,7 @@ export type Follower_Aggregate_Order_By = {
 /** input type for inserting array relation for remote table "follower" */
 export type Follower_Arr_Rel_Insert_Input = {
   data: Array<Follower_Insert_Input>;
-  /** on conflict condition */
+  /** upsert condition */
   on_conflict?: InputMaybe<Follower_On_Conflict>;
 };
 
@@ -2744,10 +2834,10 @@ export type Follower_Bool_Exp = {
   _not?: InputMaybe<Follower_Bool_Exp>;
   _or?: InputMaybe<Array<Follower_Bool_Exp>>;
   created_at?: InputMaybe<Timestamptz_Comparison_Exp>;
-  follower?: InputMaybe<Users_Bool_Exp>;
   follower_id?: InputMaybe<Uuid_Comparison_Exp>;
-  following?: InputMaybe<Users_Bool_Exp>;
   following_id?: InputMaybe<Uuid_Comparison_Exp>;
+  user?: InputMaybe<Users_Bool_Exp>;
+  userByFollowingId?: InputMaybe<Users_Bool_Exp>;
 };
 
 /** unique or primary key constraints on table "follower" */
@@ -2759,10 +2849,10 @@ export enum Follower_Constraint {
 /** input type for inserting data into table "follower" */
 export type Follower_Insert_Input = {
   created_at?: InputMaybe<Scalars['timestamptz']>;
-  follower?: InputMaybe<Users_Obj_Rel_Insert_Input>;
   follower_id?: InputMaybe<Scalars['uuid']>;
-  following?: InputMaybe<Users_Obj_Rel_Insert_Input>;
   following_id?: InputMaybe<Scalars['uuid']>;
+  user?: InputMaybe<Users_Obj_Rel_Insert_Input>;
+  userByFollowingId?: InputMaybe<Users_Obj_Rel_Insert_Input>;
 };
 
 /** aggregate max on columns */
@@ -2804,7 +2894,7 @@ export type Follower_Mutation_Response = {
   returning: Array<Follower>;
 };
 
-/** on conflict condition type for table "follower" */
+/** on_conflict condition type for table "follower" */
 export type Follower_On_Conflict = {
   constraint: Follower_Constraint;
   update_columns?: Array<Follower_Update_Column>;
@@ -2814,10 +2904,10 @@ export type Follower_On_Conflict = {
 /** Ordering options when selecting data from "follower". */
 export type Follower_Order_By = {
   created_at?: InputMaybe<Order_By>;
-  follower?: InputMaybe<Users_Order_By>;
   follower_id?: InputMaybe<Order_By>;
-  following?: InputMaybe<Users_Order_By>;
   following_id?: InputMaybe<Order_By>;
+  user?: InputMaybe<Users_Order_By>;
+  userByFollowingId?: InputMaybe<Users_Order_By>;
 };
 
 /** primary key columns input for table: follower */
@@ -2853,8 +2943,13 @@ export enum Follower_Update_Column {
   FollowingId = 'following_id'
 }
 
+export type Jsonb_Cast_Exp = {
+  String?: InputMaybe<String_Comparison_Exp>;
+};
+
 /** Boolean expression to compare columns of type "jsonb". All fields are combined with logical 'AND'. */
 export type Jsonb_Comparison_Exp = {
+  _cast?: InputMaybe<Jsonb_Cast_Exp>;
   /** is the column contained in the given json value */
   _contained_in?: InputMaybe<Scalars['jsonb']>;
   /** does the column contain the given json value at the top level */
@@ -3032,7 +3127,6 @@ export type Mutation_Root = {
   insert_workspace?: Maybe<Workspace_Mutation_Response>;
   /** insert a single row into the table: "workspace" */
   insert_workspace_one?: Maybe<Workspace>;
-  save_tags?: Maybe<Save_Tags_Output>;
   /** update single row of the table: "auth.providers" */
   updateAuthProvider?: Maybe<AuthProviders>;
   /** update single row of the table: "auth.provider_requests" */
@@ -3512,12 +3606,6 @@ export type Mutation_RootInsert_Workspace_OneArgs = {
 
 
 /** mutation root */
-export type Mutation_RootSave_TagsArgs = {
-  tags: Array<Save_Tags_Input>;
-};
-
-
-/** mutation root */
 export type Mutation_RootUpdateAuthProviderArgs = {
   _set?: InputMaybe<AuthProviders_Set_Input>;
   pk_columns: AuthProviders_Pk_Columns_Input;
@@ -3867,9 +3955,9 @@ export type Query_Root = {
   timeline_event: Array<Timeline_Event>;
   /** fetch aggregated fields from the table: "timeline_event" */
   timeline_event_aggregate: Timeline_Event_Aggregate;
-  /** fetch data from the table: "auth.users" */
+  /** An array relationship */
   users: Array<Users>;
-  /** fetch aggregated fields from the table: "auth.users" */
+  /** An aggregate relationship */
   users_aggregate: Users_Aggregate;
   /** fetch data from the table: "auth.users" using primary key columns */
   users_by_pk?: Maybe<Users>;
@@ -4267,16 +4355,6 @@ export type Query_RootWorkspace_By_PkArgs = {
   id: Scalars['uuid'];
 };
 
-export type Save_Tags_Input = {
-  block_id: Scalars['uuid'];
-  value: Scalars['String'];
-};
-
-export type Save_Tags_Output = {
-  __typename?: 'save_tags_output';
-  msg?: Maybe<Scalars['String']>;
-};
-
 export type Subscription_Root = {
   __typename?: 'subscription_root';
   /** fetch data from the table: "auth.providers" using primary key columns */
@@ -4365,9 +4443,9 @@ export type Subscription_Root = {
   timeline_event: Array<Timeline_Event>;
   /** fetch aggregated fields from the table: "timeline_event" */
   timeline_event_aggregate: Timeline_Event_Aggregate;
-  /** fetch data from the table: "auth.users" */
+  /** An array relationship */
   users: Array<Users>;
-  /** fetch aggregated fields from the table: "auth.users" */
+  /** An aggregate relationship */
   users_aggregate: Users_Aggregate;
   /** fetch data from the table: "auth.users" using primary key columns */
   users_by_pk?: Maybe<Users>;
@@ -4897,18 +4975,19 @@ export type Users = {
   facebook_id?: Maybe<Scalars['String']>;
   /** An array relationship */
   followers: Array<Follower>;
+  /** An array relationship */
+  followersByFollowingId: Array<Follower>;
+  /** An aggregate relationship */
+  followersByFollowingId_aggregate: Follower_Aggregate;
   /** An aggregate relationship */
   followers_aggregate: Follower_Aggregate;
-  /** An array relationship */
-  following: Array<Follower>;
-  /** An aggregate relationship */
-  following_aggregate: Follower_Aggregate;
   gender?: Maybe<Scalars['String']>;
   github_username?: Maybe<Scalars['String']>;
   google_id?: Maybe<Scalars['String']>;
   id: Scalars['uuid'];
   isAnonymous: Scalars['Boolean'];
   is_username_set?: Maybe<Scalars['Boolean']>;
+  lang?: Maybe<Scalars['String']>;
   lastSeen?: Maybe<Scalars['timestamptz']>;
   locale: Scalars['String'];
   location?: Maybe<Scalars['String']>;
@@ -4927,6 +5006,12 @@ export type Users = {
   /** An aggregate relationship */
   refreshTokens_aggregate: AuthRefreshTokens_Aggregate;
   /** An array relationship */
+  refresh_tokens: Array<AuthRefreshTokens>;
+  /** An aggregate relationship */
+  refresh_tokens_aggregate: AuthRefreshTokens_Aggregate;
+  /** An object relationship */
+  role: AuthRoles;
+  /** An array relationship */
   roles: Array<AuthUserRoles>;
   /** An aggregate relationship */
   roles_aggregate: AuthUserRoles_Aggregate;
@@ -4939,6 +5024,14 @@ export type Users = {
   userProviders: Array<AuthUserProviders>;
   /** An aggregate relationship */
   userProviders_aggregate: AuthUserProviders_Aggregate;
+  /** An array relationship */
+  user_providers: Array<AuthUserProviders>;
+  /** An aggregate relationship */
+  user_providers_aggregate: AuthUserProviders_Aggregate;
+  /** An array relationship */
+  user_roles: Array<AuthUserRoles>;
+  /** An aggregate relationship */
+  user_roles_aggregate: AuthUserRoles_Aggregate;
   username?: Maybe<Scalars['String']>;
   website_url?: Maybe<Scalars['String']>;
   /** An object relationship */
@@ -5057,27 +5150,27 @@ export type UsersFollowersArgs = {
 
 
 /** columns and relationships of "auth.users" */
+export type UsersFollowersByFollowingIdArgs = {
+  distinct_on?: InputMaybe<Array<Follower_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<Follower_Order_By>>;
+  where?: InputMaybe<Follower_Bool_Exp>;
+};
+
+
+/** columns and relationships of "auth.users" */
+export type UsersFollowersByFollowingId_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Follower_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<Follower_Order_By>>;
+  where?: InputMaybe<Follower_Bool_Exp>;
+};
+
+
+/** columns and relationships of "auth.users" */
 export type UsersFollowers_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Follower_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']>;
-  offset?: InputMaybe<Scalars['Int']>;
-  order_by?: InputMaybe<Array<Follower_Order_By>>;
-  where?: InputMaybe<Follower_Bool_Exp>;
-};
-
-
-/** columns and relationships of "auth.users" */
-export type UsersFollowingArgs = {
-  distinct_on?: InputMaybe<Array<Follower_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']>;
-  offset?: InputMaybe<Scalars['Int']>;
-  order_by?: InputMaybe<Array<Follower_Order_By>>;
-  where?: InputMaybe<Follower_Bool_Exp>;
-};
-
-
-/** columns and relationships of "auth.users" */
-export type UsersFollowing_AggregateArgs = {
   distinct_on?: InputMaybe<Array<Follower_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
@@ -5104,6 +5197,26 @@ export type UsersRefreshTokensArgs = {
 
 /** columns and relationships of "auth.users" */
 export type UsersRefreshTokens_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<AuthRefreshTokens_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<AuthRefreshTokens_Order_By>>;
+  where?: InputMaybe<AuthRefreshTokens_Bool_Exp>;
+};
+
+
+/** columns and relationships of "auth.users" */
+export type UsersRefresh_TokensArgs = {
+  distinct_on?: InputMaybe<Array<AuthRefreshTokens_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<AuthRefreshTokens_Order_By>>;
+  where?: InputMaybe<AuthRefreshTokens_Bool_Exp>;
+};
+
+
+/** columns and relationships of "auth.users" */
+export type UsersRefresh_Tokens_AggregateArgs = {
   distinct_on?: InputMaybe<Array<AuthRefreshTokens_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
@@ -5151,6 +5264,46 @@ export type UsersUserProviders_AggregateArgs = {
   where?: InputMaybe<AuthUserProviders_Bool_Exp>;
 };
 
+
+/** columns and relationships of "auth.users" */
+export type UsersUser_ProvidersArgs = {
+  distinct_on?: InputMaybe<Array<AuthUserProviders_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<AuthUserProviders_Order_By>>;
+  where?: InputMaybe<AuthUserProviders_Bool_Exp>;
+};
+
+
+/** columns and relationships of "auth.users" */
+export type UsersUser_Providers_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<AuthUserProviders_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<AuthUserProviders_Order_By>>;
+  where?: InputMaybe<AuthUserProviders_Bool_Exp>;
+};
+
+
+/** columns and relationships of "auth.users" */
+export type UsersUser_RolesArgs = {
+  distinct_on?: InputMaybe<Array<AuthUserRoles_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<AuthUserRoles_Order_By>>;
+  where?: InputMaybe<AuthUserRoles_Bool_Exp>;
+};
+
+
+/** columns and relationships of "auth.users" */
+export type UsersUser_Roles_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<AuthUserRoles_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<AuthUserRoles_Order_By>>;
+  where?: InputMaybe<AuthUserRoles_Bool_Exp>;
+};
+
 /** aggregated selection of "auth.users" */
 export type Users_Aggregate = {
   __typename?: 'users_aggregate';
@@ -5188,7 +5341,7 @@ export type Users_Append_Input = {
 /** input type for inserting array relation for remote table "auth.users" */
 export type Users_Arr_Rel_Insert_Input = {
   data: Array<Users_Insert_Input>;
-  /** on conflict condition */
+  /** upsert condition */
   on_conflict?: InputMaybe<Users_On_Conflict>;
 };
 
@@ -5216,13 +5369,14 @@ export type Users_Bool_Exp = {
   emailVerified?: InputMaybe<Boolean_Comparison_Exp>;
   facebook_id?: InputMaybe<String_Comparison_Exp>;
   followers?: InputMaybe<Follower_Bool_Exp>;
-  following?: InputMaybe<Follower_Bool_Exp>;
+  followersByFollowingId?: InputMaybe<Follower_Bool_Exp>;
   gender?: InputMaybe<String_Comparison_Exp>;
   github_username?: InputMaybe<String_Comparison_Exp>;
   google_id?: InputMaybe<String_Comparison_Exp>;
   id?: InputMaybe<Uuid_Comparison_Exp>;
   isAnonymous?: InputMaybe<Boolean_Comparison_Exp>;
   is_username_set?: InputMaybe<Boolean_Comparison_Exp>;
+  lang?: InputMaybe<String_Comparison_Exp>;
   lastSeen?: InputMaybe<Timestamptz_Comparison_Exp>;
   locale?: InputMaybe<String_Comparison_Exp>;
   location?: InputMaybe<String_Comparison_Exp>;
@@ -5236,6 +5390,8 @@ export type Users_Bool_Exp = {
   phoneNumberVerified?: InputMaybe<Boolean_Comparison_Exp>;
   private?: InputMaybe<Auth_User_Private_Bool_Exp>;
   refreshTokens?: InputMaybe<AuthRefreshTokens_Bool_Exp>;
+  refresh_tokens?: InputMaybe<AuthRefreshTokens_Bool_Exp>;
+  role?: InputMaybe<AuthRoles_Bool_Exp>;
   roles?: InputMaybe<AuthUserRoles_Bool_Exp>;
   ticket?: InputMaybe<String_Comparison_Exp>;
   ticketExpiresAt?: InputMaybe<Timestamptz_Comparison_Exp>;
@@ -5243,6 +5399,8 @@ export type Users_Bool_Exp = {
   twitter_username?: InputMaybe<String_Comparison_Exp>;
   updatedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   userProviders?: InputMaybe<AuthUserProviders_Bool_Exp>;
+  user_providers?: InputMaybe<AuthUserProviders_Bool_Exp>;
+  user_roles?: InputMaybe<AuthUserRoles_Bool_Exp>;
   username?: InputMaybe<String_Comparison_Exp>;
   website_url?: InputMaybe<String_Comparison_Exp>;
   workspace?: InputMaybe<Workspace_Bool_Exp>;
@@ -5296,13 +5454,14 @@ export type Users_Insert_Input = {
   emailVerified?: InputMaybe<Scalars['Boolean']>;
   facebook_id?: InputMaybe<Scalars['String']>;
   followers?: InputMaybe<Follower_Arr_Rel_Insert_Input>;
-  following?: InputMaybe<Follower_Arr_Rel_Insert_Input>;
+  followersByFollowingId?: InputMaybe<Follower_Arr_Rel_Insert_Input>;
   gender?: InputMaybe<Scalars['String']>;
   github_username?: InputMaybe<Scalars['String']>;
   google_id?: InputMaybe<Scalars['String']>;
   id?: InputMaybe<Scalars['uuid']>;
   isAnonymous?: InputMaybe<Scalars['Boolean']>;
   is_username_set?: InputMaybe<Scalars['Boolean']>;
+  lang?: InputMaybe<Scalars['String']>;
   lastSeen?: InputMaybe<Scalars['timestamptz']>;
   locale?: InputMaybe<Scalars['String']>;
   location?: InputMaybe<Scalars['String']>;
@@ -5316,6 +5475,8 @@ export type Users_Insert_Input = {
   phoneNumberVerified?: InputMaybe<Scalars['Boolean']>;
   private?: InputMaybe<Auth_User_Private_Obj_Rel_Insert_Input>;
   refreshTokens?: InputMaybe<AuthRefreshTokens_Arr_Rel_Insert_Input>;
+  refresh_tokens?: InputMaybe<AuthRefreshTokens_Arr_Rel_Insert_Input>;
+  role?: InputMaybe<AuthRoles_Obj_Rel_Insert_Input>;
   roles?: InputMaybe<AuthUserRoles_Arr_Rel_Insert_Input>;
   ticket?: InputMaybe<Scalars['String']>;
   ticketExpiresAt?: InputMaybe<Scalars['timestamptz']>;
@@ -5323,6 +5484,8 @@ export type Users_Insert_Input = {
   twitter_username?: InputMaybe<Scalars['String']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']>;
   userProviders?: InputMaybe<AuthUserProviders_Arr_Rel_Insert_Input>;
+  user_providers?: InputMaybe<AuthUserProviders_Arr_Rel_Insert_Input>;
+  user_roles?: InputMaybe<AuthUserRoles_Arr_Rel_Insert_Input>;
   username?: InputMaybe<Scalars['String']>;
   website_url?: InputMaybe<Scalars['String']>;
   workspace?: InputMaybe<Workspace_Obj_Rel_Insert_Input>;
@@ -5345,6 +5508,7 @@ export type Users_Max_Fields = {
   github_username?: Maybe<Scalars['String']>;
   google_id?: Maybe<Scalars['String']>;
   id?: Maybe<Scalars['uuid']>;
+  lang?: Maybe<Scalars['String']>;
   lastSeen?: Maybe<Scalars['timestamptz']>;
   locale?: Maybe<Scalars['String']>;
   location?: Maybe<Scalars['String']>;
@@ -5379,6 +5543,7 @@ export type Users_Max_Order_By = {
   github_username?: InputMaybe<Order_By>;
   google_id?: InputMaybe<Order_By>;
   id?: InputMaybe<Order_By>;
+  lang?: InputMaybe<Order_By>;
   lastSeen?: InputMaybe<Order_By>;
   locale?: InputMaybe<Order_By>;
   location?: InputMaybe<Order_By>;
@@ -5414,6 +5579,7 @@ export type Users_Min_Fields = {
   github_username?: Maybe<Scalars['String']>;
   google_id?: Maybe<Scalars['String']>;
   id?: Maybe<Scalars['uuid']>;
+  lang?: Maybe<Scalars['String']>;
   lastSeen?: Maybe<Scalars['timestamptz']>;
   locale?: Maybe<Scalars['String']>;
   location?: Maybe<Scalars['String']>;
@@ -5448,6 +5614,7 @@ export type Users_Min_Order_By = {
   github_username?: InputMaybe<Order_By>;
   google_id?: InputMaybe<Order_By>;
   id?: InputMaybe<Order_By>;
+  lang?: InputMaybe<Order_By>;
   lastSeen?: InputMaybe<Order_By>;
   locale?: InputMaybe<Order_By>;
   location?: InputMaybe<Order_By>;
@@ -5478,11 +5645,11 @@ export type Users_Mutation_Response = {
 /** input type for inserting object relation for remote table "auth.users" */
 export type Users_Obj_Rel_Insert_Input = {
   data: Users_Insert_Input;
-  /** on conflict condition */
+  /** upsert condition */
   on_conflict?: InputMaybe<Users_On_Conflict>;
 };
 
-/** on conflict condition type for table "auth.users" */
+/** on_conflict condition type for table "auth.users" */
 export type Users_On_Conflict = {
   constraint: Users_Constraint;
   update_columns?: Array<Users_Update_Column>;
@@ -5509,14 +5676,15 @@ export type Users_Order_By = {
   email?: InputMaybe<Order_By>;
   emailVerified?: InputMaybe<Order_By>;
   facebook_id?: InputMaybe<Order_By>;
+  followersByFollowingId_aggregate?: InputMaybe<Follower_Aggregate_Order_By>;
   followers_aggregate?: InputMaybe<Follower_Aggregate_Order_By>;
-  following_aggregate?: InputMaybe<Follower_Aggregate_Order_By>;
   gender?: InputMaybe<Order_By>;
   github_username?: InputMaybe<Order_By>;
   google_id?: InputMaybe<Order_By>;
   id?: InputMaybe<Order_By>;
   isAnonymous?: InputMaybe<Order_By>;
   is_username_set?: InputMaybe<Order_By>;
+  lang?: InputMaybe<Order_By>;
   lastSeen?: InputMaybe<Order_By>;
   locale?: InputMaybe<Order_By>;
   location?: InputMaybe<Order_By>;
@@ -5530,6 +5698,8 @@ export type Users_Order_By = {
   phoneNumberVerified?: InputMaybe<Order_By>;
   private?: InputMaybe<Auth_User_Private_Order_By>;
   refreshTokens_aggregate?: InputMaybe<AuthRefreshTokens_Aggregate_Order_By>;
+  refresh_tokens_aggregate?: InputMaybe<AuthRefreshTokens_Aggregate_Order_By>;
+  role?: InputMaybe<AuthRoles_Order_By>;
   roles_aggregate?: InputMaybe<AuthUserRoles_Aggregate_Order_By>;
   ticket?: InputMaybe<Order_By>;
   ticketExpiresAt?: InputMaybe<Order_By>;
@@ -5537,6 +5707,8 @@ export type Users_Order_By = {
   twitter_username?: InputMaybe<Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   userProviders_aggregate?: InputMaybe<AuthUserProviders_Aggregate_Order_By>;
+  user_providers_aggregate?: InputMaybe<AuthUserProviders_Aggregate_Order_By>;
+  user_roles_aggregate?: InputMaybe<AuthUserRoles_Aggregate_Order_By>;
   username?: InputMaybe<Order_By>;
   website_url?: InputMaybe<Order_By>;
   workspace?: InputMaybe<Workspace_Order_By>;
@@ -5590,6 +5762,8 @@ export enum Users_Select_Column {
   IsAnonymous = 'isAnonymous',
   /** column name */
   IsUsernameSet = 'is_username_set',
+  /** column name */
+  Lang = 'lang',
   /** column name */
   LastSeen = 'lastSeen',
   /** column name */
@@ -5648,6 +5822,7 @@ export type Users_Set_Input = {
   id?: InputMaybe<Scalars['uuid']>;
   isAnonymous?: InputMaybe<Scalars['Boolean']>;
   is_username_set?: InputMaybe<Scalars['Boolean']>;
+  lang?: InputMaybe<Scalars['String']>;
   lastSeen?: InputMaybe<Scalars['timestamptz']>;
   locale?: InputMaybe<Scalars['String']>;
   location?: InputMaybe<Scalars['String']>;
@@ -5706,6 +5881,8 @@ export enum Users_Update_Column {
   IsAnonymous = 'isAnonymous',
   /** column name */
   IsUsernameSet = 'is_username_set',
+  /** column name */
+  Lang = 'lang',
   /** column name */
   LastSeen = 'lastSeen',
   /** column name */
@@ -5852,11 +6029,11 @@ export type Workspace_Mutation_Response = {
 /** input type for inserting object relation for remote table "workspace" */
 export type Workspace_Obj_Rel_Insert_Input = {
   data: Workspace_Insert_Input;
-  /** on conflict condition */
+  /** upsert condition */
   on_conflict?: InputMaybe<Workspace_On_Conflict>;
 };
 
-/** on conflict condition type for table "workspace" */
+/** on_conflict condition type for table "workspace" */
 export type Workspace_On_Conflict = {
   constraint: Workspace_Constraint;
   update_columns?: Array<Workspace_Update_Column>;

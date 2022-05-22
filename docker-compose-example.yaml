@@ -9,14 +9,14 @@ services:
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secretpgpassword}
     ports:
-      - '5432:5432'
+      - '5433:5433'
   graphql-engine:
     image: hasura/graphql-engine:v2.1.1
     depends_on:
       - postgres
     restart: always
     environment:
-      HASURA_GRAPHQL_DATABASE_URL: postgres://postgres:${POSTGRES_PASSWORD:-secretpgpassword}@postgres:5432/postgres
+      HASURA_GRAPHQL_DATABASE_URL: postgres://postgres:${POSTGRES_PASSWORD:-secretpgpassword}@postgres:5433/postgres
       HASURA_GRAPHQL_JWT_SECRET: ${HASURA_GRAPHQL_JWT_SECRET}
       HASURA_GRAPHQL_ADMIN_SECRET: ${HASURA_GRAPHQL_ADMIN_SECRET}
       HASURA_GRAPHQL_UNAUTHORIZED_ROLE: public
@@ -32,7 +32,7 @@ services:
     env_file:
       - .env
     environment:
-      HASURA_GRAPHQL_DATABASE_URL: postgres://postgres:${POSTGRES_PASSWORD:-secretpgpassword}@postgres:5432/postgres
+      HASURA_GRAPHQL_DATABASE_URL: postgres://postgres:${POSTGRES_PASSWORD:-secretpgpassword}@postgres:5433/postgres
       HASURA_GRAPHQL_GRAPHQL_URL: http://graphql-engine:8080/v1/graphql
       AUTH_SMTP_HOST: mailhog
       AUTH_SMTP_PORT: 1025
