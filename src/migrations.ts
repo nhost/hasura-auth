@@ -1,4 +1,3 @@
-import { migrate } from '@djgrant/postgres-migrations';
 import { Client } from 'pg';
 import fs from 'fs/promises';
 import path from 'path';
@@ -6,7 +5,7 @@ import { logger } from './logger';
 import { ENV } from './utils/env';
 
 export async function applyMigrations(): Promise<void> {
-  logger.info('Applying migrations...');
+  // logger.info('Applying migrations...');
 
   const dbConfig = {
     connectionString: ENV.HASURA_GRAPHQL_DATABASE_URL,
@@ -15,9 +14,9 @@ export async function applyMigrations(): Promise<void> {
   const client = new Client(dbConfig);
   try {
     await client.connect();
-    await migrate({ client }, './migrations', {
-      migrationTableName: 'auth.migrations',
-    });
+    // await migrate({ client }, './migrations', {
+    //   migrationTableName: 'auth.migrations',
+    // });
   } catch (error: any) {
     /**
      * The following code is a workaround for the bug we introduced in v0.2.1
@@ -46,9 +45,9 @@ export async function applyMigrations(): Promise<void> {
       await fs.rename(correctName, legacyName);
       try {
         // Retry running migrations with the corrected file name
-        await migrate({ client }, './migrations', {
-          migrationTableName: 'auth.migrations',
-        });
+        // await migrate({ client }, './migrations', {
+        //   migrationTableName: 'auth.migrations',
+        // });
       } catch (secondAttemptError: any) {
         throw new Error(secondAttemptError.message);
       } finally {
@@ -66,5 +65,5 @@ export async function applyMigrations(): Promise<void> {
   } finally {
     await client.end();
   }
-  logger.info('Migrations applied');
+  // logger.info('Migrations applied');
 }

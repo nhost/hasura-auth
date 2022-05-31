@@ -25,7 +25,7 @@ export const handleDeanonymizeUserPasswordlessEmail = async (
   userId: string,
   res: Response
 ): Promise<unknown> => {
-  const { user } = await gqlSdk.user({
+  const { users_by_pk: user } = await gqlSdk.user({
     id: userId,
   });
 

@@ -1,4 +1,4 @@
-import { UserQuery } from './utils/__generated__/graphql-request';
+import { UserQuery } from "./utils/__generated__/graphql-request";
 
 export type ClaimValueType =
   | string
@@ -57,7 +57,7 @@ export type UserRegistrationOptions = {
 };
 
 export type User = Pick<
-  NonNullable<UserQuery['user']>,
+  NonNullable<UserQuery['users_by_pk']>,
   | 'id'
   | 'createdAt'
   | 'displayName'
@@ -75,6 +75,9 @@ export type User = Pick<
 
 export type Session = {
   accessToken: string;
+  /**
+   * (seconds)
+   */
   accessTokenExpiresIn: number;
   refreshToken: string;
   user?: User;

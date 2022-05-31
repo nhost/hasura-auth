@@ -56,7 +56,7 @@ export const userEmailChange: RequestHandler<
     },
   });
 
-  const user = updatedUserResponse.updateUser;
+  const user = updatedUserResponse.update_users_by_pk;
 
   if (!user) {
     throw new Error('Unable to get user');

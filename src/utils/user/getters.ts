@@ -1,5 +1,5 @@
-import { User } from '@/types';
-import { gqlSdk } from '../gql-sdk';
+import { User } from "@/types";
+import { gqlSdk } from "../gql-sdk";
 
 export const getUserByPhoneNumber = async ({
   phoneNumber,
@@ -22,7 +22,7 @@ export const getUser = async ({
 }: {
   userId: string;
 }): Promise<User> => {
-  const { user } = await gqlSdk.user({
+  const { users_by_pk: user } = await gqlSdk.user({
     id: userId,
   });
 

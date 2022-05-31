@@ -1,14 +1,12 @@
 require('tsconfig-paths/register');
 require('dotenv').config();
-import { Client } from 'pg';
+import { Client } from "pg";
 
-import { applyMetadata } from '@/metadata';
-import { applyMigrations } from '@/migrations';
-import { ENV } from '@/utils';
+import { ENV } from "@/utils";
 
 export default async (): Promise<void> => {
-  await applyMigrations();
-  await applyMetadata();
+  // await applyMigrations();
+  // await applyMetadata();
   const client = new Client({
     connectionString: ENV.HASURA_GRAPHQL_DATABASE_URL,
   });

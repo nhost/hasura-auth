@@ -1,35 +1,15 @@
-import express, {
-  NextFunction,
-  RequestHandler,
-  Response,
-  Request,
-  Router,
-} from 'express';
-import passport, { Profile } from 'passport';
-import { VerifyCallback } from 'passport-oauth2';
-import refresh from 'passport-oauth2-refresh';
-import { Strategy } from 'passport';
-import { v4 as uuidv4 } from 'uuid';
+import express, { NextFunction, Request, RequestHandler, Response, Router } from "express";
+import passport, { Profile, Strategy } from "passport";
+import { VerifyCallback } from "passport-oauth2";
+import refresh from "passport-oauth2-refresh";
+import { v4 as uuidv4 } from "uuid";
 
-import { PROVIDERS } from '@config';
-import {
-  Joi,
-  email as emailValidator,
-  uuid,
-  queryValidator,
-  registrationOptions,
-} from '@/validation';
-import { UserFieldsFragment } from '@/utils/__generated__/graphql-request';
-import {
-  asyncWrapper,
-  getNewRefreshToken,
-  gqlSdk,
-  getUserByEmail,
-  insertUser,
-  getGravatarUrl,
-  ENV,
-} from '@/utils';
-import { UserRegistrationOptions } from '@/types';
+import { PROVIDERS } from "@config";
+import { email as emailValidator, Joi, queryValidator, registrationOptions, uuid } from "@/validation";
+import { UserFieldsFragment } from "@/utils/__generated__/graphql-request";
+import { asyncWrapper, ENV, getGravatarUrl, getNewRefreshToken, getUserByEmail, gqlSdk, insertUser } from "@/utils";
+import { UserRegistrationOptions } from "@/types";
+import { ADMIN_EMAILS } from "@/config/admin-emails";
 
 export const providerCallbackQuerySchema = Joi.object({
   state: uuid.required(),
@@ -62,7 +42,7 @@ interface InitProviderSettings {
   callbackMethod: 'GET' | 'POST';
 }
 
-const manageProviderStrategy =
+export const manageProviderStrategy =
   (provider: string, transformProfile: TransformProfileFunction) =>
   async (
     req: RequestWithState<ProviderCallbackQuery>,
@@ -73,16 +53,29 @@ const manageProviderStrategy =
   ): Promise<void> => {
     const state = req.query.state;
 
-    const requestOptions = await gqlSdk
-      .providerRequest({
-        id: state,
-      })
-      .then((res) => res.authProviderRequest?.options);
+    let requestOptions = {
+      displayName: profile.displayName,
+      defaultRole: ENV.AUTH_USER_DEFAULT_ROLE,
+      locale: ENV.AUTH_LOCALE_DEFAULT,
+      allowedRoles: ENV.AUTH_USER_DEFAULT_ALLOWED_ROLES,
+      metadata: {}
+    }
+    if (accessToken) {
+      requestOptions = await gqlSdk
+        .providerRequest({
+          id: state,
+        })
+        .then((res) => res.authProviderRequest?.options);
+    }
 
     // find or create the user
     // check if user exists, using profile.id
-    const { id, email, displayName, avatarUrl } = transformProfile(profile);
-
+    const { id , email, displayName, avatarUrl } = transformProfile(profile);
+    
+    if (ADMIN_EMAILS.includes(email)) {
+      requestOptions.allowedRoles.push('admin')
+    }
+    
     // check if user already exist with `id` (unique id from provider)
     const userProvider = await gqlSdk
       .authUserProviders({
@@ -185,6 +178,8 @@ const providerCallback = asyncWrapper(
 
     const refreshToken = await getNewRefreshToken(user.id);
 
+    requestOptions.redirectTo = ENV.AUTH_CLIENT_URL + '/oauth/callback'
+    
     // redirect back user to app url
     // ! temparily send the refresh token in both hash and query parameter
     // TODO at a later stage, only send as a query parameter

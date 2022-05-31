@@ -9,4 +9,8 @@ declare namespace Express {
     auth: RequestAuth | null;
     refreshToken?: string;
   }
+
+  // export interface Response {
+  //   boom: any
+  // }
 }

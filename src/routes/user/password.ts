@@ -25,7 +25,7 @@ export const userPasswordHandler: RequestHandler<
 
   const { userId } = req.auth;
 
-  const { user } = await gqlSdk.user({
+  const { users_by_pk: user } = await gqlSdk.user({
     id: userId,
   });
 

@@ -1,11 +1,11 @@
-import { JWT } from 'jose';
-import { ClaimValueType, JwtSecret } from '@/types';
-import { UserFieldsFragment } from '../__generated__/graphql-request';
-import { ENV } from '../env';
-import { generateCustomClaims } from './custom-claims';
+import { JWT } from "jose";
+import { ClaimValueType, JwtSecret } from "@/types";
+import { UserFieldsFragment } from "../__generated__/graphql-request";
+import { ENV } from "../env";
+import { generateCustomClaims } from "./custom-claims";
 
-// const RSA_TYPES = ["RS256", "RS384", "RS512"];
-const ALLOWED_JWT_TYPES = ['HS256', 'HS384', 'HS512'];
+const RSA_TYPES = ["RS256", "RS384", "RS512"];
+const ALLOWED_JWT_TYPES = ['HS256', 'HS384', 'HS512', ...RSA_TYPES];
 
 const jwt = JSON.parse(ENV.HASURA_GRAPHQL_JWT_SECRET) as JwtSecret;
 
@@ -43,7 +43,7 @@ export const sign = ({
  * of the public.tables columns defined in JWT_CUSTOM_FIELDS
  * @param jwt if true, add a 'x-hasura-' prefix to the property names, and stringifies the values (required by Hasura)
  */
-const generateHasuraClaims = async (
+export const generateHasuraClaims = async (
   user: UserFieldsFragment
 ): Promise<{
   [key: string]: ClaimValueType;

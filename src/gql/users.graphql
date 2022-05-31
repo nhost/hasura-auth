@@ -24,7 +24,7 @@ fragment userFields on users {
 }
 
 query user($id: uuid!) {
-  user(id: $id) {
+  users_by_pk(id: $id) {
     ...userFields
   }
 }
@@ -76,13 +76,13 @@ query getUsersByRefreshTokenOld($refreshToken: uuid!) {
 }
 
 mutation updateUser($id: uuid!, $user: users_set_input!) {
-  updateUser(pk_columns: { id: $id }, _set: $user) {
+  update_users_by_pk(pk_columns: { id: $id }, _set: $user) {
     ...userFields
   }
 }
 
 mutation updateUserWhere($where: users_bool_exp!, $user: users_set_input!) {
-  updateUsers(where: $where, _set: $user) {
+  update_users(where: $where, _set: $user) {
     affected_rows
   }
 }
@@ -92,7 +92,7 @@ mutation rotateUsersTicket(
   $newTicket: String!
   $newTicketExpiresAt: timestamptz!
 ) {
-  updateUsers(
+  update_users(
     _set: { ticket: $newTicket, ticketExpiresAt: $newTicketExpiresAt }
     where: { ticket: { _eq: $oldTicket } }
   ) {
@@ -106,7 +106,7 @@ mutation changeEmailsByTicket(
   $newTicket: String!
   $now: timestamptz!
 ) {
-  updateUsers(
+  update_users(
     where: {
       _and: [{ ticket: { _eq: $ticket } }, { ticketExpiresAt: { _gt: $now } }]
     }
@@ -124,7 +124,7 @@ mutation changeEmailsByTicket(
 }
 
 mutation insertUser($user: users_insert_input!) {
-  insertUser(object: $user) {
+  insert_users_one(object: $user) {
     ...userFields
   }
 }
@@ -134,7 +134,7 @@ mutation deleteUser($userId: uuid!) {
     affected_rows
   }
 
-  deleteUser(id: $userId) {
+  delete_users_by_pk(id: $userId) {
     ...userFields
   }
 }
@@ -147,7 +147,7 @@ mutation deanonymizeUser($userId: uuid!, $avatarUrl: String, $role: String!) {
     affected_rows
   }
 
-  updateUser(
+  update_users_by_pk(
     pk_columns: { id: $userId }
     _set: { avatarUrl: $avatarUrl, defaultRole: $role }
   ) {
@@ -170,7 +170,7 @@ query getUserByTicket($ticket: String!) {
 }
 
 mutation updateUsersByTicket($ticket: String!, $user: users_set_input!) {
-  updateUsers(
+  update_users(
     where: {
       _and: [{ ticket: { _eq: $ticket } }, { ticketExpiresAt: { _gt: now } }]
     }
