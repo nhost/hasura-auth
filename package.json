@@ -68,7 +68,6 @@
     "passport-gitlab2": "^5.0.0",
     "passport-google-oauth20": "2.0.0",
     "passport-linkedin-oauth2": "^2.0.0",
-    "passport-oauth2": "^1.6.1",
     "passport-oauth2-refresh": "^2.1.0",
     "passport-spotify": "^2.0.0",
     "passport-twitter": "^1.0.4",
