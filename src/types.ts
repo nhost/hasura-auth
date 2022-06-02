@@ -125,5 +125,6 @@ export const EMAIL_TYPES = {
   CONFIRM_CHANGE: 'emailConfirmChange',
   SIGNIN_PASSWORDLESS: 'signinPasswordless',
   PASSWORD_RESET: 'passwordReset',
+  PASSWORD_RESET_TICKET: 'passwordTicketReset'
 } as const;
 export type EmailType = typeof EMAIL_TYPES[keyof typeof EMAIL_TYPES];

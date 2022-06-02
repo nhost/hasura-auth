@@ -3,14 +3,14 @@ import {
   getNewRefreshToken,
   gqlSdk,
   generateRedirectUrl,
-  getUserByEmail,
+  getUserByEmail, getSignInResponse,
 } from '@/utils';
 import { Joi, redirectTo } from '@/validation';
 import { sendError } from '@/errors';
 import { EmailType, EMAIL_TYPES } from '@/types';
 
 export const verifySchema = Joi.object({
-  redirectTo: redirectTo.required(),
+  redirectTo: redirectTo,
   ticket: Joi.string().required(),
   type: Joi.string()
     .allow(...Object.values(EMAIL_TYPES))
@@ -94,6 +94,14 @@ export const verifyHandler: RequestHandler<
   } else if (type === EMAIL_TYPES.PASSWORD_RESET) {
     // noop
     // just redirecting the user to the client (as signed-in).
+  } else if (type === EMAIL_TYPES.PASSWORD_RESET_TICKET){
+    // Return sign in details for client to handle sign in and password reset process (i.e. for native Mobile UX)
+    const signInTokens = await getSignInResponse({
+      userId: user.id,
+      checkMFA: false,
+    });
+
+    return res.send(signInTokens);
   }
 
   const refreshToken = await getNewRefreshToken(user.id);
