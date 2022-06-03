@@ -137,6 +137,10 @@ const manageProviderStrategy =
       }
     }
 
+    if (!ENV.AUTH_PROVIDER_SIGNUP_ENABLED) {
+      return done(null, false);
+    }
+
     const { defaultRole, locale, allowedRoles, metadata } = requestOptions;
 
     const insertedUser = await insertUser({
@@ -287,9 +291,16 @@ export const initProvider = <T extends Strategy>(
     },
   ]);
 
+  const failureRedirect = new URL(
+    ENV.AUTH_PROVIDER_FAILURE_REDIRECT_URL || ENV.AUTH_CLIENT_URL
+  );
+  failureRedirect.searchParams.set('provider', strategyName);
+  failureRedirect.searchParams.set('failed', 'true');
+
   const handlers = [
     passport.authenticate(strategyName, {
       session: false,
+      failureRedirect: failureRedirect.toString(),
     }),
     queryValidator(providerCallbackQuerySchema),
     providerCallback,
