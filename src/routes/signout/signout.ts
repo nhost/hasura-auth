@@ -1,9 +1,9 @@
 import { RequestHandler } from 'express';
 import { ReasonPhrases } from 'http-status-codes';
 
-import { gqlSdk } from '@/utils';
 import { sendError } from '@/errors';
 import { Joi, refreshToken } from '@/validation';
+import { postgres } from '@/utils/postgres';
 
 export const signOutSchema = Joi.object({
   refreshToken,
@@ -31,15 +31,17 @@ export const signOutHandler: RequestHandler<
 
     const { userId } = req.auth;
 
-    await gqlSdk.deleteUserRefreshTokens({
-      userId,
-    });
+    await postgres.runSql(
+      `DELETE FROM auth.refresh_tokens WHERE user_id = %L`,
+      [userId]
+    );
   } else {
     // only sign out from the current session
     // delete current refresh token
-    await gqlSdk.deleteRefreshToken({
-      refreshToken,
-    });
+    await postgres.runSql(
+      `DELETE FROM auth.refresh_tokens WHERE refresh_token = %L`,
+      [refreshToken]
+    );
   }
 
   return res.send(ReasonPhrases.OK);

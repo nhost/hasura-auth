@@ -16,6 +16,7 @@ cp .env.example .env
 ```
 
 You will also need to install the dependencies. We are using [pnpm](https://pnpm.io/) as a package manager.
+
 ## Start
 
 Run Hasura, PostgreSQL and the mock email server MailHog:
@@ -82,3 +83,9 @@ pnpm run release
 ```
 
 It will then tag the branch, push to GitHub, and trigger a GitHub relase. A GitHub action will then takeover to test, build and tag the docker image, and publish it to [Docker Hub](https://hub.docker.com/r/nhost/hasura-auth).
+
+## Why is Hasura Auth not using GraphQL to interact with data?
+
+Because we want developers to be able to set their own GraphQL root fields and GraphQL field names. Developers should be able to use `getUser` or `user` or `user_by_pk` in their GraphQL schema, and Hasura Auth should not break.
+
+Because of this, Hasura Auth is only opinionated about the database schema, and users can change the GraphQL and Hasura Metadata however they want.
