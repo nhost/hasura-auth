@@ -30,6 +30,7 @@
     "@oauth-everything/passport-discord": "^1.0.2",
     "@oauth-everything/passport-twitch": "^1.0.3",
     "@riderize/passport-strava-oauth2": "^1.1.1",
+    "@scaleleap/pg-format": "^1.0.0",
     "axios": "0.21.1",
     "bcryptjs": "^2.4.3",
     "body-parser": "1.19.0",

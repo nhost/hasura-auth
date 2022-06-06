@@ -42,7 +42,7 @@ export const userEmailSendVerificationEmailHandler: RequestHandler<
     return sendError(res, 'user-not-found');
   }
 
-  if (user.emailVerified) {
+  if (user.email_verified) {
     return sendError(res, 'email-already-verified');
   }
 
@@ -91,7 +91,7 @@ export const userEmailSendVerificationEmailHandler: RequestHandler<
     },
     locals: {
       link,
-      displayName: user.displayName,
+      displayName: user.display_name,
       ticket,
       redirectTo: encodeURIComponent(redirectTo),
       locale: user.locale ?? ENV.AUTH_LOCALE_DEFAULT,

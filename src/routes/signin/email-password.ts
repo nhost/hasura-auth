@@ -32,15 +32,15 @@ export const signInEmailPasswordHandler: RequestHandler<
     return sendError(res, 'disabled-user');
   }
 
-  if (ENV.AUTH_EMAIL_SIGNIN_EMAIL_VERIFIED_REQUIRED && !user.emailVerified) {
+  if (ENV.AUTH_EMAIL_SIGNIN_EMAIL_VERIFIED_REQUIRED && !user.email_verified) {
     return sendError(res, 'unverified-user');
   }
 
-  if (!user.passwordHash) {
+  if (!user.password_hash) {
     return sendError(res, 'invalid-email-password');
   }
 
-  const isPasswordCorrect = await bcrypt.compare(password, user.passwordHash);
+  const isPasswordCorrect = await bcrypt.compare(password, user.password_hash);
 
   if (!isPasswordCorrect) {
     return sendError(res, 'invalid-email-password');

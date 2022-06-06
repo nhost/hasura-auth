@@ -1,5 +1,6 @@
-import { User } from '@/types';
+import { DBUser, User } from '@/types';
 import { gqlSdk } from '../gql-sdk';
+import { postgres } from '../postgres';
 
 export const getUserByPhoneNumber = async ({
   phoneNumber,
@@ -63,16 +64,20 @@ export const getUser = async ({
   };
 };
 
-export const getUserByEmail = async (email: string) => {
-  const { users } = await gqlSdk.users({
-    where: {
-      email: {
-        _eq: email,
-      },
-    },
-  });
+export const getUserByEmail = async (email: string): Promise<DBUser | null> => {
+  const { rows } = await postgres.runSqlParsed(
+    `SELECT row_to_json(u) FROM auth.users u WHERE email = %L LIMIT 1`,
+    [email]
+  );
 
-  return users[0];
+  if (rows.length === 0) {
+    return null;
+  }
+
+  const users = rows as DBUser[];
+  const user = users[0];
+
+  return user;
 };
 
 export const getUserByTicket = async (ticket: string) => {

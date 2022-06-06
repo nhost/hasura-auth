@@ -127,3 +127,39 @@ export const EMAIL_TYPES = {
   PASSWORD_RESET: 'passwordReset',
 } as const;
 export type EmailType = typeof EMAIL_TYPES[keyof typeof EMAIL_TYPES];
+
+// database types
+
+type JSONValue =
+  | string
+  | number
+  | boolean
+  | { [x: string]: JSONValue }
+  | Array<JSONValue>;
+
+export type DBUser = {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  last_seen: string | null;
+  disabled: boolean;
+  display_name: string;
+  avatar_url: string;
+  locale: string;
+  email: string;
+  phone_number: string | null;
+  password_hash: string | null;
+  email_verified: boolean;
+  phone_number_verified: boolean;
+  new_email: string | null;
+  otp_method_last_used: string | null;
+  otp_hash: string | null;
+  otp_hash_expires_at: string | null;
+  default_role: string | null;
+  is_anonymous: boolean | null;
+  totp_secret: string | null;
+  active_mfa_type: string | null;
+  ticket: string | null;
+  ticket_expires_at: string | null;
+  metadata: JSONValue;
+};

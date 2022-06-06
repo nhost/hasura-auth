@@ -65,7 +65,7 @@ export const userPasswordResetHandler: RequestHandler<
       ticket,
       redirectTo: encodeURIComponent(redirectTo),
       locale: user.locale ?? ENV.AUTH_LOCALE_DEFAULT,
-      displayName: user.displayName,
+      displayName: user.display_name,
       serverUrl: ENV.AUTH_SERVER_URL,
       clientUrl: ENV.AUTH_CLIENT_URL,
     },

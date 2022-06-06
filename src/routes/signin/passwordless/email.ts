@@ -43,10 +43,11 @@ export const signInPasswordlessEmailHandler: RequestHandler<
   } = req.body;
 
   // check if email already exist
-  let user = await getUserByEmail(email);
+  const user2 = await getUserByEmail(email);
+  let user;
 
   // if no user exists, create the user
-  if (!user) {
+  if (!user2) {
     user = await insertUser({
       displayName: displayName ?? email,
       locale,
@@ -60,6 +61,10 @@ export const signInPasswordlessEmailHandler: RequestHandler<
       defaultRole,
       metadata,
     });
+  }
+
+  if (!user) {
+    throw Error('no user');
   }
 
   if (user?.disabled) {
