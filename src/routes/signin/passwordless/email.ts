@@ -3,18 +3,17 @@ import { v4 as uuidv4 } from 'uuid';
 import { ReasonPhrases } from 'http-status-codes';
 
 import {
-  gqlSdk,
   getUserByEmail,
-  insertUser,
   getGravatarUrl,
   generateTicketExpiresAt,
   ENV,
   createEmailRedirectionLink,
 } from '@/utils';
 import { emailClient } from '@/email';
-import { EMAIL_TYPES, PasswordLessEmailBody } from '@/types';
+import { DBUser, EMAIL_TYPES, PasswordLessEmailBody } from '@/types';
 import { sendError } from '@/errors';
 import { Joi, email, registrationOptions } from '@/validation';
+import { postgres } from '@/utils/postgres';
 
 export const signInPasswordlessEmailSchema = Joi.object({
   email: email.required(),
@@ -42,27 +41,69 @@ export const signInPasswordlessEmailHandler: RequestHandler<
     },
   } = req.body;
 
-  // check if email already exist
-  const user2 = await getUserByEmail(email);
-  let user;
+  // check if user with email already exist
+  let user = await getUserByEmail(email);
 
   // if no user exists, create the user
-  if (!user2) {
-    user = await insertUser({
-      displayName: displayName ?? email,
-      locale,
-      roles: {
-        // restructure user roles to be inserted in GraphQL mutation
-        data: allowedRoles.map((role: string) => ({ role })),
-      },
-      disabled: ENV.AUTH_DISABLE_NEW_USERS,
-      avatarUrl: getGravatarUrl(email),
-      email,
-      defaultRole,
-      metadata,
-    });
+  if (!user) {
+    // insert user
+    const { rows } = await postgres.runSqlParsed(
+      `INSERT INTO auth.users (
+        disabled, 
+        display_name, 
+        avatar_url,
+        email,
+        email_verified,
+        locale,
+        default_role,
+        metadata
+      ) VALUES (%L, %L, %L, %L, %L, %L, %L, %L) RETURNING id`,
+      [
+        ENV.AUTH_DISABLE_NEW_USERS,
+        displayName || email,
+        getGravatarUrl(email),
+        email,
+        false,
+        locale,
+        defaultRole,
+        metadata,
+      ]
+    );
+
+    if (!Array.isArray(rows[0])) {
+      return;
+    }
+
+    // get inserted user id
+    const insertedUserId = rows[0][0];
+
+    // insert allowed roles for the user
+    for (const role of allowedRoles) {
+      await postgres.runSql(
+        `INSERT INTO auth.user_roles (user_id, role) VALUES (%L, %L)`,
+        [insertedUserId, role]
+      );
+    }
+
+    // get users
+    const { rows: users } = await postgres.runSqlParsed(
+      `SELECT row_to_json(u) FROM auth.users u WHERE id = %L LIMIT 1`,
+      [insertedUserId]
+    );
+
+    // this should never happen
+    if (users.length === 0) {
+      // TODO: better error
+      console.log('user not found after insert');
+      throw new Error('User not found');
+    }
+
+    user = users[0] as DBUser;
   }
 
+  // Now, a user should already exist or we just created one.
+
+  // this should never happen. Either there was an existing user or we just created one
   if (!user) {
     throw Error('no user');
   }
@@ -71,17 +112,14 @@ export const signInPasswordlessEmailHandler: RequestHandler<
     return sendError(res, 'disabled-user');
   }
 
-  // create ticket
+  // create ticket for magic link
   const ticket = `passwordlessEmail:${uuidv4()}`;
   const ticketExpiresAt = generateTicketExpiresAt(60 * 60);
 
-  await gqlSdk.updateUser({
-    id: user.id,
-    user: {
-      ticket,
-      ticketExpiresAt,
-    },
-  });
+  await postgres.runSql(
+    `UPDATE auth.users SET ticket = %L, ticket_expires_at = %L WHERE id = %L`,
+    [ticket, ticketExpiresAt, user.id]
+  );
 
   const template = 'signin-passwordless';
   const link = createEmailRedirectionLink(
@@ -114,7 +152,7 @@ export const signInPasswordlessEmailHandler: RequestHandler<
     },
     locals: {
       link,
-      displayName: user.displayName,
+      displayName: user.display_name,
       email,
       ticket,
       redirectTo: encodeURIComponent(redirectTo),

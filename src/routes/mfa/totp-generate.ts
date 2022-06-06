@@ -1,8 +1,9 @@
 import { RequestHandler } from 'express';
 import { authenticator } from 'otplib';
 
-import { createQR, gqlSdk, ENV } from '@/utils';
+import { createQR, ENV } from '@/utils';
 import { sendError } from '@/errors';
+import { postgres } from '@/utils/postgres';
 
 export const mfatotpGenerateHandler: RequestHandler<
   {},
@@ -21,12 +22,10 @@ export const mfatotpGenerateHandler: RequestHandler<
     totpSecret
   );
 
-  await gqlSdk.updateUser({
-    id: userId,
-    user: {
-      totpSecret,
-    },
-  });
+  await postgres.runSql('UPDATE users SET totp_secret = %L WHERE id = %L', [
+    totpSecret,
+    userId,
+  ]);
 
   const imageUrl = await createQR(otpAuth);
 
