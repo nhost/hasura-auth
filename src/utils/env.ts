@@ -136,9 +136,6 @@ export const ENV = {
   get AUTH_PROVIDER_SIGNUP_ENABLED() {
     return castBooleanEnv('AUTH_PROVIDER_SIGNUP_ENABLED', true);
   },
-  get AUTH_PROVIDER_FAILURE_REDIRECT_URL() {
-    return castStringEnv('AUTH_PROVIDER_FAILURE_REDIRECT_URL', '');
-  },
 
   // SIGN IN
   get AUTH_EMAIL_PASSWORDLESS_ENABLED() {

@@ -30,6 +30,7 @@ import {
   ENV,
 } from '@/utils';
 import { UserRegistrationOptions } from '@/types';
+import { sendError } from '@/errors';
 
 export const providerCallbackQuerySchema = Joi.object({
   state: uuid.required(),
@@ -138,7 +139,8 @@ const manageProviderStrategy =
     }
 
     if (!ENV.AUTH_PROVIDER_SIGNUP_ENABLED) {
-      return done(null, false);
+      // provider signup is disabled
+      return done(null, {});
     }
 
     const { defaultRole, locale, allowedRoles, metadata } = requestOptions;
@@ -186,6 +188,14 @@ const providerCallback = asyncWrapper(
       .then((res) => res.deleteAuthProviderRequest?.options);
 
     const user = req.user as UserFieldsFragment;
+
+    if (!user.id) {
+      const failureRedirect = new URL(requestOptions.redirectTo);
+      failureRedirect.searchParams.set('loginFailed', 'true');
+      return sendError(res, 'provider-login-failed', {
+        redirectTo: failureRedirect.toString(),
+      }) as void;
+    }
 
     const refreshToken = await getNewRefreshToken(user.id);
 
@@ -291,16 +301,9 @@ export const initProvider = <T extends Strategy>(
     },
   ]);
 
-  const failureRedirect = new URL(
-    ENV.AUTH_PROVIDER_FAILURE_REDIRECT_URL || ENV.AUTH_CLIENT_URL
-  );
-  failureRedirect.searchParams.set('provider', strategyName);
-  failureRedirect.searchParams.set('failed', 'true');
-
   const handlers = [
     passport.authenticate(strategyName, {
       session: false,
-      failureRedirect: failureRedirect.toString(),
     }),
     queryValidator(providerCallbackQuerySchema),
     providerCallback,
