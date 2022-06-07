@@ -155,11 +155,18 @@ export type DBUser = {
   otp_method_last_used: string | null;
   otp_hash: string | null;
   otp_hash_expires_at: string | null;
-  default_role: string | null;
-  is_anonymous: boolean | null;
+  default_role: string;
+  is_anonymous: boolean;
   totp_secret: string | null;
   active_mfa_type: string | null;
   ticket: string | null;
   ticket_expires_at: string | null;
   metadata: JSONValue;
+};
+
+export type DBUserRole = {
+  id: string;
+  created_at: string;
+  user_id: string;
+  role: string;
 };

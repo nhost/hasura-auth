@@ -11,7 +11,7 @@ services:
     ports:
       - '5432:5432'
   graphql-engine:
-    image: hasura/graphql-engine:v2.2.0
+    image: hasura/graphql-engine:v2.7.0
     depends_on:
       - postgres
     restart: always
@@ -22,6 +22,7 @@ services:
       HASURA_GRAPHQL_UNAUTHORIZED_ROLE: public
       HASURA_GRAPHQL_LOG_LEVEL: debug
       HASURA_GRAPHQL_ENABLE_CONSOLE: 'true'
+      HASURA_GRAPHQL_DEFAULT_NAMING_CONVENTION: 'graphql-default'
     ports:
       - '8080:8080'
   mailhog:

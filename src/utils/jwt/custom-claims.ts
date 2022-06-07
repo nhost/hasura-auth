@@ -47,6 +47,8 @@ const createCustomFieldQuery = (jwtFields: Record<string, string>): string => {
     },
     {}
   );
+  // TODO: get `user` dynamically
+  // TODO: get `id` dynamically
   // * Prepare the query so it will accept userId as a variable
   const query = {
     query: {

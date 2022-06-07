@@ -1,4 +1,4 @@
-import { DBUser, User } from '@/types';
+import { DBUser, DBUserRole, User } from '@/types';
 import { gqlSdk } from '../gql-sdk';
 import { postgres } from '../postgres';
 
@@ -18,49 +18,53 @@ export const getUserByPhoneNumber = async ({
   return users[0];
 };
 
+export const getUserRoles = async ({ userId }: { userId: string }) => {
+  // get user roles
+  const { rows } = await postgres.runSqlParsed(
+    `SELECT row_to_json(ur) FROM auth.user_roles ur WHERE user_id = %L`,
+    [userId]
+  );
+
+  const userRoles = rows as DBUserRole[];
+
+  return userRoles;
+};
+
 export const getUser = async ({
   userId,
 }: {
   userId: string;
 }): Promise<User> => {
-  const { user } = await gqlSdk.user({
-    id: userId,
-  });
+  // get user
+  const { rows: users } = await postgres.runSqlParsed(
+    `SELECT row_to_json(u) FROM auth.users u WHERE id = %L LIMIT 1`,
+    [userId]
+  );
 
-  if (!user) {
+  if (users.length === 0) {
     throw new Error('Unable to get user');
   }
 
-  const {
-    id,
-    createdAt,
-    displayName,
-    avatarUrl,
-    locale,
-    email,
-    isAnonymous,
-    defaultRole,
-    metadata,
-    emailVerified,
-    phoneNumber,
-    phoneNumberVerified,
-    activeMfaType,
-  } = user;
+  const user = users[0] as DBUser;
+
+  const userRoles = await getUserRoles({ userId });
+
+  // construct return user
   return {
-    id,
-    createdAt,
-    displayName,
-    avatarUrl,
-    locale,
-    email,
-    isAnonymous,
-    defaultRole,
-    metadata,
-    emailVerified,
-    phoneNumber,
-    phoneNumberVerified,
-    activeMfaType,
-    roles: user.roles.map((role) => role.role),
+    id: user.id,
+    createdAt: user.created_at,
+    displayName: user.display_name,
+    avatarUrl: user.avatar_url,
+    locale: user.locale,
+    email: user.email,
+    isAnonymous: user.is_anonymous,
+    defaultRole: user.default_role,
+    metadata: user.metadata,
+    emailVerified: user.email_verified,
+    phoneNumber: user.phone_number,
+    phoneNumberVerified: user.phone_number_verified,
+    activeMfaType: user.active_mfa_type,
+    roles: userRoles.map((role) => role.role),
   };
 };
 
@@ -105,4 +109,22 @@ export const getUserByTicket = async (ticket: string) => {
   }
 
   return users[0];
+};
+
+export const getUserByRefreshToken = async (
+  refreshToken: string
+): Promise<DBUser | null> => {
+  const { rows } = await postgres.runSqlParsed(
+    `SELECT row_to_json(u) FROM auth.users u JOIN auth.refresh_tokens rt ON rt.user_id = u.id WHERE rt.refresh_token = %L AND rt.expires_at > NOW() AND u.disabled = FALSE;`,
+    [refreshToken]
+  );
+
+  if (rows.length === 0) {
+    return null;
+  }
+
+  const users = rows as DBUser[];
+  const user = users[0];
+
+  return user;
 };
