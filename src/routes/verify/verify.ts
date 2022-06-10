@@ -53,13 +53,8 @@ export const verifyHandler: RequestHandler<
     return sendError(res, 'invalid-ticket', { redirectTo });
   }
 
-  // user found, delete current ticket
-  await gqlSdk.updateUser({
-    id: user.id,
-    user: {
-      ticket: null,
-    },
-  });
+  // We do not delete the ticket because sometimes, anti-spam software opens the link
+  // and would made the ticket to be deleted without the user having a chance to login
 
   // different types
   if (type === EMAIL_TYPES.VERIFY) {
