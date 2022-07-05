@@ -193,7 +193,7 @@ if (ENV.AUTH_SMS_PROVIDER) {
 }
 
 if (ENV.AUTH_WEBAUTHN_ENABLED) {
-  ['AUTH_WEBAUTHN_RP_ID', 'AUTH_WEBAUTHN_RP_NAME'].forEach((env) => {
+  ['AUTH_WEBAUTHN_RP_ID'].forEach((env) => {
     if (isUnset(process.env[env])) {
       errors.push(
         `Env var ${env} is required when the Webauthn is enabled, but no value was provided`
@@ -207,6 +207,15 @@ if (ENV.AUTH_WEBAUTHN_ENABLED) {
   ) {
     errors.push(
       `Webauthn requires at least on of the following to be set: 'AUTH_WEBAUTHN_RP_ORIGINS', 'AUTH_CLIENT_URL'`
+    );
+  }
+
+  if (
+    isUnset(process.env['AUTH_WEBAUTHN_RP_NAME']) &&
+    isUnset(process.env['APP_NAME'])
+  ) {
+    errors.push(
+      `Webauthn requires at least on of the following to be set: 'AUTH_WEBAUTHN_RP_NAME', 'APP_NAME'`
     );
   }
 }

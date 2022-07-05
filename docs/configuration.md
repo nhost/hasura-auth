@@ -118,7 +118,8 @@ AUTH_WEBAUTHN_RP_NAME='My App'
 AUTH_WEBAUTHN_RP_ORIGINS=https://my-app.example.com
 ```
 
-By default if `AUTH_CLIENT_URL` is set, will be whitelisted as allowed origin for such authentication. Additional urls can be specified using `AUTH_WEBAUTHN_RP_ORIGINS`.
+- By default if `AUTH_CLIENT_URL` is set, will be whitelisted as allowed origin for such authentication. Additional urls can be specified using `AUTH_WEBAUTHN_RP_ORIGINS`.
+- If `AUTH_WEBAUTHN_RP_NAME` is not set, the relying party will default to `APP_NAME`.
 
 ## Gravatar
 

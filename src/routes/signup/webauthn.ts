@@ -61,7 +61,7 @@ export const signUpWebauthnHandler: RequestHandler<
 
   const registrationOptions = generateRegistrationOptions({
     rpID: ENV.AUTH_WEBAUTHN_RP_ID,
-    rpName: ENV.AUTH_WEBAUTHN_RP_NAME,
+    rpName: ENV.AUTH_WEBAUTHN_RP_NAME || ENV.APP_NAME,
     userID: user.id,
     userName: user.displayName ?? user.email,
     attestationType: 'indirect',
