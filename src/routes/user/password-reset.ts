@@ -61,6 +61,7 @@ export const userPasswordResetHandler: RequestHandler<
   await emailClient.send({
     template,
     locals: {
+      appName: ENV.APP_NAME,
       link,
       displayName: user.displayName,
       email,

@@ -116,6 +116,7 @@ export const handleDeanonymizeUserPasswordlessEmail = async (
         },
       },
       locals: {
+        appName: ENV.APP_NAME,
         link,
         displayName: user.displayName,
         email,

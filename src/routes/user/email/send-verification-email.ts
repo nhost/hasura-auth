@@ -90,6 +90,7 @@ export const userEmailSendVerificationEmailHandler: RequestHandler<
       },
     },
     locals: {
+      appName: ENV.APP_NAME,
       link,
       displayName: user.displayName,
       email: user.email,

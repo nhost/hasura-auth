@@ -12,6 +12,10 @@ export const ENV = {
     return castStringEnv('PWD', '/');
   },
 
+  get APP_NAME() {
+    return castStringEnv('APP_NAME', '');
+  },
+
   // HASURA
   get HASURA_GRAPHQL_JWT_SECRET() {
     return castStringEnv('HASURA_GRAPHQL_JWT_SECRET', '');

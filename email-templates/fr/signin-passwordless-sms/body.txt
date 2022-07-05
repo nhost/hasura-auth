@@ -1,0 +1,1 @@
+${code} est votre code de validation pour ${appName}.

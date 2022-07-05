@@ -115,6 +115,7 @@ export const signUpEmailPasswordHandler: RequestHandler<
         },
       },
       locals: {
+        appName: ENV.APP_NAME,
         link,
         displayName,
         email,
