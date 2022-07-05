@@ -6,7 +6,7 @@ describe('templates', () => {
   it('should render proper sms template', async () => {
     // set env vars
     await request.post('/change-env').send({
-      APP_NAME: 'NHost App',
+      APP_NAME: 'Nhost App',
     });
 
     const template = 'signin-passwordless-sms';
@@ -17,6 +17,6 @@ describe('templates', () => {
       code: '123456',
     });
 
-    expect(message).toEqual('123456 is your verification code for NHost App.');
+    expect(message).toEqual('123456 is your verification code for Nhost App.');
   });
 });
