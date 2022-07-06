@@ -1,4 +1,5 @@
 import { logger } from '@/logger';
+import { JwtSecret } from '@/types';
 import {
   castBooleanEnv,
   castIntEnv,
@@ -18,16 +19,16 @@ export const ENV = {
 
   // HASURA
   get HASURA_GRAPHQL_JWT_SECRET() {
-    return castStringEnv('HASURA_GRAPHQL_JWT_SECRET', '');
+    return castObjectEnv<JwtSecret>('HASURA_GRAPHQL_JWT_SECRET');
   },
   get HASURA_GRAPHQL_DATABASE_URL() {
-    return castStringEnv('HASURA_GRAPHQL_DATABASE_URL', '');
+    return castStringEnv('HASURA_GRAPHQL_DATABASE_URL');
   },
   get HASURA_GRAPHQL_ADMIN_SECRET() {
-    return castStringEnv('HASURA_GRAPHQL_ADMIN_SECRET', '');
+    return castStringEnv('HASURA_GRAPHQL_ADMIN_SECRET');
   },
   get HASURA_GRAPHQL_GRAPHQL_URL() {
-    return castStringEnv('HASURA_GRAPHQL_GRAPHQL_URL', '');
+    return castStringEnv('HASURA_GRAPHQL_GRAPHQL_URL');
   },
 
   // SERVER
@@ -35,21 +36,21 @@ export const ENV = {
     return castIntEnv('AUTH_PORT', 4000);
   },
   get AUTH_SERVER_URL() {
-    return castStringEnv('AUTH_SERVER_URL', '');
+    return castStringEnv('AUTH_SERVER_URL');
   },
 
   // SMTP
   get AUTH_SMTP_PASS() {
-    return castStringEnv('AUTH_SMTP_PASS', '');
+    return castStringEnv('AUTH_SMTP_PASS');
   },
   get AUTH_SMTP_HOST() {
-    return castStringEnv('AUTH_SMTP_HOST', '');
+    return castStringEnv('AUTH_SMTP_HOST');
   },
   get AUTH_SMTP_USER() {
-    return castStringEnv('AUTH_SMTP_USER', '');
+    return castStringEnv('AUTH_SMTP_USER');
   },
   get AUTH_SMTP_SENDER() {
-    return castStringEnv('AUTH_SMTP_SENDER', '');
+    return castStringEnv('AUTH_SMTP_SENDER');
   },
   get AUTH_SMTP_AUTH_METHOD() {
     return castStringEnv('AUTH_SMTP_AUTH_METHOD', 'PLAIN');
@@ -64,18 +65,18 @@ export const ENV = {
 
   // SMS
   get AUTH_SMS_PROVIDER() {
-    return castStringEnv('AUTH_SMS_PROVIDER', '');
+    return castStringEnv('AUTH_SMS_PROVIDER');
   },
 
   // TWILIO
   get AUTH_SMS_TWILIO_ACCOUNT_SID() {
-    return castStringEnv('AUTH_SMS_TWILIO_ACCOUNT_SID', '');
+    return castStringEnv('AUTH_SMS_TWILIO_ACCOUNT_SID');
   },
   get AUTH_SMS_TWILIO_AUTH_TOKEN() {
-    return castStringEnv('AUTH_SMS_TWILIO_AUTH_TOKEN', '');
+    return castStringEnv('AUTH_SMS_TWILIO_AUTH_TOKEN');
   },
   get AUTH_SMS_TWILIO_MESSAGING_SERVICE_ID() {
-    return castStringEnv('AUTH_SMS_TWILIO_MESSAGING_SERVICE_ID', '');
+    return castStringEnv('AUTH_SMS_TWILIO_MESSAGING_SERVICE_ID');
   },
 
   // GRAVATAR
@@ -91,7 +92,7 @@ export const ENV = {
 
   // CLIENT
   get AUTH_CLIENT_URL() {
-    return castStringEnv('AUTH_CLIENT_URL', '').toLocaleLowerCase();
+    return castStringEnv('AUTH_CLIENT_URL').toLocaleLowerCase();
   },
 
   // WEBAUTHN
@@ -105,7 +106,12 @@ export const ENV = {
     return castStringEnv('AUTH_WEBAUTHN_RP_NAME', '');
   },
   get AUTH_WEBAUTHN_RP_ORIGINS() {
-    return castStringArrayEnv('AUTH_WEBAUTHN_RP_ORIGINS', []);
+    const origins = castStringArrayEnv('AUTH_WEBAUTHN_RP_ORIGINS', []);
+    const clientUrl = ENV.AUTH_CLIENT_URL;
+    if (clientUrl) {
+      origins.push(clientUrl);
+    }
+    return origins.filter(Boolean);
   },
   get AUTH_WEBAUTHN_ATTESTATION_TIMEOUT() {
     return castIntEnv('AUTH_WEBAUTHN_ATTESTATION_TIMEOUT', 60000);
@@ -190,7 +196,7 @@ export const ENV = {
 
   // EMAIL TEMPLATES
   get AUTH_EMAIL_TEMPLATE_FETCH_URL() {
-    return castStringEnv('AUTH_EMAIL_TEMPLATE_FETCH_URL', '');
+    return castStringEnv('AUTH_EMAIL_TEMPLATE_FETCH_URL');
   },
 
   get AUTH_JWT_CUSTOM_CLAIMS() {
