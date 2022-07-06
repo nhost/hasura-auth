@@ -17,7 +17,7 @@ describe('custom external email templates', () => {
     await request.post('/change-env').send({
       AUTH_DISABLE_NEW_USERS: false,
       AUTH_EMAIL_SIGNIN_EMAIL_VERIFIED_REQUIRED: true,
-      AUTH_EMAIL_TEMPLATE_FETCH_URL:
+      AUTH_TEMPLATE_FETCH_URL:
         'https://raw.githubusercontent.com/nhost/hasura-auth/main/email-templates',
     });
   });
@@ -25,7 +25,7 @@ describe('custom external email templates', () => {
   afterAll(async () => {
     await client.end();
     await request.post('/change-env').send({
-      AUTH_EMAIL_TEMPLATE_FETCH_URL: '',
+      AUTH_TEMPLATE_FETCH_URL: '',
     });
   });
 

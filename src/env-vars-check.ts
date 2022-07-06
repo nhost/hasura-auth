@@ -18,6 +18,12 @@ if (process.env.AUTH_USER_SESSION_VARIABLE_FIELDS) {
   );
 }
 
+if (process.env.AUTH_EMAIL_TEMPLATE_FETCH_URL) {
+  warnings.push(
+    `The 'AUTH_EMAIL_TEMPLATE_FETCH_URL' environment variable is deprecated. Use 'AUTH_TEMPLATE_FETCH_URL' instead`
+  );
+}
+
 if (process.env.AUTH_JWT_CUSTOM_CLAIMS) {
   try {
     castObjectEnv<Record<string, string>>('AUTH_JWT_CUSTOM_CLAIMS');
