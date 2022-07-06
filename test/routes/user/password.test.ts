@@ -5,6 +5,7 @@ import { StatusCodes } from 'http-status-codes';
 import { request } from '../../server';
 import { ENV } from '../../../src/utils/env';
 import { mailHogSearch } from '../../utils';
+import { SignInResponse } from '@/types';
 
 describe('user password', () => {
   let client: Client;
@@ -64,7 +65,7 @@ describe('user password', () => {
       .expect(StatusCodes.OK);
   });
 
-  it('should change password with ticket', async () => {
+  it('should change password with link', async () => {
     await request
       .post('/user/password/reset')
       .send({ email })
@@ -119,6 +120,63 @@ describe('user password', () => {
     //   .send({ email, password: newPassword })
     //   .expect(StatusCodes.OK);
   });
+  it('should change password with ticket', async () => {
+    const newPassword = faker.internet.password();
+
+    await request
+      .post('/user/password/reset')
+      .send({ email })
+      .expect(StatusCodes.OK);
+
+    // get ticket from email
+    const [message] = await mailHogSearch(email);
+    expect(message).toBeTruthy();
+
+    const ticket = message.Content.Headers['X-Ticket'][0];
+
+    // use ticket to reset password
+    await request
+      .post('/user/password')
+      .send({ newPassword, ticket })
+      .expect(StatusCodes.OK);
+  });
+
+  it('should not be able to use same ticket twice to change password', async () => {
+    const newPassword = faker.internet.password();
+
+    await request
+      .post('/user/password/reset')
+      .send({ email })
+      .expect(StatusCodes.OK);
+
+    // get ticket from email
+    const [message] = await mailHogSearch(email);
+    expect(message).toBeTruthy();
+
+    const ticket = message.Content.Headers['X-Ticket'][0];
+
+    // use ticket to reset password
+    await request
+      .post('/user/password')
+      .send({ newPassword, ticket })
+      .expect(StatusCodes.OK);
+
+    // use same ticket to reset password
+    await request
+      .post('/user/password')
+      .send({ newPassword, ticket })
+      .expect(StatusCodes.UNAUTHORIZED);
+  });
+
+  it('should fail to change password with invalid ticket', async () => {
+    const newPassword = faker.internet.password();
+
+    // use ticket to reset password
+    await request
+      .post('/user/password')
+      .send({ newPassword, ticket: 'inavlid-ticket' })
+      .expect(StatusCodes.UNAUTHORIZED);
+  });
 
   it('should be able to pass "redirectTo" when changing password with ticket when ', async () => {
     const options = {
@@ -143,5 +201,22 @@ describe('user password', () => {
       .expect(StatusCodes.MOVED_TEMPORARILY);
 
     expect(redirectTo).toStrictEqual(options.redirectTo);
+  });
+
+  it('shoud not be possible to change password when anonymous', async () => {
+    await request.post('/change-env').send({
+      AUTH_DISABLE_NEW_USERS: false,
+      AUTH_ANONYMOUS_USERS_ENABLED: true,
+    });
+
+    const { body }: { body: SignInResponse } = await request
+      .post('/signin/anonymous')
+      .expect(StatusCodes.OK);
+
+    await request
+      .post('/user/password')
+      .set('Authorization', `Bearer ${body.session!.accessToken}`)
+      .send({ newPassword: faker.internet.password() })
+      .expect(StatusCodes.FORBIDDEN);
   });
 });

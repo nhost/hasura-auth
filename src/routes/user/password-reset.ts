@@ -62,10 +62,12 @@ export const userPasswordResetHandler: RequestHandler<
     template,
     locals: {
       link,
+      displayName: user.displayName,
+      email,
+      newEmail: user.newEmail,
       ticket,
       redirectTo: encodeURIComponent(redirectTo),
       locale: user.locale ?? ENV.AUTH_LOCALE_DEFAULT,
-      displayName: user.displayName,
       serverUrl: ENV.AUTH_SERVER_URL,
       clientUrl: ENV.AUTH_CLIENT_URL,
     },
@@ -74,7 +76,7 @@ export const userPasswordResetHandler: RequestHandler<
       headers: {
         'x-ticket': {
           prepared: true,
-          value: ticket as string,
+          value: ticket,
         },
         'x-redirect-to': {
           prepared: true,

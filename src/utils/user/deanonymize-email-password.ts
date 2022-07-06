@@ -95,7 +95,7 @@ export const handleDeanonymizeUserEmailPassword = async (
         headers: {
           'x-ticket': {
             prepared: true,
-            value: ticket as string,
+            value: ticket,
           },
           'x-redirect-to': {
             prepared: true,
@@ -115,6 +115,7 @@ export const handleDeanonymizeUserEmailPassword = async (
         link,
         displayName: user.displayName,
         email,
+        newEmail: user.newEmail,
         ticket,
         redirectTo: encodeURIComponent(redirectTo),
         locale: user.locale ?? ENV.AUTH_LOCALE_DEFAULT,

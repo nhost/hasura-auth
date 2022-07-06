@@ -1,4 +1,4 @@
-import { castBooleanEnv, castStringArrayEnv } from '@config';
+import { castBooleanEnv, castStringArrayEnv, castStringEnv } from '@config';
 
 const PROVIDERS = {
   get github() {
@@ -6,19 +6,19 @@ const PROVIDERS = {
       ? null
       : {
           get clientID() {
-            return process.env.AUTH_PROVIDER_GITHUB_CLIENT_ID;
+            return castStringEnv('AUTH_PROVIDER_GITHUB_CLIENT_ID');
           },
           get clientSecret() {
-            return process.env.AUTH_PROVIDER_GITHUB_CLIENT_SECRET;
+            return castStringEnv('AUTH_PROVIDER_GITHUB_CLIENT_SECRET');
           },
           get authorizationURL() {
-            return process.env.AUTH_PROVIDER_GITHUB_AUTHORIZATION_URL;
+            return castStringEnv('AUTH_PROVIDER_GITHUB_AUTHORIZATION_URL');
           },
           get tokenURL() {
-            return process.env.AUTH_PROVIDER_GITHUB_TOKEN_URL;
+            return castStringEnv('AUTH_PROVIDER_GITHUB_TOKEN_URL');
           },
           get userProfileURL() {
-            return process.env.AUTH_PROVIDER_GITHUB_USER_PROFILE_URL;
+            return castStringEnv('AUTH_PROVIDER_GITHUB_USER_PROFILE_URL');
           },
           get scope() {
             return castStringArrayEnv('AUTH_PROVIDER_GITHUB_SCOPE', [
@@ -33,10 +33,10 @@ const PROVIDERS = {
       ? null
       : {
           get clientID() {
-            return process.env.AUTH_PROVIDER_GOOGLE_CLIENT_ID || '';
+            return castStringEnv('AUTH_PROVIDER_GOOGLE_CLIENT_ID');
           },
           get clientSecret() {
-            return process.env.AUTH_PROVIDER_GOOGLE_CLIENT_SECRET || '';
+            return castStringEnv('AUTH_PROVIDER_GOOGLE_CLIENT_SECRET');
           },
           get scope() {
             return castStringArrayEnv('AUTH_PROVIDER_GOOGLE_SCOPE', [
@@ -52,10 +52,10 @@ const PROVIDERS = {
       ? null
       : {
           get clientID() {
-            return process.env.AUTH_PROVIDER_FACEBOOK_CLIENT_ID || '';
+            return castStringEnv('AUTH_PROVIDER_FACEBOOK_CLIENT_ID');
           },
           get clientSecret() {
-            return process.env.AUTH_PROVIDER_FACEBOOK_CLIENT_SECRET || '';
+            return castStringEnv('AUTH_PROVIDER_FACEBOOK_CLIENT_SECRET');
           },
           get profileFields() {
             return castStringArrayEnv('AUTH_PROVIDER_FACEBOOK_PROFILE_FIELDS', [
@@ -77,10 +77,10 @@ const PROVIDERS = {
       ? null
       : {
           get consumerKey() {
-            return process.env.AUTH_PROVIDER_TWITTER_CONSUMER_KEY || '';
+            return castStringEnv('AUTH_PROVIDER_TWITTER_CONSUMER_KEY');
           },
           get consumerSecret() {
-            return process.env.AUTH_PROVIDER_TWITTER_CONSUMER_SECRET || '';
+            return castStringEnv('AUTH_PROVIDER_TWITTER_CONSUMER_SECRET');
           },
         };
   },
@@ -90,10 +90,10 @@ const PROVIDERS = {
       ? null
       : {
           get clientID() {
-            return process.env.AUTH_PROVIDER_LINKEDIN_CLIENT_ID || '';
+            return castStringEnv('AUTH_PROVIDER_LINKEDIN_CLIENT_ID');
           },
           get clientSecret() {
-            return process.env.AUTH_PROVIDER_LINKEDIN_CLIENT_SECRET || '';
+            return castStringEnv('AUTH_PROVIDER_LINKEDIN_CLIENT_SECRET');
           },
           get scope() {
             return castStringArrayEnv('AUTH_PROVIDER_LINKEDIN_SCOPE', [
@@ -111,23 +111,18 @@ const PROVIDERS = {
       try {
         return {
           get clientID() {
-            return process.env.AUTH_PROVIDER_APPLE_CLIENT_ID || '';
+            return castStringEnv('AUTH_PROVIDER_APPLE_CLIENT_ID');
           },
           get teamID() {
-            return process.env.AUTH_PROVIDER_APPLE_TEAM_ID || '';
+            return castStringEnv('AUTH_PROVIDER_APPLE_TEAM_ID');
           },
           get keyID() {
-            return process.env.AUTH_PROVIDER_APPLE_KEY_ID || '';
+            return castStringEnv('AUTH_PROVIDER_APPLE_KEY_ID');
           },
-          get key() {
-            return (
-              (process.env.AUTH_PROVIDER_APPLE_PRIVATE_KEY &&
-                // Convert contents from base64 string to string to avoid issues with line breaks in the environment variable
-                Buffer.from(
-                  process.env.AUTH_PROVIDER_APPLE_PRIVATE_KEY,
-                  'base64'
-                ).toString('ascii')) ||
-              ''
+          get privateKeyString() {
+            return castStringEnv('AUTH_PROVIDER_APPLE_PRIVATE_KEY').replace(
+              /\\n/g,
+              '\n'
             );
           },
           get scope() {
@@ -148,10 +143,10 @@ const PROVIDERS = {
       ? null
       : {
           get clientID() {
-            return process.env.AUTH_PROVIDER_WINDOWS_LIVE_CLIENT_ID || '';
+            return castStringEnv('AUTH_PROVIDER_WINDOWS_LIVE_CLIENT_ID');
           },
           get clientSecret() {
-            return process.env.AUTH_PROVIDER_WINDOWS_LIVE_CLIENT_SECRET || '';
+            return castStringEnv('AUTH_PROVIDER_WINDOWS_LIVE_CLIENT_SECRET');
           },
           get scope() {
             return castStringArrayEnv('AUTH_PROVIDER_WINDOWS_LIVE_SCOPE', [
@@ -167,10 +162,10 @@ const PROVIDERS = {
       ? null
       : {
           get clientID() {
-            return process.env.AUTH_PROVIDER_SPOTIFY_CLIENT_ID || '';
+            return castStringEnv('AUTH_PROVIDER_SPOTIFY_CLIENT_ID');
           },
           get clientSecret() {
-            return process.env.AUTH_PROVIDER_SPOTIFY_CLIENT_SECRET || '';
+            return castStringEnv('AUTH_PROVIDER_SPOTIFY_CLIENT_SECRET');
           },
           get scope() {
             return castStringArrayEnv('AUTH_PROVIDER_SPOTIFY_SCOPE', [
@@ -186,13 +181,13 @@ const PROVIDERS = {
       ? null
       : {
           get clientID() {
-            return process.env.AUTH_PROVIDER_GITLAB_CLIENT_ID || '';
+            return castStringEnv('AUTH_PROVIDER_GITLAB_CLIENT_ID');
           },
           get clientSecret() {
-            return process.env.AUTH_PROVIDER_GITLAB_CLIENT_SECRET || '';
+            return castStringEnv('AUTH_PROVIDER_GITLAB_CLIENT_SECRET');
           },
           get baseUrl() {
-            return process.env.AUTH_PROVIDER_GITLAB_BASE_URL || '';
+            return castStringEnv('AUTH_PROVIDER_GITLAB_BASE_URL');
           },
           get scope() {
             return castStringArrayEnv('AUTH_PROVIDER_GITLAB_SCOPE', [
@@ -207,10 +202,10 @@ const PROVIDERS = {
       ? null
       : {
           get clientID() {
-            return process.env.AUTH_PROVIDER_BITBUCKET_CLIENT_ID || '';
+            return castStringEnv('AUTH_PROVIDER_BITBUCKET_CLIENT_ID');
           },
           get clientSecret() {
-            return process.env.AUTH_PROVIDER_BITBUCKET_CLIENT_SECRET || '';
+            return castStringEnv('AUTH_PROVIDER_BITBUCKET_CLIENT_SECRET');
           },
         };
   },
@@ -220,10 +215,10 @@ const PROVIDERS = {
       ? null
       : {
           get clientID() {
-            return process.env.AUTH_PROVIDER_STRAVA_CLIENT_ID || '';
+            return castStringEnv('AUTH_PROVIDER_STRAVA_CLIENT_ID');
           },
           get clientSecret() {
-            return process.env.AUTH_PROVIDER_STRAVA_CLIENT_SECRET || '';
+            return castStringEnv('AUTH_PROVIDER_STRAVA_CLIENT_SECRET');
           },
           get scope() {
             return castStringArrayEnv('AUTH_PROVIDER_STRAVA_SCOPE', [
@@ -238,10 +233,10 @@ const PROVIDERS = {
       ? null
       : {
           get clientID() {
-            return process.env.AUTH_PROVIDER_DISCORD_CLIENT_ID ?? '';
+            return castStringEnv('AUTH_PROVIDER_DISCORD_CLIENT_ID');
           },
           get clientSecret() {
-            return process.env.AUTH_PROVIDER_DISCORD_CLIENT_SECRET ?? '';
+            return castStringEnv('AUTH_PROVIDER_DISCORD_CLIENT_SECRET');
           },
           get scope() {
             return castStringArrayEnv('AUTH_PROVIDER_DISCORD_SCOPE', [
@@ -257,10 +252,10 @@ const PROVIDERS = {
       ? null
       : {
           get clientID() {
-            return process.env.AUTH_PROVIDER_TWITCH_CLIENT_ID ?? '';
+            return castStringEnv('AUTH_PROVIDER_TWITCH_CLIENT_ID');
           },
           get clientSecret() {
-            return process.env.AUTH_PROVIDER_TWITCH_CLIENT_SECRET ?? '';
+            return castStringEnv('AUTH_PROVIDER_TWITCH_CLIENT_SECRET');
           },
           get scope() {
             return castStringArrayEnv('AUTH_PROVIDER_TWITCH_SCOPE', [

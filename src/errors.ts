@@ -1,4 +1,4 @@
-import { NextFunction, Response, Request } from 'express';
+import { Response, Request } from 'express';
 import { StatusCodes } from 'http-status-codes';
 
 import { logger } from './logger';
@@ -11,9 +11,7 @@ import { generateRedirectUrl } from './utils';
 export async function serverErrors(
   error: Error,
   _req: Request,
-  res: Response,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  next: NextFunction
+  res: Response
 ): Promise<unknown> {
   logger.error(error.message);
 
@@ -108,6 +106,10 @@ export const ERRORS = asErrors({
     status: StatusCodes.BAD_REQUEST,
     message: 'Logged in user is not anonymous',
   },
+  'forbidden-anonymous': {
+    status: StatusCodes.FORBIDDEN,
+    message: 'Anonymous users cannot access this endpoint',
+  },
   'invalid-refresh-token': {
     status: StatusCodes.UNAUTHORIZED,
     message: 'Invalid or expired refresh token',
@@ -152,13 +154,14 @@ export const sendError = (
   {
     customMessage,
     redirectTo,
-  }: { customMessage?: string; redirectTo?: string } = {}
+  }: { customMessage?: string; redirectTo?: string } = {},
+  forwardRedirection?: boolean
 ) => {
   const error = ERRORS[code];
   const message = customMessage ?? error.message;
   const status = error.status;
 
-  if (redirectTo) {
+  if (forwardRedirection && redirectTo) {
     const redirectUrl = generateRedirectUrl(redirectTo, {
       error: code,
       errorDescription: message,

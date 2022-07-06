@@ -179,7 +179,7 @@ describe('custom JWT claims', () => {
       password,
     });
 
-    const jwt = decodeAccessToken(body.session.accessToken);
+    const jwt = await decodeAccessToken(body.session.accessToken);
     expect(jwt).toBeObject();
     if (jwt) {
       expect(jwt['https://hasura.io/jwt/claims']).toBeObject();
@@ -219,7 +219,7 @@ describe('custom JWT claims', () => {
     });
 
     expect(body).toBeDefined();
-    const jwt = decodeAccessToken(body.session.accessToken);
+    const jwt = await decodeAccessToken(body.session.accessToken);
 
     expect(jwt).not.toBeNull();
     if (jwt) {
@@ -232,19 +232,24 @@ describe('custom JWT claims', () => {
 
   it('should handle an invalid configuration (unparsable)', async () => {
     await request.post('/change-env').send({
-      AUTH_JWT_CUSTOM_CLAIMS: '{"invalid JSON": unquoted value }',
+      AUTH_JWT_CUSTOM_CLAIMS: '{"invalid-json": unquoted value }',
     });
     const email = faker.internet.email();
     const password = faker.internet.password();
-    const {
-      body: {
-        session: { user },
-      },
-    } = await request.post('/signup/email-password').send({
+    const { body } = await request.post('/signup/email-password').send({
       email,
       password,
     });
-    expect(user?.id).toBeString();
+
+    const jwt = await decodeAccessToken(body.session.accessToken);
+
+    expect(jwt).not.toBeNull();
+    if (jwt) {
+      expect(jwt['https://hasura.io/jwt/claims']).toBeObject();
+      expect(
+        jwt['https://hasura.io/jwt/claims']['x-hasura-invalid-json']
+      ).toBeUndefined();
+    }
   });
 
   it('should handle an invalid configuration (parsable, but not an object)', async () => {
@@ -277,7 +282,7 @@ describe('custom JWT claims', () => {
       password,
     });
     expect(session?.user?.id).toBeString();
-    const jwt = decodeAccessToken(session.accessToken);
+    const jwt = await decodeAccessToken(session.accessToken);
     if (jwt) {
       expect(jwt['https://hasura.io/jwt/claims']).toBeObject();
       expect(
@@ -299,12 +304,38 @@ describe('custom JWT claims', () => {
       password,
     });
     expect(session?.user?.id).toBeString();
-    const jwt = decodeAccessToken(session.accessToken);
+    const jwt = await decodeAccessToken(session.accessToken);
     if (jwt) {
       expect(jwt['https://hasura.io/jwt/claims']).toBeObject();
       expect(
         jwt['https://hasura.io/jwt/claims']['x-hasura-key']
       ).toBeUndefined();
+    }
+  });
+
+  it('should handle a custom claim on a hard-coded JSON field', async () => {
+    await request.post('/change-env').send({
+      AUTH_JWT_CUSTOM_CLAIMS: '{"name": "metadata.name" }',
+    });
+    const email = faker.internet.email();
+    const password = faker.internet.password();
+    const name = faker.name.firstName();
+    const {
+      body: { session },
+    } = await request.post('/signup/email-password').send({
+      email,
+      password,
+      options: {
+        metadata: { name },
+      },
+    });
+    expect(session?.user?.id).toBeString();
+    const jwt = await decodeAccessToken(session.accessToken);
+    if (jwt) {
+      expect(jwt['https://hasura.io/jwt/claims']).toBeObject();
+      expect(jwt['https://hasura.io/jwt/claims']['x-hasura-name']).toEqual(
+        name
+      );
     }
   });
 });
