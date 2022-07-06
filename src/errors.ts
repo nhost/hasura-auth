@@ -140,9 +140,9 @@ export const ERRORS = asErrors({
     status: StatusCodes.INTERNAL_SERVER_ERROR,
     message: 'Absent or invalid SMS provider type',
   },
-  'provider-login-failed': {
+  'provider-signin-failed': {
     status: StatusCodes.UNAUTHORIZED,
-    message: 'Auth provider login failed',
+    message: 'Auth provider signin failed',
   },
 });
 
