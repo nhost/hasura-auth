@@ -56,7 +56,7 @@ const readFile = (view: string, locals: Record<string, string>): string => {
   const { locale } = locals;
   const fullPath = path.join(
     ENV.PWD,
-    'email-templates',
+    'email-templates', // TODO rename the folder to `templates` and it now also stores SMS templates
     getFileName(view, locals)
   );
   logger.debug(`Using email template: ${fullPath}`);
@@ -78,7 +78,7 @@ const readRemoteTemplate = async (
 ): Promise<string> => {
   const { locale } = locals;
   const fileName = getFileName(view, locals);
-  const url = urlJoin(ENV.AUTH_EMAIL_TEMPLATE_FETCH_URL, fileName);
+  const url = urlJoin(ENV.AUTH_TEMPLATE_FETCH_URL, fileName);
   logger.debug(`Using email template: ${url}`);
   try {
     const result = await axios.get(url);
@@ -121,7 +121,7 @@ export const renderTemplate = async (
   locals: EmailLocals | SmsLocals
 ) => {
   try {
-    const content = ENV.AUTH_EMAIL_TEMPLATE_FETCH_URL
+    const content = ENV.AUTH_TEMPLATE_FETCH_URL
       ? await readRemoteTemplate(view, locals)
       : readFile(view, locals);
     return templateEngine({ content, variables: locals });

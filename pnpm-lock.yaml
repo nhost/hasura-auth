@@ -87,7 +87,7 @@ specifiers:
   jest-extended: 0.11.5
   joi: ^17.4.0
   joi-to-swagger: ^6.0.1
-  jose: 1.28.1
+  jose: 4.8.3
   js-yaml: 3.13.1
   json-to-graphql-query: ^2.2.0
   jsonata: ^1.8.5
@@ -159,7 +159,7 @@ dependencies:
   http-status-codes: 2.2.0
   joi: 17.6.0
   joi-to-swagger: 6.0.1_joi@17.6.0
-  jose: 1.28.1
+  jose: 4.8.3
   js-yaml: 3.13.1
   json-to-graphql-query: 2.2.3
   jsonata: 1.8.6
@@ -2168,11 +2168,6 @@ packages:
       '@otplib/core': 12.0.1
       '@otplib/plugin-crypto': 12.0.1
       '@otplib/plugin-thirty-two': 12.0.1
-    dev: false
-
-  /@panva/asn1.js/1.0.0:
-    resolution: {integrity: sha512-UdkG3mLEqXgnlKsWanWcgb6dOjUzJ+XC5f+aWw30qrtjxeNUSfKX1cd5FBzOaXQumoe9nIqeZUvrRJS03HCCtw==}
-    engines: {node: '>=10.13.0'}
     dev: false
 
   /@peculiar/asn1-android/2.1.9:
@@ -8160,11 +8155,8 @@ packages:
       '@sideway/pinpoint': 2.0.0
     dev: false
 
-  /jose/1.28.1:
-    resolution: {integrity: sha512-6JK28rFu5ENp/yxMwM+iN7YeaInnY9B9Bggjkz5fuwLiJhbVrl2O4SJr65bdNBPl9y27fdC3Mymh+FVCvozLIg==}
-    engines: {node: '>=10.13.0'}
-    dependencies:
-      '@panva/asn1.js': 1.0.0
+  /jose/4.8.3:
+    resolution: {integrity: sha512-7rySkpW78d8LBp4YU70Wb7+OTgE3OwAALNVZxhoIhp4Kscp+p/fBkdpxGAMKxvCAMV4QfXBU9m6l9nX/vGwd2g==}
     dev: false
 
   /js-stringify/1.0.2:

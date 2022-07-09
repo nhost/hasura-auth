@@ -33,7 +33,7 @@ jobs:
           SMTP_SECURE: 'false'
           SMTP_SENDER: hbp@hbp.com
     container:
-      image: node:16
+      image: node:16-alpine
       env:
         AUTH_PORT: 4000
         HASURA_GRAPHQL_ADMIN_SECRET: ${{ env.HASURA_GRAPHQL_ADMIN_SECRET }}

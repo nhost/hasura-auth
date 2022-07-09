@@ -29,12 +29,14 @@ You can create your own templates to customize the emails that will be sent to t
 
 When using Docker, you can mount your own email templates from the local file system. You can have a look at this [docker-compose example](https://github.com/nhost/hasura-auth/blob/16df3e84b6c9a4f888b2ff07bd85afc34f8ed051/docker-compose-example.yaml#L41) to see how to set it up.
 
-#### Remote email templates
+#### Remote email and SMS templates
 
-When running Hasura Auth in its own infrastructure, it is possible to mount a volume with custom `email-templates` directory. However, in some cases, we may want to fetch templates from an external HTTP endpoint. Hence the introduction of a new `AUTH_EMAIL_TEMPLATE_FETCH_URL` environment variable:
+When running Hasura Auth in its own infrastructure, it is possible to mount a volume with custom `email-templates` directory. However, in some cases, we may want to fetch templates from an external HTTP endpoint. Hence the introduction of a `AUTH_TEMPLATE_FETCH_URL` environment variable:
+
+_Note_: The directory is named `email-templates` for legacy reasons, but it stores templates for both email and SMS messages. It will be renamed in the near future.
 
 ```bash
-AUTH_EMAIL_TEMPLATE_FETCH_URL=https://github.com/nhost/nhost/tree/custom-email-templates-example/examples/custom-email-templates
+AUTH_TEMPLATE_FETCH_URL=https://github.com/nhost/nhost/tree/custom-email-templates-example/examples/custom-email-templates
 ```
 
 In the above example, on every email creation, the server will use this URL to fetch its templates, depending on the locale, email type and field.
