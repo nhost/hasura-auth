@@ -1,1 +1,1 @@
-${code} is your verification code for ${appName}.
+Your code is ${code}.

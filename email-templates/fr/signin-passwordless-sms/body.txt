@@ -1,1 +1,1 @@
-${code} est votre code de validation pour ${appName}.
+Votre code est ${code}.
