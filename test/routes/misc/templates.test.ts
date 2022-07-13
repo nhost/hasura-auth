@@ -17,6 +17,6 @@ describe('templates', () => {
       code: '123456',
     });
 
-    expect(message).toEqual('123456 is your verification code for Nhost App.');
+    expect(message).toEqual('Your code is 123456.');
   });
 });
