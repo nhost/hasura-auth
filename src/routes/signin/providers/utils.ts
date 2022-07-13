@@ -19,7 +19,6 @@ import {
   queryValidator,
   registrationOptions,
 } from '@/validation';
-import { UserFieldsFragment } from '@/utils/__generated__/graphql-request';
 import {
   asyncWrapper,
   getNewRefreshToken,
@@ -30,6 +29,7 @@ import {
   ENV,
 } from '@/utils';
 import { UserRegistrationOptions } from '@/types';
+import { sendError } from '@/errors';
 import { decodeJwt, JWTPayload } from 'jose';
 
 export const providerCallbackQuerySchema = Joi.object({
@@ -143,6 +143,11 @@ const manageProviderStrategy =
       }
     }
 
+    if (!ENV.AUTH_PROVIDER_SIGNUP_ENABLED) {
+      // provider signup is disabled
+      return done(null, { failureReason: 'auth provider signup disabled' });
+    }
+
     const {
       defaultRole,
       locale,
@@ -192,9 +197,22 @@ const providerCallback = asyncWrapper(
       })
       .then((res) => res.deleteAuthProviderRequest?.options);
 
-    const user = req.user as UserFieldsFragment;
+    const { id, failureReason } = req.user as any;
 
-    const refreshToken = await getNewRefreshToken(user.id);
+    if (!id) {
+      const failureRedirect = new URL(requestOptions.redirectTo);
+      failureRedirect.searchParams.set('signinFailed', 'true');
+
+      if (failureReason) {
+        failureRedirect.searchParams.set('failureReason', failureReason);
+      }
+
+      return sendError(res, 'provider-signin-failed', {
+        redirectTo: failureRedirect.toString(),
+      }) as void;
+    }
+
+    const refreshToken = await getNewRefreshToken(id);
 
     // redirect back user to app url
     // ! temparily send the refresh token in both hash and query parameter

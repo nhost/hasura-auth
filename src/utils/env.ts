@@ -156,6 +156,9 @@ export const ENV = {
       locales.push(ENV.AUTH_LOCALE_DEFAULT);
     return locales;
   },
+  get AUTH_PROVIDER_SIGNUP_ENABLED() {
+    return castBooleanEnv('AUTH_PROVIDER_SIGNUP_ENABLED', true);
+  },
 
   // SIGN IN
   get AUTH_EMAIL_PASSWORDLESS_ENABLED() {
