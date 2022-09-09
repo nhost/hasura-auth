@@ -20,16 +20,42 @@ function toPgArray(arr: string[]): string {
   return `{${m}}`;
 }
 
-export const escapeValueToPg = (value: unknown): string => {
+// * Determines whether the given path is expected to the an array or not
+/* WHY?
+In JSONata, the expression `books.title` with return a string when there is a single book.
+For instance:
+`{ books: [{title: 'War and Peace'}, {title: 'Anna Karenina'}] }` will return ["War and Peace", "Anna Karenina"]
+whereas
+`{ books: [{ title: 'War and Peace' } }]` will return "War and Peace" while we want ["War and Peace"]
+*/
+const isJsonataResultArray = (path: string, data: unknown): boolean => {
+  const parentPath = `$type(${
+    path.includes('.') ? path.substring(0, path.lastIndexOf('.')) : '$'
+  })`;
+  const expression = jsonata(parentPath);
+  const value = expression.evaluate(data);
+  return value === 'array';
+};
+
+export const escapeValueToPg = (
+  value: unknown,
+  asArray: boolean
+): string | null => {
   // ? Why escaping values? See:
   // * https://hasura.io/docs/latest/graphql/core/auth/authorization/roles-variables.html#format-of-session-variables
   // * https://github.com/hasura/graphql-engine/issues/1902
+  // `asArray` means the final value should be a Postgres array
+  if (asArray) {
+    return Array.isArray(value)
+      ? toPgArray(value)
+      : escapeValueToPg(value ? [value] : [], false);
+  }
   if (typeof value === 'string') {
     return value;
   } else if (Array.isArray(value)) {
     return toPgArray(value);
   } else {
-    return JSON.stringify(value ?? null);
+    return value ? JSON.stringify(value) : null;
   }
 };
 
@@ -102,12 +128,17 @@ export const generateCustomClaims = async (userId: string) => {
         // * Parse the path into a JSONata AST
         const expression = jsonata(path);
         // * Evaluate the JSONata expression from the fetched user data
-        const value = expression.evaluate(user, expression);
+        const value = expression.evaluate(user);
         // * Convert value into a PostgreSQL format that can be used by the Hasura permissions system
         // * see {@link escapeValueToPg}
-        const jsonataValue = escapeValueToPg(value);
-        // * Add the result to the aggregated object, prefixed with `x-hasura-`
-        aggr[`x-hasura-${name}`] = jsonataValue;
+        const jsonataValue = escapeValueToPg(
+          value,
+          isJsonataResultArray(path, user)
+        );
+        if (jsonataValue) {
+          // * Add the result to the aggregated object, prefixed with `x-hasura-`
+          aggr[`x-hasura-${name}`] = jsonataValue;
+        }
       } catch {
         // * Don't raise errors if JSONata fails, and log a warning
         logger.warn(`Invalid JSONata expression`, { user, path });
