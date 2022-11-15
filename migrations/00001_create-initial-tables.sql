@@ -1,9 +1,11 @@
 -- start a transaction
 BEGIN;
 
+-- Created by Diesel in schema initialization
+
 -- extensions
-CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA public;
-CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA public;
+-- CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA public;
+-- CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA public;
 
 
 -- functions
@@ -21,7 +23,7 @@ END;
 $$;
 
 -- domains
-CREATE DOMAIN auth.email AS public.citext CHECK (value ~ '^[a-zA-Z0-9.!#$%&''*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$');
+CREATE DOMAIN auth.email AS citext CHECK (value ~ '^[a-zA-Z0-9.!#$%&''*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$');
 
 -- tables
 CREATE TABLE auth.user_providers (
