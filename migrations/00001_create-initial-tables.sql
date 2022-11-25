@@ -27,7 +27,7 @@ CREATE DOMAIN auth.email AS citext CHECK (value ~ '^[a-zA-Z0-9.!#$%&''*+/=?^_`{|
 
 -- tables
 CREATE TABLE auth.user_providers (
-  id uuid DEFAULT public.gen_random_uuid () NOT NULL PRIMARY KEY,
+  id uuid DEFAULT gen_random_uuid () NOT NULL PRIMARY KEY,
   created_at timestamp with time zone DEFAULT now() NOT NULL,
   updated_at timestamp with time zone DEFAULT now() NOT NULL,
   user_id uuid NOT NULL,
@@ -40,7 +40,7 @@ CREATE TABLE auth.user_providers (
 );
 
 CREATE TABLE auth.user_roles (
-  id uuid DEFAULT public.gen_random_uuid () NOT NULL PRIMARY KEY,
+  id uuid DEFAULT gen_random_uuid () NOT NULL PRIMARY KEY,
   created_at timestamp with time zone DEFAULT now() NOT NULL,
   user_id uuid NOT NULL,
   role text NOT NULL,
@@ -48,7 +48,7 @@ CREATE TABLE auth.user_roles (
 );
 
 CREATE TABLE auth.users (
-  id uuid DEFAULT public.gen_random_uuid () NOT NULL PRIMARY KEY,
+  id uuid DEFAULT gen_random_uuid () NOT NULL PRIMARY KEY,
   created_at timestamp with time zone DEFAULT now() NOT NULL,
   updated_at timestamp with time zone DEFAULT now() NOT NULL,
   last_seen timestamp with time zone,

@@ -9,7 +9,7 @@
   "main": "dist/start.js",
   "scripts": {
     "build": "rimraf dist && tsc --project tsconfig.build.json && tsc-alias",
-    "start": "node ./dist/start.js",
+    "start": "NODE_ENV=production node ./dist/start.js",
     "lint": "eslint --ext .ts .",
     "lint:fix": "npm run lint --fix",
     "dev": "run-p  dev:start codegen:watch",

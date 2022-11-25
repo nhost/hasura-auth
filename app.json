@@ -1,0 +1,22 @@
+{
+    "name": "Hasura auth",
+    "addons": [
+        "heroku-postgresql:standard-0"
+    ],
+    "buildpacks": [
+        {
+            "url": "https://github.com/unfold/heroku-buildpack-pnpm.git"
+        }
+    ],
+    "env": {
+        "AUTH_JWT_CUSTOM_CLAIMS": "{\"projects_leaded\":\"projects_leaded[].project_id\"}",
+        "AUTH_LOG_LEVEL": "info"
+    },
+    "environments": {
+        "review": {
+            "addons": [
+                "heroku-postgresql:hobby-dev"
+            ]
+        }
+    }
+}

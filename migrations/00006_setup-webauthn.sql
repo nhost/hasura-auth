@@ -5,7 +5,7 @@ ALTER TABLE auth.users
     ADD COLUMN webauthn_current_challenge text;
 
 CREATE TABLE auth.user_authenticators(
-    id uuid DEFAULT public.gen_random_uuid () NOT NULL PRIMARY KEY,
+    id uuid DEFAULT gen_random_uuid () NOT NULL PRIMARY KEY,
     user_id uuid NOT NULL,
     credential_id text UNIQUE NOT NULL,
     credential_public_key bytea,
