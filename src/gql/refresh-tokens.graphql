@@ -4,10 +4,9 @@ mutation insertRefreshToken($refreshToken: authRefreshTokens_insert_input!) {
   }
 }
 
-mutation deleteRefreshToken($refreshToken: uuid!) {
-  deleteAuthRefreshToken(refreshToken: $refreshToken) {
-    refreshToken
-    expiresAt
+mutation deleteRefreshTokens($refreshTokens: [String!]!) {
+  deleteAuthRefreshTokens(where: { refreshToken: { _in: $refreshTokens } }) {
+    affected_rows
   }
 }
 

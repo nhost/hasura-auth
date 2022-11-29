@@ -36,14 +36,14 @@ query users($where: users_bool_exp!) {
 }
 
 mutation getUsersByRefreshTokenAndUpdateRefreshTokenExpiresAt(
-  $refreshToken: uuid!
+  $refreshTokens: [String!]!
   $expiresAt: timestamptz!
 ) {
   updateAuthRefreshTokens(
     _set: { expiresAt: $expiresAt }
     where: {
       _and: [
-        { refreshToken: { _eq: $refreshToken } }
+        { refreshToken: { _in: $refreshTokens } }
         { user: { disabled: { _eq: false } } }
         { expiresAt: { _gte: now } }
       ]
@@ -58,11 +58,11 @@ mutation getUsersByRefreshTokenAndUpdateRefreshTokenExpiresAt(
   }
 }
 
-query getUsersByRefreshTokenOld($refreshToken: uuid!) {
+query getUsersByRefreshToken($refreshTokens: [String!]!) {
   authRefreshTokens(
     where: {
       _and: [
-        { refreshToken: { _eq: $refreshToken } }
+        { refreshToken: { _in: $refreshTokens } }
         { user: { disabled: { _eq: false } } }
         { expiresAt: { _gte: now } }
       ]
