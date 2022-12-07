@@ -7,7 +7,7 @@ import { RegistrationCredentialJSON } from '@simplewebauthn/typescript-types';
 
 import { ENV } from './env';
 import { gqlSdk } from './gql-sdk';
-import { AuthUserSecurityKeys_Insert_Input } from './__generated__/graphql-request';
+import { AuthUserSecurityKeysInsertInput } from './__generated__/graphql-request';
 
 export const getWebAuthnRelyingParty = () =>
   ENV.AUTH_CLIENT_URL && new URL(ENV.AUTH_CLIENT_URL).hostname;
@@ -55,7 +55,7 @@ export const verifyWebAuthnRegistration = async (
     counter,
   } = registrationInfo;
 
-  const newSecurityKey: AuthUserSecurityKeys_Insert_Input = {
+  const newSecurityKey: AuthUserSecurityKeysInsertInput = {
     credentialId: credentialId.toString('base64url'),
     credentialPublicKey: Buffer.from(
       '\\x' + credentialPublicKey.toString('hex')
