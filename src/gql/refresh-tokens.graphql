@@ -1,4 +1,4 @@
-mutation insertRefreshToken($refreshToken: authRefreshTokens_insert_input!) {
+mutation insertRefreshToken($refreshToken: authRefreshTokensInsertInput!) {
   insertAuthRefreshToken(object: $refreshToken) {
     refreshToken
   }

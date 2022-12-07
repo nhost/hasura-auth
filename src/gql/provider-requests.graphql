@@ -1,5 +1,5 @@
 mutation insertProviderRequest(
-  $providerRequest: authProviderRequests_insert_input!
+  $providerRequest: authProviderRequestsInsertInput!
 ) {
   insertAuthProviderRequest(object: $providerRequest) {
     id

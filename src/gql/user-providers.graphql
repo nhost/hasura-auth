@@ -29,7 +29,7 @@ query userProvider($userId: uuid!, $providerId: String!) {
 
 mutation updateAuthUserprovider(
   $id: uuid!
-  $authUserProvider: authUserProviders_set_input!
+  $authUserProvider: authUserProvidersSetInput!
 ) {
   updateAuthUserProvider(pk_columns: { id: $id }, _set: $authUserProvider) {
     id

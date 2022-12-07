@@ -28,7 +28,7 @@ mutation updateUserChallenge($userId: uuid!, $challenge: String!) {
 }
 
 mutation addUserSecurityKey(
-  $userSecurityKey: authUserSecurityKeys_insert_input!
+  $userSecurityKey: authUserSecurityKeysInsertInput!
 ) {
   insertAuthUserSecurityKey(object: $userSecurityKey) {
     id

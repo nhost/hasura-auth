@@ -1,4 +1,4 @@
-mutation insertUserRoles($userRoles: [authUserRoles_insert_input!]!) {
+mutation insertUserRoles($userRoles: [authUserRolesInsertInput!]!) {
   insertAuthUserRoles(objects: $userRoles) {
     affected_rows
   }
