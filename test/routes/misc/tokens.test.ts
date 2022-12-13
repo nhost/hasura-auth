@@ -29,7 +29,7 @@ describe('token', () => {
     await client.query(`DELETE FROM auth.users;`);
   });
 
-  it('should should sign in and get access token with standard claims', async () => {
+  it('should sign in and get access token with standard claims', async () => {
     // set env vars
 
     const { body } = await request
