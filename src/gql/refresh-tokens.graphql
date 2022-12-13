@@ -21,10 +21,16 @@ mutation deleteUserRefreshTokens($userId: uuid!) {
   deleteAuthRefreshTokens(where: { user: { id: { _eq: $userId } } }) {
     affected_rows
   }
+  deleteAuthHashedRefreshTokens(where: { user: { id: { _eq: $userId } } }) {
+    affected_rows
+  }
 }
 
 mutation deleteExpiredRefreshTokens {
   deleteAuthRefreshTokens(where: { expiresAt: { _lt: now } }) {
+    affected_rows
+  }
+  deleteAuthHashedRefreshTokens(where: { expiresAt: { _lt: now } }) {
     affected_rows
   }
 }
