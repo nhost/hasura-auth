@@ -63,6 +63,9 @@ export const ENV = {
   get AUTH_SMS_PROVIDER() {
     return castStringEnv('AUTH_SMS_PROVIDER');
   },
+  get AUTH_SMS_TEST_PHONE_NUMBERS() {
+    return castStringArrayEnv('AUTH_SMS_TEST_PHONE_NUMBERS', []);
+  },
 
   // TWILIO
   get AUTH_SMS_TWILIO_ACCOUNT_SID() {
@@ -205,6 +208,10 @@ export const ENV = {
 
   get AUTH_USER_SESSION_VARIABLE_FIELDS(): Record<string, string> {
     return this.AUTH_USER_SESSION_VARIABLE_FIELDS;
+  },
+
+  get AUTH_CONCEAL_ERRORS() {
+    return castBooleanEnv('AUTH_CONCEAL_ERRORS', false);
   },
   // * See ../server.ts
   // get AUTH_SKIP_INIT() {

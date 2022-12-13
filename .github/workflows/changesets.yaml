@@ -15,6 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       hasChangesets: ${{ steps.changesets.outputs.hasChangesets }}
+      version: ${{ steps.check_tag.outputs.version }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -37,39 +38,24 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  build:
-    name: Build Docker image
-    needs: version
-    timeout-minutes: 60
-    runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: write
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-      - name: Build
-        uses: docker/build-push-action@v3
-        timeout-minutes: 60
-        with:
-          context: .
-          platforms: linux/amd64,linux/arm64
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+      - name: Check Hasura Auth tag
+        id: check_tag
+        if: steps.changesets.outputs.hasChangesets == 'false'
+        run: |
+          VERSION=$(jq -r .version package.json)
+          GIT_TAG="v$VERSION"
+          if [ -z "$(git tag -l | grep $GIT_TAG)" ]; then
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+          fi
 
   test:
-    name: Run tests
+    name: Tests
     uses: ./.github/workflows/test.yaml
 
   publish:
-    name: Publish image & GitHub release
+    name: Publish Docker image
     needs:
       - test
-      - build
       - version
     timeout-minutes: 60
     runs-on: ubuntu-latest
@@ -86,30 +72,23 @@ jobs:
       - name: Preprocess environment
         id: preprocess-environment
         run: echo "aws_account_id=${{ secrets.AWS_PRODUCTION_ACCOUNT_ID }}" >> $GITHUB_OUTPUT
+      - name: Add git tag
+        if: needs.version.outputs.version != ''
+        run: |
+          git tag "v${{ needs.version.outputs.version }}"
+          git push origin --tags
       - name: Determine tags
-        # Create and push a Git tag for the release it doesn't already exist.
-        # If the package version has not been released yet:
-        # 1. push the corresponding git tag
-        # 2. add the corresponding docker tags to the output
-        # 3. add the corresponding git tag to the output
         id: tags
         run: |
-          CURRENT_VERSION=$(jq -r .version package.json)
-          GIT_TAG="v$CURRENT_VERSION"
           echo "docker_tags<<EOF" >> $GITHUB_OUTPUT
           echo "type=sha" >> $GITHUB_OUTPUT
           echo "type=raw,value=latest,enable=true" >> $GITHUB_OUTPUT
-          if [ "${{ needs.version.outputs.hasChangesets }}" = "false" ] && [ -z "$(git tag -l | grep $GIT_TAG)" ]; then
-            git tag $GIT_TAG
-            git push origin --tags
+          if [ "${{ needs.version.outputs.version }}" != "false" ]; then
             echo "type=semver,pattern={{version}},value=$GIT_TAG" >> $GITHUB_OUTPUT
             echo "type=semver,pattern={{major}}.{{minor}},value=$GIT_TAG" >> $GITHUB_OUTPUT
             echo "type=semver,pattern={{major}},value=$GIT_TAG" >> $GITHUB_OUTPUT
-            echo 'EOF' >> $GITHUB_OUTPUT
-            echo "git_tag=$GIT_TAG" >> $GITHUB_OUTPUT
-          else
-            echo 'EOF' >> $GITHUB_OUTPUT
           fi
+          echo 'EOF' >> $GITHUB_OUTPUT
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v4
@@ -147,11 +126,28 @@ jobs:
           push: true
       - name: Create GitHub Release
         uses: taiki-e/create-gh-release-action@v1
-        if: steps.tags.outputs.git_tag != ''
+        if: needs.version.outputs.version != ''
         with:
           changelog: CHANGELOG.md
           token: ${{ secrets.GITHUB_TOKEN }}
-          ref: refs/tags/${{ steps.tags.outputs.git_tag }}
+          ref: refs/tags/${{ needs.version.outputs.version }}
       - name: Remove tag
-        if: failure() && steps.tags.outputs.git_tag != ''
-        run: git push --delete origin ${{ steps.tags.outputs.git_tag }}
+        if: failure() && needs.version.outputs.version != ''
+        run: git push --delete origin ${{ needs.version.outputs.version }}
+
+  release:
+    name: GitHub release
+    needs: publish
+    runs-on: ubuntu-latest
+    if: needs.publish.needs.version.outputs.version != ''
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Create GitHub Release
+        uses: taiki-e/create-gh-release-action@v1
+        if: needs.version.outputs.version != ''
+        with:
+          changelog: CHANGELOG.md
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: refs/tags/${{ needs.version.outputs.version }}
