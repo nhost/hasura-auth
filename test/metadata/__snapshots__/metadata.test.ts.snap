@@ -81,6 +81,40 @@ Object {
           },
         },
         Object {
+          "configuration": Object {
+            "custom_column_names": Object {
+              "created_at": "createdAt",
+              "expires_at": "expiresAt",
+              "hashed_refresh_token": "hashedRefreshToken",
+              "user_id": "userId",
+            },
+            "custom_name": "authHashedRefreshTokens",
+            "custom_root_fields": Object {
+              "delete": "deleteAuthHashedRefreshTokens",
+              "delete_by_pk": "deleteAuthHashedRefreshToken",
+              "insert": "insertAuthHashedRefreshTokens",
+              "insert_one": "insertAuthHashedRefreshToken",
+              "select": "authHashedRefreshTokens",
+              "select_aggregate": "authHashedRefreshTokensAggregate",
+              "select_by_pk": "authHashedRefreshToken",
+              "update": "updateAuthHashedRefreshTokens",
+              "update_by_pk": "updateAuthHashedRefreshToken",
+            },
+          },
+          "object_relationships": Array [
+            Object {
+              "name": "user",
+              "using": Object {
+                "foreign_key_constraint_on": "user_id",
+              },
+            },
+          ],
+          "table": Object {
+            "name": "hashed_refresh_tokens",
+            "schema": "auth",
+          },
+        },
+        Object {
           "array_relationships": Array [
             Object {
               "name": "userRoles",
@@ -246,6 +280,18 @@ Object {
                   "column": "user_id",
                   "table": Object {
                     "name": "refresh_tokens",
+                    "schema": "auth",
+                  },
+                },
+              },
+            },
+            Object {
+              "name": "hashedRefreshTokens",
+              "using": Object {
+                "foreign_key_constraint_on": Object {
+                  "column": "user_id",
+                  "table": Object {
+                    "name": "hashed_refresh_tokens",
                     "schema": "auth",
                   },
                 },
