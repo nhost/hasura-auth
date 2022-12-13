@@ -83,7 +83,7 @@ describe('token', () => {
       'https://hasura.io/jwt/claims'
     ]['x-hasura-user-id'];
     await client.query(
-      `INSERT INTO "auth"."refresh_tokens" (refresh_token, user_id, expires_at) VALUES ($1, $2, $3);`,
+      `INSERT INTO "auth"."hashed_refresh_tokens" (hashed_refresh_token, user_id, expires_at) VALUES ($1, $2, $3);`,
       [
         hashedToken,
         id,

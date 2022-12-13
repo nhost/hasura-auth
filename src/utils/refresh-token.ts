@@ -7,11 +7,13 @@ const hash = (value: string) =>
   crypto.createHash('sha256').update(value).digest('hex');
 
 export const getUserByRefreshToken = async (refreshToken: string) => {
+  const result = await gqlSdk.getUsersByRefreshToken({
+    refreshToken,
+    hashedRefreshToken: hash(refreshToken),
+  });
   return (
-    await gqlSdk.getUsersByRefreshToken({
-      refreshTokens: [refreshToken, hash(refreshToken)],
-    })
-  ).authRefreshTokens[0]?.user;
+    result.authHashedRefreshTokens[0]?.user || result.authRefreshTokens[0]?.user
+  );
 };
 
 export const deleteUserRefreshTokens = async (userId: string) => {
@@ -21,7 +23,8 @@ export const deleteUserRefreshTokens = async (userId: string) => {
 export const deleteRefreshToken = async (refreshToken: string) => {
   // * delete both refresh token and its hash value
   await gqlSdk.deleteRefreshTokens({
-    refreshTokens: [refreshToken, hash(refreshToken)],
+    refreshToken,
+    hashedRefreshToken: hash(refreshToken),
   });
 };
 
@@ -37,7 +40,8 @@ const newRefreshExpiry = () => {
 
 export const updateRefreshTokenExpiry = async (refreshToken: string) => {
   await gqlSdk.getUsersByRefreshTokenAndUpdateRefreshTokenExpiresAt({
-    refreshTokens: [refreshToken, hash(refreshToken)],
+    refreshToken,
+    hashedRefreshToken: hash(refreshToken),
     expiresAt: new Date(newRefreshExpiry()),
   });
 
@@ -48,10 +52,10 @@ export const getNewRefreshToken = async (
   userId: string,
   refreshToken = uuidv4()
 ) => {
-  await gqlSdk.insertRefreshToken({
-    refreshToken: {
+  await gqlSdk.insertHashedRefreshToken({
+    hashedRefreshToken: {
       userId,
-      refreshToken: hash(refreshToken),
+      hashedRefreshToken: hash(refreshToken),
       expiresAt: new Date(newRefreshExpiry()),
     },
   });

@@ -62,6 +62,37 @@ export const hasuraAuthMetadataPatch: MetadataPatch = {
         ],
       },
       {
+        table: { name: 'hashed_refresh_tokens', schema },
+        configuration: {
+          custom_name: 'authHashedRefreshTokens',
+          custom_root_fields: {
+            select: 'authHashedRefreshTokens',
+            select_by_pk: 'authHashedRefreshToken',
+            select_aggregate: 'authHashedRefreshTokensAggregate',
+            insert: 'insertAuthHashedRefreshTokens',
+            insert_one: 'insertAuthHashedRefreshToken',
+            update: 'updateAuthHashedRefreshTokens',
+            update_by_pk: 'updateAuthHashedRefreshToken',
+            delete: 'deleteAuthHashedRefreshTokens',
+            delete_by_pk: 'deleteAuthHashedRefreshToken',
+          },
+          custom_column_names: {
+            hashed_refresh_token: 'hashedRefreshToken',
+            created_at: 'createdAt',
+            expires_at: 'expiresAt',
+            user_id: 'userId',
+          },
+        },
+        object_relationships: [
+          {
+            name: 'user',
+            using: {
+              foreign_key_constraint_on: 'user_id',
+            },
+          },
+        ],
+      },
+      {
         table: { name: 'roles', schema },
         configuration: {
           custom_name: 'authRoles',
@@ -267,6 +298,18 @@ export const hasuraAuthMetadataPatch: MetadataPatch = {
                 table: {
                   schema: 'auth',
                   name: 'refresh_tokens',
+                },
+                column: 'user_id',
+              },
+            },
+          },
+          {
+            name: 'hashedRefreshTokens',
+            using: {
+              foreign_key_constraint_on: {
+                table: {
+                  schema: 'auth',
+                  name: 'hashed_refresh_tokens',
                 },
                 column: 'user_id',
               },

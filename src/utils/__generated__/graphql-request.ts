@@ -68,6 +68,182 @@ export type String_Comparison_Exp = {
   _similar?: InputMaybe<Scalars['String']>;
 };
 
+/** Deprecated: user refresh tokens. This table is replaced by hashed_refresh_tokens and will be removed in the next major release. */
+export type AuthHashedRefreshTokens = {
+  __typename?: 'authHashedRefreshTokens';
+  createdAt: Scalars['timestamptz'];
+  expiresAt: Scalars['timestamptz'];
+  hashedRefreshToken: Scalars['String'];
+  /** An object relationship */
+  user: Users;
+  userId: Scalars['uuid'];
+};
+
+/** aggregated selection of "auth.hashed_refresh_tokens" */
+export type AuthHashedRefreshTokens_Aggregate = {
+  __typename?: 'authHashedRefreshTokens_aggregate';
+  aggregate?: Maybe<AuthHashedRefreshTokens_Aggregate_Fields>;
+  nodes: Array<AuthHashedRefreshTokens>;
+};
+
+/** aggregate fields of "auth.hashed_refresh_tokens" */
+export type AuthHashedRefreshTokens_Aggregate_Fields = {
+  __typename?: 'authHashedRefreshTokens_aggregate_fields';
+  count: Scalars['Int'];
+  max?: Maybe<AuthHashedRefreshTokens_Max_Fields>;
+  min?: Maybe<AuthHashedRefreshTokens_Min_Fields>;
+};
+
+
+/** aggregate fields of "auth.hashed_refresh_tokens" */
+export type AuthHashedRefreshTokens_Aggregate_FieldsCountArgs = {
+  columns?: InputMaybe<Array<AuthHashedRefreshTokens_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']>;
+};
+
+/** order by aggregate values of table "auth.hashed_refresh_tokens" */
+export type AuthHashedRefreshTokens_Aggregate_Order_By = {
+  count?: InputMaybe<Order_By>;
+  max?: InputMaybe<AuthHashedRefreshTokens_Max_Order_By>;
+  min?: InputMaybe<AuthHashedRefreshTokens_Min_Order_By>;
+};
+
+/** input type for inserting array relation for remote table "auth.hashed_refresh_tokens" */
+export type AuthHashedRefreshTokens_Arr_Rel_Insert_Input = {
+  data: Array<AuthHashedRefreshTokens_Insert_Input>;
+  /** upsert condition */
+  on_conflict?: InputMaybe<AuthHashedRefreshTokens_On_Conflict>;
+};
+
+/** Boolean expression to filter rows from the table "auth.hashed_refresh_tokens". All fields are combined with a logical 'AND'. */
+export type AuthHashedRefreshTokens_Bool_Exp = {
+  _and?: InputMaybe<Array<AuthHashedRefreshTokens_Bool_Exp>>;
+  _not?: InputMaybe<AuthHashedRefreshTokens_Bool_Exp>;
+  _or?: InputMaybe<Array<AuthHashedRefreshTokens_Bool_Exp>>;
+  createdAt?: InputMaybe<Timestamptz_Comparison_Exp>;
+  expiresAt?: InputMaybe<Timestamptz_Comparison_Exp>;
+  hashedRefreshToken?: InputMaybe<String_Comparison_Exp>;
+  user?: InputMaybe<Users_Bool_Exp>;
+  userId?: InputMaybe<Uuid_Comparison_Exp>;
+};
+
+/** unique or primary key constraints on table "auth.hashed_refresh_tokens" */
+export enum AuthHashedRefreshTokens_Constraint {
+  /** unique or primary key constraint on columns "hashed_refresh_token" */
+  HashedRefreshTokensPkey = 'hashed_refresh_tokens_pkey'
+}
+
+/** input type for inserting data into table "auth.hashed_refresh_tokens" */
+export type AuthHashedRefreshTokens_Insert_Input = {
+  createdAt?: InputMaybe<Scalars['timestamptz']>;
+  expiresAt?: InputMaybe<Scalars['timestamptz']>;
+  hashedRefreshToken?: InputMaybe<Scalars['String']>;
+  user?: InputMaybe<Users_Obj_Rel_Insert_Input>;
+  userId?: InputMaybe<Scalars['uuid']>;
+};
+
+/** aggregate max on columns */
+export type AuthHashedRefreshTokens_Max_Fields = {
+  __typename?: 'authHashedRefreshTokens_max_fields';
+  createdAt?: Maybe<Scalars['timestamptz']>;
+  expiresAt?: Maybe<Scalars['timestamptz']>;
+  hashedRefreshToken?: Maybe<Scalars['String']>;
+  userId?: Maybe<Scalars['uuid']>;
+};
+
+/** order by max() on columns of table "auth.hashed_refresh_tokens" */
+export type AuthHashedRefreshTokens_Max_Order_By = {
+  createdAt?: InputMaybe<Order_By>;
+  expiresAt?: InputMaybe<Order_By>;
+  hashedRefreshToken?: InputMaybe<Order_By>;
+  userId?: InputMaybe<Order_By>;
+};
+
+/** aggregate min on columns */
+export type AuthHashedRefreshTokens_Min_Fields = {
+  __typename?: 'authHashedRefreshTokens_min_fields';
+  createdAt?: Maybe<Scalars['timestamptz']>;
+  expiresAt?: Maybe<Scalars['timestamptz']>;
+  hashedRefreshToken?: Maybe<Scalars['String']>;
+  userId?: Maybe<Scalars['uuid']>;
+};
+
+/** order by min() on columns of table "auth.hashed_refresh_tokens" */
+export type AuthHashedRefreshTokens_Min_Order_By = {
+  createdAt?: InputMaybe<Order_By>;
+  expiresAt?: InputMaybe<Order_By>;
+  hashedRefreshToken?: InputMaybe<Order_By>;
+  userId?: InputMaybe<Order_By>;
+};
+
+/** response of any mutation on the table "auth.hashed_refresh_tokens" */
+export type AuthHashedRefreshTokens_Mutation_Response = {
+  __typename?: 'authHashedRefreshTokens_mutation_response';
+  /** number of rows affected by the mutation */
+  affected_rows: Scalars['Int'];
+  /** data from the rows affected by the mutation */
+  returning: Array<AuthHashedRefreshTokens>;
+};
+
+/** on_conflict condition type for table "auth.hashed_refresh_tokens" */
+export type AuthHashedRefreshTokens_On_Conflict = {
+  constraint: AuthHashedRefreshTokens_Constraint;
+  update_columns?: Array<AuthHashedRefreshTokens_Update_Column>;
+  where?: InputMaybe<AuthHashedRefreshTokens_Bool_Exp>;
+};
+
+/** Ordering options when selecting data from "auth.hashed_refresh_tokens". */
+export type AuthHashedRefreshTokens_Order_By = {
+  createdAt?: InputMaybe<Order_By>;
+  expiresAt?: InputMaybe<Order_By>;
+  hashedRefreshToken?: InputMaybe<Order_By>;
+  user?: InputMaybe<Users_Order_By>;
+  userId?: InputMaybe<Order_By>;
+};
+
+/** primary key columns input for table: authHashedRefreshTokens */
+export type AuthHashedRefreshTokens_Pk_Columns_Input = {
+  hashedRefreshToken: Scalars['String'];
+};
+
+/** select columns of table "auth.hashed_refresh_tokens" */
+export enum AuthHashedRefreshTokens_Select_Column {
+  /** column name */
+  CreatedAt = 'createdAt',
+  /** column name */
+  ExpiresAt = 'expiresAt',
+  /** column name */
+  HashedRefreshToken = 'hashedRefreshToken',
+  /** column name */
+  UserId = 'userId'
+}
+
+/** input type for updating data in table "auth.hashed_refresh_tokens" */
+export type AuthHashedRefreshTokens_Set_Input = {
+  createdAt?: InputMaybe<Scalars['timestamptz']>;
+  expiresAt?: InputMaybe<Scalars['timestamptz']>;
+  hashedRefreshToken?: InputMaybe<Scalars['String']>;
+  userId?: InputMaybe<Scalars['uuid']>;
+};
+
+/** update columns of table "auth.hashed_refresh_tokens" */
+export enum AuthHashedRefreshTokens_Update_Column {
+  /** column name */
+  CreatedAt = 'createdAt',
+  /** column name */
+  ExpiresAt = 'expiresAt',
+  /** column name */
+  HashedRefreshToken = 'hashedRefreshToken',
+  /** column name */
+  UserId = 'userId'
+}
+
+export type AuthHashedRefreshTokens_Updates = {
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<AuthHashedRefreshTokens_Set_Input>;
+  where: AuthHashedRefreshTokens_Bool_Exp;
+};
+
 /** Oauth requests, inserted before redirecting to the provider's site. Don't modify its structure as Hasura Auth relies on it to function properly. */
 export type AuthProviderRequests = {
   __typename?: 'authProviderRequests';
@@ -368,12 +544,12 @@ export type AuthProviders_Updates = {
   where: AuthProviders_Bool_Exp;
 };
 
-/** User refresh tokens. Hasura auth uses them to rotate new access tokens as long as the refresh token is not expired. Don't modify its structure as Hasura Auth relies on it to function properly. */
+/** Hashed user refresh tokens. Hasura auth uses them to rotate new access tokens as long as the refresh token is not expired. Don't modify its structure as Hasura Auth relies on it to function properly. */
 export type AuthRefreshTokens = {
   __typename?: 'authRefreshTokens';
   createdAt: Scalars['timestamptz'];
   expiresAt: Scalars['timestamptz'];
-  refreshToken: Scalars['String'];
+  refreshToken: Scalars['uuid'];
   /** An object relationship */
   user: Users;
   userId: Scalars['uuid'];
@@ -422,7 +598,7 @@ export type AuthRefreshTokens_Bool_Exp = {
   _or?: InputMaybe<Array<AuthRefreshTokens_Bool_Exp>>;
   createdAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   expiresAt?: InputMaybe<Timestamptz_Comparison_Exp>;
-  refreshToken?: InputMaybe<String_Comparison_Exp>;
+  refreshToken?: InputMaybe<Uuid_Comparison_Exp>;
   user?: InputMaybe<Users_Bool_Exp>;
   userId?: InputMaybe<Uuid_Comparison_Exp>;
 };
@@ -437,7 +613,7 @@ export enum AuthRefreshTokens_Constraint {
 export type AuthRefreshTokens_Insert_Input = {
   createdAt?: InputMaybe<Scalars['timestamptz']>;
   expiresAt?: InputMaybe<Scalars['timestamptz']>;
-  refreshToken?: InputMaybe<Scalars['String']>;
+  refreshToken?: InputMaybe<Scalars['uuid']>;
   user?: InputMaybe<Users_Obj_Rel_Insert_Input>;
   userId?: InputMaybe<Scalars['uuid']>;
 };
@@ -447,7 +623,7 @@ export type AuthRefreshTokens_Max_Fields = {
   __typename?: 'authRefreshTokens_max_fields';
   createdAt?: Maybe<Scalars['timestamptz']>;
   expiresAt?: Maybe<Scalars['timestamptz']>;
-  refreshToken?: Maybe<Scalars['String']>;
+  refreshToken?: Maybe<Scalars['uuid']>;
   userId?: Maybe<Scalars['uuid']>;
 };
 
@@ -464,7 +640,7 @@ export type AuthRefreshTokens_Min_Fields = {
   __typename?: 'authRefreshTokens_min_fields';
   createdAt?: Maybe<Scalars['timestamptz']>;
   expiresAt?: Maybe<Scalars['timestamptz']>;
-  refreshToken?: Maybe<Scalars['String']>;
+  refreshToken?: Maybe<Scalars['uuid']>;
   userId?: Maybe<Scalars['uuid']>;
 };
 
@@ -503,7 +679,7 @@ export type AuthRefreshTokens_Order_By = {
 
 /** primary key columns input for table: authRefreshTokens */
 export type AuthRefreshTokens_Pk_Columns_Input = {
-  refreshToken: Scalars['String'];
+  refreshToken: Scalars['uuid'];
 };
 
 /** select columns of table "auth.refresh_tokens" */
@@ -522,7 +698,7 @@ export enum AuthRefreshTokens_Select_Column {
 export type AuthRefreshTokens_Set_Input = {
   createdAt?: InputMaybe<Scalars['timestamptz']>;
   expiresAt?: InputMaybe<Scalars['timestamptz']>;
-  refreshToken?: InputMaybe<Scalars['String']>;
+  refreshToken?: InputMaybe<Scalars['uuid']>;
   userId?: InputMaybe<Scalars['uuid']>;
 };
 
@@ -1547,6 +1723,10 @@ export type Jsonb_Comparison_Exp = {
 /** mutation root */
 export type Mutation_Root = {
   __typename?: 'mutation_root';
+  /** delete single row from the table: "auth.hashed_refresh_tokens" */
+  deleteAuthHashedRefreshToken?: Maybe<AuthHashedRefreshTokens>;
+  /** delete data from the table: "auth.hashed_refresh_tokens" */
+  deleteAuthHashedRefreshTokens?: Maybe<AuthHashedRefreshTokens_Mutation_Response>;
   /** delete single row from the table: "auth.providers" */
   deleteAuthProvider?: Maybe<AuthProviders>;
   /** delete single row from the table: "auth.provider_requests" */
@@ -1579,6 +1759,10 @@ export type Mutation_Root = {
   deleteUser?: Maybe<Users>;
   /** delete data from the table: "auth.users" */
   deleteUsers?: Maybe<Users_Mutation_Response>;
+  /** insert a single row into the table: "auth.hashed_refresh_tokens" */
+  insertAuthHashedRefreshToken?: Maybe<AuthHashedRefreshTokens>;
+  /** insert data into the table: "auth.hashed_refresh_tokens" */
+  insertAuthHashedRefreshTokens?: Maybe<AuthHashedRefreshTokens_Mutation_Response>;
   /** insert a single row into the table: "auth.providers" */
   insertAuthProvider?: Maybe<AuthProviders>;
   /** insert a single row into the table: "auth.provider_requests" */
@@ -1611,6 +1795,10 @@ export type Mutation_Root = {
   insertUser?: Maybe<Users>;
   /** insert data into the table: "auth.users" */
   insertUsers?: Maybe<Users_Mutation_Response>;
+  /** update single row of the table: "auth.hashed_refresh_tokens" */
+  updateAuthHashedRefreshToken?: Maybe<AuthHashedRefreshTokens>;
+  /** update data of the table: "auth.hashed_refresh_tokens" */
+  updateAuthHashedRefreshTokens?: Maybe<AuthHashedRefreshTokens_Mutation_Response>;
   /** update single row of the table: "auth.providers" */
   updateAuthProvider?: Maybe<AuthProviders>;
   /** update single row of the table: "auth.provider_requests" */
@@ -1643,6 +1831,8 @@ export type Mutation_Root = {
   updateUser?: Maybe<Users>;
   /** update data of the table: "auth.users" */
   updateUsers?: Maybe<Users_Mutation_Response>;
+  /** update multiples rows of table: "auth.hashed_refresh_tokens" */
+  update_authHashedRefreshTokens_many?: Maybe<Array<Maybe<AuthHashedRefreshTokens_Mutation_Response>>>;
   /** update multiples rows of table: "auth.provider_requests" */
   update_authProviderRequests_many?: Maybe<Array<Maybe<AuthProviderRequests_Mutation_Response>>>;
   /** update multiples rows of table: "auth.providers" */
@@ -1659,6 +1849,18 @@ export type Mutation_Root = {
   update_authUserSecurityKeys_many?: Maybe<Array<Maybe<AuthUserSecurityKeys_Mutation_Response>>>;
   /** update multiples rows of table: "auth.users" */
   update_users_many?: Maybe<Array<Maybe<Users_Mutation_Response>>>;
+};
+
+
+/** mutation root */
+export type Mutation_RootDeleteAuthHashedRefreshTokenArgs = {
+  hashedRefreshToken: Scalars['String'];
+};
+
+
+/** mutation root */
+export type Mutation_RootDeleteAuthHashedRefreshTokensArgs = {
+  where: AuthHashedRefreshTokens_Bool_Exp;
 };
 
 
@@ -1688,7 +1890,7 @@ export type Mutation_RootDeleteAuthProvidersArgs = {
 
 /** mutation root */
 export type Mutation_RootDeleteAuthRefreshTokenArgs = {
-  refreshToken: Scalars['String'];
+  refreshToken: Scalars['uuid'];
 };
 
 
@@ -1755,6 +1957,20 @@ export type Mutation_RootDeleteUserArgs = {
 /** mutation root */
 export type Mutation_RootDeleteUsersArgs = {
   where: Users_Bool_Exp;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsertAuthHashedRefreshTokenArgs = {
+  object: AuthHashedRefreshTokens_Insert_Input;
+  on_conflict?: InputMaybe<AuthHashedRefreshTokens_On_Conflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsertAuthHashedRefreshTokensArgs = {
+  objects: Array<AuthHashedRefreshTokens_Insert_Input>;
+  on_conflict?: InputMaybe<AuthHashedRefreshTokens_On_Conflict>;
 };
 
 
@@ -1867,6 +2083,20 @@ export type Mutation_RootInsertUserArgs = {
 export type Mutation_RootInsertUsersArgs = {
   objects: Array<Users_Insert_Input>;
   on_conflict?: InputMaybe<Users_On_Conflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdateAuthHashedRefreshTokenArgs = {
+  _set?: InputMaybe<AuthHashedRefreshTokens_Set_Input>;
+  pk_columns: AuthHashedRefreshTokens_Pk_Columns_Input;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdateAuthHashedRefreshTokensArgs = {
+  _set?: InputMaybe<AuthHashedRefreshTokens_Set_Input>;
+  where: AuthHashedRefreshTokens_Bool_Exp;
 };
 
 
@@ -2005,6 +2235,12 @@ export type Mutation_RootUpdateUsersArgs = {
 
 
 /** mutation root */
+export type Mutation_RootUpdate_AuthHashedRefreshTokens_ManyArgs = {
+  updates: Array<AuthHashedRefreshTokens_Updates>;
+};
+
+
+/** mutation root */
 export type Mutation_RootUpdate_AuthProviderRequests_ManyArgs = {
   updates: Array<AuthProviderRequests_Updates>;
 };
@@ -2069,6 +2305,12 @@ export enum Order_By {
 
 export type Query_Root = {
   __typename?: 'query_root';
+  /** fetch data from the table: "auth.hashed_refresh_tokens" using primary key columns */
+  authHashedRefreshToken?: Maybe<AuthHashedRefreshTokens>;
+  /** fetch data from the table: "auth.hashed_refresh_tokens" */
+  authHashedRefreshTokens: Array<AuthHashedRefreshTokens>;
+  /** fetch aggregated fields from the table: "auth.hashed_refresh_tokens" */
+  authHashedRefreshTokensAggregate: AuthHashedRefreshTokens_Aggregate;
   /** fetch data from the table: "auth.providers" using primary key columns */
   authProvider?: Maybe<AuthProviders>;
   /** fetch data from the table: "auth.provider_requests" using primary key columns */
@@ -2120,6 +2362,29 @@ export type Query_Root = {
 };
 
 
+export type Query_RootAuthHashedRefreshTokenArgs = {
+  hashedRefreshToken: Scalars['String'];
+};
+
+
+export type Query_RootAuthHashedRefreshTokensArgs = {
+  distinct_on?: InputMaybe<Array<AuthHashedRefreshTokens_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<AuthHashedRefreshTokens_Order_By>>;
+  where?: InputMaybe<AuthHashedRefreshTokens_Bool_Exp>;
+};
+
+
+export type Query_RootAuthHashedRefreshTokensAggregateArgs = {
+  distinct_on?: InputMaybe<Array<AuthHashedRefreshTokens_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<AuthHashedRefreshTokens_Order_By>>;
+  where?: InputMaybe<AuthHashedRefreshTokens_Bool_Exp>;
+};
+
+
 export type Query_RootAuthProviderArgs = {
   id: Scalars['String'];
 };
@@ -2167,7 +2432,7 @@ export type Query_RootAuthProvidersAggregateArgs = {
 
 
 export type Query_RootAuthRefreshTokenArgs = {
-  refreshToken: Scalars['String'];
+  refreshToken: Scalars['uuid'];
 };
 
 
@@ -2305,6 +2570,12 @@ export type Query_RootUsersAggregateArgs = {
 
 export type Subscription_Root = {
   __typename?: 'subscription_root';
+  /** fetch data from the table: "auth.hashed_refresh_tokens" using primary key columns */
+  authHashedRefreshToken?: Maybe<AuthHashedRefreshTokens>;
+  /** fetch data from the table: "auth.hashed_refresh_tokens" */
+  authHashedRefreshTokens: Array<AuthHashedRefreshTokens>;
+  /** fetch aggregated fields from the table: "auth.hashed_refresh_tokens" */
+  authHashedRefreshTokensAggregate: AuthHashedRefreshTokens_Aggregate;
   /** fetch data from the table: "auth.providers" using primary key columns */
   authProvider?: Maybe<AuthProviders>;
   /** fetch data from the table: "auth.provider_requests" using primary key columns */
@@ -2356,6 +2627,29 @@ export type Subscription_Root = {
 };
 
 
+export type Subscription_RootAuthHashedRefreshTokenArgs = {
+  hashedRefreshToken: Scalars['String'];
+};
+
+
+export type Subscription_RootAuthHashedRefreshTokensArgs = {
+  distinct_on?: InputMaybe<Array<AuthHashedRefreshTokens_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<AuthHashedRefreshTokens_Order_By>>;
+  where?: InputMaybe<AuthHashedRefreshTokens_Bool_Exp>;
+};
+
+
+export type Subscription_RootAuthHashedRefreshTokensAggregateArgs = {
+  distinct_on?: InputMaybe<Array<AuthHashedRefreshTokens_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<AuthHashedRefreshTokens_Order_By>>;
+  where?: InputMaybe<AuthHashedRefreshTokens_Bool_Exp>;
+};
+
+
 export type Subscription_RootAuthProviderArgs = {
   id: Scalars['String'];
 };
@@ -2403,7 +2697,7 @@ export type Subscription_RootAuthProvidersAggregateArgs = {
 
 
 export type Subscription_RootAuthRefreshTokenArgs = {
-  refreshToken: Scalars['String'];
+  refreshToken: Scalars['uuid'];
 };
 
 
@@ -2566,6 +2860,10 @@ export type Users = {
   displayName: Scalars['String'];
   email?: Maybe<Scalars['citext']>;
   emailVerified: Scalars['Boolean'];
+  /** An array relationship */
+  hashedRefreshTokens: Array<AuthHashedRefreshTokens>;
+  /** An aggregate relationship */
+  hashedRefreshTokens_aggregate: AuthHashedRefreshTokens_Aggregate;
   id: Scalars['uuid'];
   isAnonymous: Scalars['Boolean'];
   lastSeen?: Maybe<Scalars['timestamptz']>;
@@ -2598,6 +2896,26 @@ export type Users = {
   userProviders: Array<AuthUserProviders>;
   /** An aggregate relationship */
   userProviders_aggregate: AuthUserProviders_Aggregate;
+};
+
+
+/** User account information. Don't modify its structure as Hasura Auth relies on it to function properly. */
+export type UsersHashedRefreshTokensArgs = {
+  distinct_on?: InputMaybe<Array<AuthHashedRefreshTokens_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<AuthHashedRefreshTokens_Order_By>>;
+  where?: InputMaybe<AuthHashedRefreshTokens_Bool_Exp>;
+};
+
+
+/** User account information. Don't modify its structure as Hasura Auth relies on it to function properly. */
+export type UsersHashedRefreshTokens_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<AuthHashedRefreshTokens_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<AuthHashedRefreshTokens_Order_By>>;
+  where?: InputMaybe<AuthHashedRefreshTokens_Bool_Exp>;
 };
 
 
@@ -2742,6 +3060,7 @@ export type Users_Bool_Exp = {
   displayName?: InputMaybe<String_Comparison_Exp>;
   email?: InputMaybe<Citext_Comparison_Exp>;
   emailVerified?: InputMaybe<Boolean_Comparison_Exp>;
+  hashedRefreshTokens?: InputMaybe<AuthHashedRefreshTokens_Bool_Exp>;
   id?: InputMaybe<Uuid_Comparison_Exp>;
   isAnonymous?: InputMaybe<Boolean_Comparison_Exp>;
   lastSeen?: InputMaybe<Timestamptz_Comparison_Exp>;
@@ -2801,6 +3120,7 @@ export type Users_Insert_Input = {
   displayName?: InputMaybe<Scalars['String']>;
   email?: InputMaybe<Scalars['citext']>;
   emailVerified?: InputMaybe<Scalars['Boolean']>;
+  hashedRefreshTokens?: InputMaybe<AuthHashedRefreshTokens_Arr_Rel_Insert_Input>;
   id?: InputMaybe<Scalars['uuid']>;
   isAnonymous?: InputMaybe<Scalars['Boolean']>;
   lastSeen?: InputMaybe<Scalars['timestamptz']>;
@@ -2956,6 +3276,7 @@ export type Users_Order_By = {
   displayName?: InputMaybe<Order_By>;
   email?: InputMaybe<Order_By>;
   emailVerified?: InputMaybe<Order_By>;
+  hashedRefreshTokens_aggregate?: InputMaybe<AuthHashedRefreshTokens_Aggregate_Order_By>;
   id?: InputMaybe<Order_By>;
   isAnonymous?: InputMaybe<Order_By>;
   lastSeen?: InputMaybe<Order_By>;
@@ -3175,19 +3496,20 @@ export type ProviderRequestQueryVariables = Exact<{
 
 export type ProviderRequestQuery = { __typename?: 'query_root', authProviderRequest?: { __typename?: 'authProviderRequests', id: any, options?: any | null } | null };
 
-export type InsertRefreshTokenMutationVariables = Exact<{
-  refreshToken: AuthRefreshTokens_Insert_Input;
+export type InsertHashedRefreshTokenMutationVariables = Exact<{
+  hashedRefreshToken: AuthHashedRefreshTokens_Insert_Input;
 }>;
 
 
-export type InsertRefreshTokenMutation = { __typename?: 'mutation_root', insertAuthRefreshToken?: { __typename?: 'authRefreshTokens', refreshToken: string } | null };
+export type InsertHashedRefreshTokenMutation = { __typename?: 'mutation_root', insertAuthHashedRefreshToken?: { __typename?: 'authHashedRefreshTokens', hashedRefreshToken: string } | null };
 
 export type DeleteRefreshTokensMutationVariables = Exact<{
-  refreshTokens: Array<Scalars['String']> | Scalars['String'];
+  refreshToken?: InputMaybe<Scalars['uuid']>;
+  hashedRefreshToken?: InputMaybe<Scalars['String']>;
 }>;
 
 
-export type DeleteRefreshTokensMutation = { __typename?: 'mutation_root', deleteAuthRefreshTokens?: { __typename?: 'authRefreshTokens_mutation_response', affected_rows: number } | null };
+export type DeleteRefreshTokensMutation = { __typename?: 'mutation_root', deleteAuthRefreshTokens?: { __typename?: 'authRefreshTokens_mutation_response', affected_rows: number } | null, deleteAuthHashedRefreshTokens?: { __typename?: 'authHashedRefreshTokens_mutation_response', affected_rows: number } | null };
 
 export type DeleteUserRefreshTokensMutationVariables = Exact<{
   userId: Scalars['uuid'];
@@ -3300,19 +3622,21 @@ export type UsersQueryVariables = Exact<{
 export type UsersQuery = { __typename?: 'query_root', users: Array<{ __typename?: 'users', id: any, createdAt: any, disabled: boolean, displayName: string, avatarUrl: string, email?: any | null, passwordHash?: string | null, emailVerified: boolean, phoneNumber?: string | null, phoneNumberVerified: boolean, defaultRole: string, isAnonymous: boolean, ticket?: string | null, otpHash?: string | null, totpSecret?: string | null, activeMfaType?: string | null, newEmail?: any | null, locale: string, metadata?: any | null, roles: Array<{ __typename?: 'authUserRoles', role: string }> }> };
 
 export type GetUsersByRefreshTokenAndUpdateRefreshTokenExpiresAtMutationVariables = Exact<{
-  refreshTokens: Array<Scalars['String']> | Scalars['String'];
+  refreshToken?: InputMaybe<Scalars['uuid']>;
+  hashedRefreshToken?: InputMaybe<Scalars['String']>;
   expiresAt: Scalars['timestamptz'];
 }>;
 
 
-export type GetUsersByRefreshTokenAndUpdateRefreshTokenExpiresAtMutation = { __typename?: 'mutation_root', updateAuthRefreshTokens?: { __typename?: 'authRefreshTokens_mutation_response', returning: Array<{ __typename?: 'authRefreshTokens', refreshToken: string, user: { __typename?: 'users', id: any, createdAt: any, disabled: boolean, displayName: string, avatarUrl: string, email?: any | null, passwordHash?: string | null, emailVerified: boolean, phoneNumber?: string | null, phoneNumberVerified: boolean, defaultRole: string, isAnonymous: boolean, ticket?: string | null, otpHash?: string | null, totpSecret?: string | null, activeMfaType?: string | null, newEmail?: any | null, locale: string, metadata?: any | null, roles: Array<{ __typename?: 'authUserRoles', role: string }> } }> } | null };
+export type GetUsersByRefreshTokenAndUpdateRefreshTokenExpiresAtMutation = { __typename?: 'mutation_root', updateAuthHashedRefreshTokens?: { __typename?: 'authHashedRefreshTokens_mutation_response', affected_rows: number } | null, updateAuthRefreshTokens?: { __typename?: 'authRefreshTokens_mutation_response', affected_rows: number } | null };
 
 export type GetUsersByRefreshTokenQueryVariables = Exact<{
-  refreshTokens: Array<Scalars['String']> | Scalars['String'];
+  refreshToken?: InputMaybe<Scalars['uuid']>;
+  hashedRefreshToken?: InputMaybe<Scalars['String']>;
 }>;
 
 
-export type GetUsersByRefreshTokenQuery = { __typename?: 'query_root', authRefreshTokens: Array<{ __typename?: 'authRefreshTokens', refreshToken: string, user: { __typename?: 'users', id: any, createdAt: any, disabled: boolean, displayName: string, avatarUrl: string, email?: any | null, passwordHash?: string | null, emailVerified: boolean, phoneNumber?: string | null, phoneNumberVerified: boolean, defaultRole: string, isAnonymous: boolean, ticket?: string | null, otpHash?: string | null, totpSecret?: string | null, activeMfaType?: string | null, newEmail?: any | null, locale: string, metadata?: any | null, roles: Array<{ __typename?: 'authUserRoles', role: string }> } }> };
+export type GetUsersByRefreshTokenQuery = { __typename?: 'query_root', authHashedRefreshTokens: Array<{ __typename?: 'authHashedRefreshTokens', user: { __typename?: 'users', id: any, createdAt: any, disabled: boolean, displayName: string, avatarUrl: string, email?: any | null, passwordHash?: string | null, emailVerified: boolean, phoneNumber?: string | null, phoneNumberVerified: boolean, defaultRole: string, isAnonymous: boolean, ticket?: string | null, otpHash?: string | null, totpSecret?: string | null, activeMfaType?: string | null, newEmail?: any | null, locale: string, metadata?: any | null, roles: Array<{ __typename?: 'authUserRoles', role: string }> } }>, authRefreshTokens: Array<{ __typename?: 'authRefreshTokens', user: { __typename?: 'users', id: any, createdAt: any, disabled: boolean, displayName: string, avatarUrl: string, email?: any | null, passwordHash?: string | null, emailVerified: boolean, phoneNumber?: string | null, phoneNumberVerified: boolean, defaultRole: string, isAnonymous: boolean, ticket?: string | null, otpHash?: string | null, totpSecret?: string | null, activeMfaType?: string | null, newEmail?: any | null, locale: string, metadata?: any | null, roles: Array<{ __typename?: 'authUserRoles', role: string }> } }> };
 
 export type UpdateUserMutationVariables = Exact<{
   id: Scalars['uuid'];
@@ -3447,16 +3771,21 @@ export const ProviderRequestDocument = gql`
   }
 }
     `;
-export const InsertRefreshTokenDocument = gql`
-    mutation insertRefreshToken($refreshToken: authRefreshTokens_insert_input!) {
-  insertAuthRefreshToken(object: $refreshToken) {
-    refreshToken
+export const InsertHashedRefreshTokenDocument = gql`
+    mutation insertHashedRefreshToken($hashedRefreshToken: authHashedRefreshTokens_insert_input!) {
+  insertAuthHashedRefreshToken(object: $hashedRefreshToken) {
+    hashedRefreshToken
   }
 }
     `;
 export const DeleteRefreshTokensDocument = gql`
-    mutation deleteRefreshTokens($refreshTokens: [String!]!) {
-  deleteAuthRefreshTokens(where: {refreshToken: {_in: $refreshTokens}}) {
+    mutation deleteRefreshTokens($refreshToken: uuid, $hashedRefreshToken: String) {
+  deleteAuthRefreshTokens(where: {refreshToken: {_eq: $refreshToken}}) {
+    affected_rows
+  }
+  deleteAuthHashedRefreshTokens(
+    where: {hashedRefreshToken: {_eq: $hashedRefreshToken}}
+  ) {
     affected_rows
   }
 }
@@ -3591,26 +3920,33 @@ export const UsersDocument = gql`
 }
     ${UserFieldsFragmentDoc}`;
 export const GetUsersByRefreshTokenAndUpdateRefreshTokenExpiresAtDocument = gql`
-    mutation getUsersByRefreshTokenAndUpdateRefreshTokenExpiresAt($refreshTokens: [String!]!, $expiresAt: timestamptz!) {
+    mutation getUsersByRefreshTokenAndUpdateRefreshTokenExpiresAt($refreshToken: uuid, $hashedRefreshToken: String, $expiresAt: timestamptz!) {
+  updateAuthHashedRefreshTokens(
+    _set: {expiresAt: $expiresAt}
+    where: {_and: [{hashedRefreshToken: {_eq: $hashedRefreshToken}}, {user: {disabled: {_eq: false}}}, {expiresAt: {_gte: now}}]}
+  ) {
+    affected_rows
+  }
   updateAuthRefreshTokens(
     _set: {expiresAt: $expiresAt}
-    where: {_and: [{refreshToken: {_in: $refreshTokens}}, {user: {disabled: {_eq: false}}}, {expiresAt: {_gte: now}}]}
+    where: {_and: [{refreshToken: {_eq: $refreshToken}}, {user: {disabled: {_eq: false}}}, {expiresAt: {_gte: now}}]}
   ) {
-    returning {
-      refreshToken
-      user {
-        ...userFields
-      }
-    }
+    affected_rows
   }
 }
-    ${UserFieldsFragmentDoc}`;
+    `;
 export const GetUsersByRefreshTokenDocument = gql`
-    query getUsersByRefreshToken($refreshTokens: [String!]!) {
-  authRefreshTokens(
-    where: {_and: [{refreshToken: {_in: $refreshTokens}}, {user: {disabled: {_eq: false}}}, {expiresAt: {_gte: now}}]}
+    query getUsersByRefreshToken($refreshToken: uuid, $hashedRefreshToken: String) {
+  authHashedRefreshTokens(
+    where: {_and: [{hashedRefreshToken: {_eq: $hashedRefreshToken}}, {user: {disabled: {_eq: false}}}, {expiresAt: {_gte: now}}]}
   ) {
-    refreshToken
+    user {
+      ...userFields
+    }
+  }
+  authRefreshTokens(
+    where: {_and: [{refreshToken: {_eq: $refreshToken}}, {user: {disabled: {_eq: false}}}, {expiresAt: {_gte: now}}]}
+  ) {
     user {
       ...userFields
     }
@@ -3727,10 +4063,10 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     providerRequest(variables: ProviderRequestQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<ProviderRequestQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<ProviderRequestQuery>(ProviderRequestDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'providerRequest', 'query');
     },
-    insertRefreshToken(variables: InsertRefreshTokenMutationVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<InsertRefreshTokenMutation> {
-      return withWrapper((wrappedRequestHeaders) => client.request<InsertRefreshTokenMutation>(InsertRefreshTokenDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'insertRefreshToken', 'mutation');
+    insertHashedRefreshToken(variables: InsertHashedRefreshTokenMutationVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<InsertHashedRefreshTokenMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<InsertHashedRefreshTokenMutation>(InsertHashedRefreshTokenDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'insertHashedRefreshToken', 'mutation');
     },
-    deleteRefreshTokens(variables: DeleteRefreshTokensMutationVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<DeleteRefreshTokensMutation> {
+    deleteRefreshTokens(variables?: DeleteRefreshTokensMutationVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<DeleteRefreshTokensMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<DeleteRefreshTokensMutation>(DeleteRefreshTokensDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'deleteRefreshTokens', 'mutation');
     },
     deleteUserRefreshTokens(variables: DeleteUserRefreshTokensMutationVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<DeleteUserRefreshTokensMutation> {
@@ -3781,7 +4117,7 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     getUsersByRefreshTokenAndUpdateRefreshTokenExpiresAt(variables: GetUsersByRefreshTokenAndUpdateRefreshTokenExpiresAtMutationVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<GetUsersByRefreshTokenAndUpdateRefreshTokenExpiresAtMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetUsersByRefreshTokenAndUpdateRefreshTokenExpiresAtMutation>(GetUsersByRefreshTokenAndUpdateRefreshTokenExpiresAtDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getUsersByRefreshTokenAndUpdateRefreshTokenExpiresAt', 'mutation');
     },
-    getUsersByRefreshToken(variables: GetUsersByRefreshTokenQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<GetUsersByRefreshTokenQuery> {
+    getUsersByRefreshToken(variables?: GetUsersByRefreshTokenQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<GetUsersByRefreshTokenQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetUsersByRefreshTokenQuery>(GetUsersByRefreshTokenDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getUsersByRefreshToken', 'query');
     },
     updateUser(variables: UpdateUserMutationVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<UpdateUserMutation> {
