@@ -3,17 +3,20 @@ import * as faker from 'faker';
 import { StatusCodes } from 'http-status-codes';
 
 import { ENV } from '../../../src/utils/env';
-import { request } from '../../server';
 import {
   mailHogSearch,
   deleteAllMailHogEmails,
-  verfiyUserTicket,
+  verifyUserTicket,
 } from '../../utils';
+import { SuperTest, Test } from 'supertest';
+import { getRequestClient } from '../../server';
 
 describe('email-password', () => {
   let client: Client;
+  let request: SuperTest<Test>;
 
   beforeAll(async () => {
+    request = await getRequestClient();
     client = new Client({
       connectionString: ENV.HASURA_GRAPHQL_DATABASE_URL,
     });
@@ -184,7 +187,7 @@ describe('email-password', () => {
       .send({ email, password })
       .expect(StatusCodes.UNAUTHORIZED);
 
-    await verfiyUserTicket(email);
+    await verifyUserTicket(email);
 
     // sign in should now work
     await request

@@ -1,6 +1,12 @@
-import { app } from '@/app';
-import supertest from 'supertest';
+import { createApp } from '@/app';
+import supertest, { SuperTest, Test } from 'supertest';
 
-const request = supertest(app);
+let _request: SuperTest<Test> | null;
 
-export { request };
+export const getRequestClient = async () => {
+  if (!_request) {
+    const app = await createApp();
+    _request = supertest(app);
+  }
+  return _request;
+};

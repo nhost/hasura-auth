@@ -2,13 +2,14 @@ import { Client } from 'pg';
 import * as faker from 'faker';
 import { StatusCodes } from 'http-status-codes';
 import { ENV } from '../../../src/utils/env';
-import { request } from '../../server';
 import {
   mailHogSearch,
   deleteAllMailHogEmails,
   expectUrlParameters,
   getUrlParameters,
 } from '../../utils';
+import { SuperTest, Test } from 'supertest';
+import { getRequestClient } from '../../server';
 
 const params = {
   a: 'valuea',
@@ -19,9 +20,11 @@ const strParams = Object.entries(params)
   .join('&');
 
 describe('Redirections', () => {
+  let request: SuperTest<Test>;
   let client: Client;
 
   beforeAll(async () => {
+    request = await getRequestClient();
     client = new Client({
       connectionString: ENV.HASURA_GRAPHQL_DATABASE_URL,
     });

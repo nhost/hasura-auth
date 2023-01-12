@@ -1,5 +1,5 @@
 import { RequestHandler } from 'express';
-import bcrypt from 'bcryptjs';
+import bcrypt from 'bcrypt';
 
 import { ENV, getSignInResponse, pgClient } from '@/utils';
 import { sendError } from '@/errors';

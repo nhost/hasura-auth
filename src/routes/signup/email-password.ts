@@ -1,10 +1,18 @@
 import { RequestHandler } from 'express';
 
-import { getSignInResponse, getUserByEmail, ENV } from '@/utils';
+import {
+  getSignInResponse,
+  getUserByEmail,
+  ENV,
+  hashPassword,
+  getGravatarUrl,
+  insertUser,
+  createVerifyEmailTicket,
+} from '@/utils';
 import { UserRegistrationOptionsWithRedirect } from '@/types';
 import { sendError } from '@/errors';
 import { Joi, email, passwordInsert, registrationOptions } from '@/validation';
-import { createUserAndSendVerificationEmail } from '@/utils/user/email-verification';
+import { sendEmailIfNotVerified } from '@/utils/user/email-verification';
 
 export const signUpEmailPasswordSchema = Joi.object({
   email: email.required(),
@@ -22,18 +30,55 @@ export const signUpEmailPasswordHandler: RequestHandler<
   }
 > = async (req, res) => {
   const { body } = req;
-  const { email, password, options } = body;
+  const {
+    email,
+    password,
+    options: {
+      redirectTo,
+      locale,
+      defaultRole,
+      allowedRoles,
+      metadata,
+      displayName = email,
+    },
+  } = body;
 
+  // TODO performance: try to create the user, catch the error if it fails. Then, if this is a conflict error, send this error to the client.
   // check if email already in use by some other user
   if (await getUserByEmail(email)) {
     return sendError(res, 'email-already-in-use');
   }
 
-  const user = await createUserAndSendVerificationEmail(
+  // hash password
+  const passwordHash = password && (await hashPassword(password));
+
+  // create ticket
+  const { ticket, ticketExpiresAt } = createVerifyEmailTicket();
+
+  // insert user
+  const user = await insertUser({
+    disabled: ENV.AUTH_DISABLE_NEW_USERS,
+    displayName,
+    avatarUrl: getGravatarUrl(email),
     email,
-    options,
-    password
-  );
+    passwordHash,
+    ticket,
+    ticketExpiresAt,
+    emailVerified: false,
+    locale,
+    defaultRole,
+    roles: allowedRoles,
+    metadata,
+  });
+
+  await sendEmailIfNotVerified({
+    email,
+    newEmail: user.newEmail,
+    user,
+    displayName,
+    ticket,
+    redirectTo,
+  });
 
   // SIGNIN_EMAIL_VERIFIED_REQUIRED = true => User must verify their email before signing in.
   // SIGNIN_EMAIL_VERIFIED_REQUIRED = false => User don't have to verify their email before signin in.

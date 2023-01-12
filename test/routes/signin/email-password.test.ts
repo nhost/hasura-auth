@@ -3,13 +3,16 @@ import * as faker from 'faker';
 import { StatusCodes } from 'http-status-codes';
 
 import { ENV } from '../../../src/utils/env';
-import { request } from '../../server';
 import { deleteAllMailHogEmails, isValidAccessToken } from '../../utils';
+import { SuperTest, Test } from 'supertest';
+import { getRequestClient } from '../../server';
 
 describe('email-password', () => {
   let client: Client;
+  let request: SuperTest<Test>;
 
   beforeAll(async () => {
+    request = await getRequestClient();
     // set env vars
     await request.post('/change-env').send({
       AUTH_DISABLE_NEW_USERS: false,

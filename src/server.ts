@@ -41,7 +41,8 @@ export const start = async () => {
   //   );
   // } else {
   await import('./env-vars-check');
-  const { app } = await import('./app');
+  const { createApp } = await import('./app');
+  const app = await createApp();
 
   app.listen(ENV.AUTH_PORT, () => {
     logger.info(`Running on port ${ENV.AUTH_PORT}`);

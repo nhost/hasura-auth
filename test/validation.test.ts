@@ -1,5 +1,6 @@
-import { request } from './server';
 import { phoneNumber, redirectTo } from '@/validation';
+import { SuperTest, Test } from 'supertest';
+import { getRequestClient } from './server';
 
 describe('Unit tests on field validation', () => {
   describe('phone number', () => {
@@ -57,6 +58,8 @@ describe('Unit tests on field validation', () => {
   });
 
   describe('redirections', () => {
+    let request: SuperTest<Test>;
+
     const clientUrl = 'http://localhost:3000';
     const domain = 'allowed.com';
     const protocolDomain = 'protocol.com';
@@ -67,6 +70,7 @@ describe('Unit tests on field validation', () => {
     const anyportUrl = `https://${anyPortDomain}?(:{1..65536})`;
     const otherAllowedRedirects = `${anotherUrl},${subdomainUrl},${protocolUrl}`;
     beforeAll(async () => {
+      request = await getRequestClient();
       await request.post('/change-env').send({
         AUTH_CLIENT_URL: clientUrl,
         AUTH_ACCESS_CONTROL_ALLOWED_REDIRECT_URLS: otherAllowedRedirects,

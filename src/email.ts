@@ -1,5 +1,5 @@
 // TODO this library takes more than one third of the time required by hasura-auth to load
-import Email from 'email-templates';
+import Email, { EmailOptions } from 'email-templates';
 import nodemailer from 'nodemailer';
 
 import { ENV } from './utils/env';
@@ -24,15 +24,14 @@ const transport = nodemailer.createTransport({
  * Reusable email client.
  */
 const emailClient = new Email<EmailLocals>({
+  preview: false,
   transport,
   message: { from: ENV.AUTH_SMTP_SENDER },
   send: true,
   render: renderTemplate,
 });
 
-export const sendEmail = async (
-  options: Parameters<typeof emailClient['send']>[0]
-) => {
+export const sendEmail = async (options: EmailOptions) => {
   try {
     await emailClient.send(options);
   } catch (err) {
@@ -47,9 +46,10 @@ export const sendEmail = async (
         {}
       )
     );
+    const { template, message } = options;
     logger.warn(`SMTP error context`, {
-      template: options.template,
-      to: options.message.to,
+      template,
+      to: message?.to,
     });
     throw err;
   }

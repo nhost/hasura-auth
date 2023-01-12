@@ -54,7 +54,7 @@ build:
 	docker build -t $(IMAGE) .
 
 
-.PHONY: dev-env-down 
+.PHONY: dev-env-up 
 dev-env-up: ## Start required services (Hasura, Postgres, Mailhog).
 	docker-compose -f docker-compose.yaml up -d
 	while [[ "$$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:8080/healthz)" != "200" ]]; do sleep 1; done
@@ -70,3 +70,6 @@ dev-env-down:  ## Stop required services (Hasura, Posgres, Mailhbg).
 install: 
 	pnpm install
 
+.PHONY: profile
+profile: check-port install dev-env-up ## run the profiler
+	bash -c "trap 'make dev-env-down' EXIT; pnpm run profile"

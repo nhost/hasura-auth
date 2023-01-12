@@ -3,13 +3,16 @@ import * as faker from 'faker';
 import { StatusCodes } from 'http-status-codes';
 
 import { ENV } from '@/utils';
-import { request } from '../../server';
+import { SuperTest, Test } from 'supertest';
+import { getRequestClient } from '../../server';
 
 describe('user metadata field', () => {
   const firstName = faker.name.firstName();
   let client: Client;
+  let request: SuperTest<Test>;
 
   beforeAll(async () => {
+    request = await getRequestClient();
     client = new Client({
       connectionString: ENV.HASURA_GRAPHQL_DATABASE_URL,
     });

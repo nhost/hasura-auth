@@ -2,14 +2,17 @@ import { Client } from 'pg';
 import { StatusCodes } from 'http-status-codes';
 
 import { ENV } from '../../../src/utils/env';
-import { request } from '../../server';
 import { SignInResponse } from '../../../src/types';
 import { authenticator } from 'otplib';
+import { SuperTest, Test } from 'supertest';
+import { getRequestClient } from '../../server';
 
 describe('mfa totp', () => {
   let client: Client;
+  let request: SuperTest<Test>;
 
   beforeAll(async () => {
+    request = await getRequestClient();
     client = new Client({
       connectionString: ENV.HASURA_GRAPHQL_DATABASE_URL,
     });

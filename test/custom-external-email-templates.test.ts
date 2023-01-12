@@ -3,16 +3,18 @@ import * as faker from 'faker';
 import { StatusCodes } from 'http-status-codes';
 import { ENV } from '@/utils';
 
-import { request } from './server';
+import { getRequestClient } from './server';
 import { mailHogSearch } from './utils';
+import { SuperTest, Test } from 'supertest';
 
 describe('custom external email templates', () => {
   let client: Client;
-
+  let request: SuperTest<Test>;
   beforeAll(async () => {
     client = new Client({
       connectionString: ENV.HASURA_GRAPHQL_DATABASE_URL,
     });
+    request = await getRequestClient();
     await client.connect();
     await request.post('/change-env').send({
       AUTH_DISABLE_NEW_USERS: false,

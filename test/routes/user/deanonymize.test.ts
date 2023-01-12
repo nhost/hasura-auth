@@ -2,19 +2,22 @@ import { Client } from 'pg';
 import { StatusCodes } from 'http-status-codes';
 
 import { ENV } from '../../../src/utils/env';
-import { request } from '../../server';
 import { SignInResponse } from '../../../src/types';
 import {
   mailHogSearch,
   deleteAllMailHogEmails,
   expectUrlParameters,
 } from '../../utils';
+import { SuperTest, Test } from 'supertest';
+import { getRequestClient } from '../../server';
 
 // TODO: test options
 describe('email-password', () => {
   let client: Client;
+  let request: SuperTest<Test>;
 
   beforeAll(async () => {
+    request = await getRequestClient();
     client = new Client({
       connectionString: ENV.HASURA_GRAPHQL_DATABASE_URL,
     });

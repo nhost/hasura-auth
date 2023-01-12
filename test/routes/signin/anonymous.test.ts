@@ -3,14 +3,17 @@ import * as faker from 'faker';
 import { StatusCodes } from 'http-status-codes';
 
 import { ENV } from '../../../src/utils/env';
-import { request } from '../../server';
 import { isValidAccessToken } from '../../utils';
 import { SignInResponse } from '../../../src/types';
+import { SuperTest, Test } from 'supertest';
+import { getRequestClient } from '../../server';
 
 describe('anonymous', () => {
   let client: Client;
+  let request: SuperTest<Test>;
 
   beforeAll(async () => {
+    request = await getRequestClient();
     client = new Client({
       connectionString: ENV.HASURA_GRAPHQL_DATABASE_URL,
     });

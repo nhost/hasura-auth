@@ -2,16 +2,19 @@ import { ENV } from '@/utils';
 import faker from 'faker';
 import { StatusCodes } from 'http-status-codes';
 import { Client } from 'pg';
-import { request } from '../../server';
+import { SuperTest, Test } from 'supertest';
+import { getRequestClient } from '../../server';
 import { deleteAllMailHogEmails, insertDbUser } from '../../utils';
 
 describe('webauthn', () => {
   let client: Client;
+  let request: SuperTest<Test>;
 
   const rpName = 'Nhost tests';
   const serverUrl = 'http://localhost:4000';
 
   beforeAll(async () => {
+    request = await getRequestClient();
     client = new Client({
       connectionString: ENV.HASURA_GRAPHQL_DATABASE_URL,
     });

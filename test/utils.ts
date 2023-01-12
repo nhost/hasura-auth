@@ -2,11 +2,11 @@ import fetch, { Response } from 'node-fetch';
 import { Response as SuperTestResponse } from 'supertest';
 import { ENV } from '../src/utils/env';
 import { verifyJwt } from '@/utils';
-import { request } from './server';
 import { StatusCodes } from 'http-status-codes';
 import { generateTicketExpiresAt, hashPassword } from '@/utils';
 import { ClientBase } from 'pg';
 import { v4 as uuidv4 } from 'uuid';
+import { getRequestClient } from './server';
 
 interface MailhogEmailAddress {
   Relays: string | null;
@@ -138,13 +138,14 @@ export const expectUrlParameters = (
   return expect(Array.from(params.keys()));
 };
 
-export const verfiyUserTicket = async (email: string) => {
+export const verifyUserTicket = async (email: string) => {
   // get ticket from email
   const [message] = await mailHogSearch(email);
   expect(message).toBeTruthy();
   const link = message.Content.Headers['X-Link'][0];
 
   // use ticket to verify email
+  const request = await getRequestClient();
   const res = await request
     .get(link.replace('http://localhost:4000', ''))
     .expect(StatusCodes.MOVED_TEMPORARILY);

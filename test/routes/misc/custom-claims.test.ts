@@ -4,15 +4,19 @@ import * as faker from 'faker';
 import { patchMetadata } from '@/utils';
 import { escapeValueToPg, ENV } from '@/utils';
 
-import { request } from '../../server';
 import { decodeAccessToken } from '../../utils';
+import { SuperTest, Test } from 'supertest';
+import { getRequestClient } from '../../server';
 
 describe('custom JWT claims', () => {
   let client: Client;
+  let request: SuperTest<Test>;
   const organisationId = faker.datatype.uuid();
   const projects = [...Array(3).keys()].map(faker.datatype.uuid);
 
   beforeAll(async () => {
+    request = await getRequestClient();
+
     client = new Client({
       connectionString: ENV.HASURA_GRAPHQL_DATABASE_URL,
     });

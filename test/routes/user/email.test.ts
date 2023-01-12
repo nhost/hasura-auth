@@ -4,7 +4,6 @@ import { StatusCodes } from 'http-status-codes';
 import * as faker from 'faker';
 
 import { ENV } from '../../../src/utils/env';
-import { request } from '../../server';
 import { SignInResponse } from '../../../src/types';
 import {
   expectUrlParameters,
@@ -12,15 +11,19 @@ import {
   getUrlParameters,
 } from '../../utils';
 import { ERRORS } from '@/errors';
+import { SuperTest, Test } from 'supertest';
+import { getRequestClient } from '../../server';
 
 describe('user email', () => {
   let client: Client;
+  let request: SuperTest<Test>;
   let accessToken: string | undefined;
   let body: SignInResponse | undefined;
   const email = faker.internet.email();
   const password = faker.internet.password(8);
 
   beforeAll(async () => {
+    request = await getRequestClient();
     client = new Client({
       connectionString: ENV.HASURA_GRAPHQL_DATABASE_URL,
     });

@@ -1,5 +1,5 @@
 import { RequestHandler } from 'express';
-import bcrypt from 'bcryptjs';
+import bcrypt from 'bcrypt';
 
 import { getSignInResponse, getUserByEmail, ENV } from '@/utils';
 import { logger } from '@/logger';

@@ -2,18 +2,21 @@ import { Client } from 'pg';
 import * as faker from 'faker';
 import { StatusCodes } from 'http-status-codes';
 
-import { request } from '../../server';
 import { ENV } from '../../../src/utils/env';
 import { mailHogSearch } from '../../utils';
 import { SignInResponse } from '@/types';
+import { SuperTest, Test } from 'supertest';
+import { getRequestClient } from '../../server';
 
 describe('user password', () => {
   let client: Client;
+  let request: SuperTest<Test>;
   let accessToken: string | undefined;
   const email = faker.internet.email();
   const password = faker.internet.password();
 
   beforeAll(async () => {
+    request = await getRequestClient();
     await request.post('/change-env').send({
       AUTH_DISABLE_NEW_USERS: false,
       AUTH_EMAIL_SIGNIN_EMAIL_VERIFIED_REQUIRED: false,

@@ -41,12 +41,14 @@ export const getNewOrUpdateCurrentSession = async ({
 };
 
 export const getSignInResponse = async ({
+  // TODO performance: use the user as an argument rather than a userId so we don't need to get the user again from the DB
   userId,
   checkMFA,
 }: {
   userId: string;
   checkMFA: boolean;
 }): Promise<SignInResponse> => {
+  // TODO performance: we could remove this call - see the above TODO
   const user = await pgClient.getUserById(userId);
   if (!user) {
     throw new Error('No user');

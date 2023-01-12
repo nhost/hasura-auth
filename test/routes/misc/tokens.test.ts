@@ -1,14 +1,17 @@
 import { StatusCodes } from 'http-status-codes';
 import { Client } from 'pg';
+import { SuperTest, Test } from 'supertest';
 
 import { ENV } from '../../../src/utils/env';
-import { request } from '../../server';
+import { getRequestClient } from '../../server';
 import { isValidAccessToken } from '../../utils';
 
 describe('token', () => {
   let client: Client;
+  let request: SuperTest<Test>;
 
   beforeAll(async () => {
+    request = await getRequestClient();
     client = new Client({
       connectionString: ENV.HASURA_GRAPHQL_DATABASE_URL,
     });

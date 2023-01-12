@@ -3,11 +3,13 @@ import { ENV } from '@/utils';
 import faker from 'faker';
 import { StatusCodes } from 'http-status-codes';
 import { Client } from 'pg';
-import { request } from '../../server';
+import { SuperTest, Test } from 'supertest';
+import { getRequestClient } from '../../server';
 import { deleteAllMailHogEmails } from '../../utils';
 
 describe('webauthn', () => {
   let client: Client;
+  let request: SuperTest<Test>;
   let userSession: Session | null;
 
   const email = faker.internet.email();
@@ -17,6 +19,7 @@ describe('webauthn', () => {
   const serverUrl = 'http://localhost:4000';
 
   beforeAll(async () => {
+    request = await getRequestClient();
     client = new Client({
       connectionString: ENV.HASURA_GRAPHQL_DATABASE_URL,
     });
