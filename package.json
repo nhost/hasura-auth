@@ -19,8 +19,10 @@
     "ci:version": "changeset version && pnpm install --frozen-lockfile false",
     "changeset": "changeset",
     "benchmark": "node profiler/requests.js",
-    "profile": "run-s build profile:run",
-    "profile:run": "clinic flame --on-port 'node profiler/requests.js' -- node dist/start.js"
+    "profile": "run-s build clinic:flame",
+    "clinic:flame": "clinic flame --on-port 'node profiler/requests.js' -- node dist/start.js",
+    "clinic:doctor": "clinic doctor --on-port 'node profiler/requests.js' -- node dist/start.js",
+    "clinic:heapprofiler": "clinic heapprofiler --on-port 'node profiler/requests.js' -- node dist/start.js"
   },
   "dependencies": {
     "@djgrant/postgres-migrations": "^4.1.0-rc.1",

@@ -19,4 +19,4 @@ COPY migrations/ ./migrations/
 COPY email-templates/ ./email-templates
 COPY --from=builder ./app/dist dist/
 HEALTHCHECK --interval=60s --timeout=2s --retries=3 CMD wget http://localhost:${AUTH_PORT}/healthz -q -O - > /dev/null 2>&1
-CMD ["pnpm", "run", "start"]
+CMD ["node", "dist/start"]
