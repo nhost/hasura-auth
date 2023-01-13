@@ -364,13 +364,12 @@ export const PROVIDERS_CONFIG: Record<
         query: {
           organization = process.env.AUTH_PROVIDER_WORKOS_DEFAULT_ORGANIZATION,
           connection = process.env.AUTH_PROVIDER_WORKOS_DEFAULT_CONNECTION,
-          domain = process.env.AUTH_PROVIDER_WORKOKS_DEFAULT_DOMAIN,
         },
       },
       res,
       next
     ) => {
-      if (!(organization || connection || domain)) {
+      if (!(organization || connection)) {
         return sendError(res, 'invalid-request', {
           customMessage:
             'You need to give either an organization, a domain or a connection to be able to authenticate with WorkOS',
@@ -379,7 +378,7 @@ export const PROVIDERS_CONFIG: Record<
       }
       res.locals.grant = {
         dynamic: {
-          custom_params: { organization, connection, domain },
+          custom_params: { organization, connection },
         },
       };
       next();
