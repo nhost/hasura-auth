@@ -10,10 +10,6 @@ import {
 import { RequestHandler } from 'express';
 
 import {
-  generateAuthenticationOptions,
-  verifyAuthenticationResponse,
-} from '@simplewebauthn/server';
-import {
   AuthenticationCredentialJSON,
   PublicKeyCredentialRequestOptionsJSON,
 } from '@simplewebauthn/typescript-types';
@@ -56,6 +52,9 @@ export const signInWebauthnHandler: RequestHandler<
 
   const authUserSecurityKeys = await pgClient.getUserSecurityKeys(user.id);
 
+  const { generateAuthenticationOptions } = await import(
+    '@simplewebauthn/server'
+  );
   const options = generateAuthenticationOptions({
     rpID: getWebAuthnRelyingParty(),
     userVerification: 'preferred',
@@ -131,6 +130,9 @@ export const signInVerifyWebauthnHandler: RequestHandler<
 
   let verification;
   try {
+    const { verifyAuthenticationResponse } = await import(
+      '@simplewebauthn/server'
+    );
     verification = verifyAuthenticationResponse({
       credential,
       expectedChallenge,

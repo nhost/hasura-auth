@@ -1,3 +1,4 @@
+// TODO get rid of graphql-request
 import { GraphQLClient } from 'graphql-request';
 import { ENV } from './env';
 

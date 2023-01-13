@@ -31,9 +31,9 @@ jobs:
         id: preprocess-environment
         run: echo "aws_account_id=${{ secrets.AWS_PRODUCTION_ACCOUNT_ID }}" >> $GITHUB_OUTPUT
       - name: Add git tag
-        if: input.version != ''
+        if: inputs.version != ''
         run: |
-          git tag "v${{ input.version }}"
+          git tag "v${{ inputs.version }}"
           git push origin --tags
       - name: Determine tags
         id: tags
@@ -42,7 +42,7 @@ jobs:
           echo "type=sha" >> $GITHUB_OUTPUT
           echo "type=ref,event=pr" >> $GITHUB_OUTPUT
           echo "type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}" >> $GITHUB_OUTPUT
-          if [ "${{ input.version }}" != "" ]; then
+          if [ "${{ inputs.version }}" != "" ]; then
             echo "type=semver,pattern={{version}},value=$GIT_TAG" >> $GITHUB_OUTPUT
             echo "type=semver,pattern={{major}}.{{minor}},value=$GIT_TAG" >> $GITHUB_OUTPUT
             echo "type=semver,pattern={{major}},value=$GIT_TAG" >> $GITHUB_OUTPUT
@@ -85,11 +85,11 @@ jobs:
           push: true
       - name: Create GitHub Release
         uses: taiki-e/create-gh-release-action@v1
-        if: input.version != ''
+        if: inputs.version != ''
         with:
           changelog: CHANGELOG.md
           token: ${{ secrets.GITHUB_TOKEN }}
-          ref: refs/tags/${{ input.version }}
+          ref: refs/tags/${{ inputs.version }}
       - name: Remove tag
-        if: failure() && input.version != ''
-        run: git push --delete origin ${{ input.version }}
+        if: failure() && inputs.version != ''
+        run: git push --delete origin ${{ inputs.version }}

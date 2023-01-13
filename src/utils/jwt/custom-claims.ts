@@ -1,6 +1,5 @@
 import { jsonToGraphQLQuery, VariableType } from 'json-to-graphql-query';
 import { get, set } from 'dot-prop';
-import jsonata from 'jsonata';
 
 import { ENV } from '../env';
 import { client } from '../gql-sdk';
@@ -100,6 +99,7 @@ export const generateCustomClaims = async (userId: string) => {
     } = await client.rawRequest(request, {
       userId,
     });
+    const { default: jsonata } = await import('jsonata');
     // * Aggregate each 'name' key of the object with its value evaluated in JSONata
     return Object.entries(ENV.AUTH_JWT_CUSTOM_CLAIMS).reduce<
       Record<string, unknown>

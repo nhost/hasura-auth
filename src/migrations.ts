@@ -1,20 +1,15 @@
 import { migrate } from '@djgrant/postgres-migrations';
-import { Client } from 'pg';
 import fs from 'fs/promises';
 import path from 'path';
 import { logger } from './logger';
-import { ENV } from './utils/env';
+import { pgPool } from './utils';
 
 export async function applyMigrations(): Promise<void> {
   logger.info('Applying SQL migrations...');
 
-  const dbConfig = {
-    connectionString: ENV.HASURA_GRAPHQL_DATABASE_URL,
-  };
+  const client = await pgPool.connect();
 
-  const client = new Client(dbConfig);
   try {
-    await client.connect();
     /**
      * We modified the migration 5 to remove the comment on the auth schema
      * as the postgres user that runs hasura-auth is not necessary the owner
@@ -83,7 +78,7 @@ export async function applyMigrations(): Promise<void> {
       throw new Error(error.message);
     }
   } finally {
-    await client.end();
+    client.release();
   }
   logger.info('SQL migrations applied');
 }

@@ -3,7 +3,6 @@ import {
   PublicKeyCredentialCreationOptionsJSON,
   RegistrationCredentialJSON,
 } from '@simplewebauthn/typescript-types';
-import { generateRegistrationOptions } from '@simplewebauthn/server';
 
 import { Joi } from '@/validation';
 import { sendError, sendUnspecifiedError } from '@/errors';
@@ -39,7 +38,9 @@ export const addSecurityKeyHandler: RequestHandler<
   }
 
   const authUserSecurityKeys = await pgClient.getUserSecurityKeys(userId);
-
+  const { generateRegistrationOptions } = await import(
+    '@simplewebauthn/server'
+  );
   const options = generateRegistrationOptions({
     rpID: getWebAuthnRelyingParty(),
     rpName: ENV.AUTH_WEBAUTHN_RP_NAME,

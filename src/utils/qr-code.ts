@@ -1,9 +1,8 @@
-import QRCode from 'qrcode';
-
 /**
  * Create QR code.
  * @param secret Required OTP secret.
  */
-export function createQR(secret: string): Promise<string> {
+export const createQR = async (secret: string): Promise<string> => {
+  const { default: QRCode } = await import('qrcode');
   return QRCode.toDataURL(secret);
-}
+};

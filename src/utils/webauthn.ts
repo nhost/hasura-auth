@@ -1,8 +1,5 @@
 import { User } from '@/types';
-import {
-  VerifiedRegistrationResponse,
-  verifyRegistrationResponse,
-} from '@simplewebauthn/server';
+import type { VerifiedRegistrationResponse } from '@simplewebauthn/server';
 import { RegistrationCredentialJSON } from '@simplewebauthn/typescript-types';
 
 import { ENV } from './env';
@@ -28,6 +25,9 @@ export const verifyWebAuthnRegistration = async (
   const expectedChallenge = await getCurrentChallenge(id);
   let verification: VerifiedRegistrationResponse;
   try {
+    const { verifyRegistrationResponse } = await import(
+      '@simplewebauthn/server'
+    );
     verification = await verifyRegistrationResponse({
       credential,
       expectedChallenge,

@@ -1,13 +1,13 @@
 import { sendError } from '@/errors';
-import axios from 'axios';
 import { RequestHandler } from 'express';
-import { GrantProvider, GrantResponse } from 'grant';
+import type { GrantProvider, GrantResponse } from 'grant';
 import { NormalisedProfile } from './utils';
 import jwt from 'jsonwebtoken';
 export const OAUTH_ROUTE = '/signin/provider';
 
 const azureBaseUrl = 'https://login.microsoftonline.com';
 const workosBaseUrl = 'https://api.workos.com/sso';
+// TODO why this?
 process.env.DEBUG = 'req,res,json';
 export const PROVIDERS_CONFIG: Record<
   string,
@@ -94,6 +94,7 @@ export const PROVIDERS_CONFIG: Record<
       scope: ['account'],
     },
     profile: async ({ profile, access_token }) => {
+      const { default: axios } = await import('axios');
       const {
         data: {
           values: [{ email, is_confirmed }],
@@ -152,6 +153,7 @@ export const PROVIDERS_CONFIG: Record<
     },
     profile: async ({ profile, access_token }) => {
       // * The email is not returned by default, so we need to make a separate request
+      const { default: axios } = await import('axios');
       const { data: emails } = await axios.get<
         { email: string; primary: boolean; verified: boolean }[]
       >('https://api.github.com/user/emails', {
@@ -214,6 +216,7 @@ export const PROVIDERS_CONFIG: Record<
         'https://api.linkedin.com/v2/me?projection=(id,localizedFirstName,localizedLastName,profilePicture(displayImage~:playableStreams))',
     },
     profile: async ({ profile, access_token }) => {
+      const { default: axios } = await import('axios');
       const {
         data: {
           elements: [

@@ -1,5 +1,5 @@
 import { logger } from '../logger';
-import axios, { AxiosError } from 'axios';
+import type { AxiosError } from 'axios';
 import { ENV } from './env';
 
 function delay(ms: number) {
@@ -7,6 +7,7 @@ function delay(ms: number) {
 }
 
 const reachHasura = async () => {
+  const { default: axios } = await import('axios');
   try {
     await axios.get(
       `${ENV.HASURA_GRAPHQL_GRAPHQL_URL.replace('/v1/graphql', '/healthz')}`

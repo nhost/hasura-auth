@@ -1,6 +1,5 @@
 import { Claims, PermissionVariables, Token } from '@/types';
 import { createSecretKey } from 'crypto';
-import { jwtVerify } from 'jose';
 import { ENV } from '../env';
 
 const ALLOWED_JWT_TYPES = ['HS256', 'HS384', 'HS512'];
@@ -14,6 +13,7 @@ if (!ENV.HASURA_GRAPHQL_JWT_SECRET.key) {
 }
 
 export const verifyJwt = async (jwt: string) => {
+  const { jwtVerify } = await import('jose');
   const secret = createSecretKey(ENV.HASURA_GRAPHQL_JWT_SECRET.key, 'utf-8');
   const result = await jwtVerify(jwt, secret);
   return result.payload as unknown as Token;

@@ -1,5 +1,4 @@
 import { RequestHandler } from 'express';
-import bcrypt from 'bcrypt';
 
 import { getSignInResponse, getUserByTicket } from '@/utils';
 import { sendError } from '@/errors';
@@ -19,8 +18,8 @@ export const signInMfaSmspHandler: RequestHandler<
   if (!user || !user.otpHash) {
     return sendError(res, 'invalid-otp');
   }
-
-  if (!(await bcrypt.compare(otp, user.otpHash))) {
+  const { compare } = await import('bcrypt');
+  if (!(await compare(otp, user.otpHash))) {
     return sendError(res, 'invalid-otp');
   }
 

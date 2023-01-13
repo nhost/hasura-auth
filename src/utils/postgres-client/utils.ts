@@ -1,5 +1,5 @@
 import { User } from '@/types';
-import { PoolClient } from 'pg';
+import type { PoolClient } from 'pg';
 import { SqlUser } from './types';
 
 export const cameliseUser = (user?: SqlUser | null): User | null => {

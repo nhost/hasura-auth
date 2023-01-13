@@ -1,4 +1,4 @@
-import { JWTPayload, SignJWT } from 'jose';
+import type { JWTPayload } from 'jose';
 import { ClaimValueType, User } from '@/types';
 import { ENV } from '../env';
 import { generateCustomClaims } from './custom-claims';
@@ -16,6 +16,7 @@ export const sign = async ({
 }) => {
   const { key, type, issuer } = ENV.HASURA_GRAPHQL_JWT_SECRET;
   const secret = createSecretKey(key, 'utf-8');
+  const { SignJWT } = await import('jose');
   return new SignJWT(payload)
     .setProtectedHeader({ alg: type })
     .setSubject(user.id)

@@ -6,7 +6,7 @@ import {
   insertUser,
   getWebAuthnRelyingParty,
 } from '@/utils';
-import { generateRegistrationOptions } from '@simplewebauthn/server';
+
 import { v4 as uuidv4 } from 'uuid';
 import { RequestHandler } from 'express';
 
@@ -48,6 +48,9 @@ export const signUpWebauthnHandler: RequestHandler<
   } = options;
 
   const userId = uuidv4();
+  const { generateRegistrationOptions } = await import(
+    '@simplewebauthn/server'
+  );
   const registrationOptions = generateRegistrationOptions({
     rpID: getWebAuthnRelyingParty(),
     rpName: ENV.AUTH_WEBAUTHN_RP_NAME,

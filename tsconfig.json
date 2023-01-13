@@ -14,7 +14,7 @@
     "noUnusedLocals": true,
     "module": "commonjs",
     "strict": true,
-    "target": "es2019",
+    "target": "ES2020",
     "baseUrl": "src",
     "esModuleInterop": true,
     "moduleResolution": "node",

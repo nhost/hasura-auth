@@ -1,4 +1,3 @@
-import bcrypt from 'bcrypt';
 import { generateTicketExpiresAt } from './ticket';
 
 // * Performance: the library `random-number-csprng` was slow to import and slow to run, with no clear benefit over `Math.random()`.
@@ -8,7 +7,8 @@ const randomNumber = (min: number, max: number) =>
 export const getNewOneTimePasswordData = async () => {
   const pw = await randomNumber(0, 999999);
   const otp = pw.toString().padStart(6, '0');
-  const otpHash = await bcrypt.hash(otp, 10);
+  const { hash } = await import('bcrypt');
+  const otpHash = await hash(otp, 10);
   const otpHashExpiresAt = generateTicketExpiresAt(5 * 60);
 
   return {

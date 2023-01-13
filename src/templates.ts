@@ -1,7 +1,5 @@
-import axios from 'axios';
 import path from 'path';
 import fs from 'fs';
-import urlJoin from 'url-join';
 import { logger } from './logger';
 import { ENV } from './utils';
 
@@ -81,6 +79,8 @@ const readRemoteTemplate = async (
   view: string,
   locals: EmailLocals | SmsLocals
 ): Promise<string> => {
+  const { default: axios } = await import('axios');
+  const { default: urlJoin } = await import('url-join');
   const { locale } = locals;
   const fileName = getFileName(view, locals);
   const url = urlJoin(ENV.AUTH_EMAIL_TEMPLATE_FETCH_URL, fileName);

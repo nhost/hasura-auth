@@ -1,11 +1,9 @@
 import { RequestHandler } from 'express';
-import bcrypt from 'bcrypt';
 
 import { ENV, getSignInResponse, pgClient } from '@/utils';
 import { sendError } from '@/errors';
 import { Joi, phoneNumber } from '@/validation';
 import { isTestingPhoneNumber, isVerifySid } from '@/utils/twilio';
-import twilio from 'twilio';
 
 export type OtpSmsRequestBody = {
   phoneNumber: string;
@@ -62,8 +60,9 @@ export const signInOtpHandler: RequestHandler<
     return res.send(signInResponse);
   }
 
+  const { compare } = await import('bcrypt');
   if (isTestingPhoneNumber(user.phoneNumber)) {
-    if (await bcrypt.compare(otp, user.otpHash)) {
+    if (await compare(otp, user.otpHash)) {
       return await verifyPhoneNumberAndSignIn();
     } else {
       return sendError(res, 'invalid-otp');
@@ -77,6 +76,7 @@ export const signInOtpHandler: RequestHandler<
   const messagingServiceSid = ENV.AUTH_SMS_TWILIO_MESSAGING_SERVICE_ID;
 
   if (isVerifySid(messagingServiceSid)) {
+    const { default: twilio } = await import('twilio');
     const twilioClient = twilio(
       ENV.AUTH_SMS_TWILIO_ACCOUNT_SID,
       ENV.AUTH_SMS_TWILIO_AUTH_TOKEN
@@ -96,7 +96,7 @@ export const signInOtpHandler: RequestHandler<
     } catch (error) {
       throw Error('Cannot veirfy otp');
     }
-  } else if (!(await bcrypt.compare(otp, user.otpHash))) {
+  } else if (!(await compare(otp, user.otpHash))) {
     return sendError(res, 'invalid-otp');
   }
 

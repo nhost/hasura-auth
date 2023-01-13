@@ -1,5 +1,4 @@
 import { RequestHandler } from 'express';
-import bcrypt from 'bcrypt';
 
 import { getSignInResponse, getUserByEmail, ENV } from '@/utils';
 import { logger } from '@/logger';
@@ -36,7 +35,8 @@ export const signInEmailPasswordHandler: RequestHandler<
     return sendError(res, 'invalid-email-password');
   }
 
-  const isPasswordCorrect = await bcrypt.compare(password, user.passwordHash);
+  const { compare } = await import('bcrypt');
+  const isPasswordCorrect = await compare(password, user.passwordHash);
 
   if (!isPasswordCorrect) {
     return sendError(res, 'invalid-email-password');

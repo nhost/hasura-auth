@@ -18,8 +18,7 @@
     "test:watch": "AUTH_LOG_LEVEL=error jest --runInBand --watch",
     "ci:version": "changeset version && pnpm install --frozen-lockfile false",
     "changeset": "changeset",
-    "benchmark": "run-s build benchmark:run",
-    "benchmark:run": "node profiler/requests.js",
+    "benchmark": "node profiler/requests.js",
     "profile": "run-s build profile:run",
     "profile:run": "clinic flame --on-port 'node profiler/requests.js' -- node dist/start.js"
   },

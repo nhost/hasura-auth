@@ -1,5 +1,4 @@
 import { RequestHandler } from 'express';
-import twilio from 'twilio';
 import { ReasonPhrases } from 'http-status-codes';
 
 import { UserRegistrationOptions } from '@/types';
@@ -92,6 +91,7 @@ export const signInPasswordlessSmsHandler: RequestHandler<
     throw Error('No sms provider set');
   }
 
+  const { default: twilio } = await import('twilio');
   const twilioClient = twilio(
     ENV.AUTH_SMS_TWILIO_ACCOUNT_SID,
     ENV.AUTH_SMS_TWILIO_AUTH_TOKEN

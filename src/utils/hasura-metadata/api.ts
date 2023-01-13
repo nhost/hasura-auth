@@ -1,5 +1,4 @@
 import { logger } from '@/logger';
-import axios from 'axios';
 import { ENV } from '../env';
 import { HasuraMetadataV3 } from './types';
 
@@ -76,8 +75,12 @@ type MetadataInconsistency = {
   reason: string;
 };
 
-export const runMetadataRequest = async <T>(args: { type: string; args: {} }) =>
-  await axios.post<T>(
+export const runMetadataRequest = async <T>(args: {
+  type: string;
+  args: {};
+}) => {
+  const { default: axios } = await import('axios');
+  return axios.post<T>(
     ENV.HASURA_GRAPHQL_GRAPHQL_URL.replace('/v1/graphql', '/v1/metadata'),
     args,
     {
@@ -86,6 +89,7 @@ export const runMetadataRequest = async <T>(args: { type: string; args: {} }) =>
       },
     }
   );
+};
 
 export const exportMetadata = async (): Promise<HasuraMetadataV3> => {
   const { data } = await runMetadataRequest<HasuraMetadataV3>({
