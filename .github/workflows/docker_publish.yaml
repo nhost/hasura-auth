@@ -17,7 +17,7 @@ on:
       DOCKER_PASSWORD:
         description: 'DockerHub password.'
         required: true
-      GITHUB_TOKEN:
+      GITHUB_PAT:
         description: 'GitHub token.'
         required: true
 
@@ -97,7 +97,7 @@ jobs:
         if: inputs.version != ''
         with:
           changelog: CHANGELOG.md
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_PAT }}
           ref: refs/tags/${{ inputs.version }}
       - name: Remove tag
         if: failure() && inputs.version != ''
