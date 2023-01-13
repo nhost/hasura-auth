@@ -29,7 +29,7 @@ autocannon(
     //   maxConnectionRequests: 1,
     // excludeErrorStats: true,
     connections: 1000,
-    duration: 20,
+    duration: 10,
 
     initialContext: { user: createUser() },
     headers: {

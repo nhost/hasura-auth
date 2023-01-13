@@ -4,6 +4,7 @@ module.exports = {
     server: null,
   },
   globalSetup: '<rootDir>/test/global-setup.ts',
+  globalTeardown: '<rootDir>/test/global-teardown.ts',
   verbose: false,
   moduleNameMapper: {
     '^@config$': '<rootDir>/src/config',
@@ -17,4 +18,4 @@ module.exports = {
   setupFilesAfterEnv: ['jest-extended'],
   preset: 'ts-jest',
   testEnvironment: 'node',
-}
+};
