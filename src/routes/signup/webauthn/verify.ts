@@ -5,7 +5,6 @@ import {
   verifyWebAuthnRegistration,
   createVerifyEmailTicket,
   createEmailRedirectionLink,
-  getUserByEmail,
   pgClient,
 } from '@/utils';
 import { RequestHandler } from 'express';
@@ -78,7 +77,7 @@ export const signInVerifyWebauthnHandler: RequestHandler<
   }
 
   // Edge case: if another user registered with the same email while the webauthn requester is between the first and second step
-  if (await getUserByEmail(newEmail)) {
+  if (await pgClient.getUserByEmail(newEmail)) {
     return sendError(res, 'email-already-in-use');
   }
 

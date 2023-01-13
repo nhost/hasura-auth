@@ -25,7 +25,6 @@ export const getNewOrUpdateCurrentSession = async ({
       lastSeen: new Date(),
     },
   });
-  const sessionUser = await pgClient.getUserById(user.id);
   const accessToken = await createHasuraAccessToken(user);
   const refreshToken =
     (currentRefreshToken &&
@@ -35,7 +34,7 @@ export const getNewOrUpdateCurrentSession = async ({
     accessToken,
     accessTokenExpiresIn: ENV.AUTH_ACCESS_TOKEN_EXPIRES_IN,
     refreshToken,
-    user: sessionUser,
+    user,
   };
 };
 

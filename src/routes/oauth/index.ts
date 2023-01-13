@@ -4,7 +4,7 @@ import session from 'express-session';
 import grant from 'grant';
 
 import { ERRORS, sendError } from '@/errors';
-import { ENV, generateRedirectUrl, getUserByEmail, pgClient } from '@/utils';
+import { ENV, generateRedirectUrl, pgClient } from '@/utils';
 import {
   queryValidator,
   redirectTo as redirectToRule,
@@ -233,7 +233,7 @@ export const oauthProviders = Router()
     } else {
       let user: User | null = null;
       if (profile.email) {
-        user = await getUserByEmail(profile.email);
+        user = await pgClient.getUserByEmail(profile.email);
       }
       if (user) {
         userId = user.id;

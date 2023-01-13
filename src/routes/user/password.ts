@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express';
 import { ReasonPhrases } from 'http-status-codes';
 
-import { hashPassword, getUserByTicket, pgClient } from '@/utils';
+import { hashPassword, pgClient } from '@/utils';
 import { sendError } from '@/errors';
 import { Joi, password } from '@/validation';
 import { User } from '@/types';
@@ -20,7 +20,7 @@ export const userPasswordHandler: RequestHandler<
 
   let user: User | null = null;
   if (ticket) {
-    user = await getUserByTicket(ticket);
+    user = await pgClient.getUserByTicket(ticket);
     if (!user) {
       return sendError(res, 'invalid-ticket');
     }

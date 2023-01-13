@@ -3,7 +3,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { ReasonPhrases } from 'http-status-codes';
 
 import {
-  getUserByEmail,
   getGravatarUrl,
   generateTicketExpiresAt,
   ENV,
@@ -48,7 +47,7 @@ export const signInPasswordlessEmailHandler: RequestHandler<
   } = req.body;
 
   // check if email already exist
-  let user = await getUserByEmail(email);
+  let user = await pgClient.getUserByEmail(email);
 
   // if no user exists, create the user
   if (!user) {

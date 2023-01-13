@@ -337,10 +337,11 @@ export const pgClient = {
     client.release();
   },
 
-  insertUser: async (user: Partial<User>) => {
+  insertUser: async (user: Partial<User> & Pick<User, 'roles'>) => {
     const client = await pgPool.connect();
-    const transformedUser = snakeiseUser(user) as Partial<SqlUser>;
-    const { roles, ...rest } = transformedUser;
+    const transformedUser = snakeiseUser(user);
+    const { roles, ...rest } = transformedUser as Partial<SqlUser> &
+      Pick<SqlUser, 'roles'>;
     const columns = Object.keys(rest);
     const values = Object.values(rest);
     let insertedUser: SqlUser;
@@ -363,7 +364,7 @@ export const pgClient = {
       await insertUserRoles(client, insertedUser.id, roles);
     }
     client.release();
-    return cameliseUser(insertedUser);
+    return cameliseUser({ ...insertedUser, roles });
   },
 
   updateUser: async ({ id, user }: { id: string; user: Partial<User> }) => {
@@ -382,6 +383,6 @@ export const pgClient = {
       await insertUserRoles(client, id, roles);
     }
     client.release();
-    return cameliseUser(rows[0]);
+    return cameliseUser({ ...rows[0], roles });
   },
 };

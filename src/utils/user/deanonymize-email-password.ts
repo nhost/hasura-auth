@@ -2,7 +2,7 @@ import { Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { ReasonPhrases } from 'http-status-codes';
 
-import { pgClient, createEmailRedirectionLink, getUserByEmail } from '@/utils';
+import { pgClient, createEmailRedirectionLink } from '@/utils';
 import { sendEmail } from '@/email';
 import { sendError } from '@/errors';
 
@@ -40,7 +40,7 @@ export const handleDeanonymizeUserEmailPassword = async (
   } = body;
 
   // check if email already in use by some other user
-  if (await getUserByEmail(email)) {
+  if (await pgClient.getUserByEmail(email)) {
     return sendError(res, 'email-already-in-use');
   }
 

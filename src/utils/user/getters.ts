@@ -38,8 +38,3 @@ export const getSessionUser = async (params: {
     activeMfaType,
   };
 };
-
-export const getUserByEmail = (email: string) => pgClient.getUserByEmail(email);
-
-export const getUserByTicket = (ticket: string) =>
-  pgClient.getUserByTicket(ticket);

@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 
-import { getSignInResponse, getUserByTicket } from '@/utils';
+import { getSignInResponse, pgClient } from '@/utils';
 import { sendError } from '@/errors';
 
 export const signInMfaSmspHandler: RequestHandler<
@@ -13,7 +13,7 @@ export const signInMfaSmspHandler: RequestHandler<
 > = async (req, res) => {
   const { ticket, otp } = req.body;
 
-  const user = await getUserByTicket(ticket);
+  const user = await pgClient.getUserByTicket(ticket);
 
   if (!user || !user.otpHash) {
     return sendError(res, 'invalid-otp');

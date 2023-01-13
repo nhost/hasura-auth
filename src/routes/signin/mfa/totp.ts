@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 
-import { getSignInResponse, getUserByTicket } from '@/utils';
+import { getSignInResponse, pgClient } from '@/utils';
 import { authenticator } from 'otplib';
 import { sendError } from '@/errors';
 import { Joi, mfaTotpTicketPattern } from '@/validation';
@@ -23,7 +23,7 @@ export const signInMfaTotpHandler: RequestHandler<
 > = async (req, res) => {
   const { ticket, otp } = req.body;
 
-  const user = await getUserByTicket(ticket);
+  const user = await pgClient.getUserByTicket(ticket);
 
   if (!user) {
     return sendError(res, 'invalid-otp');

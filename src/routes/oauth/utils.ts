@@ -32,7 +32,7 @@ export type NormalisedProfile = Partial<{
 export const transformOauthProfile = async (
   normalised: NormalisedProfile,
   options?: Partial<UserRegistrationOptions>
-): Promise<Partial<User>> => {
+): Promise<Partial<User> & Pick<User, 'roles'>> => {
   // * Check if the email is valid. If not, throw an error
   const email = await emailValidator.validateAsync(normalised.email);
 

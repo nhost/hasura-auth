@@ -4,7 +4,6 @@ import { ReasonPhrases } from 'http-status-codes';
 
 import {
   generateTicketExpiresAt,
-  getUserByEmail,
   ENV,
   createEmailRedirectionLink,
   pgClient,
@@ -36,7 +35,7 @@ export const userEmailSendVerificationEmailHandler: RequestHandler<
     options: { redirectTo },
   } = req.body;
 
-  const user = await getUserByEmail(email);
+  const user = await pgClient.getUserByEmail(email);
 
   if (!user) {
     return sendError(res, 'user-not-found');

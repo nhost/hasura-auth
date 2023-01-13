@@ -4,7 +4,6 @@ import { ReasonPhrases } from 'http-status-codes';
 
 import { sendEmail } from '@/email';
 import {
-  getUserByEmail,
   generateTicketExpiresAt,
   ENV,
   createEmailRedirectionLink,
@@ -35,7 +34,7 @@ export const userPasswordResetHandler: RequestHandler<
     email,
     options: { redirectTo },
   } = req.body;
-  const user = await getUserByEmail(email);
+  const user = await pgClient.getUserByEmail(email);
 
   if (!user || user.disabled) {
     return sendError(res, 'user-not-found');

@@ -6,7 +6,6 @@ import {
   generateTicketExpiresAt,
   ENV,
   createEmailRedirectionLink,
-  getUserByEmail,
   pgClient,
 } from '@/utils';
 import { sendEmail } from '@/email';
@@ -42,7 +41,7 @@ export const userEmailChange: RequestHandler<
   const ticketExpiresAt = generateTicketExpiresAt(60 * 60); // 1 hour
 
   // * Send an error if the new email is already used by another user
-  if (await getUserByEmail(newEmail)) {
+  if (await pgClient.getUserByEmail(newEmail)) {
     return sendError(res, 'email-already-in-use');
   }
 

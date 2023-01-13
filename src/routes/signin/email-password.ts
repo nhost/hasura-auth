@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 
-import { getSignInResponse, getUserByEmail, ENV } from '@/utils';
+import { getSignInResponse, ENV, pgClient } from '@/utils';
 import { logger } from '@/logger';
 import { sendError } from '@/errors';
 import { Joi, email, password } from '@/validation';
@@ -21,7 +21,7 @@ export const signInEmailPasswordHandler: RequestHandler<
   const { email, password } = req.body;
   logger.debug(`Sign in with email: ${email}`);
 
-  const user = await getUserByEmail(email);
+  const user = await pgClient.getUserByEmail(email);
 
   if (!user) {
     return sendError(res, 'invalid-email-password');

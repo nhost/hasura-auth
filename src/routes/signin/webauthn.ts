@@ -2,7 +2,6 @@ import { sendError } from '@/errors';
 import {
   ENV,
   getSignInResponse,
-  getUserByEmail,
   getWebAuthnRelyingParty,
   getCurrentChallenge,
   pgClient,
@@ -35,7 +34,7 @@ export const signInWebauthnHandler: RequestHandler<
   const { body } = req;
   const { email } = body;
 
-  const user = await getUserByEmail(email);
+  const user = await pgClient.getUserByEmail(email);
 
   // ? Do we know to let anyone know if the user doesn't exist?
   if (!user) {
@@ -94,7 +93,7 @@ export const signInVerifyWebauthnHandler: RequestHandler<
 
   const { credential, email } = req.body;
 
-  const user = await getUserByEmail(email);
+  const user = await pgClient.getUserByEmail(email);
 
   if (!user) {
     return sendError(res, 'user-not-found');

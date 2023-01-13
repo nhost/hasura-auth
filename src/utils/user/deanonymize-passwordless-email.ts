@@ -1,7 +1,7 @@
 import { Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 
-import { createEmailRedirectionLink, getUserByEmail, pgClient } from '@/utils';
+import { createEmailRedirectionLink, pgClient } from '@/utils';
 import { ENV } from '../env';
 import { sendEmail } from '@/email';
 import { generateTicketExpiresAt } from '../ticket';
@@ -36,7 +36,7 @@ export const handleDeanonymizeUserPasswordlessEmail = async (
   } = body;
 
   // check if email already in use by some other user
-  if (await getUserByEmail(email)) {
+  if (await pgClient.getUserByEmail(email)) {
     return sendError(res, 'email-already-in-use');
   }
 
