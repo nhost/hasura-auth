@@ -14,7 +14,7 @@
     "lint": "eslint --ext .ts .",
     "lint:fix": "npm run lint --fix",
     "dev": "ts-node-dev -r tsconfig-paths/register --respawn --clear --unhandled-rejections=strict src/start.ts",
-    "test": "AUTH_LOG_LEVEL=error jest --runInBand",
+    "test": "AUTH_LOG_LEVEL=error jest --detectOpenHandles",
     "test:watch": "AUTH_LOG_LEVEL=error jest --runInBand --watch",
     "ci:version": "changeset version && pnpm install --frozen-lockfile false",
     "changeset": "changeset",
