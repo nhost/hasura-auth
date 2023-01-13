@@ -51,7 +51,9 @@ export const pgClient = {
     }
   },
 
-  providerRequest: async (id: string) => {
+  providerRequest: async (
+    id: string
+  ): Promise<{ options: SessionData } | null> => {
     const client = await openPgClient();
     try {
       const { rows } = await client.query<{ options: SessionData }>(
@@ -264,7 +266,6 @@ export const pgClient = {
         `INSERT INTO "auth"."user_providers" (user_id, provider_id, provider_user_id, refresh_token, access_token) VALUES($1, $2, $3, $4, $5) RETURNING *;`,
         [userId, providerId, providerUserId, refreshToken, accessToken]
       );
-      client.release();
       return rows[0];
     } finally {
       client.release();
