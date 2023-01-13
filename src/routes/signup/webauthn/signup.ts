@@ -1,10 +1,9 @@
 import { sendError } from '@/errors';
 import {
   ENV,
-  getUserByEmail,
   getGravatarUrl,
-  insertUser,
   getWebAuthnRelyingParty,
+  pgClient,
 } from '@/utils';
 
 import { v4 as uuidv4 } from 'uuid';
@@ -13,6 +12,7 @@ import { RequestHandler } from 'express';
 import { PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/typescript-types';
 import { email, Joi, registrationOptions } from '@/validation';
 import { UserRegistrationOptions } from '@/types';
+import { logger } from '@/logger';
 
 export type SignUpWebAuthnRequestBody = {
   email: string;
@@ -32,11 +32,6 @@ export const signUpWebauthnHandler: RequestHandler<
 > = async ({ body: { email, options } }, res) => {
   if (!ENV.AUTH_WEBAUTHN_ENABLED) {
     return sendError(res, 'disabled-endpoint');
-  }
-
-  // check if email already in use by some other user
-  if (await getUserByEmail(email)) {
-    return sendError(res, 'email-already-in-use');
   }
 
   const {
@@ -59,19 +54,29 @@ export const signUpWebauthnHandler: RequestHandler<
     attestationType: 'indirect',
   });
 
-  await insertUser({
-    id: userId,
-    isAnonymous: true,
-    newEmail: email,
-    disabled: ENV.AUTH_DISABLE_NEW_USERS,
-    displayName,
-    avatarUrl: getGravatarUrl(email),
-    emailVerified: false,
-    locale,
-    defaultRole,
-    roles: allowedRoles,
-    metadata,
-    webauthnCurrentChallenge: registrationOptions.challenge,
-  });
+  try {
+    await pgClient.insertUser({
+      id: userId,
+      isAnonymous: true,
+      newEmail: email,
+      disabled: ENV.AUTH_DISABLE_NEW_USERS,
+      displayName,
+      avatarUrl: getGravatarUrl(email),
+      emailVerified: false,
+      locale,
+      defaultRole,
+      roles: allowedRoles,
+      metadata,
+      webauthnCurrentChallenge: registrationOptions.challenge,
+    });
+  } catch (e) {
+    const error = e as Error;
+    if (error.message === 'email-already-in-use') {
+      return sendError(res, 'email-already-in-use');
+    }
+    logger.warn('Error while inserting user', { error });
+    return sendError(res, 'internal-error');
+  }
+
   return res.send(registrationOptions);
 };

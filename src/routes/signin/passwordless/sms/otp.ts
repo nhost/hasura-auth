@@ -53,7 +53,7 @@ export const signInOtpHandler: RequestHandler<
     });
 
     const signInResponse = await getSignInResponse({
-      userId: userId,
+      user,
       checkMFA: true,
     });
 

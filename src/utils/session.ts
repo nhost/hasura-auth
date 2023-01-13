@@ -3,7 +3,6 @@ import { Session, SignInResponse, User } from '@/types';
 import { generateTicketExpiresAt } from './ticket';
 import { ENV } from './env';
 import { createHasuraAccessToken } from './jwt';
-import { getUser } from './user';
 import { pgClient } from './postgres-client';
 
 /**
@@ -26,7 +25,7 @@ export const getNewOrUpdateCurrentSession = async ({
       lastSeen: new Date(),
     },
   });
-  const sessionUser = await getUser({ userId: user.id });
+  const sessionUser = await pgClient.getUserById(user.id);
   const accessToken = await createHasuraAccessToken(user);
   const refreshToken =
     (currentRefreshToken &&
@@ -41,24 +40,18 @@ export const getNewOrUpdateCurrentSession = async ({
 };
 
 export const getSignInResponse = async ({
-  // TODO performance: use the user as an argument rather than a userId so we don't need to get the user again from the DB
-  userId,
+  user,
   checkMFA,
 }: {
-  userId: string;
+  user: User;
   checkMFA: boolean;
 }): Promise<SignInResponse> => {
-  // TODO performance: we could remove this call - see the above TODO
-  const user = await pgClient.getUserById(userId);
-  if (!user) {
-    throw new Error('No user');
-  }
   if (checkMFA && user?.activeMfaType === 'totp') {
     // generate new ticket
     const ticket = `mfaTotp:${uuidv4()}`;
     // set ticket
     await pgClient.updateUser({
-      id: userId,
+      id: user.id,
       user: {
         ticket,
         ticketExpiresAt: generateTicketExpiresAt(5 * 60),

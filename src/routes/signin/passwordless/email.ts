@@ -4,7 +4,6 @@ import { ReasonPhrases } from 'http-status-codes';
 
 import {
   getUserByEmail,
-  insertUser,
   getGravatarUrl,
   generateTicketExpiresAt,
   ENV,
@@ -53,7 +52,7 @@ export const signInPasswordlessEmailHandler: RequestHandler<
 
   // if no user exists, create the user
   if (!user) {
-    user = await insertUser({
+    user = await pgClient.insertUser({
       displayName: displayName ?? email,
       locale,
       roles: allowedRoles,

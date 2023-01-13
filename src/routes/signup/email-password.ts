@@ -2,17 +2,17 @@ import { RequestHandler } from 'express';
 
 import {
   getSignInResponse,
-  getUserByEmail,
   ENV,
   hashPassword,
   getGravatarUrl,
-  insertUser,
   createVerifyEmailTicket,
+  pgClient,
 } from '@/utils';
-import { UserRegistrationOptionsWithRedirect } from '@/types';
+import { User, UserRegistrationOptionsWithRedirect } from '@/types';
 import { sendError } from '@/errors';
 import { Joi, email, passwordInsert, registrationOptions } from '@/validation';
 import { sendEmailIfNotVerified } from '@/utils/user/email-verification';
+import { logger } from '@/logger';
 
 export const signUpEmailPasswordSchema = Joi.object({
   email: email.required(),
@@ -42,13 +42,6 @@ export const signUpEmailPasswordHandler: RequestHandler<
       displayName = email,
     },
   } = body;
-
-  // TODO performance: try to create the user, catch the error if it fails. Then, if this is a conflict error, send this error to the client.
-  // check if email already in use by some other user
-  if (await getUserByEmail(email)) {
-    return sendError(res, 'email-already-in-use');
-  }
-
   // hash password
   const passwordHash = password && (await hashPassword(password));
 
@@ -56,20 +49,30 @@ export const signUpEmailPasswordHandler: RequestHandler<
   const { ticket, ticketExpiresAt } = createVerifyEmailTicket();
 
   // insert user
-  const user = await insertUser({
-    disabled: ENV.AUTH_DISABLE_NEW_USERS,
-    displayName,
-    avatarUrl: getGravatarUrl(email),
-    email,
-    passwordHash,
-    ticket,
-    ticketExpiresAt,
-    emailVerified: false,
-    locale,
-    defaultRole,
-    roles: allowedRoles,
-    metadata,
-  });
+  let user: User;
+  try {
+    user = await pgClient.insertUser({
+      disabled: ENV.AUTH_DISABLE_NEW_USERS,
+      displayName,
+      avatarUrl: getGravatarUrl(email),
+      email,
+      passwordHash,
+      ticket,
+      ticketExpiresAt,
+      emailVerified: false,
+      locale,
+      defaultRole,
+      roles: allowedRoles,
+      metadata,
+    });
+  } catch (e) {
+    const error = e as Error;
+    if (error.message === 'email-already-in-use') {
+      return sendError(res, 'email-already-in-use');
+    }
+    logger.warn('Error while inserting user', { error });
+    return sendError(res, 'internal-error');
+  }
 
   await sendEmailIfNotVerified({
     email,
@@ -85,7 +88,7 @@ export const signUpEmailPasswordHandler: RequestHandler<
 
   if (!ENV.AUTH_EMAIL_SIGNIN_EMAIL_VERIFIED_REQUIRED) {
     const signInResponse = await getSignInResponse({
-      userId: user.id,
+      user,
       checkMFA: false,
     });
 

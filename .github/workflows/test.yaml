@@ -1,13 +1,6 @@
 name: Test
 on:
   workflow_call:
-  pull_request:
-    branches: [main]
-    paths:
-      - '**'
-      - '!docs/**'
-      - '!examples/**'
-      - '!*.md'
 
 env:
   HASURA_GRAPHQL_ADMIN_SECRET: test_secret_key

@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 
-import { getSignInResponse, insertUser, ENV } from '@/utils';
+import { getSignInResponse, ENV, pgClient } from '@/utils';
 import { sendError } from '@/errors';
 import { Joi, displayName, locale, metadata } from '@/validation';
 
@@ -26,7 +26,7 @@ export const signInAnonymousHandler: RequestHandler<{}, {}, BodyType> = async (
   const { locale, displayName = 'Anonymous User' } = req.body;
 
   // insert user
-  const user = await insertUser({
+  const user = await pgClient.insertUser({
     displayName,
     locale,
     roles: ['anonymous'],
@@ -36,7 +36,7 @@ export const signInAnonymousHandler: RequestHandler<{}, {}, BodyType> = async (
   });
 
   const signInResponse = await getSignInResponse({
-    userId: user.id,
+    user,
     checkMFA: false,
   });
 

@@ -8,7 +8,6 @@ import { Joi } from '@/validation';
 import { sendError, sendUnspecifiedError } from '@/errors';
 import {
   ENV,
-  getUser,
   verifyWebAuthnRegistration,
   getWebAuthnRelyingParty,
   pgClient,
@@ -31,7 +30,9 @@ export const addSecurityKeyHandler: RequestHandler<
 
   const { userId } = req.auth as RequestAuth;
 
-  const { displayName, email, emailVerified } = await getUser({ userId });
+  const { displayName, email, emailVerified } = await pgClient.getUserById(
+    userId
+  );
 
   if (ENV.AUTH_EMAIL_SIGNIN_EMAIL_VERIFIED_REQUIRED && !emailVerified) {
     return sendError(res, 'unverified-user');
@@ -84,7 +85,7 @@ export const addSecurityKeyVerifyHandler: RequestHandler<
     return sendError(res, 'unauthenticated-user');
   }
 
-  const user = await getUser({ userId });
+  const user = await pgClient.getUserById(userId);
 
   if (ENV.AUTH_EMAIL_SIGNIN_EMAIL_VERIFIED_REQUIRED && !user.emailVerified) {
     return sendError(res, 'unverified-user');

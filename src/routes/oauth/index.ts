@@ -4,13 +4,7 @@ import session from 'express-session';
 import grant from 'grant';
 
 import { ERRORS, sendError } from '@/errors';
-import {
-  ENV,
-  generateRedirectUrl,
-  getUserByEmail,
-  insertUser,
-  pgClient,
-} from '@/utils';
+import { ENV, generateRedirectUrl, getUserByEmail, pgClient } from '@/utils';
 import {
   queryValidator,
   redirectTo as redirectToRule,
@@ -261,7 +255,7 @@ export const oauthProviders = Router()
         // * No user found with this email. Create a new user
         // TODO feature: check if registration is enabled
         const userInput = await transformOauthProfile(profile, options);
-        const { id } = await insertUser(userInput);
+        const { id } = await pgClient.insertUser(userInput);
         userId = id;
         await pgClient.insertUserProviderToUser({
           userId: id,

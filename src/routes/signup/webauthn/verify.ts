@@ -155,7 +155,7 @@ export const signInVerifyWebauthnHandler: RequestHandler<
       return res.send({ session: null, mfa: null });
     }
     const signInResponse = await getSignInResponse({
-      userId: user.id,
+      user,
       checkMFA: false,
     });
     return res.send(signInResponse);

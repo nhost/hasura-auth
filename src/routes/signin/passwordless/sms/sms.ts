@@ -2,13 +2,7 @@ import { RequestHandler } from 'express';
 import { ReasonPhrases } from 'http-status-codes';
 
 import { UserRegistrationOptions } from '@/types';
-import {
-  getNewOneTimePasswordData,
-  getUserByPhoneNumber,
-  insertUser,
-  ENV,
-  pgClient,
-} from '@/utils';
+import { getNewOneTimePasswordData, ENV, pgClient } from '@/utils';
 import { sendError } from '@/errors';
 import { Joi, phoneNumber, registrationOptions } from '@/validation';
 import { isTestingPhoneNumber, isVerifySid } from '@/utils/twilio';
@@ -41,12 +35,12 @@ export const signInPasswordlessSmsHandler: RequestHandler<
   } = req.body;
 
   // check if email already exist
-  let user = await getUserByPhoneNumber({ phoneNumber });
+  let user = await pgClient.getUserByPhoneNumber(phoneNumber);
   const userExists = !!user;
 
   // if no user exists, create the user
   if (!user) {
-    user = await insertUser({
+    user = await pgClient.insertUser({
       disabled: ENV.AUTH_DISABLE_NEW_USERS,
       displayName,
       avatarUrl: '',

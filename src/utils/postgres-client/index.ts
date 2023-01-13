@@ -55,7 +55,7 @@ export const pgClient = {
   insertRefreshToken: async (
     userId: string,
     refreshToken: string = uuidv4()
-  ) => {
+  ): Promise<string> => {
     const client = await pgPool.connect();
     await client.query(
       `INSERT INTO "auth"."refresh_tokens" (user_id, refresh_token, expires_at) VALUES($1, $2, $3);`,
@@ -343,16 +343,22 @@ export const pgClient = {
     const { roles, ...rest } = transformedUser;
     const columns = Object.keys(rest);
     const values = Object.values(rest);
-    const {
-      rows: [insertedUser],
-    } = await client.query<SqlUser>(
-      `INSERT INTO "auth"."users" (${columns.join(',')}) VALUES(${[
-        ...columns.keys(),
-      ]
-        .map((i) => `$${i + 1}`)
-        .join(',')}) RETURNING *;`,
-      values
-    );
+    let insertedUser: SqlUser;
+    try {
+      const { rows } = await client.query<SqlUser>(
+        `INSERT INTO "auth"."users" (${columns.join(',')}) VALUES(${[
+          ...columns.keys(),
+        ]
+          .map((i) => `$${i + 1}`)
+          .join(',')}) RETURNING *;`,
+        values
+      );
+      insertedUser = rows[0];
+    } catch (e) {
+      // TODO determine the error type
+      throw new Error('email-already-in-use');
+    }
+
     if (roles) {
       await insertUserRoles(client, insertedUser.id, roles);
     }

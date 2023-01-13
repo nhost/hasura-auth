@@ -47,7 +47,7 @@ export const signInEmailPasswordHandler: RequestHandler<
   }
 
   const signInTokens = await getSignInResponse({
-    userId: user.id,
+    user,
     checkMFA: true,
   });
 

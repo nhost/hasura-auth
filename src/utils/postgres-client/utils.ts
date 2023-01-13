@@ -2,9 +2,14 @@ import { User } from '@/types';
 import type { PoolClient } from 'pg';
 import { SqlUser } from './types';
 
-export const cameliseUser = (user?: SqlUser | null): User | null => {
+export const cameliseUser = <
+  T extends SqlUser | null,
+  Result extends T extends SqlUser ? User : null
+>(
+  user: T
+): T extends SqlUser ? User : null => {
   if (!user) {
-    return null;
+    return null as Result;
   }
   const {
     avatar_url,
@@ -32,7 +37,7 @@ export const cameliseUser = (user?: SqlUser | null): User | null => {
     otp_method_last_used,
     otp_hash_expires_at,
     last_seen,
-  } = user;
+  } = user as SqlUser;
   return {
     avatarUrl: avatar_url,
     createdAt: created_at,
@@ -59,7 +64,7 @@ export const cameliseUser = (user?: SqlUser | null): User | null => {
     ticketExpiresAt: ticket_expires_at,
     otpHashExpiresAt: otp_hash_expires_at,
     lastSeen: last_seen,
-  };
+  } as Result;
 };
 
 export const snakeiseUser = (

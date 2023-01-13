@@ -50,7 +50,7 @@ export const signInMfaTotpHandler: RequestHandler<
   }
 
   const signInResponse = await getSignInResponse({
-    userId: user.id,
+    user,
     checkMFA: false,
   });
 

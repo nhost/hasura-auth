@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import { generateRedirectUrl, getUserByEmail, pgClient } from '@/utils';
 import { Joi, redirectTo } from '@/validation';
 import { sendError } from '@/errors';
-import { EmailType, EMAIL_TYPES } from '@/types';
+import { EmailType, EMAIL_TYPES, User } from '@/types';
 
 export const verifySchema = Joi.object({
   redirectTo: redirectTo.required(),
@@ -31,22 +31,14 @@ export const verifyHandler: RequestHandler<
     return sendError(res, 'invalid-ticket', { redirectTo }, true);
   }
 
-  // user found, delete current ticket
-  await pgClient.updateUser({
-    id: user.id,
-    user: {
-      ticket: null,
-    },
-  });
+  const updates: Partial<User> = {
+    // user found, delete current ticket
+    ticket: null,
+  };
 
   // different types
   if (type === EMAIL_TYPES.VERIFY) {
-    await pgClient.updateUser({
-      id: user.id,
-      user: {
-        emailVerified: true,
-      },
-    });
+    updates.emailVerified = true;
   } else if (type === EMAIL_TYPES.CONFIRM_CHANGE) {
     const newEmail = user.newEmail;
     if (!newEmail) {
@@ -59,24 +51,19 @@ export const verifyHandler: RequestHandler<
       return sendError(res, 'email-already-in-use', { redirectTo }, true);
     }
     // set new email for user
-    await pgClient.updateUser({
-      id: user.id,
-      user: {
-        email: newEmail,
-        newEmail: null,
-      },
-    });
+    updates.email = newEmail;
+    updates.newEmail = null;
   } else if (type === EMAIL_TYPES.SIGNIN_PASSWORDLESS) {
-    await pgClient.updateUser({
-      id: user.id,
-      user: {
-        emailVerified: true,
-      },
-    });
+    updates.emailVerified = true;
   } else if (type === EMAIL_TYPES.PASSWORD_RESET) {
     // noop
     // just redirecting the user to the client (as signed-in).
   }
+
+  await pgClient.updateUser({
+    id: user.id,
+    user: updates,
+  });
 
   const refreshToken = await pgClient.insertRefreshToken(user.id);
   const redirectUrl = generateRedirectUrl(redirectTo, { refreshToken, type });
