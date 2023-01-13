@@ -1,0 +1,20 @@
+name: Pull Request
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - '**.md'
+      - '!.changeset/**'
+      - 'LICENSE'
+
+jobs:
+  test:
+    name: Tests
+    uses: ./.github/workflows/test.yaml
+
+  publish:
+    name: Publish Docker image
+    needs: test
+    uses: ./.github/workflows/docker_publish.yaml

@@ -1,0 +1,95 @@
+name: Publish Docker image
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: 'Semver version to use for the Docker image.'
+        default: ''
+        required: false
+        type: string
+
+jobs:
+  publish:
+    name: Publish Docker image
+    #
+    needs:
+      - test
+      - version
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    # These permissions are needed to interact with GitHub's OIDC Token endpoint.
+    permissions:
+      id-token: write
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Preprocess environment
+        id: preprocess-environment
+        run: echo "aws_account_id=${{ secrets.AWS_PRODUCTION_ACCOUNT_ID }}" >> $GITHUB_OUTPUT
+      - name: Add git tag
+        if: input.version != ''
+        run: |
+          git tag "v${{ input.version }}"
+          git push origin --tags
+      - name: Determine tags
+        id: tags
+        run: |
+          echo "docker_tags<<EOF" >> $GITHUB_OUTPUT
+          echo "type=sha" >> $GITHUB_OUTPUT
+          echo "type=ref,event=pr" >> $GITHUB_OUTPUT
+          echo "type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}" >> $GITHUB_OUTPUT
+          if [ "${{ input.version }}" != "" ]; then
+            echo "type=semver,pattern={{version}},value=$GIT_TAG" >> $GITHUB_OUTPUT
+            echo "type=semver,pattern={{major}}.{{minor}},value=$GIT_TAG" >> $GITHUB_OUTPUT
+            echo "type=semver,pattern={{major}},value=$GIT_TAG" >> $GITHUB_OUTPUT
+          fi
+          echo 'EOF' >> $GITHUB_OUTPUT
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          # list of Docker images to use as base name for tags
+          images: |
+            nhost/hasura-auth
+            ${{ steps.preprocess-environment.outputs.aws_account_id }}.dkr.ecr.eu-central-1.amazonaws.com/hasura-auth
+          tags: ${{ steps.tags.outputs.docker_tags }}
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Configure AWS
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: arn:aws:iam::${{ steps.preprocess-environment.outputs.aws_account_id }}:role/github-actions-nhost-${{ github.event.repository.name }}
+          aws-region: eu-central-1
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v1
+      - name: Build and publish to Docker Hub and AWS ECR
+        uses: docker/build-push-action@v3
+        timeout-minutes: 60
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          push: true
+      - name: Create GitHub Release
+        uses: taiki-e/create-gh-release-action@v1
+        if: input.version != ''
+        with:
+          changelog: CHANGELOG.md
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: refs/tags/${{ input.version }}
+      - name: Remove tag
+        if: failure() && input.version != ''
+        run: git push --delete origin ${{ input.version }}

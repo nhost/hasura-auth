@@ -10,7 +10,7 @@
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "build": "rimraf dist && tsc --project tsconfig.build.json && tsc-alias",
-    "start": "NODE_ENV=production node --prof ./dist/start.js",
+    "start": "node ./dist/start.js",
     "lint": "eslint --ext .ts .",
     "lint:fix": "npm run lint --fix",
     "dev": "ts-node-dev -r tsconfig-paths/register --respawn --clear --unhandled-rejections=strict src/start.ts",
@@ -18,6 +18,8 @@
     "test:watch": "AUTH_LOG_LEVEL=error jest --runInBand --watch",
     "ci:version": "changeset version && pnpm install --frozen-lockfile false",
     "changeset": "changeset",
+    "benchmark": "run-s build benchmark:run",
+    "benchmark:run": "node profiler/requests.js",
     "profile": "run-s build profile:run",
     "profile:run": "clinic flame --on-port 'node profiler/requests.js' -- node dist/start.js"
   },
