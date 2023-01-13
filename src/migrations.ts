@@ -2,12 +2,12 @@ import { migrate } from '@djgrant/postgres-migrations';
 import fs from 'fs/promises';
 import path from 'path';
 import { logger } from './logger';
-import { pgPool } from './utils';
+import { openPgClient } from './utils';
 
 export async function applyMigrations(): Promise<void> {
   logger.info('Applying SQL migrations...');
 
-  const client = await pgPool.connect();
+  const client = await openPgClient();
 
   try {
     /**
