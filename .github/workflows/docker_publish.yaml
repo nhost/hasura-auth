@@ -11,10 +11,6 @@ on:
 jobs:
   publish:
     name: Publish Docker image
-    #
-    needs:
-      - test
-      - version
     timeout-minutes: 60
     runs-on: ubuntu-latest
     # These permissions are needed to interact with GitHub's OIDC Token endpoint.
