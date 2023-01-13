@@ -1,12 +1,11 @@
 name: Pull Request
 
 on:
-  push:
+  pull_request:
     branches: [main]
     paths-ignore:
       - 'docs/**'
       - '**.md'
-      - '!.changeset/**'
       - 'LICENSE'
 
 jobs:
