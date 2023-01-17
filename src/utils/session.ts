@@ -19,13 +19,17 @@ export const getNewOrUpdateCurrentSession = async ({
   currentRefreshToken?: string;
 }): Promise<Session> => {
   // update user's last seen
-  pgClient.updateUser({
+  await pgClient.updateUser({
     id: user.id,
     user: {
+      // TODO performance: update through a SQL trigger
       lastSeen: new Date(),
     },
   });
   const accessToken = await createHasuraAccessToken(user);
+  // TODO performance: no need to wait for the update to finish the http request. How to do this? Queue with an hasura event on the last_seen column?
+  // Another option: update both the user and the refresh token in the same transaction
+  // TODO performance: upsert refresh token rather than this scrappy update/insert
   const refreshToken =
     (currentRefreshToken &&
       (await pgClient.updateRefreshTokenExpiresAt(currentRefreshToken))) ||

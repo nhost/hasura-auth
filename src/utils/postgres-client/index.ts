@@ -106,17 +106,6 @@ export const pgClient = {
     }
   },
 
-  deleteExpiredRefreshTokens: async () => {
-    const client = await openPgClient();
-    try {
-      await client.query(
-        `DELETE FROM "auth"."refresh_tokens" WHERE expires_at < NOW();`
-      );
-    } finally {
-      client.release();
-    }
-  },
-
   upsertRoles: async (roles: string[]) => {
     const client = await openPgClient();
     try {

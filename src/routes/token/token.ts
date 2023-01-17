@@ -20,13 +20,6 @@ export const tokenHandler: RequestHandler<
     return sendError(res, 'invalid-refresh-token');
   }
 
-  // 1 in 10 request will delete expired refresh tokens
-  // TODO: CRONJOB in the future.
-  if (Math.random() < 0.1) {
-    // no await
-    pgClient.deleteExpiredRefreshTokens();
-  }
-
   const session = await getNewOrUpdateCurrentSession({
     user,
     currentRefreshToken: refreshToken,
