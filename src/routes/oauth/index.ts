@@ -207,19 +207,29 @@ export const oauthProviders = Router()
       logger.warn(`No Oauth response for the provider ${provider}`);
       return sendErrorFromQuery('internal-error');
     }
+
+    const grantError =
+      typeof response?.error === 'object'
+        ? typeof response.error.error === 'string'
+          ? response.error.error
+          : JSON.stringify(response.error)
+        : response?.error;
+
     if (!response.profile) {
       logger.warn(
-        `No Oauth profile in the session for the provider ${provider}`
+        `No Oauth profile in the session for the provider ${provider}: ${grantError}`
       );
-      return sendErrorFromQuery('internal-error', response.error);
+      return sendErrorFromQuery('internal-error', grantError);
     }
 
     const profile = await normaliseProfile(provider, response);
 
     const providerUserId = profile?.id;
     if (!providerUserId) {
-      logger.warn(`Missing id in profile for provider ${provider}`);
-      return sendErrorFromQuery(undefined, 'OAuth request cancelled');
+      logger.warn(
+        `Missing id in profile for provider ${provider}: ${grantError}`
+      );
+      return sendErrorFromQuery(undefined, grantError);
     }
 
     const { access_token: accessToken, refresh_token: refreshToken } = response;
