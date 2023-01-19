@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import express, { Router } from 'express';
 import session from 'express-session';
-import grant from 'grant';
+import grant, { GrantResponse } from 'grant';
 
 import { ERRORS, sendError } from '@/errors';
 import {
@@ -169,7 +169,7 @@ export const oauthProviders = Router()
       });
     });
 
-    const response = grant?.response;
+    const response: GrantResponse | undefined = grant?.response;
     const provider = grant?.provider;
 
     /**
@@ -180,15 +180,28 @@ export const oauthProviders = Router()
       code?: keyof typeof ERRORS,
       fallbackMessage?: string
     ) => {
+      const grantError =
+        typeof response?.error === 'object'
+          ? typeof response.error.error === 'string'
+            ? response.error.error
+            : JSON.stringify(response.error)
+          : response?.error;
+      if (grantError) {
+        logger.warn(`Grant error: ${grantError}`);
+      }
       const error =
         code ||
-        (typeof query.error === 'string' ? query.error : 'invalid-request');
+        (typeof query.error === 'string'
+          ? query.error
+          : grantError
+          ? 'internal-error'
+          : 'invalid-request');
       const errorDescription =
         typeof query.error_description === 'string'
           ? query.error_description
           : typeof query.error === 'string' && query.error !== error
           ? query.error
-          : fallbackMessage || 'Unknown error';
+          : grantError || fallbackMessage || 'Unknown error';
       const details: Record<string, string> = {
         error,
         errorDescription,
@@ -208,28 +221,18 @@ export const oauthProviders = Router()
       return sendErrorFromQuery('internal-error');
     }
 
-    const grantError =
-      typeof response?.error === 'object'
-        ? typeof response.error.error === 'string'
-          ? response.error.error
-          : JSON.stringify(response.error)
-        : response?.error;
-
     if (!response.profile) {
       logger.warn(
-        `No Oauth profile in the session for the provider ${provider}: ${grantError}`
+        `No Oauth profile in the session for the provider ${provider}`
       );
-      return sendErrorFromQuery('internal-error', grantError);
+      return sendErrorFromQuery('internal-error', response.error);
     }
 
     const profile = await normaliseProfile(provider, response);
 
     const providerUserId = profile?.id;
     if (!providerUserId) {
-      logger.warn(
-        `Missing id in profile for provider ${provider}: ${grantError}`
-      );
-      return sendErrorFromQuery(undefined, grantError);
+      return sendErrorFromQuery(undefined, 'OAuth request cancelled');
     }
 
     const { access_token: accessToken, refresh_token: refreshToken } = response;
