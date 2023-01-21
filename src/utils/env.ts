@@ -66,6 +66,9 @@ export const ENV = {
   get AUTH_SMS_TEST_PHONE_NUMBERS() {
     return castStringArrayEnv('AUTH_SMS_TEST_PHONE_NUMBERS', []);
   },
+  get AUTH_SMS_VERIFICATION_TIMEOUT() {
+    return castIntEnv('AUTH_SMS_VERIFICATION_TIMEOUT', 5 * 60);
+  },
 
   // TWILIO
   get AUTH_SMS_TWILIO_ACCOUNT_SID() {
