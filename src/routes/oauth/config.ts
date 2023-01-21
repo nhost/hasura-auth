@@ -385,4 +385,25 @@ export const PROVIDERS_CONFIG: Record<
       next();
     },
   },
+  oidc: {
+    grant: {
+      oauth: 2,
+      nonce: true,
+      scope_delimiter: ' ',
+      scope: ['openid', 'profile', 'email'],
+      pkce: process.env.AUTH_PROVIDER_OIDC_PKCE === 'true',
+      authorize_url: `${process.env.AUTH_PROVIDER_OIDC_HOST}/auth`,
+      access_url: `${process.env.AUTH_PROVIDER_OIDC_HOST}/token`,
+      profile_url: `${process.env.AUTH_PROVIDER_OIDC_HOST}/userinfo`,
+      client_id: process.env.AUTH_PROVIDER_OIDC_CLIEND_ID,
+      client_secret: process.env.AUTH_PROVIDER_OIDC_CLIENT_SECRET,
+    },
+    profile: ({ profile }) => ({
+      id: profile.sub,
+      email: profile.email,
+      emailVerified: profile.email_verified,
+      displayName: profile.name && profile.nickname,
+      avatarUrl: profile.picture,
+    }),
+  },
 };
