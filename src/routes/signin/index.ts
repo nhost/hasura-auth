@@ -1,14 +1,14 @@
 import { Router } from 'express';
 
 import { asyncWrapper as aw } from '@/utils';
-import { bodyValidator } from '@/validation';
+import { bodyValidator, signInOtpSchema } from '@/validation';
 
 import {
   signInEmailPasswordHandler,
   signInEmailPasswordSchema,
 } from './email-password';
 import { signInAnonymousHandler, signInAnonymousSchema } from './anonymous';
-import { signInOtpHandler, signInOtpSchema } from './passwordless/sms/otp';
+import { signInOtpHandler } from './passwordless/sms/otp';
 import {
   signInPasswordlessEmailHandler,
   signInPasswordlessEmailSchema,

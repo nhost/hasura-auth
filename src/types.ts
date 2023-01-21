@@ -74,6 +74,11 @@ export type SignInResponse = {
   mfa: Mfa | null;
 };
 
+export type OtpSmsRequestBody = {
+  phoneNumber: string;
+  otp: string;
+};
+
 export type JwtSecret = {
   type: 'HS256' | 'HS238' | 'HS512' | 'RS256' | 'RS384' | 'RS512' | 'Ed25519';
   key: string;
@@ -101,6 +106,7 @@ export type User = {
   createdAt: Date;
   displayName: string;
   newEmail: string | null;
+  newPhoneNumber: string | null;
   avatarUrl: string;
   locale: string;
   email: string;

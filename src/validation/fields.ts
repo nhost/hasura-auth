@@ -1,4 +1,7 @@
-import { UserRegistrationOptionsWithRedirect } from '@/types';
+import {
+  OtpSmsRequestBody,
+  UserRegistrationOptionsWithRedirect,
+} from '@/types';
 import { pwnedPassword } from 'hibp';
 import { isValidPhoneNumber, parsePhoneNumber } from 'libphonenumber-js';
 import micromatch from 'micromatch';
@@ -202,3 +205,8 @@ export const phoneNumber = Joi.string()
       throw new Error('invalid phone number');
     }
   }, 'valid phone number');
+
+export const signInOtpSchema = Joi.object<OtpSmsRequestBody>({
+  phoneNumber,
+  otp: Joi.string().required(),
+}).meta({ className: 'SignInOtpSchema' });

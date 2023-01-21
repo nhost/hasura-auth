@@ -366,6 +366,9 @@ export const NHOST_PROJECT_METADATA: HasuraMetadataV3 = {
               phone_number: {
                 custom_name: 'phoneNumber',
               },
+              new_phone_number: {
+                custom_name: 'newPhoneNumber',
+              },
               phone_number_verified: {
                 custom_name: 'phoneNumberVerified',
               },
@@ -397,6 +400,7 @@ export const NHOST_PROJECT_METADATA: HasuraMetadataV3 = {
               otp_method_last_used: 'otpMethodLastUsed',
               password_hash: 'passwordHash',
               phone_number: 'phoneNumber',
+              new_phone_number: 'newPhoneNumber',
               phone_number_verified: 'phoneNumberVerified',
               ticket_expires_at: 'ticketExpiresAt',
               totp_secret: 'totpSecret',

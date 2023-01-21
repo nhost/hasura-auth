@@ -27,6 +27,10 @@ import {
   addSecurityKeyVerifyHandler,
   userVerifyAddSecurityKeySchema,
 } from './webauthn';
+import {
+  userPhoneNumberChange,
+  userPhoneNumberChangeSchema,
+} from './phone-number';
 
 const router = Router();
 
@@ -99,6 +103,23 @@ router.post(
   bodyValidator(userEmailChangeSchema),
   authenticationGate,
   aw(userEmailChange)
+);
+
+/**
+ * POST /user/phone-number/change
+ * @summary Change the current user's phone number
+ * @param {UserPhoneNumberChangeSchema} request.body.required
+ * @return {string} 200 - A one-time password has been send to the new phone number - application/json
+ * @return {InvalidRequestError} 400 - The payload format is invalid - application/json
+ * @return {UnauthenticatedUserError} 401 - User is not authenticated - application/json
+ * @security BearerAuth
+ * @tags User management
+ */
+router.post(
+  '/user/phone-number/change',
+  bodyValidator(userPhoneNumberChangeSchema),
+  authenticationGate,
+  aw(userPhoneNumberChange)
 );
 
 /**

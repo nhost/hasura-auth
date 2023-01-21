@@ -102,6 +102,11 @@ export const ERRORS = asErrors({
     message: 'Email already in use',
     sensitive: true,
   },
+  'phone-number-already-in-use': {
+    status: StatusCodes.CONFLICT,
+    message: 'Phone number already in use',
+    sensitive: true,
+  },
   'mfa-type-not-found': {
     status: StatusCodes.BAD_REQUEST,
     message: 'There is no active MFA set for the user',

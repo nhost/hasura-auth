@@ -1,8 +1,9 @@
 import { Router } from 'express';
 
 import { asyncWrapper as aw } from '@/utils';
-import { verifyHandler, verifySchema } from './verify';
-import { queryValidator } from '@/validation';
+import { verifyHandler, verifySchema } from './verify-email';
+import { bodyValidator, queryValidator, signInOtpSchema } from '@/validation';
+import { signInOtpHandler } from '../signin/passwordless';
 
 const router = Router();
 
@@ -21,6 +22,23 @@ router.head('/verify', (_, res) => res.sendStatus(200));
  * @tags General
  */
 router.get('/verify', queryValidator(verifySchema), aw(verifyHandler));
+
+/**
+ * POST /verify/otp
+ * @summary Verify phone number change via one-time password code received by SMS
+ * @param {SignInOtpSchema} request.body.required
+ * @return {string} 200 - User successfully vefiried their new phone number - application/json
+ * @return {InvalidRequestError} 400 - The payload is invalid - application/json
+ * @return {UnauthorizedError} 401 - Error processing the request - application/json
+ * @return {DisabledEndpointError} 404 - The feature is not activated - application/json
+ * @security BearerAuth
+ * @tags General
+ */
+router.post(
+  '/verify/otp',
+  bodyValidator(signInOtpSchema),
+  aw(signInOtpHandler)
+);
 
 const verifyRouter = router;
 export { verifyRouter };

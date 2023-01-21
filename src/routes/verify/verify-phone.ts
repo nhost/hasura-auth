@@ -1,13 +1,14 @@
 import { RequestHandler } from 'express';
 import bcrypt from 'bcryptjs';
 
-import { ENV, getSignInResponse, pgClient } from '@/utils';
+import { ENV, pgClient } from '@/utils';
 import { sendError } from '@/errors';
 import { isTestingPhoneNumber, isVerifySid } from '@/utils/twilio';
 import twilio from 'twilio';
 import { OtpSmsRequestBody } from '@/types';
+import { ReasonPhrases } from 'http-status-codes';
 
-export const signInOtpHandler: RequestHandler<
+export const verifyPhoneChangeHandler: RequestHandler<
   {},
   {},
   OtpSmsRequestBody
@@ -17,13 +18,13 @@ export const signInOtpHandler: RequestHandler<
   }
 
   const { body } = req;
-
   const { phoneNumber, otp } = body;
+  const { userId } = req.auth as RequestAuth;
 
-  const user = await pgClient.getUserByPhoneNumberAndOtp(phoneNumber);
+  const user = await pgClient.getUserById(userId);
 
   if (!user) {
-    return sendError(res, 'invalid-otp');
+    return sendError(res, 'user-not-found');
   }
 
   if (user.disabled) {
@@ -33,28 +34,24 @@ export const signInOtpHandler: RequestHandler<
   if (!user.otpHash) {
     return sendError(res, 'invalid-otp');
   }
-  const userId = user.id;
 
-  async function verifyPhoneNumberAndSignIn() {
+  async function updateUserPhoneNumber() {
     await pgClient.updateUser({
       id: userId,
       user: {
         otpHash: null,
         phoneNumberVerified: true,
+        phoneNumber,
+        newPhoneNumber: null,
       },
     });
 
-    const signInResponse = await getSignInResponse({
-      userId: userId,
-      checkMFA: true,
-    });
-
-    return res.send(signInResponse);
+    return res.json(ReasonPhrases.OK);
   }
 
   if (isTestingPhoneNumber(user.phoneNumber)) {
     if (await bcrypt.compare(otp, user.otpHash)) {
-      return await verifyPhoneNumberAndSignIn();
+      return await updateUserPhoneNumber();
     } else {
       return sendError(res, 'invalid-otp');
     }
@@ -90,5 +87,5 @@ export const signInOtpHandler: RequestHandler<
     return sendError(res, 'invalid-otp');
   }
 
-  return verifyPhoneNumberAndSignIn();
+  return await updateUserPhoneNumber();
 };

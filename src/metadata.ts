@@ -212,6 +212,7 @@ export const hasuraAuthMetadataPatch: MetadataPatch = {
             locale: 'locale',
             email: 'email',
             phone_number: 'phoneNumber',
+            new_phone_number: 'newPhoneNumber',
             password_hash: 'passwordHash',
             email_verified: 'emailVerified',
             phone_number_verified: 'phoneNumberVerified',

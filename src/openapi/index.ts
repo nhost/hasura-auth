@@ -4,7 +4,6 @@ import { Application } from 'express';
 
 import { ErrorPayload, ERRORS } from '@/errors';
 import {
-  signInOtpSchema,
   signInPasswordlessEmailSchema,
   signInPasswordlessSmsSchema,
 } from '@/routes/signin/passwordless';
@@ -23,10 +22,10 @@ import { userMfaSchema } from '@/routes/user/mfa';
 import { userDeanonymizeSchema } from '@/routes/user/deanonymize';
 import { userProviderTokensSchema } from '@/routes/user/provider-tokens';
 import { tokenSchema } from '@/routes/token/token';
-import { verifySchema } from '@/routes/verify/verify';
+import { verifySchema } from '@/routes/verify/verify-email';
 
 import * as responses from './responses';
-import { Joi } from '@/validation';
+import { Joi, signInOtpSchema } from '@/validation';
 import { pascalCase } from 'pascal-case';
 import { verifyTokenSchema } from '@/routes/token/verify';
 import {
@@ -34,6 +33,7 @@ import {
   signInWebauthnSchema,
 } from '@/routes/signin/webauthn';
 import { userVerifyAddSecurityKeySchema } from '@/routes/user/webauthn';
+import { userPhoneNumberChangeSchema } from '@/routes/user/phone-number';
 
 const schema: Record<string, unknown> & { components: SwaggerSchema } = {
   tags: [],
@@ -55,6 +55,7 @@ const requestSchemas = [
   userPasswordSchema,
   userEmailChangeSchema,
   userEmailSendVerificationEmailSchema,
+  userPhoneNumberChangeSchema,
   userMfaSchema,
   userDeanonymizeSchema,
   userProviderTokensSchema,

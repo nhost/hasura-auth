@@ -280,6 +280,7 @@ Object {
               "last_seen": "lastSeen",
               "locale": "locale",
               "new_email": "newEmail",
+              "new_phone_number": "newPhoneNumber",
               "otp_hash": "otpHash",
               "otp_hash_expires_at": "otpHashExpiresAt",
               "otp_method_last_used": "otpMethodLastUsed",

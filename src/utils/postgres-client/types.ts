@@ -26,6 +26,7 @@ export type SqlUser = {
   email_verified: boolean;
   phone_number?: string;
   phone_number_verified: boolean;
+  new_phone_number: string | null;
   active_mfa_type: string | null;
   roles: string[];
   ticket: string | null;
