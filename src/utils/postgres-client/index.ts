@@ -275,7 +275,7 @@ export const pgClient = {
       rows: [user],
     } = await client.query<SqlUser>(
       createUserQueryWhere(
-        `u.phone_number = $1 AND u.otp_method_last_used = 'sms' AND u.otp_hash_expires_at > NOW()`
+        `(u.phone_number = $1 OR u.new_phone_number = $1) AND u.otp_method_last_used = 'sms' AND u.otp_hash_expires_at > NOW()`
       ),
       [phoneNumber]
     );

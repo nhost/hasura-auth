@@ -33,7 +33,10 @@ import {
   signInWebauthnSchema,
 } from '@/routes/signin/webauthn';
 import { userVerifyAddSecurityKeySchema } from '@/routes/user/webauthn';
-import { userPhoneNumberChangeSchema } from '@/routes/user/phone-number';
+import {
+  userPhoneNumberChangeSchema,
+  userPhoneNumberResendVerificationSchema,
+} from '@/routes/user/phone-number';
 
 const schema: Record<string, unknown> & { components: SwaggerSchema } = {
   tags: [],
@@ -56,6 +59,7 @@ const requestSchemas = [
   userEmailChangeSchema,
   userEmailSendVerificationEmailSchema,
   userPhoneNumberChangeSchema,
+  userPhoneNumberResendVerificationSchema,
   userMfaSchema,
   userDeanonymizeSchema,
   userProviderTokensSchema,

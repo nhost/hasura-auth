@@ -451,6 +451,27 @@
             },
             "type" : "object"
          },
+         "PhoneNumberAlreadyInUseError" : {
+            "additionalProperties" : false,
+            "properties" : {
+               "error" : {
+                  "enum" : [
+                     "phone-number-already-in-use"
+                  ]
+               },
+               "message" : {
+                  "enum" : [
+                     "Phone number already in use"
+                  ]
+               },
+               "status" : {
+                  "enum" : [
+                     409
+                  ]
+               }
+            },
+            "type" : "object"
+         },
          "RouteNotFoundError" : {
             "additionalProperties" : false,
             "properties" : {
@@ -1406,6 +1427,24 @@
             "required" : [
                "newPassword"
             ],
+            "type" : "object"
+         },
+         "UserPhoneNumberChangeSchema" : {
+            "additionalProperties" : false,
+            "properties" : {
+               "newPhoneNumber" : {
+                  "type" : "string"
+               }
+            },
+            "type" : "object"
+         },
+         "UserPhoneNumberResendVerificationSchema" : {
+            "additionalProperties" : false,
+            "properties" : {
+               "phoneNumber" : {
+                  "type" : "string"
+               }
+            },
             "type" : "object"
          },
          "UserProviderTokensSchema" : {
@@ -2811,6 +2850,122 @@
             ]
          }
       },
+      "/user/phone-number/change" : {
+         "post" : {
+            "deprecated" : false,
+            "parameters" : [],
+            "requestBody" : {
+               "content" : {
+                  "application/json" : {
+                     "schema" : {
+                        "$ref" : "#/components/schemas/UserPhoneNumberChangeSchema"
+                     }
+                  }
+               },
+               "description" : "",
+               "required" : true
+            },
+            "responses" : {
+               "200" : {
+                  "content" : {
+                     "application/json" : {
+                        "schema" : {
+                           "type" : "string"
+                        }
+                     }
+                  },
+                  "description" : "A one-time password has been send to the new phone number"
+               },
+               "400" : {
+                  "content" : {
+                     "application/json" : {
+                        "schema" : {
+                           "$ref" : "#/components/schemas/InvalidRequestError"
+                        }
+                     }
+                  },
+                  "description" : "The payload format is invalid"
+               },
+               "401" : {
+                  "content" : {
+                     "application/json" : {
+                        "schema" : {
+                           "$ref" : "#/components/schemas/UnauthenticatedUserError"
+                        }
+                     }
+                  },
+                  "description" : "User is not authenticated"
+               }
+            },
+            "security" : [
+               {
+                  "BearerAuth" : []
+               }
+            ],
+            "summary" : "Change the current user's phone number",
+            "tags" : [
+               "User management"
+            ]
+         }
+      },
+      "/user/phone-number/resend-verification" : {
+         "post" : {
+            "deprecated" : false,
+            "parameters" : [],
+            "requestBody" : {
+               "content" : {
+                  "application/json" : {
+                     "schema" : {
+                        "$ref" : "#/components/schemas/UserPhoneNumberResendVerificationSchema"
+                     }
+                  }
+               },
+               "description" : "",
+               "required" : true
+            },
+            "responses" : {
+               "200" : {
+                  "content" : {
+                     "application/json" : {
+                        "schema" : {
+                           "type" : "string"
+                        }
+                     }
+                  },
+                  "description" : "A one-time password has been send to the phone number"
+               },
+               "400" : {
+                  "content" : {
+                     "application/json" : {
+                        "schema" : {
+                           "$ref" : "#/components/schemas/InvalidRequestError"
+                        }
+                     }
+                  },
+                  "description" : "The payload format is invalid"
+               },
+               "401" : {
+                  "content" : {
+                     "application/json" : {
+                        "schema" : {
+                           "$ref" : "#/components/schemas/UnauthenticatedUserError"
+                        }
+                     }
+                  },
+                  "description" : "User is not authenticated"
+               }
+            },
+            "security" : [
+               {
+                  "BearerAuth" : []
+               }
+            ],
+            "summary" : "Resend verification code on the user's phone number",
+            "tags" : [
+               "User management"
+            ]
+         }
+      },
       "/user/provider/tokens" : {
          "post" : {
             "deprecated" : false,
@@ -3038,6 +3193,74 @@
             },
             "security" : [],
             "summary" : "Verify tickets created by email verification, email passwordless authentication, or password reset",
+            "tags" : [
+               "General"
+            ]
+         }
+      },
+      "/verify/otp" : {
+         "post" : {
+            "deprecated" : false,
+            "parameters" : [],
+            "requestBody" : {
+               "content" : {
+                  "application/json" : {
+                     "schema" : {
+                        "$ref" : "#/components/schemas/SignInOtpSchema"
+                     }
+                  }
+               },
+               "description" : "",
+               "required" : true
+            },
+            "responses" : {
+               "200" : {
+                  "content" : {
+                     "application/json" : {
+                        "schema" : {
+                           "type" : "string"
+                        }
+                     }
+                  },
+                  "description" : "User successfully vefiried their new phone number"
+               },
+               "400" : {
+                  "content" : {
+                     "application/json" : {
+                        "schema" : {
+                           "$ref" : "#/components/schemas/InvalidRequestError"
+                        }
+                     }
+                  },
+                  "description" : "The payload is invalid"
+               },
+               "401" : {
+                  "content" : {
+                     "application/json" : {
+                        "schema" : {
+                           "$ref" : "#/components/schemas/UnauthorizedError"
+                        }
+                     }
+                  },
+                  "description" : "Error processing the request"
+               },
+               "404" : {
+                  "content" : {
+                     "application/json" : {
+                        "schema" : {
+                           "$ref" : "#/components/schemas/DisabledEndpointError"
+                        }
+                     }
+                  },
+                  "description" : "The feature is not activated"
+               }
+            },
+            "security" : [
+               {
+                  "BearerAuth" : []
+               }
+            ],
+            "summary" : "Verify phone number change via one-time password code received by SMS",
             "tags" : [
                "General"
             ]
