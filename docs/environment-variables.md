@@ -117,7 +117,9 @@
 | AUTH_PROVIDER_AZUREAD_CLIENT_SECRET                                                |                                     |
 | AUTH_PROVIDER_AZUREAD_TENANT                                                       |                                     |
 | AUTH_PROVIDER_OIDC_ENABLED                                                         | `false`                             |
-| AUTH_PROVIDER_OIDC_HOST<b>\*</b>                                                   |                                     |
+| AUTH_PROVIDER_OIDC_AUTH_URL<b>\*</b>                                               |                                     |
+| AUTH_PROVIDER_OIDC_TOKEN_URL<b>\*</b>                                              |                                     |
+| AUTH_PROVIDER_OIDC_USERINFO_URL<b>\*</b>                                           |                                     |
 | AUTH_PROVIDER_OIDC_CLIENT_ID<b>\*</b>                                              |                                     |
 | AUTH_PROVIDER_OIDC_CLIENT_SECRET<b>\*</b>                                          |                                     |
 | AUTH_PROVIDER_OIDC_SCOPE                                                           | `openid profile email`              |
