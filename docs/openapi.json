@@ -1958,6 +1958,70 @@
             ]
          }
       },
+      "/signin/passwordless/sms/resend" : {
+         "post" : {
+            "deprecated" : false,
+            "parameters" : [],
+            "requestBody" : {
+               "content" : {
+                  "application/json" : {
+                     "schema" : {
+                        "$ref" : "#/components/schemas/UserPhoneNumberResendVerificationSchema"
+                     }
+                  }
+               },
+               "description" : "",
+               "required" : true
+            },
+            "responses" : {
+               "200" : {
+                  "content" : {
+                     "application/json" : {
+                        "schema" : {
+                           "$ref" : "#/components/schemas/SessionPayload"
+                        }
+                     }
+                  },
+                  "description" : "User successfully authenticated"
+               },
+               "400" : {
+                  "content" : {
+                     "application/json" : {
+                        "schema" : {
+                           "$ref" : "#/components/schemas/InvalidRequestError"
+                        }
+                     }
+                  },
+                  "description" : "The payload is invalid"
+               },
+               "401" : {
+                  "content" : {
+                     "application/json" : {
+                        "schema" : {
+                           "$ref" : "#/components/schemas/UnauthorizedError"
+                        }
+                     }
+                  },
+                  "description" : "Error processing the request"
+               },
+               "404" : {
+                  "content" : {
+                     "application/json" : {
+                        "schema" : {
+                           "$ref" : "#/components/schemas/DisabledEndpointError"
+                        }
+                     }
+                  },
+                  "description" : "The feature is not activated"
+               }
+            },
+            "security" : [],
+            "summary" : "Passwordless authentication from a one-time password code received by SMS",
+            "tags" : [
+               "Authentication"
+            ]
+         }
+      },
       "/signin/provider/{provider}" : {
          "get" : {
             "deprecated" : false,

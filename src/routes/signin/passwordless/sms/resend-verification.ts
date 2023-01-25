@@ -1,46 +1,41 @@
 import { RequestHandler } from 'express';
 import { ReasonPhrases } from 'http-status-codes';
 
-import {
-  ENV,
-  pgClient,
-  getUserByPhoneNumber,
-  getNewOneTimePasswordData,
-} from '@/utils';
-import { Joi } from '@/validation';
+import { ENV, pgClient, getNewOneTimePasswordData } from '@/utils';
 import { sendError } from '@/errors';
 import { isTestingPhoneNumber, isVerifySid } from '@/utils/twilio';
 import { renderTemplate } from '@/templates';
 import { logger } from '@/logger';
 import twilio from 'twilio';
 
-export const userPhoneNumberChangeSchema = Joi.object({
-  newPhoneNumber: Joi.string(),
-}).meta({ className: 'UserPhoneNumberChangeSchema' });
-
-export const userPhoneNumberChange: RequestHandler<
+export const userSignInResendVerificationHandler: RequestHandler<
   {},
   {},
   {
-    newPhoneNumber: string;
+    phoneNumber: string;
   }
 > = async (req, res) => {
-  const { newPhoneNumber } = req.body;
+  const { phoneNumber } = req.body;
 
-  const { userId } = req.auth as RequestAuth;
+  const userByPhone = await pgClient.getUserByPhoneNumberAndOtp(phoneNumber);
 
-  // Send an error if the new phone number is already used by another user
-  if (await getUserByPhoneNumber({ phoneNumber: newPhoneNumber })) {
-    return sendError(res, 'phone-number-already-in-use');
+  if (!userByPhone) {
+    return sendError(res, 'user-not-found');
+  }
+
+  if (userByPhone.disabled) {
+    return sendError(res, 'disabled-user');
+  }
+
+  if (phoneNumber !== userByPhone.phoneNumber) {
+    return sendError(res, 'invalid-request');
   }
 
   const { otp, otpHash, otpHashExpiresAt } = await getNewOneTimePasswordData();
 
-  // set newPhoneNumber and otp data for user
   const user = await pgClient.updateUser({
-    id: userId,
+    id: userByPhone.id,
     user: {
-      newPhoneNumber,
       otpMethodLastUsed: 'sms',
       otpHash,
       otpHashExpiresAt,
@@ -51,15 +46,7 @@ export const userPhoneNumberChange: RequestHandler<
     return sendError(res, 'user-not-found');
   }
 
-  if (user.disabled) {
-    return sendError(res, 'disabled-user');
-  }
-
-  if (user.isAnonymous) {
-    return sendError(res, 'forbidden-anonymous');
-  }
-
-  if (isTestingPhoneNumber(newPhoneNumber)) {
+  if (isTestingPhoneNumber(phoneNumber)) {
     const template = 'signin-passwordless-sms';
     const message =
       (await renderTemplate(`${template}/text`, {
@@ -68,7 +55,7 @@ export const userPhoneNumberChange: RequestHandler<
         code: otp,
       })) ?? `Your code is ${otp}`;
 
-    logger.info(`Message to ${newPhoneNumber}: ${message}`);
+    logger.info(`Message to ${phoneNumber}: ${message}`);
     return res.json(ReasonPhrases.OK);
   }
 
@@ -89,7 +76,7 @@ export const userPhoneNumberChange: RequestHandler<
         .services(messagingServiceSid)
         .verifications.create({
           channel: 'sms',
-          to: newPhoneNumber,
+          to: phoneNumber,
         });
     } else {
       const template = 'signin-passwordless-sms';
@@ -102,7 +89,7 @@ export const userPhoneNumberChange: RequestHandler<
       await twilioClient.messages.create({
         body: message ?? `Your code is ${otp}`,
         from: ENV.AUTH_SMS_TWILIO_MESSAGING_SERVICE_ID,
-        to: newPhoneNumber,
+        to: phoneNumber,
       });
     }
   } catch (error: any) {

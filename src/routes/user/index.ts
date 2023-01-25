@@ -1,7 +1,10 @@
 import { Router } from 'express';
 
 import { asyncWrapper as aw } from '@/utils';
-import { bodyValidator } from '@/validation';
+import {
+  bodyValidator,
+  userPhoneNumberResendVerificationSchema,
+} from '@/validation';
 import { authenticationGate } from '@/middleware/auth';
 
 import { userMFAHandler, userMfaSchema } from './mfa';
@@ -31,7 +34,6 @@ import {
   userPhoneNumberChange,
   userPhoneNumberChangeSchema,
   userPhoneNumberResendVerificationChange,
-  userPhoneNumberResendVerificationSchema,
 } from './phone-number';
 
 const router = Router();

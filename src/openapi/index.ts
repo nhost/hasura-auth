@@ -25,7 +25,11 @@ import { tokenSchema } from '@/routes/token/token';
 import { verifySchema } from '@/routes/verify/verify-email';
 
 import * as responses from './responses';
-import { Joi, signInOtpSchema } from '@/validation';
+import {
+  Joi,
+  signInOtpSchema,
+  userPhoneNumberResendVerificationSchema,
+} from '@/validation';
 import { pascalCase } from 'pascal-case';
 import { verifyTokenSchema } from '@/routes/token/verify';
 import {
@@ -33,10 +37,7 @@ import {
   signInWebauthnSchema,
 } from '@/routes/signin/webauthn';
 import { userVerifyAddSecurityKeySchema } from '@/routes/user/webauthn';
-import {
-  userPhoneNumberChangeSchema,
-  userPhoneNumberResendVerificationSchema,
-} from '@/routes/user/phone-number';
+import { userPhoneNumberChangeSchema } from '@/routes/user/phone-number';
 
 const schema: Record<string, unknown> & { components: SwaggerSchema } = {
   tags: [],

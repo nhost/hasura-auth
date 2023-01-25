@@ -1,7 +1,11 @@
 import { Router } from 'express';
 
 import { asyncWrapper as aw } from '@/utils';
-import { bodyValidator, signInOtpSchema } from '@/validation';
+import {
+  bodyValidator,
+  signInOtpSchema,
+  userPhoneNumberResendVerificationSchema,
+} from '@/validation';
 
 import {
   signInEmailPasswordHandler,
@@ -14,6 +18,7 @@ import {
   signInPasswordlessEmailSchema,
   signInPasswordlessSmsHandler,
   signInPasswordlessSmsSchema,
+  userSignInResendVerificationHandler,
 } from './passwordless';
 import { signInMfaTotpHandler, signInMfaTotpSchema } from './mfa';
 import {
@@ -86,6 +91,22 @@ router.post(
   '/signin/passwordless/sms/otp',
   bodyValidator(signInOtpSchema),
   aw(signInOtpHandler)
+);
+
+/**
+ * POST /signin/passwordless/sms/resend
+ * @summary Passwordless authentication from a one-time password code received by SMS
+ * @param {UserPhoneNumberResendVerificationSchema} request.body.required
+ * @return {SessionPayload} 200 - User successfully authenticated - application/json
+ * @return {InvalidRequestError} 400 - The payload is invalid - application/json
+ * @return {UnauthorizedError} 401 - Error processing the request - application/json
+ * @return {DisabledEndpointError} 404 - The feature is not activated - application/json
+ * @tags Authentication
+ */
+router.post(
+  '/signin/passwordless/sms/resend',
+  bodyValidator(userPhoneNumberResendVerificationSchema),
+  aw(userSignInResendVerificationHandler)
 );
 
 // TODO add @return payload on success

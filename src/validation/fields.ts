@@ -210,3 +210,7 @@ export const signInOtpSchema = Joi.object<OtpSmsRequestBody>({
   phoneNumber,
   otp: Joi.string().required(),
 }).meta({ className: 'SignInOtpSchema' });
+
+export const userPhoneNumberResendVerificationSchema = Joi.object({
+  phoneNumber: Joi.string(),
+}).meta({ className: 'UserPhoneNumberResendVerificationSchema' });

@@ -2,16 +2,11 @@ import { RequestHandler } from 'express';
 import { ReasonPhrases } from 'http-status-codes';
 
 import { ENV, pgClient, getNewOneTimePasswordData } from '@/utils';
-import { Joi } from '@/validation';
 import { sendError } from '@/errors';
 import { isTestingPhoneNumber, isVerifySid } from '@/utils/twilio';
 import { renderTemplate } from '@/templates';
 import { logger } from '@/logger';
 import twilio from 'twilio';
-
-export const userPhoneNumberResendVerificationSchema = Joi.object({
-  phoneNumber: Joi.string(),
-}).meta({ className: 'UserPhoneNumberResendVerificationSchema' });
 
 export const userPhoneNumberResendVerificationChange: RequestHandler<
   {},
@@ -30,13 +25,14 @@ export const userPhoneNumberResendVerificationChange: RequestHandler<
     return sendError(res, 'user-not-found');
   }
 
+  if (userById.disabled) {
+    return sendError(res, 'disabled-user');
+  }
+
   if (userById.isAnonymous) {
     return sendError(res, 'forbidden-anonymous');
   }
 
-  // send verification if new phone number or old one not verified
-  logger.info(`${phoneNumber}, ${userById.phoneNumber}, ${userById.newPhoneNumber}`)
-  
   if (
     phoneNumber === userById.newPhoneNumber ||
     (phoneNumber === userById.phoneNumber && !userById.phoneNumberVerified)
@@ -56,13 +52,6 @@ export const userPhoneNumberResendVerificationChange: RequestHandler<
     if (!user) {
       return sendError(res, 'user-not-found');
     }
-
-    logger.info(ENV.AUTH_SMS_TEST_PHONE_NUMBERS);
-    logger.info(
-      `${phoneNumber} is test phoneNumber = ${isTestingPhoneNumber(
-        phoneNumber
-      )}`
-    );
 
     if (isTestingPhoneNumber(phoneNumber)) {
       const template = 'signin-passwordless-sms';
