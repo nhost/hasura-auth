@@ -15,7 +15,7 @@ import { logger } from '@/logger';
 import twilio from 'twilio';
 
 export const userPhoneNumberChangeSchema = Joi.object({
-  newPhoneNumber: Joi.string,
+  newPhoneNumber: Joi.string(),
 }).meta({ className: 'UserPhoneNumberChangeSchema' });
 
 export const userPhoneNumberChange: RequestHandler<

@@ -3,7 +3,7 @@ import { Router } from 'express';
 import { asyncWrapper as aw } from '@/utils';
 import { verifyHandler, verifySchema } from './verify-email';
 import { bodyValidator, queryValidator, signInOtpSchema } from '@/validation';
-import { signInOtpHandler } from '../signin/passwordless';
+import { verifyPhoneChangeHandler } from './verify-phone';
 
 const router = Router();
 
@@ -37,7 +37,7 @@ router.get('/verify', queryValidator(verifySchema), aw(verifyHandler));
 router.post(
   '/verify/otp',
   bodyValidator(signInOtpSchema),
-  aw(signInOtpHandler)
+  aw(verifyPhoneChangeHandler)
 );
 
 const verifyRouter = router;

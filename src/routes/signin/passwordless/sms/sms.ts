@@ -41,7 +41,7 @@ export const signInPasswordlessSmsHandler: RequestHandler<
     options: { defaultRole, allowedRoles, displayName, locale, metadata },
   } = req.body;
 
-  // check if email already exist
+  // check if user with given phone number already exist
   let user = await getUserByPhoneNumber({ phoneNumber });
   const userExists = !!user;
 
@@ -63,7 +63,6 @@ export const signInPasswordlessSmsHandler: RequestHandler<
     return sendError(res, 'disabled-user');
   }
 
-  // set otp for user that will be sent in the email
   const { otp, otpHash, otpHashExpiresAt } = await getNewOneTimePasswordData();
 
   await pgClient.updateUser({

@@ -31,6 +31,10 @@ export const verifyPhoneChangeHandler: RequestHandler<
     return sendError(res, 'disabled-user');
   }
 
+  if (phoneNumber !== user.phoneNumber && phoneNumber !== user.newPhoneNumber) {
+    return sendError(res, 'invalid-request');
+  }
+
   if (!user.otpHash) {
     return sendError(res, 'invalid-otp');
   }
@@ -49,7 +53,7 @@ export const verifyPhoneChangeHandler: RequestHandler<
     return res.json(ReasonPhrases.OK);
   }
 
-  if (isTestingPhoneNumber(user.phoneNumber)) {
+  if (isTestingPhoneNumber(phoneNumber)) {
     if (await bcrypt.compare(otp, user.otpHash)) {
       return await updateUserPhoneNumber();
     } else {
