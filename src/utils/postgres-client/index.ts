@@ -49,7 +49,7 @@ export const pgClient = {
       [id]
     );
     client.release();
-    return rows[0];
+    return rows.length === 0 ? null : rows[0];
   },
 
   insertRefreshToken: async (

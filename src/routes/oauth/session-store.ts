@@ -18,7 +18,9 @@ export class SessionStore extends Store {
   ) {
     pgClient
       .providerRequest(id)
-      .then(({ options }) => callback(null, options))
+      .then((result: { options: SessionData } | null) =>
+        callback(null, result ? result.options : null)
+      )
       .catch((err) => callback(err, null));
   }
   set(id: string, session: SessionData, callback: (err: unknown) => void) {
