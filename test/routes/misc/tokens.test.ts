@@ -35,12 +35,31 @@ describe('token', () => {
       .send()
       .expect(StatusCodes.OK);
 
-    const { accessToken, accessTokenExpiresIn, refreshToken } = body.session;
+    const { accessToken, accessTokenExpiresIn, refreshToken, user } =
+      body.session;
     const { mfa } = body;
 
     expect(await isValidAccessToken(accessToken)).toBe(true);
     expect(typeof accessTokenExpiresIn).toBe('number');
     expect(typeof refreshToken).toBe('string');
     expect(mfa).toBe(null);
+    expect(Object.keys(user)).toMatchInlineSnapshot(`
+      Array [
+        "id",
+        "createdAt",
+        "roles",
+        "displayName",
+        "avatarUrl",
+        "locale",
+        "email",
+        "isAnonymous",
+        "defaultRole",
+        "metadata",
+        "emailVerified",
+        "phoneNumber",
+        "phoneNumberVerified",
+        "activeMfaType",
+      ]
+    `);
   });
 });
