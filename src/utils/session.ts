@@ -3,7 +3,7 @@ import { Session, SignInResponse, User } from '@/types';
 import { generateTicketExpiresAt } from './ticket';
 import { ENV } from './env';
 import { createHasuraAccessToken } from './jwt';
-import { getUser } from './user';
+import { getSessionUser } from './user';
 import { pgClient } from './postgres-client';
 
 /**
@@ -26,7 +26,7 @@ export const getNewOrUpdateCurrentSession = async ({
       lastSeen: new Date(),
     },
   });
-  const sessionUser = await getUser({ userId: user.id });
+  const sessionUser = await getSessionUser({ userId: user.id });
   const accessToken = await createHasuraAccessToken(user);
   const refreshToken =
     (currentRefreshToken &&
