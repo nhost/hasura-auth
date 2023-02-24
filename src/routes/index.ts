@@ -5,6 +5,7 @@ import { ReasonPhrases } from 'http-status-codes';
 import { sendError } from '@/errors';
 import { signUpRouter } from './signup';
 import { signInRouter } from './signin';
+import { authRouter } from './auth';
 import { userRouter } from './user';
 import { mfaRouter } from './mfa';
 import { tokenRouter } from './token';
@@ -42,6 +43,7 @@ router.use(userRouter);
 router.use(mfaRouter);
 router.use(tokenRouter);
 router.use(verifyRouter);
+router.use(authRouter);
 
 // admin
 env(router);
