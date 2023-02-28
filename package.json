@@ -17,7 +17,7 @@
     "codegen": "dotenv graphql-codegen -- --config graphql.config.js",
     "codegen:watch": "dotenv graphql-codegen -- --config graphql.config.js --watch",
     "dev:start": "ts-node-dev -r tsconfig-paths/register --respawn --clear  --unhandled-rejections=strict src/start.ts",
-    "test": "AUTH_LOG_LEVEL=error jest --runInBand ./test/validation.test.ts -t --watch",
+    "test": "AUTH_LOG_LEVEL=error jest --runInBand",
     "test:watch": "AUTH_LOG_LEVEL=error jest --runInBand --watch",
     "ci:version": "changeset version && pnpm install --frozen-lockfile false",
     "changeset": "changeset"
