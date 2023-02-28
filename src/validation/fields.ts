@@ -86,7 +86,6 @@ export const redirectTo = Joi.string()
       }
     }
 
-    //const authClientUrl = new URL(ENV.AUTH_CLIENT_URL);
     const valueUrl = new URL(value);
 
     // allow localhost
@@ -94,11 +93,6 @@ export const redirectTo = Joi.string()
       return value
     }
 
-    // check that the value URL hostname matches the client URL hostname
-    //if (authClientUrl.hostname !== valueUrl.hostname) {
-    //  return helper.error('redirectTo');
-    //}
-    
     // * We allow any sub-path of the client url
     if (new RegExp(`^${ENV.AUTH_CLIENT_URL}(?:\/.*)?$`).test(value)) {
       return value;
