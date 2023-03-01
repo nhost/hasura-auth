@@ -60,7 +60,7 @@ describe('Unit tests on field validation', () => {
     const clientUrl = 'https://nhost.io';
     const diffDomainUrl = 'https://myotherdomain.com'
     const host = 'host.com'
-    const allowedRedirectUrls = `https://*-nhost.vercel.app,${diffDomainUrl},https://*.${host}`;
+    const allowedRedirectUrls = `https://*-nhost.vercel.app,${diffDomainUrl},https://*.${host},https://no-wildcard.io`;
 
     beforeAll(async () => {
       await request.post('/change-env').send({
@@ -74,8 +74,8 @@ describe('Unit tests on field validation', () => {
         AUTH_CLIENT_URL: '',
       });
       expect(
-        redirectTo.validate('https://www.google.com/subpath?key=value').value
-      ).toEqual('https://www.google.com/subpath?key=value');
+        redirectTo.validate('https://www.google.com/path?key=value').value
+      ).toEqual('https://www.google.com/path?key=value');
 
       await request.post('/change-env').send({
         AUTH_CLIENT_URL: clientUrl,
@@ -86,50 +86,46 @@ describe('Unit tests on field validation', () => {
       expect(redirectTo.validate('not-an-url').error).toBeObject();
     });
 
-    it('should validate if it matches the client url', () => {
+    it('should validate a value that matches the client url', () => {
       expect(redirectTo.validate(clientUrl).error).toBeUndefined();
       expect(redirectTo.validate(`${clientUrl}/path`).error).toBeUndefined();
-      expect(redirectTo.validate(`${clientUrl}/key=value`).error).toBeUndefined();
-      //expect(redirectTo.validate(`${clientUrl}#key=value`).error).toBeUndefined();
+      expect(redirectTo.validate(`${clientUrl}?key=value`).error).toBeUndefined();
+      expect(redirectTo.validate(`${clientUrl}#key=value`).error).toBeUndefined();
     });
 
-    it('should validate if it matches one of the valid allowed redirect urls', () => {
-      expect(redirectTo.validate(`${diffDomainUrl}`).error).toBeUndefined();
+    it('should validate a value that matches an allowed redirect url', () => {
+      expect(redirectTo.validate(diffDomainUrl).error).toBeUndefined();
       expect(redirectTo.validate(`${diffDomainUrl}/path`).error).toBeUndefined();
-      expect(redirectTo.validate(`${diffDomainUrl}/key=value`).error).toBeUndefined();
+      expect(redirectTo.validate(`${diffDomainUrl}?key=value`).error).toBeUndefined();
       expect(redirectTo.validate(`${diffDomainUrl}#key=value`).error).toBeUndefined();
     });
 
-    it('should work with wildcards in the allowed redirect urls', () => {
+    it('should validate a subdomain that matches an allowed redirect url with a wildcard', () => {
       expect(redirectTo.validate(`https://subdomain.${host}`).error).toBeUndefined()
       expect(redirectTo.validate(`https://subdomain.${host}/path`).error).toBeUndefined()
-      expect(redirectTo.validate(`https://subdomain.${host}#key=value`).error).toBeUndefined()
       expect(redirectTo.validate(`https://subdomain.${host}?key=value`).error).toBeUndefined()
+      expect(redirectTo.validate(`https://subdomain.${host}#key=value`).error).toBeUndefined()
 
       expect(redirectTo.validate(`https://docs-ger4gr-nhost.vercel.app`).error).toBeUndefined()
     });
 
-    it('localhost', () => {
-      expect(redirectTo.validate(`http://localhost:3000`).error).toBeUndefined()
+    it('should reject a subsubdomain if no wildcard', () => {
+      expect(
+        redirectTo.validate('https://subdomain.no-wildcard.io').error
+      ).toBeObject();
     });
 
     it('should reject url with the wrong path', () => {
       expect(redirectTo.validate(`https://${host}/wrong`).error).toBeObject();
     });
 
-    it('should reject sub-subdomains if no wildcard', () => {
-      expect(
-        redirectTo.validate(`https://subdomain.${diffDomainUrl}`).error
-      ).toBeObject();
-    });
-
     it('should reject shadowing domains', async () => {
       expect(
-        redirectTo.validate(`https://protocol.com.example.com`).error
+        redirectTo.validate(`https://nhost.io.example.com`).error
       ).toBeObject();
 
       expect(
-        redirectTo.validate(`https://wwwaprotocol.com`).error
+        redirectTo.validate(`https://wwwanhost.com`).error
       ).toBeObject();
     });
   });

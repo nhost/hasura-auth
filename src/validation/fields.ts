@@ -86,15 +86,9 @@ export const redirectTo = Joi.string()
       }
     }
 
-    const valueUrl = new URL(value);
-
-    // allow localhost
-    if (valueUrl.hostname === "localhost") { 
-      return value
-    }
-
     // * We allow any sub-path of the client url
-    if (new RegExp(`^${ENV.AUTH_CLIENT_URL}(?:\/.*)?$`).test(value)) {
+    // * With optional hash and query params 
+    if (new RegExp(`^${ENV.AUTH_CLIENT_URL}(\/.*)?([?].*)?([#].*)?$`).test(value)) {
       return value;
     }
 
@@ -121,6 +115,7 @@ export const redirectTo = Joi.string()
     try {
       // * Don't take the query parameters into account
       // * And replace `.` with `/` because of micromatch
+      const valueUrl = new URL(value);
       const urlWithoutParams = `${valueUrl.origin}${valueUrl.pathname}`.replace(/[.]/g, '/');
       const match = micromatch.isMatch(urlWithoutParams, expressions, {
         nocase: true,
