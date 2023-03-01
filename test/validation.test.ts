@@ -121,7 +121,11 @@ describe('Unit tests on field validation', () => {
 
     it('should reject shadowing domains', async () => {
       expect(
-        redirectTo.validate(`https://nhost.io.example.com`).error
+        redirectTo.validate(`${clientUrl}.example.com`).error
+      ).toBeObject();
+
+      expect(
+        redirectTo.validate(`${diffDomainUrl}.example.com`).error
       ).toBeObject();
 
       expect(

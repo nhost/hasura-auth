@@ -92,6 +92,19 @@ export const redirectTo = Joi.string()
       return value;
     }
 
+    // * Check if the value's hostname matches any allowed hostname 
+    // * Required to avoid shadowing domains
+    const hostnames = ENV.AUTH_ACCESS_CONTROL_ALLOWED_REDIRECT_URLS.map(
+      (allowed) => {
+        return new URL(allowed).hostname
+      }
+    );
+
+    const valueUrl = new URL(value);
+    if (!micromatch.isMatch(valueUrl.hostname, hostnames, {nocase: true})) {
+      return helper.error('redirectTo')
+    }
+
     // * We allow any sub-path of the allowed redirect urls.
     // * Allowed redirect urls also accepts wildcards and other micromatch patterns
     const expressions = ENV.AUTH_ACCESS_CONTROL_ALLOWED_REDIRECT_URLS.map(
@@ -115,7 +128,6 @@ export const redirectTo = Joi.string()
     try {
       // * Don't take the query parameters into account
       // * And replace `.` with `/` because of micromatch
-      const valueUrl = new URL(value);
       const urlWithoutParams = `${valueUrl.origin}${valueUrl.pathname}`.replace(/[.]/g, '/');
       const match = micromatch.isMatch(urlWithoutParams, expressions, {
         nocase: true,
