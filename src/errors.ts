@@ -1,4 +1,4 @@
-import { Response, Request, NextFunction } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 
 import { ENV, generateRedirectUrl } from './utils';
@@ -58,6 +58,10 @@ export const ERRORS = asErrors({
   'invalid-request': {
     status: StatusCodes.BAD_REQUEST,
     message: 'The request payload is incorrect',
+  },
+  'invalid-expiry-date': {
+    status: StatusCodes.BAD_REQUEST,
+    message: 'The expiry date must be greater than the current date',
   },
   'disabled-mfa-totp': {
     status: StatusCodes.BAD_REQUEST,

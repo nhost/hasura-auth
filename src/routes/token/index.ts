@@ -2,7 +2,14 @@ import { Router } from 'express';
 
 import { asyncWrapper as aw } from '@/utils';
 import { bodyValidator } from '@/validation';
-import { tokenHandler, tokenSchema } from './token';
+import {
+  createPATHandler,
+  createPATSchema,
+  tokenHandler,
+  tokenSchema,
+  verifyPATHandler,
+  verifyPATSchema,
+} from './token';
 import { verifyTokenHandler, verifyTokenSchema } from './verify';
 
 const router = Router();
@@ -31,6 +38,14 @@ router.post(
   '/token/verify',
   bodyValidator(verifyTokenSchema),
   aw(verifyTokenHandler)
+);
+
+router.post('/pat', bodyValidator(createPATSchema), aw(createPATHandler));
+
+router.post(
+  '/pat/verify',
+  bodyValidator(verifyPATSchema),
+  aw(verifyPATHandler)
 );
 
 const tokenRouter = router;

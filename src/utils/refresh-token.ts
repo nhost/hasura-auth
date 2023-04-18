@@ -1,7 +1,7 @@
-import { v4 as uuidv4 } from 'uuid';
 import { gqlSdk } from '@/utils';
-import { ENV } from './env';
 import crypto from 'crypto';
+import { v4 as uuidv4 } from 'uuid';
+import { ENV } from './env';
 
 /** Hash using SHA256, and prefix with \x so it matches the Postgres hexadecimal syntax */
 const hash = (value: string) =>
