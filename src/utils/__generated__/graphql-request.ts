@@ -28,6 +28,7 @@ export type Scalars = {
   citext: any;
   float64: any;
   jsonb: any;
+  refresh_token_type: any;
   smallint: any;
   timestamp: any;
   timestamptz: any;
@@ -3495,6 +3496,7 @@ export type AuthRefreshTokens = {
   /** DEPRECATED: auto-generated refresh token id. Will be replaced by a genereric id column that will be used as a primary key, not the refresh token itself. Use refresh_token_hash instead. */
   refreshToken: Scalars['uuid'];
   refreshTokenHash?: Maybe<Scalars['String']>;
+  type: Scalars['refresh_token_type'];
   /** An object relationship */
   user: Users;
   userId: Scalars['uuid'];
@@ -3568,6 +3570,7 @@ export type AuthRefreshTokens_Bool_Exp = {
   metadata?: InputMaybe<Jsonb_Comparison_Exp>;
   refreshToken?: InputMaybe<Uuid_Comparison_Exp>;
   refreshTokenHash?: InputMaybe<String_Comparison_Exp>;
+  type?: InputMaybe<Refresh_Token_Type_Comparison_Exp>;
   user?: InputMaybe<Users_Bool_Exp>;
   userId?: InputMaybe<Uuid_Comparison_Exp>;
 };
@@ -3600,6 +3603,7 @@ export type AuthRefreshTokens_Insert_Input = {
   metadata?: InputMaybe<Scalars['jsonb']>;
   /** DEPRECATED: auto-generated refresh token id. Will be replaced by a genereric id column that will be used as a primary key, not the refresh token itself. Use refresh_token_hash instead. */
   refreshToken?: InputMaybe<Scalars['uuid']>;
+  type?: InputMaybe<Scalars['refresh_token_type']>;
   user?: InputMaybe<Users_Obj_Rel_Insert_Input>;
   userId?: InputMaybe<Scalars['uuid']>;
 };
@@ -3612,6 +3616,7 @@ export type AuthRefreshTokens_Max_Fields = {
   /** DEPRECATED: auto-generated refresh token id. Will be replaced by a genereric id column that will be used as a primary key, not the refresh token itself. Use refresh_token_hash instead. */
   refreshToken?: Maybe<Scalars['uuid']>;
   refreshTokenHash?: Maybe<Scalars['String']>;
+  type?: Maybe<Scalars['refresh_token_type']>;
   userId?: Maybe<Scalars['uuid']>;
 };
 
@@ -3622,6 +3627,7 @@ export type AuthRefreshTokens_Max_Order_By = {
   /** DEPRECATED: auto-generated refresh token id. Will be replaced by a genereric id column that will be used as a primary key, not the refresh token itself. Use refresh_token_hash instead. */
   refreshToken?: InputMaybe<Order_By>;
   refreshTokenHash?: InputMaybe<Order_By>;
+  type?: InputMaybe<Order_By>;
   userId?: InputMaybe<Order_By>;
 };
 
@@ -3633,6 +3639,7 @@ export type AuthRefreshTokens_Min_Fields = {
   /** DEPRECATED: auto-generated refresh token id. Will be replaced by a genereric id column that will be used as a primary key, not the refresh token itself. Use refresh_token_hash instead. */
   refreshToken?: Maybe<Scalars['uuid']>;
   refreshTokenHash?: Maybe<Scalars['String']>;
+  type?: Maybe<Scalars['refresh_token_type']>;
   userId?: Maybe<Scalars['uuid']>;
 };
 
@@ -3643,6 +3650,7 @@ export type AuthRefreshTokens_Min_Order_By = {
   /** DEPRECATED: auto-generated refresh token id. Will be replaced by a genereric id column that will be used as a primary key, not the refresh token itself. Use refresh_token_hash instead. */
   refreshToken?: InputMaybe<Order_By>;
   refreshTokenHash?: InputMaybe<Order_By>;
+  type?: InputMaybe<Order_By>;
   userId?: InputMaybe<Order_By>;
 };
 
@@ -3669,6 +3677,7 @@ export type AuthRefreshTokens_Order_By = {
   metadata?: InputMaybe<Order_By>;
   refreshToken?: InputMaybe<Order_By>;
   refreshTokenHash?: InputMaybe<Order_By>;
+  type?: InputMaybe<Order_By>;
   user?: InputMaybe<Users_Order_By>;
   userId?: InputMaybe<Order_By>;
 };
@@ -3697,6 +3706,8 @@ export enum AuthRefreshTokens_Select_Column {
   /** column name */
   RefreshTokenHash = 'refreshTokenHash',
   /** column name */
+  Type = 'type',
+  /** column name */
   UserId = 'userId'
 }
 
@@ -3707,6 +3718,7 @@ export type AuthRefreshTokens_Set_Input = {
   metadata?: InputMaybe<Scalars['jsonb']>;
   /** DEPRECATED: auto-generated refresh token id. Will be replaced by a genereric id column that will be used as a primary key, not the refresh token itself. Use refresh_token_hash instead. */
   refreshToken?: InputMaybe<Scalars['uuid']>;
+  type?: InputMaybe<Scalars['refresh_token_type']>;
   userId?: InputMaybe<Scalars['uuid']>;
 };
 
@@ -3726,6 +3738,7 @@ export type AuthRefreshTokens_Stream_Cursor_Value_Input = {
   /** DEPRECATED: auto-generated refresh token id. Will be replaced by a genereric id column that will be used as a primary key, not the refresh token itself. Use refresh_token_hash instead. */
   refreshToken?: InputMaybe<Scalars['uuid']>;
   refreshTokenHash?: InputMaybe<Scalars['String']>;
+  type?: InputMaybe<Scalars['refresh_token_type']>;
   userId?: InputMaybe<Scalars['uuid']>;
 };
 
@@ -3739,6 +3752,8 @@ export enum AuthRefreshTokens_Update_Column {
   Metadata = 'metadata',
   /** column name */
   RefreshToken = 'refreshToken',
+  /** column name */
+  Type = 'type',
   /** column name */
   UserId = 'userId'
 }
@@ -13977,6 +13992,19 @@ export type Query_RootWorkspacesAggregateArgs = {
   offset?: InputMaybe<Scalars['Int']>;
   order_by?: InputMaybe<Array<Workspaces_Order_By>>;
   where?: InputMaybe<Workspaces_Bool_Exp>;
+};
+
+/** Boolean expression to compare columns of type "refresh_token_type". All fields are combined with logical 'AND'. */
+export type Refresh_Token_Type_Comparison_Exp = {
+  _eq?: InputMaybe<Scalars['refresh_token_type']>;
+  _gt?: InputMaybe<Scalars['refresh_token_type']>;
+  _gte?: InputMaybe<Scalars['refresh_token_type']>;
+  _in?: InputMaybe<Array<Scalars['refresh_token_type']>>;
+  _is_null?: InputMaybe<Scalars['Boolean']>;
+  _lt?: InputMaybe<Scalars['refresh_token_type']>;
+  _lte?: InputMaybe<Scalars['refresh_token_type']>;
+  _neq?: InputMaybe<Scalars['refresh_token_type']>;
+  _nin?: InputMaybe<Array<Scalars['refresh_token_type']>>;
 };
 
 /** columns and relationships of "regions" */
