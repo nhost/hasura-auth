@@ -31,7 +31,10 @@ export const createPATHandler: RequestHandler<
   // Note: Joi wouldn't work here because we need to compare the date to the
   // date of the request, not the date when the schema was created
   // 7 days
-  if (new Date(expiresAt).getTime() < Date.now() + 7 * 24 * 60 * 60 * 1000) {
+  if (
+    new Date(expiresAt).setHours(0, 0, 0, 0) <
+    new Date().setHours(0, 0, 0, 0) + 7 * 24 * 60 * 60 * 1000
+  ) {
     return sendError(res, 'invalid-expiry-date', {
       customMessage: 'The expiry date must be at least 7 days from now',
     });
