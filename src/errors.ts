@@ -136,6 +136,10 @@ export const ERRORS = asErrors({
     status: StatusCodes.UNAUTHORIZED,
     message: 'Invalid or expired refresh token',
   },
+  'invalid-pat': {
+    status: StatusCodes.UNAUTHORIZED,
+    message: 'Invalid or expired personal access token',
+  },
   'invalid-admin-secret': {
     status: StatusCodes.UNAUTHORIZED,
     message: 'Invalid admin secret',

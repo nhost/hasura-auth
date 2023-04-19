@@ -7,6 +7,11 @@ import { ENV } from './env';
 const hash = (value: string) =>
   `\\x${crypto.createHash('sha256').update(value).digest('hex')}`;
 
+export const getUserByPAT = async (pat: string) => {
+  const result = await gqlSdk.getUsersByPAT({ patHash: hash(pat) });
+  return result.authRefreshTokens[0]?.user;
+};
+
 export const getUserByRefreshToken = async (refreshToken: string) => {
   const result = await gqlSdk.getUsersByRefreshToken({
     refreshTokenHash: hash(refreshToken),

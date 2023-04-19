@@ -9771,7 +9771,11 @@ export type Mutation_Root = {
   backupAllApplicationsDatabase: Array<Maybe<BackupResultsItem>>;
   backupApplicationDatabase: BackupResult;
   billingFinishSubscription: Scalars['Boolean'];
-  billingUpdateDedicatedResources: Scalars['Boolean'];
+  billingFixSubscriptions: Scalars['Boolean'];
+  billingReportDedicatedCompute: Scalars['Boolean'];
+  billingUpdateAndReportDedicatedComputeReports: Scalars['Boolean'];
+  billingUpdateDedicatedCompute: Scalars['Boolean'];
+  billingUpdateDedicatedComputeReports: Scalars['Boolean'];
   /** delete single row from the table: "apps" */
   deleteApp?: Maybe<Apps>;
   /** delete single row from the table: "app_states" */
@@ -10272,9 +10276,27 @@ export type Mutation_RootBillingFinishSubscriptionArgs = {
 
 
 /** mutation root */
-export type Mutation_RootBillingUpdateDedicatedResourcesArgs = {
+export type Mutation_RootBillingReportDedicatedComputeArgs = {
+  reportTime: Scalars['Timestamp'];
+};
+
+
+/** mutation root */
+export type Mutation_RootBillingUpdateAndReportDedicatedComputeReportsArgs = {
+  reportTime?: InputMaybe<Scalars['Timestamp']>;
+};
+
+
+/** mutation root */
+export type Mutation_RootBillingUpdateDedicatedComputeArgs = {
   appID: Scalars['uuid'];
   totalMillicores: Scalars['Int'];
+};
+
+
+/** mutation root */
+export type Mutation_RootBillingUpdateDedicatedComputeReportsArgs = {
+  reportTime: Scalars['Timestamp'];
 };
 
 
@@ -17860,6 +17882,13 @@ export type GetUsersByRefreshTokenQueryVariables = Exact<{
 
 export type GetUsersByRefreshTokenQuery = { __typename?: 'query_root', authRefreshTokens: Array<{ __typename?: 'authRefreshTokens', refreshToken: any, user: { __typename?: 'users', id: any, createdAt: any, disabled: boolean, displayName: string, avatarUrl: string, email?: any | null, passwordHash?: string | null, emailVerified: boolean, phoneNumber?: string | null, phoneNumberVerified: boolean, defaultRole: string, isAnonymous: boolean, ticket?: string | null, otpHash?: string | null, totpSecret?: string | null, activeMfaType?: string | null, newEmail?: any | null, locale: string, metadata?: any | null, roles: Array<{ __typename?: 'authUserRoles', role: string }> } }> };
 
+export type GetUsersByPatQueryVariables = Exact<{
+  patHash: Scalars['String'];
+}>;
+
+
+export type GetUsersByPatQuery = { __typename?: 'query_root', authRefreshTokens: Array<{ __typename?: 'authRefreshTokens', refreshToken: any, user: { __typename?: 'users', id: any, createdAt: any, disabled: boolean, displayName: string, avatarUrl: string, email?: any | null, passwordHash?: string | null, emailVerified: boolean, phoneNumber?: string | null, phoneNumberVerified: boolean, defaultRole: string, isAnonymous: boolean, ticket?: string | null, otpHash?: string | null, totpSecret?: string | null, activeMfaType?: string | null, newEmail?: any | null, locale: string, metadata?: any | null, roles: Array<{ __typename?: 'authUserRoles', role: string }> } }> };
+
 export type UpdateUserMutationVariables = Exact<{
   id: Scalars['uuid'];
   user: Users_Set_Input;
@@ -18158,6 +18187,18 @@ export const GetUsersByRefreshTokenDocument = gql`
   }
 }
     ${UserFieldsFragmentDoc}`;
+export const GetUsersByPatDocument = gql`
+    query getUsersByPAT($patHash: String!) {
+  authRefreshTokens(
+    where: {_and: [{refreshTokenHash: {_eq: $patHash}}, {user: {disabled: {_eq: false}}}, {expiresAt: {_gte: now}}, {type: {_eq: "pat"}}]}
+  ) {
+    refreshToken
+    user {
+      ...userFields
+    }
+  }
+}
+    ${UserFieldsFragmentDoc}`;
 export const UpdateUserDocument = gql`
     mutation updateUser($id: uuid!, $user: users_set_input!) {
   updateUser(pk_columns: {id: $id}, _set: $user) {
@@ -18324,6 +18365,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     getUsersByRefreshToken(variables: GetUsersByRefreshTokenQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<GetUsersByRefreshTokenQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetUsersByRefreshTokenQuery>(GetUsersByRefreshTokenDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getUsersByRefreshToken', 'query');
+    },
+    getUsersByPAT(variables: GetUsersByPatQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<GetUsersByPatQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetUsersByPatQuery>(GetUsersByPatDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getUsersByPAT', 'query');
     },
     updateUser(variables: UpdateUserMutationVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<UpdateUserMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<UpdateUserMutation>(UpdateUserDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'updateUser', 'mutation');

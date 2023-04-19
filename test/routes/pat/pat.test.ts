@@ -112,4 +112,62 @@ describe('personal access token', () => {
 
     expect(patSignInResponse.body?.session?.accessToken).toBeDefined();
   });
+
+  test('should not be able to authenticate with a valid refresh token that is not a PAT', async () => {
+    const response = await request.post('/signin/email-password').send({
+      email,
+      password,
+    });
+
+    const { user } = response.body?.session;
+    const refreshToken = faker.datatype.uuid();
+
+    await client.query(
+      'INSERT INTO auth.refresh_tokens (refresh_token, user_id, expires_at, type) VALUES ($1, $2, $3, $4);',
+      [
+        refreshToken,
+        user.id,
+        new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        'regular',
+      ]
+    );
+
+    // This is a valid refresh token, but it is not a PAT
+    await request.post('/token').send({ refreshToken }).expect(StatusCodes.OK);
+
+    // This should fail because the refresh token is not a PAT
+    await request
+      .post('/signin/pat')
+      .send({ personalAccessToken: refreshToken })
+      .expect(StatusCodes.UNAUTHORIZED);
+  });
+
+  test('should not be able to authenticate with an expired personal access token', async () => {
+    const response = await request.post('/signin/email-password').send({
+      email,
+      password,
+    });
+
+    const { user } = response.body?.session;
+    const expiredPersonalAccessToken = faker.datatype.uuid();
+
+    await client.query(
+      'INSERT INTO auth.refresh_tokens (refresh_token, user_id, expires_at, type) VALUES ($1, $2, $3, $4);',
+      [
+        expiredPersonalAccessToken,
+        user.id,
+        new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+        'pat',
+      ]
+    );
+
+    const expiredResponse = await request
+      .post('/signin/pat')
+      .send({ personalAccessToken: expiredPersonalAccessToken })
+      .expect(StatusCodes.UNAUTHORIZED);
+
+    expect(expiredResponse.body?.message).toBe(
+      'Invalid or expired personal access token'
+    );
+  });
 });

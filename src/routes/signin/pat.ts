@@ -1,5 +1,5 @@
 import { sendError } from '@/errors';
-import { ENV, createHasuraAccessToken, getUserByRefreshToken } from '@/utils';
+import { ENV, createHasuraAccessToken, getUserByPAT } from '@/utils';
 import { personalAccessToken } from '@/validation';
 import { RequestHandler } from 'express';
 import Joi from 'joi';
@@ -13,10 +13,10 @@ export const signInPATHandler: RequestHandler<
   {},
   { personalAccessToken: string }
 > = async (req, res) => {
-  const user = await getUserByRefreshToken(req.body.personalAccessToken);
+  const user = await getUserByPAT(req.body.personalAccessToken);
 
   if (!user) {
-    return sendError(res, 'invalid-refresh-token');
+    return sendError(res, 'invalid-pat');
   }
 
   if (user.disabled) {
