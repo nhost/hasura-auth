@@ -12,7 +12,7 @@ export const createPATSchema = Joi.object({
 export const createPATHandler: RequestHandler<
   {},
   {},
-  { refreshToken: string; metadata: object; expiresAt: Date }
+  { metadata: object; expiresAt: Date }
 > = async (req, res) => {
   if (!req.auth) {
     return sendError(res, 'unauthenticated-user');
