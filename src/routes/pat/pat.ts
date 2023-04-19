@@ -23,7 +23,7 @@ export const createPATHandler: RequestHandler<
   const user = await getUser({ userId });
 
   if (!user) {
-    return sendError(res, 'invalid-refresh-token');
+    return sendError(res, 'user-not-found');
   }
 
   const { metadata, expiresAt } = req.body;
