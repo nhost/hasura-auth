@@ -3,7 +3,7 @@ import cors from 'cors';
 import express from 'express';
 import helmet from 'helmet';
 import { serverErrors } from './errors';
-import { httpLogger, uncaughtErrorLogger } from './logger';
+import { httpLogger, logger, uncaughtErrorLogger } from './logger';
 import { authMiddleware } from './middleware/auth';
 import { addOpenApiRoute } from './openapi';
 import router from './routes';
@@ -21,5 +21,27 @@ app.use(helmet(), json(), cors());
 app.use(authMiddleware);
 app.use(router);
 app.use(uncaughtErrorLogger, serverErrors);
+
+process.on('unhandledRejection', (reason) => {
+  if (reason instanceof Error) {
+    logger.error(`Unhandled Rejection`, {
+      message: reason.message,
+      stack: reason.stack,
+    });
+    process.exit(1);
+  }
+
+  logger.error(`Unhandled Rejection: ${reason}`);
+  process.exit(1);
+});
+
+process.on('uncaughtException', (err, origin) => {
+  logger.error(`Uncaught Exception`, {
+    message: err.message,
+    stack: err.stack,
+    origin,
+  });
+  process.exit(1);
+});
 
 export { app };
