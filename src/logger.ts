@@ -59,14 +59,21 @@ const loggerOptions: LoggerOptions = {
     }ms`,
   // * Always log status, method, url, and userId when it exists
   dynamicMeta: ({ method, url, auth, headers }, res) => {
-    const { responseTime, statusCode } = res as Response & {
+    const { responseTime, statusCode, body } = res as Response & {
       responseTime: number;
+      body: unknown;
     };
+
     const meta: Record<string, unknown> = {
       statusCode,
       method,
       latencyInNs: responseTime * 1e6,
     };
+
+    if (statusCode >= 400) {
+      meta.reason = body;
+    }
+
     if (LOG_LEVEL === 'debug') {
       meta.url = url;
       meta.headers = headers;
@@ -92,7 +99,7 @@ const loggerOptions: LoggerOptions = {
     return 'info';
   },
   requestWhitelist: [],
-  responseWhitelist: ['responseTime'],
+  responseWhitelist: ['responseTime', 'body'],
 };
 
 /**
