@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from 'express';
+import { Response, Request, NextFunction } from 'express';
 import { StatusCodes } from 'http-status-codes';
 
 import { ENV, generateRedirectUrl } from './utils';
@@ -58,10 +58,6 @@ export const ERRORS = asErrors({
   'invalid-request': {
     status: StatusCodes.BAD_REQUEST,
     message: 'The request payload is incorrect',
-  },
-  'invalid-expiry-date': {
-    status: StatusCodes.BAD_REQUEST,
-    message: 'The expiry date must be greater than the current date',
   },
   'disabled-mfa-totp': {
     status: StatusCodes.BAD_REQUEST,
@@ -135,10 +131,6 @@ export const ERRORS = asErrors({
   'invalid-refresh-token': {
     status: StatusCodes.UNAUTHORIZED,
     message: 'Invalid or expired refresh token',
-  },
-  'invalid-pat': {
-    status: StatusCodes.UNAUTHORIZED,
-    message: 'Invalid or expired personal access token',
   },
   'invalid-admin-secret': {
     status: StatusCodes.UNAUTHORIZED,

@@ -28,7 +28,6 @@ export type Scalars = {
   citext: any;
   float64: any;
   jsonb: any;
-  refresh_token_type: any;
   smallint: any;
   timestamp: any;
   timestamptz: any;
@@ -3492,20 +3491,12 @@ export type AuthRefreshTokens = {
   __typename?: 'authRefreshTokens';
   createdAt: Scalars['timestamptz'];
   expiresAt: Scalars['timestamptz'];
-  metadata?: Maybe<Scalars['jsonb']>;
   /** DEPRECATED: auto-generated refresh token id. Will be replaced by a genereric id column that will be used as a primary key, not the refresh token itself. Use refresh_token_hash instead. */
   refreshToken: Scalars['uuid'];
   refreshTokenHash?: Maybe<Scalars['String']>;
-  type: Scalars['refresh_token_type'];
   /** An object relationship */
   user: Users;
   userId: Scalars['uuid'];
-};
-
-
-/** User refresh tokens. Hasura auth uses them to rotate new access tokens as long as the refresh token is not expired. Don't modify its structure as Hasura Auth relies on it to function properly. */
-export type AuthRefreshTokensMetadataArgs = {
-  path?: InputMaybe<Scalars['String']>;
 };
 
 /** aggregated selection of "auth.refresh_tokens" */
@@ -3548,11 +3539,6 @@ export type AuthRefreshTokens_Aggregate_Order_By = {
   min?: InputMaybe<AuthRefreshTokens_Min_Order_By>;
 };
 
-/** append existing jsonb value of filtered columns with new jsonb value */
-export type AuthRefreshTokens_Append_Input = {
-  metadata?: InputMaybe<Scalars['jsonb']>;
-};
-
 /** input type for inserting array relation for remote table "auth.refresh_tokens" */
 export type AuthRefreshTokens_Arr_Rel_Insert_Input = {
   data: Array<AuthRefreshTokens_Insert_Input>;
@@ -3567,10 +3553,8 @@ export type AuthRefreshTokens_Bool_Exp = {
   _or?: InputMaybe<Array<AuthRefreshTokens_Bool_Exp>>;
   createdAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   expiresAt?: InputMaybe<Timestamptz_Comparison_Exp>;
-  metadata?: InputMaybe<Jsonb_Comparison_Exp>;
   refreshToken?: InputMaybe<Uuid_Comparison_Exp>;
   refreshTokenHash?: InputMaybe<String_Comparison_Exp>;
-  type?: InputMaybe<Refresh_Token_Type_Comparison_Exp>;
   user?: InputMaybe<Users_Bool_Exp>;
   userId?: InputMaybe<Uuid_Comparison_Exp>;
 };
@@ -3581,29 +3565,12 @@ export enum AuthRefreshTokens_Constraint {
   RefreshTokensPkey = 'refresh_tokens_pkey'
 }
 
-/** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
-export type AuthRefreshTokens_Delete_At_Path_Input = {
-  metadata?: InputMaybe<Array<Scalars['String']>>;
-};
-
-/** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
-export type AuthRefreshTokens_Delete_Elem_Input = {
-  metadata?: InputMaybe<Scalars['Int']>;
-};
-
-/** delete key/value pair or string element. key/value pairs are matched based on their key value */
-export type AuthRefreshTokens_Delete_Key_Input = {
-  metadata?: InputMaybe<Scalars['String']>;
-};
-
 /** input type for inserting data into table "auth.refresh_tokens" */
 export type AuthRefreshTokens_Insert_Input = {
   createdAt?: InputMaybe<Scalars['timestamptz']>;
   expiresAt?: InputMaybe<Scalars['timestamptz']>;
-  metadata?: InputMaybe<Scalars['jsonb']>;
   /** DEPRECATED: auto-generated refresh token id. Will be replaced by a genereric id column that will be used as a primary key, not the refresh token itself. Use refresh_token_hash instead. */
   refreshToken?: InputMaybe<Scalars['uuid']>;
-  type?: InputMaybe<Scalars['refresh_token_type']>;
   user?: InputMaybe<Users_Obj_Rel_Insert_Input>;
   userId?: InputMaybe<Scalars['uuid']>;
 };
@@ -3616,7 +3583,6 @@ export type AuthRefreshTokens_Max_Fields = {
   /** DEPRECATED: auto-generated refresh token id. Will be replaced by a genereric id column that will be used as a primary key, not the refresh token itself. Use refresh_token_hash instead. */
   refreshToken?: Maybe<Scalars['uuid']>;
   refreshTokenHash?: Maybe<Scalars['String']>;
-  type?: Maybe<Scalars['refresh_token_type']>;
   userId?: Maybe<Scalars['uuid']>;
 };
 
@@ -3627,7 +3593,6 @@ export type AuthRefreshTokens_Max_Order_By = {
   /** DEPRECATED: auto-generated refresh token id. Will be replaced by a genereric id column that will be used as a primary key, not the refresh token itself. Use refresh_token_hash instead. */
   refreshToken?: InputMaybe<Order_By>;
   refreshTokenHash?: InputMaybe<Order_By>;
-  type?: InputMaybe<Order_By>;
   userId?: InputMaybe<Order_By>;
 };
 
@@ -3639,7 +3604,6 @@ export type AuthRefreshTokens_Min_Fields = {
   /** DEPRECATED: auto-generated refresh token id. Will be replaced by a genereric id column that will be used as a primary key, not the refresh token itself. Use refresh_token_hash instead. */
   refreshToken?: Maybe<Scalars['uuid']>;
   refreshTokenHash?: Maybe<Scalars['String']>;
-  type?: Maybe<Scalars['refresh_token_type']>;
   userId?: Maybe<Scalars['uuid']>;
 };
 
@@ -3650,7 +3614,6 @@ export type AuthRefreshTokens_Min_Order_By = {
   /** DEPRECATED: auto-generated refresh token id. Will be replaced by a genereric id column that will be used as a primary key, not the refresh token itself. Use refresh_token_hash instead. */
   refreshToken?: InputMaybe<Order_By>;
   refreshTokenHash?: InputMaybe<Order_By>;
-  type?: InputMaybe<Order_By>;
   userId?: InputMaybe<Order_By>;
 };
 
@@ -3674,10 +3637,8 @@ export type AuthRefreshTokens_On_Conflict = {
 export type AuthRefreshTokens_Order_By = {
   createdAt?: InputMaybe<Order_By>;
   expiresAt?: InputMaybe<Order_By>;
-  metadata?: InputMaybe<Order_By>;
   refreshToken?: InputMaybe<Order_By>;
   refreshTokenHash?: InputMaybe<Order_By>;
-  type?: InputMaybe<Order_By>;
   user?: InputMaybe<Users_Order_By>;
   userId?: InputMaybe<Order_By>;
 };
@@ -3688,11 +3649,6 @@ export type AuthRefreshTokens_Pk_Columns_Input = {
   refreshToken: Scalars['uuid'];
 };
 
-/** prepend existing jsonb value of filtered columns with new jsonb value */
-export type AuthRefreshTokens_Prepend_Input = {
-  metadata?: InputMaybe<Scalars['jsonb']>;
-};
-
 /** select columns of table "auth.refresh_tokens" */
 export enum AuthRefreshTokens_Select_Column {
   /** column name */
@@ -3700,13 +3656,9 @@ export enum AuthRefreshTokens_Select_Column {
   /** column name */
   ExpiresAt = 'expiresAt',
   /** column name */
-  Metadata = 'metadata',
-  /** column name */
   RefreshToken = 'refreshToken',
   /** column name */
   RefreshTokenHash = 'refreshTokenHash',
-  /** column name */
-  Type = 'type',
   /** column name */
   UserId = 'userId'
 }
@@ -3715,10 +3667,8 @@ export enum AuthRefreshTokens_Select_Column {
 export type AuthRefreshTokens_Set_Input = {
   createdAt?: InputMaybe<Scalars['timestamptz']>;
   expiresAt?: InputMaybe<Scalars['timestamptz']>;
-  metadata?: InputMaybe<Scalars['jsonb']>;
   /** DEPRECATED: auto-generated refresh token id. Will be replaced by a genereric id column that will be used as a primary key, not the refresh token itself. Use refresh_token_hash instead. */
   refreshToken?: InputMaybe<Scalars['uuid']>;
-  type?: InputMaybe<Scalars['refresh_token_type']>;
   userId?: InputMaybe<Scalars['uuid']>;
 };
 
@@ -3734,11 +3684,9 @@ export type AuthRefreshTokens_Stream_Cursor_Input = {
 export type AuthRefreshTokens_Stream_Cursor_Value_Input = {
   createdAt?: InputMaybe<Scalars['timestamptz']>;
   expiresAt?: InputMaybe<Scalars['timestamptz']>;
-  metadata?: InputMaybe<Scalars['jsonb']>;
   /** DEPRECATED: auto-generated refresh token id. Will be replaced by a genereric id column that will be used as a primary key, not the refresh token itself. Use refresh_token_hash instead. */
   refreshToken?: InputMaybe<Scalars['uuid']>;
   refreshTokenHash?: InputMaybe<Scalars['String']>;
-  type?: InputMaybe<Scalars['refresh_token_type']>;
   userId?: InputMaybe<Scalars['uuid']>;
 };
 
@@ -3749,26 +3697,12 @@ export enum AuthRefreshTokens_Update_Column {
   /** column name */
   ExpiresAt = 'expiresAt',
   /** column name */
-  Metadata = 'metadata',
-  /** column name */
   RefreshToken = 'refreshToken',
-  /** column name */
-  Type = 'type',
   /** column name */
   UserId = 'userId'
 }
 
 export type AuthRefreshTokens_Updates = {
-  /** append existing jsonb value of filtered columns with new jsonb value */
-  _append?: InputMaybe<AuthRefreshTokens_Append_Input>;
-  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
-  _delete_at_path?: InputMaybe<AuthRefreshTokens_Delete_At_Path_Input>;
-  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
-  _delete_elem?: InputMaybe<AuthRefreshTokens_Delete_Elem_Input>;
-  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
-  _delete_key?: InputMaybe<AuthRefreshTokens_Delete_Key_Input>;
-  /** prepend existing jsonb value of filtered columns with new jsonb value */
-  _prepend?: InputMaybe<AuthRefreshTokens_Prepend_Input>;
   /** sets the columns of the filtered rows to the given values */
   _set?: InputMaybe<AuthRefreshTokens_Set_Input>;
   where: AuthRefreshTokens_Bool_Exp;
@@ -11235,11 +11169,6 @@ export type Mutation_RootUpdateAuthProvidersArgs = {
 
 /** mutation root */
 export type Mutation_RootUpdateAuthRefreshTokenArgs = {
-  _append?: InputMaybe<AuthRefreshTokens_Append_Input>;
-  _delete_at_path?: InputMaybe<AuthRefreshTokens_Delete_At_Path_Input>;
-  _delete_elem?: InputMaybe<AuthRefreshTokens_Delete_Elem_Input>;
-  _delete_key?: InputMaybe<AuthRefreshTokens_Delete_Key_Input>;
-  _prepend?: InputMaybe<AuthRefreshTokens_Prepend_Input>;
   _set?: InputMaybe<AuthRefreshTokens_Set_Input>;
   pk_columns: AuthRefreshTokens_Pk_Columns_Input;
 };
@@ -11247,11 +11176,6 @@ export type Mutation_RootUpdateAuthRefreshTokenArgs = {
 
 /** mutation root */
 export type Mutation_RootUpdateAuthRefreshTokensArgs = {
-  _append?: InputMaybe<AuthRefreshTokens_Append_Input>;
-  _delete_at_path?: InputMaybe<AuthRefreshTokens_Delete_At_Path_Input>;
-  _delete_elem?: InputMaybe<AuthRefreshTokens_Delete_Elem_Input>;
-  _delete_key?: InputMaybe<AuthRefreshTokens_Delete_Key_Input>;
-  _prepend?: InputMaybe<AuthRefreshTokens_Prepend_Input>;
   _set?: InputMaybe<AuthRefreshTokens_Set_Input>;
   where: AuthRefreshTokens_Bool_Exp;
 };
@@ -14021,19 +13945,6 @@ export type Query_RootWorkspacesAggregateArgs = {
   offset?: InputMaybe<Scalars['Int']>;
   order_by?: InputMaybe<Array<Workspaces_Order_By>>;
   where?: InputMaybe<Workspaces_Bool_Exp>;
-};
-
-/** Boolean expression to compare columns of type "refresh_token_type". All fields are combined with logical 'AND'. */
-export type Refresh_Token_Type_Comparison_Exp = {
-  _eq?: InputMaybe<Scalars['refresh_token_type']>;
-  _gt?: InputMaybe<Scalars['refresh_token_type']>;
-  _gte?: InputMaybe<Scalars['refresh_token_type']>;
-  _in?: InputMaybe<Array<Scalars['refresh_token_type']>>;
-  _is_null?: InputMaybe<Scalars['Boolean']>;
-  _lt?: InputMaybe<Scalars['refresh_token_type']>;
-  _lte?: InputMaybe<Scalars['refresh_token_type']>;
-  _neq?: InputMaybe<Scalars['refresh_token_type']>;
-  _nin?: InputMaybe<Array<Scalars['refresh_token_type']>>;
 };
 
 /** columns and relationships of "regions" */
@@ -17889,13 +17800,6 @@ export type GetUsersByRefreshTokenQueryVariables = Exact<{
 
 export type GetUsersByRefreshTokenQuery = { __typename?: 'query_root', authRefreshTokens: Array<{ __typename?: 'authRefreshTokens', refreshToken: any, user: { __typename?: 'users', id: any, createdAt: any, disabled: boolean, displayName: string, avatarUrl: string, email?: any | null, passwordHash?: string | null, emailVerified: boolean, phoneNumber?: string | null, phoneNumberVerified: boolean, defaultRole: string, isAnonymous: boolean, ticket?: string | null, otpHash?: string | null, totpSecret?: string | null, activeMfaType?: string | null, newEmail?: any | null, locale: string, metadata?: any | null, roles: Array<{ __typename?: 'authUserRoles', role: string }> } }> };
 
-export type GetUsersByPatQueryVariables = Exact<{
-  patHash: Scalars['String'];
-}>;
-
-
-export type GetUsersByPatQuery = { __typename?: 'query_root', authRefreshTokens: Array<{ __typename?: 'authRefreshTokens', refreshToken: any, user: { __typename?: 'users', id: any, createdAt: any, disabled: boolean, displayName: string, avatarUrl: string, email?: any | null, passwordHash?: string | null, emailVerified: boolean, phoneNumber?: string | null, phoneNumberVerified: boolean, defaultRole: string, isAnonymous: boolean, ticket?: string | null, otpHash?: string | null, totpSecret?: string | null, activeMfaType?: string | null, newEmail?: any | null, locale: string, metadata?: any | null, roles: Array<{ __typename?: 'authUserRoles', role: string }> } }> };
-
 export type UpdateUserMutationVariables = Exact<{
   id: Scalars['uuid'];
   user: Users_Set_Input;
@@ -18194,18 +18098,6 @@ export const GetUsersByRefreshTokenDocument = gql`
   }
 }
     ${UserFieldsFragmentDoc}`;
-export const GetUsersByPatDocument = gql`
-    query getUsersByPAT($patHash: String!) {
-  authRefreshTokens(
-    where: {_and: [{refreshTokenHash: {_eq: $patHash}}, {user: {disabled: {_eq: false}}}, {expiresAt: {_gte: now}}, {type: {_eq: "pat"}}]}
-  ) {
-    refreshToken
-    user {
-      ...userFields
-    }
-  }
-}
-    ${UserFieldsFragmentDoc}`;
 export const UpdateUserDocument = gql`
     mutation updateUser($id: uuid!, $user: users_set_input!) {
   updateUser(pk_columns: {id: $id}, _set: $user) {
@@ -18372,9 +18264,6 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     getUsersByRefreshToken(variables: GetUsersByRefreshTokenQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<GetUsersByRefreshTokenQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetUsersByRefreshTokenQuery>(GetUsersByRefreshTokenDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getUsersByRefreshToken', 'query');
-    },
-    getUsersByPAT(variables: GetUsersByPatQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<GetUsersByPatQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<GetUsersByPatQuery>(GetUsersByPatDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getUsersByPAT', 'query');
     },
     updateUser(variables: UpdateUserMutationVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<UpdateUserMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<UpdateUserMutation>(UpdateUserDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'updateUser', 'mutation');

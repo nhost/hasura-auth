@@ -1,17 +1,17 @@
-import { sendError } from '@/errors';
 import * as express from 'express';
-import { ReasonPhrases } from 'http-status-codes';
 import nocache from 'nocache';
-import env from './env';
-import { mfaRouter } from './mfa';
-import { oauthProviders } from './oauth';
-import { patRouter } from './pat';
-import { signInRouter } from './signin';
-import { signOutRouter } from './signout';
+import { ReasonPhrases } from 'http-status-codes';
+
+import { sendError } from '@/errors';
 import { signUpRouter } from './signup';
-import { tokenRouter } from './token';
+import { signInRouter } from './signin';
 import { userRouter } from './user';
+import { mfaRouter } from './mfa';
+import { tokenRouter } from './token';
+import { signOutRouter } from './signout';
+import env from './env';
 import { verifyRouter } from './verify';
+import { oauthProviders } from './oauth';
 
 const router = express.Router();
 router.use(nocache());
@@ -41,7 +41,6 @@ router.use(signOutRouter);
 router.use(userRouter);
 router.use(mfaRouter);
 router.use(tokenRouter);
-router.use(patRouter);
 router.use(verifyRouter);
 
 // admin
