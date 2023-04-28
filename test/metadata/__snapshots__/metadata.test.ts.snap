@@ -48,9 +48,13 @@ Object {
         },
         Object {
           "configuration": Object {
+            "column_config": Object {
+              "refresh_token": null,
+            },
             "custom_column_names": Object {
               "created_at": "createdAt",
               "expires_at": "expiresAt",
+              "refresh_token": null,
               "refresh_token_hash": "refreshTokenHash",
               "user_id": "userId",
             },
@@ -100,6 +104,7 @@ Object {
             Object {
               "permission": Object {
                 "columns": Array [
+                  "id",
                   "created_at",
                   "expires_at",
                   "metadata",
