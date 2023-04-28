@@ -26,6 +26,9 @@ export const ENV = {
   get HASURA_GRAPHQL_GRAPHQL_URL() {
     return castStringEnv('HASURA_GRAPHQL_GRAPHQL_URL');
   },
+  get HASURA_GRAPHQL_NAMING_CONVENTION() {
+    return castStringEnv('HASURA_GRAPHQL_NAMING_CONVENTION');
+  },
 
   // SERVER
   get AUTH_PORT() {

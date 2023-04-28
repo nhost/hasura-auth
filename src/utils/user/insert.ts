@@ -1,8 +1,8 @@
-import { gqlSdk } from '../gql-sdk';
 import {
+  gqlSdk,
   InsertUserMutation,
   InsertUserMutationVariables,
-} from '../__generated__/graphql-request';
+} from '../gql-sdk';
 
 type UserInput = InsertUserMutationVariables['user'];
 type UserOutput = NonNullable<InsertUserMutation['insertUser']>;

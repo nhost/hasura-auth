@@ -8,7 +8,7 @@ import { hashPassword } from '../password';
 import { sendEmail } from '@/email';
 import { createEmailRedirectionLink } from '../redirect';
 import { getUserByEmail } from './getters';
-import { UserQuery } from '../__generated__/graphql-request';
+import { UserQuery } from '../gql-sdk';
 
 const sendEmailIfNotVerified = async ({
   email,

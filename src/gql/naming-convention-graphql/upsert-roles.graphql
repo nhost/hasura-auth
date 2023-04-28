@@ -1,0 +1,11 @@
+mutation upsertRoles($roles: [authRolesInsertInput!]!) {
+  insertAuthRoles(
+    objects: $roles
+    onConflict: { constraint: roles_pkey, update_columns: [] }
+  ) {
+    affected_rows
+    returning {
+      role
+    }
+  }
+}

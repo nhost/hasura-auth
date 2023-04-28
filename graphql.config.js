@@ -1,5 +1,8 @@
 require('dotenv').config();
 
+const namingConvention =
+  process.env.HASURA_GRAPHQL_NAMING_CONVENTION || 'default';
+
 module.exports = {
   overwrite: true,
   schema: [
@@ -12,9 +15,9 @@ module.exports = {
     },
   ],
 
-  documents: 'src/gql/**/*.graphql',
+  documents: `src/gql/naming-convention-${namingConvention}/**/*.graphql`,
   generates: {
-    'src/utils/__generated__/graphql-request.ts': {
+    [`src/utils/__generated__/graphql-request-${namingConvention}.ts`]: {
       plugins: [
         {
           add: {
@@ -27,6 +30,9 @@ module.exports = {
         'typescript-operations',
         'typescript-graphql-request',
       ],
+      config: {
+        skipTypename: true,
+      },
     },
   },
 };

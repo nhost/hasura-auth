@@ -11,6 +11,7 @@ import {
   getUserByEmail,
   gqlSdk,
   insertUser,
+  InsertUserMutation,
 } from '@/utils';
 import {
   queryValidator,
@@ -19,7 +20,6 @@ import {
 } from '@/validation';
 import { SessionStore } from './session-store';
 import { logger } from '@/logger';
-import { InsertUserMutation } from '@/utils/__generated__/graphql-request';
 import {
   createGrantConfig,
   normaliseProfile,

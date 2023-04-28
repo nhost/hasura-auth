@@ -1,12 +1,11 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Session, SignInResponse } from '@/types';
-import { gqlSdk } from './gql-sdk';
+import { gqlSdk, UserFieldsFragment } from './gql-sdk';
 import { generateTicketExpiresAt } from './ticket';
 import { ENV } from './env';
 import { createHasuraAccessToken } from './jwt';
 import { getNewRefreshToken, updateRefreshTokenExpiry } from './refresh-token';
 import { getUser } from './user';
-import { UserFieldsFragment } from './__generated__/graphql-request';
 
 /**
  * Get new or update current user session
