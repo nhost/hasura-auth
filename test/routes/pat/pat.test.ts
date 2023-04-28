@@ -78,11 +78,11 @@ describe('personal access token', () => {
       .expect(StatusCodes.OK);
 
     const { rows } = await client.query(
-      'SELECT * FROM auth.refresh_tokens WHERE id=$1;',
-      [patResponse.body?.personalAccessToken]
+      'SELECT * FROM auth.refresh_tokens WHERE refresh_token_hash=$1;',
+      [hash(patResponse.body?.personalAccessToken)]
     );
 
-    expect(rows[0].metadata).toMatchObject({ name: 'Test PAT' });
+    expect(rows[0]?.metadata).toMatchObject({ name: 'Test PAT' });
   });
 
   test('should authenticate using the PAT workflow', async () => {
