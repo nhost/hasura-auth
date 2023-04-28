@@ -14,6 +14,8 @@ const getSource = (metadata: HasuraMetadataV3, source = 'default') => {
  * Modify a metadata object in-place and add a table to it
  * If the table exists, it will be overwritten,
  * and the missing relationships will be added
+ *
+ * @deprecated Instead of patching, just blindly replace the metadata instead.
  */
 export const patchTableObject = (
   metadata: HasuraMetadataV3,
@@ -91,16 +93,48 @@ export const patchTableObject = (
       if (configuration.custom_name) {
         existingConfig.custom_name = configuration.custom_name;
       }
+
       // * Add/replace column configurations
-      existingConfig.column_config = {
-        ...existingConfig.column_config,
-        ...configuration.column_config,
-      };
+      existingConfig.column_config = existingConfig.column_config
+        ? Object.keys(existingConfig.column_config).reduce(
+            (finalColumnConfig, currentConfigKey) => {
+              if (configuration.column_config?.[currentConfigKey] === null) {
+                return finalColumnConfig;
+              }
+
+              return {
+                ...finalColumnConfig,
+                [currentConfigKey]: {
+                  ...existingConfig.column_config[currentConfigKey],
+                  ...configuration.column_config?.[currentConfigKey],
+                },
+              };
+            },
+            {}
+          )
+        : { ...configuration.column_config };
+
       // * Add/replace custom column names
-      existingConfig.custom_column_names = {
-        ...existingConfig.custom_column_names,
-        ...configuration.custom_column_names,
-      };
+      existingConfig.custom_column_names = existingConfig.custom_column_names
+        ? Object.keys(existingConfig.custom_column_names).reduce(
+            (finalColumnConfig, currentConfigKey) => {
+              if (
+                configuration.custom_column_names?.[currentConfigKey] === null
+              ) {
+                return finalColumnConfig;
+              }
+
+              return {
+                ...finalColumnConfig,
+                [currentConfigKey]:
+                  existingConfig.custom_column_names?.[currentConfigKey] ||
+                  configuration.custom_column_names?.[currentConfigKey],
+              };
+            },
+            {}
+          )
+        : { ...configuration.custom_column_names };
+
       // * Add/replace custom root fields
       existingConfig.custom_root_fields = {
         ...existingConfig.custom_root_fields,

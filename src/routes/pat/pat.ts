@@ -1,5 +1,5 @@
 import { sendError } from '@/errors';
-import { getUser, gqlSdk } from '@/utils';
+import { getUser, gqlSdk, hash } from '@/utils';
 import { RequestHandler } from 'express';
 import Joi from 'joi';
 import { v4 as uuidv4 } from 'uuid';
@@ -47,7 +47,7 @@ export const createPATHandler: RequestHandler<
   await gqlSdk.insertRefreshToken({
     refreshToken: {
       userId: id,
-      refreshToken: personalAccessToken,
+      refreshTokenHash: hash(personalAccessToken),
       expiresAt: new Date(expiresAt),
       metadata,
       type: 'pat',
