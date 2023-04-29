@@ -1676,311 +1676,6 @@ export type Bigint_Comparison_Exp = {
   _nin?: InputMaybe<Array<Scalars['bigint']>>;
 };
 
-/** columns and relationships of "storage.buckets" */
-export type Buckets = {
-  cacheControl?: Maybe<Scalars['String']>;
-  createdAt: Scalars['timestamptz'];
-  downloadExpiration: Scalars['Int'];
-  /** An array relationship */
-  files: Array<Files>;
-  /** An aggregate relationship */
-  files_aggregate: Files_Aggregate;
-  id: Scalars['String'];
-  maxUploadFileSize: Scalars['Int'];
-  minUploadFileSize: Scalars['Int'];
-  presignedUrlsEnabled: Scalars['Boolean'];
-  updatedAt: Scalars['timestamptz'];
-};
-
-
-/** columns and relationships of "storage.buckets" */
-export type BucketsFilesArgs = {
-  distinct_on?: InputMaybe<Array<Files_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']>;
-  offset?: InputMaybe<Scalars['Int']>;
-  order_by?: InputMaybe<Array<Files_Order_By>>;
-  where?: InputMaybe<Files_Bool_Exp>;
-};
-
-
-/** columns and relationships of "storage.buckets" */
-export type BucketsFiles_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Files_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']>;
-  offset?: InputMaybe<Scalars['Int']>;
-  order_by?: InputMaybe<Array<Files_Order_By>>;
-  where?: InputMaybe<Files_Bool_Exp>;
-};
-
-/** aggregated selection of "storage.buckets" */
-export type Buckets_Aggregate = {
-  aggregate?: Maybe<Buckets_Aggregate_Fields>;
-  nodes: Array<Buckets>;
-};
-
-/** aggregate fields of "storage.buckets" */
-export type Buckets_Aggregate_Fields = {
-  avg?: Maybe<Buckets_Avg_Fields>;
-  count: Scalars['Int'];
-  max?: Maybe<Buckets_Max_Fields>;
-  min?: Maybe<Buckets_Min_Fields>;
-  stddev?: Maybe<Buckets_Stddev_Fields>;
-  stddev_pop?: Maybe<Buckets_Stddev_Pop_Fields>;
-  stddev_samp?: Maybe<Buckets_Stddev_Samp_Fields>;
-  sum?: Maybe<Buckets_Sum_Fields>;
-  var_pop?: Maybe<Buckets_Var_Pop_Fields>;
-  var_samp?: Maybe<Buckets_Var_Samp_Fields>;
-  variance?: Maybe<Buckets_Variance_Fields>;
-};
-
-
-/** aggregate fields of "storage.buckets" */
-export type Buckets_Aggregate_FieldsCountArgs = {
-  columns?: InputMaybe<Array<Buckets_Select_Column>>;
-  distinct?: InputMaybe<Scalars['Boolean']>;
-};
-
-/** aggregate avg on columns */
-export type Buckets_Avg_Fields = {
-  downloadExpiration?: Maybe<Scalars['Float']>;
-  maxUploadFileSize?: Maybe<Scalars['Float']>;
-  minUploadFileSize?: Maybe<Scalars['Float']>;
-};
-
-/** Boolean expression to filter rows from the table "storage.buckets". All fields are combined with a logical 'AND'. */
-export type Buckets_Bool_Exp = {
-  _and?: InputMaybe<Array<Buckets_Bool_Exp>>;
-  _not?: InputMaybe<Buckets_Bool_Exp>;
-  _or?: InputMaybe<Array<Buckets_Bool_Exp>>;
-  cacheControl?: InputMaybe<String_Comparison_Exp>;
-  createdAt?: InputMaybe<Timestamptz_Comparison_Exp>;
-  downloadExpiration?: InputMaybe<Int_Comparison_Exp>;
-  files?: InputMaybe<Files_Bool_Exp>;
-  files_aggregate?: InputMaybe<Files_Aggregate_Bool_Exp>;
-  id?: InputMaybe<String_Comparison_Exp>;
-  maxUploadFileSize?: InputMaybe<Int_Comparison_Exp>;
-  minUploadFileSize?: InputMaybe<Int_Comparison_Exp>;
-  presignedUrlsEnabled?: InputMaybe<Boolean_Comparison_Exp>;
-  updatedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "storage.buckets" */
-export enum Buckets_Constraint {
-  /** unique or primary key constraint on columns "id" */
-  BucketsPkey = 'buckets_pkey'
-}
-
-/** input type for incrementing numeric columns in table "storage.buckets" */
-export type Buckets_Inc_Input = {
-  downloadExpiration?: InputMaybe<Scalars['Int']>;
-  maxUploadFileSize?: InputMaybe<Scalars['Int']>;
-  minUploadFileSize?: InputMaybe<Scalars['Int']>;
-};
-
-/** input type for inserting data into table "storage.buckets" */
-export type Buckets_Insert_Input = {
-  cacheControl?: InputMaybe<Scalars['String']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']>;
-  downloadExpiration?: InputMaybe<Scalars['Int']>;
-  files?: InputMaybe<Files_Arr_Rel_Insert_Input>;
-  id?: InputMaybe<Scalars['String']>;
-  maxUploadFileSize?: InputMaybe<Scalars['Int']>;
-  minUploadFileSize?: InputMaybe<Scalars['Int']>;
-  presignedUrlsEnabled?: InputMaybe<Scalars['Boolean']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']>;
-};
-
-/** aggregate max on columns */
-export type Buckets_Max_Fields = {
-  cacheControl?: Maybe<Scalars['String']>;
-  createdAt?: Maybe<Scalars['timestamptz']>;
-  downloadExpiration?: Maybe<Scalars['Int']>;
-  id?: Maybe<Scalars['String']>;
-  maxUploadFileSize?: Maybe<Scalars['Int']>;
-  minUploadFileSize?: Maybe<Scalars['Int']>;
-  updatedAt?: Maybe<Scalars['timestamptz']>;
-};
-
-/** aggregate min on columns */
-export type Buckets_Min_Fields = {
-  cacheControl?: Maybe<Scalars['String']>;
-  createdAt?: Maybe<Scalars['timestamptz']>;
-  downloadExpiration?: Maybe<Scalars['Int']>;
-  id?: Maybe<Scalars['String']>;
-  maxUploadFileSize?: Maybe<Scalars['Int']>;
-  minUploadFileSize?: Maybe<Scalars['Int']>;
-  updatedAt?: Maybe<Scalars['timestamptz']>;
-};
-
-/** response of any mutation on the table "storage.buckets" */
-export type Buckets_Mutation_Response = {
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int'];
-  /** data from the rows affected by the mutation */
-  returning: Array<Buckets>;
-};
-
-/** input type for inserting object relation for remote table "storage.buckets" */
-export type Buckets_Obj_Rel_Insert_Input = {
-  data: Buckets_Insert_Input;
-  /** upsert condition */
-  on_conflict?: InputMaybe<Buckets_On_Conflict>;
-};
-
-/** on_conflict condition type for table "storage.buckets" */
-export type Buckets_On_Conflict = {
-  constraint: Buckets_Constraint;
-  update_columns?: Array<Buckets_Update_Column>;
-  where?: InputMaybe<Buckets_Bool_Exp>;
-};
-
-/** Ordering options when selecting data from "storage.buckets". */
-export type Buckets_Order_By = {
-  cacheControl?: InputMaybe<Order_By>;
-  createdAt?: InputMaybe<Order_By>;
-  downloadExpiration?: InputMaybe<Order_By>;
-  files_aggregate?: InputMaybe<Files_Aggregate_Order_By>;
-  id?: InputMaybe<Order_By>;
-  maxUploadFileSize?: InputMaybe<Order_By>;
-  minUploadFileSize?: InputMaybe<Order_By>;
-  presignedUrlsEnabled?: InputMaybe<Order_By>;
-  updatedAt?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: storage.buckets */
-export type Buckets_Pk_Columns_Input = {
-  id: Scalars['String'];
-};
-
-/** select columns of table "storage.buckets" */
-export enum Buckets_Select_Column {
-  /** column name */
-  CacheControl = 'cacheControl',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  DownloadExpiration = 'downloadExpiration',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  MaxUploadFileSize = 'maxUploadFileSize',
-  /** column name */
-  MinUploadFileSize = 'minUploadFileSize',
-  /** column name */
-  PresignedUrlsEnabled = 'presignedUrlsEnabled',
-  /** column name */
-  UpdatedAt = 'updatedAt'
-}
-
-/** input type for updating data in table "storage.buckets" */
-export type Buckets_Set_Input = {
-  cacheControl?: InputMaybe<Scalars['String']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']>;
-  downloadExpiration?: InputMaybe<Scalars['Int']>;
-  id?: InputMaybe<Scalars['String']>;
-  maxUploadFileSize?: InputMaybe<Scalars['Int']>;
-  minUploadFileSize?: InputMaybe<Scalars['Int']>;
-  presignedUrlsEnabled?: InputMaybe<Scalars['Boolean']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']>;
-};
-
-/** aggregate stddev on columns */
-export type Buckets_Stddev_Fields = {
-  downloadExpiration?: Maybe<Scalars['Float']>;
-  maxUploadFileSize?: Maybe<Scalars['Float']>;
-  minUploadFileSize?: Maybe<Scalars['Float']>;
-};
-
-/** aggregate stddev_pop on columns */
-export type Buckets_Stddev_Pop_Fields = {
-  downloadExpiration?: Maybe<Scalars['Float']>;
-  maxUploadFileSize?: Maybe<Scalars['Float']>;
-  minUploadFileSize?: Maybe<Scalars['Float']>;
-};
-
-/** aggregate stddev_samp on columns */
-export type Buckets_Stddev_Samp_Fields = {
-  downloadExpiration?: Maybe<Scalars['Float']>;
-  maxUploadFileSize?: Maybe<Scalars['Float']>;
-  minUploadFileSize?: Maybe<Scalars['Float']>;
-};
-
-/** Streaming cursor of the table "buckets" */
-export type Buckets_Stream_Cursor_Input = {
-  /** Stream column input with initial value */
-  initial_value: Buckets_Stream_Cursor_Value_Input;
-  /** cursor ordering */
-  ordering?: InputMaybe<Cursor_Ordering>;
-};
-
-/** Initial value of the column from where the streaming should start */
-export type Buckets_Stream_Cursor_Value_Input = {
-  cacheControl?: InputMaybe<Scalars['String']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']>;
-  downloadExpiration?: InputMaybe<Scalars['Int']>;
-  id?: InputMaybe<Scalars['String']>;
-  maxUploadFileSize?: InputMaybe<Scalars['Int']>;
-  minUploadFileSize?: InputMaybe<Scalars['Int']>;
-  presignedUrlsEnabled?: InputMaybe<Scalars['Boolean']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']>;
-};
-
-/** aggregate sum on columns */
-export type Buckets_Sum_Fields = {
-  downloadExpiration?: Maybe<Scalars['Int']>;
-  maxUploadFileSize?: Maybe<Scalars['Int']>;
-  minUploadFileSize?: Maybe<Scalars['Int']>;
-};
-
-/** update columns of table "storage.buckets" */
-export enum Buckets_Update_Column {
-  /** column name */
-  CacheControl = 'cacheControl',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  DownloadExpiration = 'downloadExpiration',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  MaxUploadFileSize = 'maxUploadFileSize',
-  /** column name */
-  MinUploadFileSize = 'minUploadFileSize',
-  /** column name */
-  PresignedUrlsEnabled = 'presignedUrlsEnabled',
-  /** column name */
-  UpdatedAt = 'updatedAt'
-}
-
-export type Buckets_Updates = {
-  /** increments the numeric columns with given value of the filtered values */
-  _inc?: InputMaybe<Buckets_Inc_Input>;
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<Buckets_Set_Input>;
-  where: Buckets_Bool_Exp;
-};
-
-/** aggregate var_pop on columns */
-export type Buckets_Var_Pop_Fields = {
-  downloadExpiration?: Maybe<Scalars['Float']>;
-  maxUploadFileSize?: Maybe<Scalars['Float']>;
-  minUploadFileSize?: Maybe<Scalars['Float']>;
-};
-
-/** aggregate var_samp on columns */
-export type Buckets_Var_Samp_Fields = {
-  downloadExpiration?: Maybe<Scalars['Float']>;
-  maxUploadFileSize?: Maybe<Scalars['Float']>;
-  minUploadFileSize?: Maybe<Scalars['Float']>;
-};
-
-/** aggregate variance on columns */
-export type Buckets_Variance_Fields = {
-  downloadExpiration?: Maybe<Scalars['Float']>;
-  maxUploadFileSize?: Maybe<Scalars['Float']>;
-  minUploadFileSize?: Maybe<Scalars['Float']>;
-};
-
 /** Boolean expression to compare columns of type "bytea". All fields are combined with logical 'AND'. */
 export type Bytea_Comparison_Exp = {
   _eq?: InputMaybe<Scalars['bytea']>;
@@ -2034,414 +1729,6 @@ export enum Cursor_Ordering {
   /** descending ordering of the cursor */
   Desc = 'DESC'
 }
-
-/** columns and relationships of "storage.files" */
-export type Files = {
-  /** An object relationship */
-  bucket: Buckets;
-  bucketId: Scalars['String'];
-  createdAt: Scalars['timestamptz'];
-  etag?: Maybe<Scalars['String']>;
-  id: Scalars['uuid'];
-  isUploaded?: Maybe<Scalars['Boolean']>;
-  mimeType?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
-  size?: Maybe<Scalars['Int']>;
-  updatedAt: Scalars['timestamptz'];
-  uploadedByUserId?: Maybe<Scalars['uuid']>;
-};
-
-/** aggregated selection of "storage.files" */
-export type Files_Aggregate = {
-  aggregate?: Maybe<Files_Aggregate_Fields>;
-  nodes: Array<Files>;
-};
-
-export type Files_Aggregate_Bool_Exp = {
-  bool_and?: InputMaybe<Files_Aggregate_Bool_Exp_Bool_And>;
-  bool_or?: InputMaybe<Files_Aggregate_Bool_Exp_Bool_Or>;
-  count?: InputMaybe<Files_Aggregate_Bool_Exp_Count>;
-};
-
-export type Files_Aggregate_Bool_Exp_Bool_And = {
-  arguments: Files_Select_Column_Files_Aggregate_Bool_Exp_Bool_And_Arguments_Columns;
-  distinct?: InputMaybe<Scalars['Boolean']>;
-  filter?: InputMaybe<Files_Bool_Exp>;
-  predicate: Boolean_Comparison_Exp;
-};
-
-export type Files_Aggregate_Bool_Exp_Bool_Or = {
-  arguments: Files_Select_Column_Files_Aggregate_Bool_Exp_Bool_Or_Arguments_Columns;
-  distinct?: InputMaybe<Scalars['Boolean']>;
-  filter?: InputMaybe<Files_Bool_Exp>;
-  predicate: Boolean_Comparison_Exp;
-};
-
-export type Files_Aggregate_Bool_Exp_Count = {
-  arguments?: InputMaybe<Array<Files_Select_Column>>;
-  distinct?: InputMaybe<Scalars['Boolean']>;
-  filter?: InputMaybe<Files_Bool_Exp>;
-  predicate: Int_Comparison_Exp;
-};
-
-/** aggregate fields of "storage.files" */
-export type Files_Aggregate_Fields = {
-  avg?: Maybe<Files_Avg_Fields>;
-  count: Scalars['Int'];
-  max?: Maybe<Files_Max_Fields>;
-  min?: Maybe<Files_Min_Fields>;
-  stddev?: Maybe<Files_Stddev_Fields>;
-  stddev_pop?: Maybe<Files_Stddev_Pop_Fields>;
-  stddev_samp?: Maybe<Files_Stddev_Samp_Fields>;
-  sum?: Maybe<Files_Sum_Fields>;
-  var_pop?: Maybe<Files_Var_Pop_Fields>;
-  var_samp?: Maybe<Files_Var_Samp_Fields>;
-  variance?: Maybe<Files_Variance_Fields>;
-};
-
-
-/** aggregate fields of "storage.files" */
-export type Files_Aggregate_FieldsCountArgs = {
-  columns?: InputMaybe<Array<Files_Select_Column>>;
-  distinct?: InputMaybe<Scalars['Boolean']>;
-};
-
-/** order by aggregate values of table "storage.files" */
-export type Files_Aggregate_Order_By = {
-  avg?: InputMaybe<Files_Avg_Order_By>;
-  count?: InputMaybe<Order_By>;
-  max?: InputMaybe<Files_Max_Order_By>;
-  min?: InputMaybe<Files_Min_Order_By>;
-  stddev?: InputMaybe<Files_Stddev_Order_By>;
-  stddev_pop?: InputMaybe<Files_Stddev_Pop_Order_By>;
-  stddev_samp?: InputMaybe<Files_Stddev_Samp_Order_By>;
-  sum?: InputMaybe<Files_Sum_Order_By>;
-  var_pop?: InputMaybe<Files_Var_Pop_Order_By>;
-  var_samp?: InputMaybe<Files_Var_Samp_Order_By>;
-  variance?: InputMaybe<Files_Variance_Order_By>;
-};
-
-/** input type for inserting array relation for remote table "storage.files" */
-export type Files_Arr_Rel_Insert_Input = {
-  data: Array<Files_Insert_Input>;
-  /** upsert condition */
-  on_conflict?: InputMaybe<Files_On_Conflict>;
-};
-
-/** aggregate avg on columns */
-export type Files_Avg_Fields = {
-  size?: Maybe<Scalars['Float']>;
-};
-
-/** order by avg() on columns of table "storage.files" */
-export type Files_Avg_Order_By = {
-  size?: InputMaybe<Order_By>;
-};
-
-/** Boolean expression to filter rows from the table "storage.files". All fields are combined with a logical 'AND'. */
-export type Files_Bool_Exp = {
-  _and?: InputMaybe<Array<Files_Bool_Exp>>;
-  _not?: InputMaybe<Files_Bool_Exp>;
-  _or?: InputMaybe<Array<Files_Bool_Exp>>;
-  bucket?: InputMaybe<Buckets_Bool_Exp>;
-  bucketId?: InputMaybe<String_Comparison_Exp>;
-  createdAt?: InputMaybe<Timestamptz_Comparison_Exp>;
-  etag?: InputMaybe<String_Comparison_Exp>;
-  id?: InputMaybe<Uuid_Comparison_Exp>;
-  isUploaded?: InputMaybe<Boolean_Comparison_Exp>;
-  mimeType?: InputMaybe<String_Comparison_Exp>;
-  name?: InputMaybe<String_Comparison_Exp>;
-  size?: InputMaybe<Int_Comparison_Exp>;
-  updatedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
-  uploadedByUserId?: InputMaybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "storage.files" */
-export enum Files_Constraint {
-  /** unique or primary key constraint on columns "id" */
-  FilesPkey = 'files_pkey'
-}
-
-/** input type for incrementing numeric columns in table "storage.files" */
-export type Files_Inc_Input = {
-  size?: InputMaybe<Scalars['Int']>;
-};
-
-/** input type for inserting data into table "storage.files" */
-export type Files_Insert_Input = {
-  bucket?: InputMaybe<Buckets_Obj_Rel_Insert_Input>;
-  bucketId?: InputMaybe<Scalars['String']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']>;
-  etag?: InputMaybe<Scalars['String']>;
-  id?: InputMaybe<Scalars['uuid']>;
-  isUploaded?: InputMaybe<Scalars['Boolean']>;
-  mimeType?: InputMaybe<Scalars['String']>;
-  name?: InputMaybe<Scalars['String']>;
-  size?: InputMaybe<Scalars['Int']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']>;
-  uploadedByUserId?: InputMaybe<Scalars['uuid']>;
-};
-
-/** aggregate max on columns */
-export type Files_Max_Fields = {
-  bucketId?: Maybe<Scalars['String']>;
-  createdAt?: Maybe<Scalars['timestamptz']>;
-  etag?: Maybe<Scalars['String']>;
-  id?: Maybe<Scalars['uuid']>;
-  mimeType?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
-  size?: Maybe<Scalars['Int']>;
-  updatedAt?: Maybe<Scalars['timestamptz']>;
-  uploadedByUserId?: Maybe<Scalars['uuid']>;
-};
-
-/** order by max() on columns of table "storage.files" */
-export type Files_Max_Order_By = {
-  bucketId?: InputMaybe<Order_By>;
-  createdAt?: InputMaybe<Order_By>;
-  etag?: InputMaybe<Order_By>;
-  id?: InputMaybe<Order_By>;
-  mimeType?: InputMaybe<Order_By>;
-  name?: InputMaybe<Order_By>;
-  size?: InputMaybe<Order_By>;
-  updatedAt?: InputMaybe<Order_By>;
-  uploadedByUserId?: InputMaybe<Order_By>;
-};
-
-/** aggregate min on columns */
-export type Files_Min_Fields = {
-  bucketId?: Maybe<Scalars['String']>;
-  createdAt?: Maybe<Scalars['timestamptz']>;
-  etag?: Maybe<Scalars['String']>;
-  id?: Maybe<Scalars['uuid']>;
-  mimeType?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
-  size?: Maybe<Scalars['Int']>;
-  updatedAt?: Maybe<Scalars['timestamptz']>;
-  uploadedByUserId?: Maybe<Scalars['uuid']>;
-};
-
-/** order by min() on columns of table "storage.files" */
-export type Files_Min_Order_By = {
-  bucketId?: InputMaybe<Order_By>;
-  createdAt?: InputMaybe<Order_By>;
-  etag?: InputMaybe<Order_By>;
-  id?: InputMaybe<Order_By>;
-  mimeType?: InputMaybe<Order_By>;
-  name?: InputMaybe<Order_By>;
-  size?: InputMaybe<Order_By>;
-  updatedAt?: InputMaybe<Order_By>;
-  uploadedByUserId?: InputMaybe<Order_By>;
-};
-
-/** response of any mutation on the table "storage.files" */
-export type Files_Mutation_Response = {
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int'];
-  /** data from the rows affected by the mutation */
-  returning: Array<Files>;
-};
-
-/** on_conflict condition type for table "storage.files" */
-export type Files_On_Conflict = {
-  constraint: Files_Constraint;
-  update_columns?: Array<Files_Update_Column>;
-  where?: InputMaybe<Files_Bool_Exp>;
-};
-
-/** Ordering options when selecting data from "storage.files". */
-export type Files_Order_By = {
-  bucket?: InputMaybe<Buckets_Order_By>;
-  bucketId?: InputMaybe<Order_By>;
-  createdAt?: InputMaybe<Order_By>;
-  etag?: InputMaybe<Order_By>;
-  id?: InputMaybe<Order_By>;
-  isUploaded?: InputMaybe<Order_By>;
-  mimeType?: InputMaybe<Order_By>;
-  name?: InputMaybe<Order_By>;
-  size?: InputMaybe<Order_By>;
-  updatedAt?: InputMaybe<Order_By>;
-  uploadedByUserId?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: storage.files */
-export type Files_Pk_Columns_Input = {
-  id: Scalars['uuid'];
-};
-
-/** select columns of table "storage.files" */
-export enum Files_Select_Column {
-  /** column name */
-  BucketId = 'bucketId',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  Etag = 'etag',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  IsUploaded = 'isUploaded',
-  /** column name */
-  MimeType = 'mimeType',
-  /** column name */
-  Name = 'name',
-  /** column name */
-  Size = 'size',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UploadedByUserId = 'uploadedByUserId'
-}
-
-/** select "files_aggregate_bool_exp_bool_and_arguments_columns" columns of table "storage.files" */
-export enum Files_Select_Column_Files_Aggregate_Bool_Exp_Bool_And_Arguments_Columns {
-  /** column name */
-  IsUploaded = 'isUploaded'
-}
-
-/** select "files_aggregate_bool_exp_bool_or_arguments_columns" columns of table "storage.files" */
-export enum Files_Select_Column_Files_Aggregate_Bool_Exp_Bool_Or_Arguments_Columns {
-  /** column name */
-  IsUploaded = 'isUploaded'
-}
-
-/** input type for updating data in table "storage.files" */
-export type Files_Set_Input = {
-  bucketId?: InputMaybe<Scalars['String']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']>;
-  etag?: InputMaybe<Scalars['String']>;
-  id?: InputMaybe<Scalars['uuid']>;
-  isUploaded?: InputMaybe<Scalars['Boolean']>;
-  mimeType?: InputMaybe<Scalars['String']>;
-  name?: InputMaybe<Scalars['String']>;
-  size?: InputMaybe<Scalars['Int']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']>;
-  uploadedByUserId?: InputMaybe<Scalars['uuid']>;
-};
-
-/** aggregate stddev on columns */
-export type Files_Stddev_Fields = {
-  size?: Maybe<Scalars['Float']>;
-};
-
-/** order by stddev() on columns of table "storage.files" */
-export type Files_Stddev_Order_By = {
-  size?: InputMaybe<Order_By>;
-};
-
-/** aggregate stddev_pop on columns */
-export type Files_Stddev_Pop_Fields = {
-  size?: Maybe<Scalars['Float']>;
-};
-
-/** order by stddev_pop() on columns of table "storage.files" */
-export type Files_Stddev_Pop_Order_By = {
-  size?: InputMaybe<Order_By>;
-};
-
-/** aggregate stddev_samp on columns */
-export type Files_Stddev_Samp_Fields = {
-  size?: Maybe<Scalars['Float']>;
-};
-
-/** order by stddev_samp() on columns of table "storage.files" */
-export type Files_Stddev_Samp_Order_By = {
-  size?: InputMaybe<Order_By>;
-};
-
-/** Streaming cursor of the table "files" */
-export type Files_Stream_Cursor_Input = {
-  /** Stream column input with initial value */
-  initial_value: Files_Stream_Cursor_Value_Input;
-  /** cursor ordering */
-  ordering?: InputMaybe<Cursor_Ordering>;
-};
-
-/** Initial value of the column from where the streaming should start */
-export type Files_Stream_Cursor_Value_Input = {
-  bucketId?: InputMaybe<Scalars['String']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']>;
-  etag?: InputMaybe<Scalars['String']>;
-  id?: InputMaybe<Scalars['uuid']>;
-  isUploaded?: InputMaybe<Scalars['Boolean']>;
-  mimeType?: InputMaybe<Scalars['String']>;
-  name?: InputMaybe<Scalars['String']>;
-  size?: InputMaybe<Scalars['Int']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']>;
-  uploadedByUserId?: InputMaybe<Scalars['uuid']>;
-};
-
-/** aggregate sum on columns */
-export type Files_Sum_Fields = {
-  size?: Maybe<Scalars['Int']>;
-};
-
-/** order by sum() on columns of table "storage.files" */
-export type Files_Sum_Order_By = {
-  size?: InputMaybe<Order_By>;
-};
-
-/** update columns of table "storage.files" */
-export enum Files_Update_Column {
-  /** column name */
-  BucketId = 'bucketId',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  Etag = 'etag',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  IsUploaded = 'isUploaded',
-  /** column name */
-  MimeType = 'mimeType',
-  /** column name */
-  Name = 'name',
-  /** column name */
-  Size = 'size',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UploadedByUserId = 'uploadedByUserId'
-}
-
-export type Files_Updates = {
-  /** increments the numeric columns with given value of the filtered values */
-  _inc?: InputMaybe<Files_Inc_Input>;
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<Files_Set_Input>;
-  where: Files_Bool_Exp;
-};
-
-/** aggregate var_pop on columns */
-export type Files_Var_Pop_Fields = {
-  size?: Maybe<Scalars['Float']>;
-};
-
-/** order by var_pop() on columns of table "storage.files" */
-export type Files_Var_Pop_Order_By = {
-  size?: InputMaybe<Order_By>;
-};
-
-/** aggregate var_samp on columns */
-export type Files_Var_Samp_Fields = {
-  size?: Maybe<Scalars['Float']>;
-};
-
-/** order by var_samp() on columns of table "storage.files" */
-export type Files_Var_Samp_Order_By = {
-  size?: InputMaybe<Order_By>;
-};
-
-/** aggregate variance on columns */
-export type Files_Variance_Fields = {
-  size?: Maybe<Scalars['Float']>;
-};
-
-/** order by variance() on columns of table "storage.files" */
-export type Files_Variance_Order_By = {
-  size?: InputMaybe<Order_By>;
-};
 
 export type Jsonb_Cast_Exp = {
   String?: InputMaybe<String_Comparison_Exp>;
@@ -2501,14 +1788,6 @@ export type Mutation_Root = {
   deleteAuthUserSecurityKey?: Maybe<AuthUserSecurityKeys>;
   /** delete data from the table: "auth.user_security_keys" */
   deleteAuthUserSecurityKeys?: Maybe<AuthUserSecurityKeys_Mutation_Response>;
-  /** delete single row from the table: "storage.buckets" */
-  deleteBucket?: Maybe<Buckets>;
-  /** delete data from the table: "storage.buckets" */
-  deleteBuckets?: Maybe<Buckets_Mutation_Response>;
-  /** delete single row from the table: "storage.files" */
-  deleteFile?: Maybe<Files>;
-  /** delete data from the table: "storage.files" */
-  deleteFiles?: Maybe<Files_Mutation_Response>;
   /** delete single row from the table: "auth.users" */
   deleteUser?: Maybe<Users>;
   /** delete data from the table: "auth.users" */
@@ -2541,14 +1820,6 @@ export type Mutation_Root = {
   insertAuthUserSecurityKey?: Maybe<AuthUserSecurityKeys>;
   /** insert data into the table: "auth.user_security_keys" */
   insertAuthUserSecurityKeys?: Maybe<AuthUserSecurityKeys_Mutation_Response>;
-  /** insert a single row into the table: "storage.buckets" */
-  insertBucket?: Maybe<Buckets>;
-  /** insert data into the table: "storage.buckets" */
-  insertBuckets?: Maybe<Buckets_Mutation_Response>;
-  /** insert a single row into the table: "storage.files" */
-  insertFile?: Maybe<Files>;
-  /** insert data into the table: "storage.files" */
-  insertFiles?: Maybe<Files_Mutation_Response>;
   /** insert a single row into the table: "auth.users" */
   insertUser?: Maybe<Users>;
   /** insert data into the table: "auth.users" */
@@ -2581,14 +1852,6 @@ export type Mutation_Root = {
   updateAuthUserSecurityKey?: Maybe<AuthUserSecurityKeys>;
   /** update data of the table: "auth.user_security_keys" */
   updateAuthUserSecurityKeys?: Maybe<AuthUserSecurityKeys_Mutation_Response>;
-  /** update single row of the table: "storage.buckets" */
-  updateBucket?: Maybe<Buckets>;
-  /** update data of the table: "storage.buckets" */
-  updateBuckets?: Maybe<Buckets_Mutation_Response>;
-  /** update single row of the table: "storage.files" */
-  updateFile?: Maybe<Files>;
-  /** update data of the table: "storage.files" */
-  updateFiles?: Maybe<Files_Mutation_Response>;
   /** update single row of the table: "auth.users" */
   updateUser?: Maybe<Users>;
   /** update data of the table: "auth.users" */
@@ -2607,10 +1870,6 @@ export type Mutation_Root = {
   update_authUserRoles_many?: Maybe<Array<Maybe<AuthUserRoles_Mutation_Response>>>;
   /** update multiples rows of table: "auth.user_security_keys" */
   update_authUserSecurityKeys_many?: Maybe<Array<Maybe<AuthUserSecurityKeys_Mutation_Response>>>;
-  /** update multiples rows of table: "storage.buckets" */
-  update_buckets_many?: Maybe<Array<Maybe<Buckets_Mutation_Response>>>;
-  /** update multiples rows of table: "storage.files" */
-  update_files_many?: Maybe<Array<Maybe<Files_Mutation_Response>>>;
   /** update multiples rows of table: "auth.users" */
   update_users_many?: Maybe<Array<Maybe<Users_Mutation_Response>>>;
 };
@@ -2697,30 +1956,6 @@ export type Mutation_RootDeleteAuthUserSecurityKeyArgs = {
 /** mutation root */
 export type Mutation_RootDeleteAuthUserSecurityKeysArgs = {
   where: AuthUserSecurityKeys_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteBucketArgs = {
-  id: Scalars['String'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteBucketsArgs = {
-  where: Buckets_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteFileArgs = {
-  id: Scalars['uuid'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteFilesArgs = {
-  where: Files_Bool_Exp;
 };
 
 
@@ -2831,34 +2066,6 @@ export type Mutation_RootInsertAuthUserSecurityKeyArgs = {
 export type Mutation_RootInsertAuthUserSecurityKeysArgs = {
   objects: Array<AuthUserSecurityKeys_Insert_Input>;
   on_conflict?: InputMaybe<AuthUserSecurityKeys_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertBucketArgs = {
-  object: Buckets_Insert_Input;
-  on_conflict?: InputMaybe<Buckets_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertBucketsArgs = {
-  objects: Array<Buckets_Insert_Input>;
-  on_conflict?: InputMaybe<Buckets_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertFileArgs = {
-  object: Files_Insert_Input;
-  on_conflict?: InputMaybe<Files_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertFilesArgs = {
-  objects: Array<Files_Insert_Input>;
-  on_conflict?: InputMaybe<Files_On_Conflict>;
 };
 
 
@@ -2997,38 +2204,6 @@ export type Mutation_RootUpdateAuthUserSecurityKeysArgs = {
 
 
 /** mutation root */
-export type Mutation_RootUpdateBucketArgs = {
-  _inc?: InputMaybe<Buckets_Inc_Input>;
-  _set?: InputMaybe<Buckets_Set_Input>;
-  pk_columns: Buckets_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateBucketsArgs = {
-  _inc?: InputMaybe<Buckets_Inc_Input>;
-  _set?: InputMaybe<Buckets_Set_Input>;
-  where: Buckets_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateFileArgs = {
-  _inc?: InputMaybe<Files_Inc_Input>;
-  _set?: InputMaybe<Files_Set_Input>;
-  pk_columns: Files_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateFilesArgs = {
-  _inc?: InputMaybe<Files_Inc_Input>;
-  _set?: InputMaybe<Files_Set_Input>;
-  where: Files_Bool_Exp;
-};
-
-
-/** mutation root */
 export type Mutation_RootUpdateUserArgs = {
   _append?: InputMaybe<Users_Append_Input>;
   _delete_at_path?: InputMaybe<Users_Delete_At_Path_Input>;
@@ -3091,18 +2266,6 @@ export type Mutation_RootUpdate_AuthUserRoles_ManyArgs = {
 /** mutation root */
 export type Mutation_RootUpdate_AuthUserSecurityKeys_ManyArgs = {
   updates: Array<AuthUserSecurityKeys_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_Buckets_ManyArgs = {
-  updates: Array<Buckets_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_Files_ManyArgs = {
-  updates: Array<Files_Updates>;
 };
 
 
@@ -3170,18 +2333,6 @@ export type Query_Root = {
   authUserSecurityKeys: Array<AuthUserSecurityKeys>;
   /** fetch aggregated fields from the table: "auth.user_security_keys" */
   authUserSecurityKeysAggregate: AuthUserSecurityKeys_Aggregate;
-  /** fetch data from the table: "storage.buckets" using primary key columns */
-  bucket?: Maybe<Buckets>;
-  /** fetch data from the table: "storage.buckets" */
-  buckets: Array<Buckets>;
-  /** fetch aggregated fields from the table: "storage.buckets" */
-  bucketsAggregate: Buckets_Aggregate;
-  /** fetch data from the table: "storage.files" using primary key columns */
-  file?: Maybe<Files>;
-  /** An array relationship */
-  files: Array<Files>;
-  /** fetch aggregated fields from the table: "storage.files" */
-  filesAggregate: Files_Aggregate;
   /** fetch data from the table: "auth.users" using primary key columns */
   user?: Maybe<Users>;
   /** fetch data from the table: "auth.users" */
@@ -3352,52 +2503,6 @@ export type Query_RootAuthUserSecurityKeysAggregateArgs = {
 };
 
 
-export type Query_RootBucketArgs = {
-  id: Scalars['String'];
-};
-
-
-export type Query_RootBucketsArgs = {
-  distinct_on?: InputMaybe<Array<Buckets_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']>;
-  offset?: InputMaybe<Scalars['Int']>;
-  order_by?: InputMaybe<Array<Buckets_Order_By>>;
-  where?: InputMaybe<Buckets_Bool_Exp>;
-};
-
-
-export type Query_RootBucketsAggregateArgs = {
-  distinct_on?: InputMaybe<Array<Buckets_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']>;
-  offset?: InputMaybe<Scalars['Int']>;
-  order_by?: InputMaybe<Array<Buckets_Order_By>>;
-  where?: InputMaybe<Buckets_Bool_Exp>;
-};
-
-
-export type Query_RootFileArgs = {
-  id: Scalars['uuid'];
-};
-
-
-export type Query_RootFilesArgs = {
-  distinct_on?: InputMaybe<Array<Files_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']>;
-  offset?: InputMaybe<Scalars['Int']>;
-  order_by?: InputMaybe<Array<Files_Order_By>>;
-  where?: InputMaybe<Files_Bool_Exp>;
-};
-
-
-export type Query_RootFilesAggregateArgs = {
-  distinct_on?: InputMaybe<Array<Files_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']>;
-  offset?: InputMaybe<Scalars['Int']>;
-  order_by?: InputMaybe<Array<Files_Order_By>>;
-  where?: InputMaybe<Files_Bool_Exp>;
-};
-
-
 export type Query_RootUserArgs = {
   id: Scalars['uuid'];
 };
@@ -3490,22 +2595,6 @@ export type Subscription_Root = {
   authUserSecurityKeysAggregate: AuthUserSecurityKeys_Aggregate;
   /** fetch data from the table in a streaming manner: "auth.user_security_keys" */
   authUserSecurityKeys_stream: Array<AuthUserSecurityKeys>;
-  /** fetch data from the table: "storage.buckets" using primary key columns */
-  bucket?: Maybe<Buckets>;
-  /** fetch data from the table: "storage.buckets" */
-  buckets: Array<Buckets>;
-  /** fetch aggregated fields from the table: "storage.buckets" */
-  bucketsAggregate: Buckets_Aggregate;
-  /** fetch data from the table in a streaming manner: "storage.buckets" */
-  buckets_stream: Array<Buckets>;
-  /** fetch data from the table: "storage.files" using primary key columns */
-  file?: Maybe<Files>;
-  /** An array relationship */
-  files: Array<Files>;
-  /** fetch aggregated fields from the table: "storage.files" */
-  filesAggregate: Files_Aggregate;
-  /** fetch data from the table in a streaming manner: "storage.files" */
-  files_stream: Array<Files>;
   /** fetch data from the table: "auth.users" using primary key columns */
   user?: Maybe<Users>;
   /** fetch data from the table: "auth.users" */
@@ -3724,66 +2813,6 @@ export type Subscription_RootAuthUserSecurityKeys_StreamArgs = {
   batch_size: Scalars['Int'];
   cursor: Array<InputMaybe<AuthUserSecurityKeys_Stream_Cursor_Input>>;
   where?: InputMaybe<AuthUserSecurityKeys_Bool_Exp>;
-};
-
-
-export type Subscription_RootBucketArgs = {
-  id: Scalars['String'];
-};
-
-
-export type Subscription_RootBucketsArgs = {
-  distinct_on?: InputMaybe<Array<Buckets_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']>;
-  offset?: InputMaybe<Scalars['Int']>;
-  order_by?: InputMaybe<Array<Buckets_Order_By>>;
-  where?: InputMaybe<Buckets_Bool_Exp>;
-};
-
-
-export type Subscription_RootBucketsAggregateArgs = {
-  distinct_on?: InputMaybe<Array<Buckets_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']>;
-  offset?: InputMaybe<Scalars['Int']>;
-  order_by?: InputMaybe<Array<Buckets_Order_By>>;
-  where?: InputMaybe<Buckets_Bool_Exp>;
-};
-
-
-export type Subscription_RootBuckets_StreamArgs = {
-  batch_size: Scalars['Int'];
-  cursor: Array<InputMaybe<Buckets_Stream_Cursor_Input>>;
-  where?: InputMaybe<Buckets_Bool_Exp>;
-};
-
-
-export type Subscription_RootFileArgs = {
-  id: Scalars['uuid'];
-};
-
-
-export type Subscription_RootFilesArgs = {
-  distinct_on?: InputMaybe<Array<Files_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']>;
-  offset?: InputMaybe<Scalars['Int']>;
-  order_by?: InputMaybe<Array<Files_Order_By>>;
-  where?: InputMaybe<Files_Bool_Exp>;
-};
-
-
-export type Subscription_RootFilesAggregateArgs = {
-  distinct_on?: InputMaybe<Array<Files_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']>;
-  offset?: InputMaybe<Scalars['Int']>;
-  order_by?: InputMaybe<Array<Files_Order_By>>;
-  where?: InputMaybe<Files_Bool_Exp>;
-};
-
-
-export type Subscription_RootFiles_StreamArgs = {
-  batch_size: Scalars['Int'];
-  cursor: Array<InputMaybe<Files_Stream_Cursor_Input>>;
-  where?: InputMaybe<Files_Bool_Exp>;
 };
 
 
@@ -4550,26 +3579,26 @@ export type DeleteRefreshTokenMutationVariables = Exact<{
 }>;
 
 
-export type DeleteRefreshTokenMutation = { deleteAuthRefreshTokens?: { affected_rows: number } | null };
+export type DeleteRefreshTokenMutation = { deleteAuthRefreshTokens?: { affectedRows: number } | null };
 
 export type DeleteUserRefreshTokensMutationVariables = Exact<{
   userId: Scalars['uuid'];
 }>;
 
 
-export type DeleteUserRefreshTokensMutation = { deleteAuthRefreshTokens?: { affected_rows: number } | null };
+export type DeleteUserRefreshTokensMutation = { deleteAuthRefreshTokens?: { affectedRows: number } | null };
 
 export type DeleteExpiredRefreshTokensMutationVariables = Exact<{ [key: string]: never; }>;
 
 
-export type DeleteExpiredRefreshTokensMutation = { deleteAuthRefreshTokens?: { affected_rows: number } | null };
+export type DeleteExpiredRefreshTokensMutation = { deleteAuthRefreshTokens?: { affectedRows: number } | null };
 
 export type UpsertRolesMutationVariables = Exact<{
   roles: Array<AuthRoles_Insert_Input> | AuthRoles_Insert_Input;
 }>;
 
 
-export type UpsertRolesMutation = { insertAuthRoles?: { affected_rows: number, returning: Array<{ role: string }> } | null };
+export type UpsertRolesMutation = { insertAuthRoles?: { affectedRows: number, returning: Array<{ role: string }> } | null };
 
 export type GetUserSecurityKeysQueryVariables = Exact<{
   id: Scalars['uuid'];
@@ -4637,14 +3666,14 @@ export type InsertUserRolesMutationVariables = Exact<{
 }>;
 
 
-export type InsertUserRolesMutation = { insertAuthUserRoles?: { affected_rows: number } | null };
+export type InsertUserRolesMutation = { insertAuthUserRoles?: { affectedRows: number } | null };
 
 export type DeleteUserRolesByUserIdMutationVariables = Exact<{
   userId: Scalars['uuid'];
 }>;
 
 
-export type DeleteUserRolesByUserIdMutation = { deleteAuthUserRoles?: { affected_rows: number } | null };
+export type DeleteUserRolesByUserIdMutation = { deleteAuthUserRoles?: { affectedRows: number } | null };
 
 export type UserFieldsFragment = { id: any, createdAt: any, disabled: boolean, displayName: string, avatarUrl: string, email?: any | null, passwordHash?: string | null, emailVerified: boolean, phoneNumber?: string | null, phoneNumberVerified: boolean, defaultRole: string, isAnonymous: boolean, ticket?: string | null, otpHash?: string | null, totpSecret?: string | null, activeMfaType?: string | null, newEmail?: any | null, locale: string, metadata?: any | null, roles: Array<{ role: string }> };
 
@@ -4668,7 +3697,7 @@ export type GetUsersByRefreshTokenAndUpdateRefreshTokenExpiresAtMutationVariable
 }>;
 
 
-export type GetUsersByRefreshTokenAndUpdateRefreshTokenExpiresAtMutation = { updateAuthRefreshTokens?: { affected_rows: number } | null };
+export type GetUsersByRefreshTokenAndUpdateRefreshTokenExpiresAtMutation = { updateAuthRefreshTokens?: { affectedRows: number } | null };
 
 export type GetUsersByRefreshTokenQueryVariables = Exact<{
   refreshTokenHash: Scalars['String'];
@@ -4698,7 +3727,7 @@ export type UpdateUserWhereMutationVariables = Exact<{
 }>;
 
 
-export type UpdateUserWhereMutation = { updateUsers?: { affected_rows: number } | null };
+export type UpdateUserWhereMutation = { updateUsers?: { affectedRows: number } | null };
 
 export type RotateUsersTicketMutationVariables = Exact<{
   oldTicket: Scalars['String'];
@@ -4707,7 +3736,7 @@ export type RotateUsersTicketMutationVariables = Exact<{
 }>;
 
 
-export type RotateUsersTicketMutation = { updateUsers?: { affected_rows: number } | null };
+export type RotateUsersTicketMutation = { updateUsers?: { affectedRows: number } | null };
 
 export type ChangeEmailsByTicketMutationVariables = Exact<{
   ticket: Scalars['String'];
@@ -4731,7 +3760,7 @@ export type DeleteUserMutationVariables = Exact<{
 }>;
 
 
-export type DeleteUserMutation = { deleteAuthUserRoles?: { affected_rows: number } | null, deleteUser?: { id: any, createdAt: any, disabled: boolean, displayName: string, avatarUrl: string, email?: any | null, passwordHash?: string | null, emailVerified: boolean, phoneNumber?: string | null, phoneNumberVerified: boolean, defaultRole: string, isAnonymous: boolean, ticket?: string | null, otpHash?: string | null, totpSecret?: string | null, activeMfaType?: string | null, newEmail?: any | null, locale: string, metadata?: any | null, roles: Array<{ role: string }> } | null };
+export type DeleteUserMutation = { deleteAuthUserRoles?: { affectedRows: number } | null, deleteUser?: { id: any, createdAt: any, disabled: boolean, displayName: string, avatarUrl: string, email?: any | null, passwordHash?: string | null, emailVerified: boolean, phoneNumber?: string | null, phoneNumberVerified: boolean, defaultRole: string, isAnonymous: boolean, ticket?: string | null, otpHash?: string | null, totpSecret?: string | null, activeMfaType?: string | null, newEmail?: any | null, locale: string, metadata?: any | null, roles: Array<{ role: string }> } | null };
 
 export type DeanonymizeUserMutationVariables = Exact<{
   userId: Scalars['uuid'];
@@ -4740,7 +3769,7 @@ export type DeanonymizeUserMutationVariables = Exact<{
 }>;
 
 
-export type DeanonymizeUserMutation = { updateAuthUserRoles?: { affected_rows: number } | null, updateUser?: { id: any } | null };
+export type DeanonymizeUserMutation = { updateAuthUserRoles?: { affectedRows: number } | null, updateUser?: { id: any } | null };
 
 export type InsertUserProviderToUserMutationVariables = Exact<{
   userProvider: AuthUserProviders_Insert_Input;
@@ -4762,7 +3791,7 @@ export type UpdateUsersByTicketMutationVariables = Exact<{
 }>;
 
 
-export type UpdateUsersByTicketMutation = { updateUsers?: { affected_rows: number, returning: Array<{ id: any, createdAt: any, disabled: boolean, displayName: string, avatarUrl: string, email?: any | null, passwordHash?: string | null, emailVerified: boolean, phoneNumber?: string | null, phoneNumberVerified: boolean, defaultRole: string, isAnonymous: boolean, ticket?: string | null, otpHash?: string | null, totpSecret?: string | null, activeMfaType?: string | null, newEmail?: any | null, locale: string, metadata?: any | null, roles: Array<{ role: string }> }> } | null };
+export type UpdateUsersByTicketMutation = { updateUsers?: { affectedRows: number, returning: Array<{ id: any, createdAt: any, disabled: boolean, displayName: string, avatarUrl: string, email?: any | null, passwordHash?: string | null, emailVerified: boolean, phoneNumber?: string | null, phoneNumberVerified: boolean, defaultRole: string, isAnonymous: boolean, ticket?: string | null, otpHash?: string | null, totpSecret?: string | null, activeMfaType?: string | null, newEmail?: any | null, locale: string, metadata?: any | null, roles: Array<{ role: string }> }> } | null };
 
 export const UserFieldsFragmentDoc = gql`
     fragment userFields on users {
@@ -4827,21 +3856,21 @@ export const InsertRefreshTokenDocument = gql`
 export const DeleteRefreshTokenDocument = gql`
     mutation deleteRefreshToken($refreshTokenHash: String!) {
   deleteAuthRefreshTokens(where: {refreshTokenHash: {_eq: $refreshTokenHash}}) {
-    affected_rows
+    affectedRows: affected_rows
   }
 }
     `;
 export const DeleteUserRefreshTokensDocument = gql`
     mutation deleteUserRefreshTokens($userId: uuid!) {
   deleteAuthRefreshTokens(where: {user: {id: {_eq: $userId}}}) {
-    affected_rows
+    affectedRows: affected_rows
   }
 }
     `;
 export const DeleteExpiredRefreshTokensDocument = gql`
     mutation deleteExpiredRefreshTokens {
   deleteAuthRefreshTokens(where: {expiresAt: {_lt: now}}) {
-    affected_rows
+    affectedRows: affected_rows
   }
 }
     `;
@@ -4851,7 +3880,7 @@ export const UpsertRolesDocument = gql`
     objects: $roles
     on_conflict: {constraint: roles_pkey, update_columns: []}
   ) {
-    affected_rows
+    affectedRows: affected_rows
     returning {
       role
     }
@@ -4935,14 +3964,14 @@ export const UpdateAuthUserproviderDocument = gql`
 export const InsertUserRolesDocument = gql`
     mutation insertUserRoles($userRoles: [authUserRoles_insert_input!]!) {
   insertAuthUserRoles(objects: $userRoles) {
-    affected_rows
+    affectedRows: affected_rows
   }
 }
     `;
 export const DeleteUserRolesByUserIdDocument = gql`
     mutation deleteUserRolesByUserId($userId: uuid!) {
   deleteAuthUserRoles(where: {userId: {_eq: $userId}}) {
-    affected_rows
+    affectedRows: affected_rows
   }
 }
     `;
@@ -4966,7 +3995,7 @@ export const GetUsersByRefreshTokenAndUpdateRefreshTokenExpiresAtDocument = gql`
     _set: {expiresAt: $expiresAt}
     where: {_and: [{refreshTokenHash: {_eq: $refreshTokenHash}}, {user: {disabled: {_eq: false}}}, {expiresAt: {_gte: now}}]}
   ) {
-    affected_rows
+    affectedRows: affected_rows
   }
 }
     `;
@@ -5004,7 +4033,7 @@ export const UpdateUserDocument = gql`
 export const UpdateUserWhereDocument = gql`
     mutation updateUserWhere($where: users_bool_exp!, $user: users_set_input!) {
   updateUsers(where: $where, _set: $user) {
-    affected_rows
+    affectedRows: affected_rows
   }
 }
     `;
@@ -5014,7 +4043,7 @@ export const RotateUsersTicketDocument = gql`
     _set: {ticket: $newTicket, ticketExpiresAt: $newTicketExpiresAt}
     where: {ticket: {_eq: $oldTicket}}
   ) {
-    affected_rows
+    affectedRows: affected_rows
   }
 }
     `;
@@ -5040,7 +4069,7 @@ export const InsertUserDocument = gql`
 export const DeleteUserDocument = gql`
     mutation deleteUser($userId: uuid!) {
   deleteAuthUserRoles(where: {userId: {_eq: $userId}}) {
-    affected_rows
+    affectedRows: affected_rows
   }
   deleteUser(id: $userId) {
     ...userFields
@@ -5050,7 +4079,7 @@ export const DeleteUserDocument = gql`
 export const DeanonymizeUserDocument = gql`
     mutation deanonymizeUser($userId: uuid!, $avatarUrl: String, $role: String!) {
   updateAuthUserRoles(where: {user: {id: {_eq: $userId}}}, _set: {role: $role}) {
-    affected_rows
+    affectedRows: affected_rows
   }
   updateUser(
     pk_columns: {id: $userId}
@@ -5080,7 +4109,7 @@ export const UpdateUsersByTicketDocument = gql`
     where: {_and: [{ticket: {_eq: $ticket}}, {ticketExpiresAt: {_gt: now}}]}
     _set: $user
   ) {
-    affected_rows
+    affectedRows: affected_rows
     returning {
       ...userFields
     }

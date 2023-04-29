@@ -1,10 +1,10 @@
 mutation insertUserRoles($userRoles: [authUserRoles_insert_input!]!) {
   insertAuthUserRoles(objects: $userRoles) {
-    affected_rows
+    affectedRows: affected_rows
   }
 }
 mutation deleteUserRolesByUserId($userId: uuid!) {
   deleteAuthUserRoles(where: { userId: { _eq: $userId } }) {
-    affected_rows
+    affectedRows: affected_rows
   }
 }

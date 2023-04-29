@@ -35,10 +35,10 @@ export const start = async () => {
       ]),
     ].map((role) => ({ role })),
   });
-  if (insertAuthRoles?.affected_rows) {
+  if (insertAuthRoles?.affectedRows) {
     logger.info(
       `Inserted ${
-        insertAuthRoles.affected_rows
+        insertAuthRoles.affectedRows
       } roles: ${insertAuthRoles.returning.map(({ role }) => role).join(', ')}`
     );
   }

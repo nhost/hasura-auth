@@ -1,17 +1,17 @@
 import { GraphQLClient } from 'graphql-request';
 import * as Dom from 'graphql-request/dist/types.dom';
-import { getSdk as getSdkGraphqlNaming } from './__generated__/graphql-request-graphql';
+import { getSdk as getSdkGraphqlNaming } from './__generated__/graphql-request-graphql-default';
 import {
   getSdk as getSdkDefaultNaming,
   UsersQuery,
   UsersQueryVariables,
-} from './__generated__/graphql-request-default';
+} from './__generated__/graphql-request-hasura-default';
 import { ENV } from './env';
 
 const isGraphqlNamingConvention =
   ENV.HASURA_GRAPHQL_NAMING_CONVENTION === 'graphql-default';
 
-export * from './__generated__/graphql-request-default';
+export * from './__generated__/graphql-request-hasura-default';
 
 export const client = new GraphQLClient(ENV.HASURA_GRAPHQL_GRAPHQL_URL, {
   headers: {

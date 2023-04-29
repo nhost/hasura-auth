@@ -29,7 +29,7 @@ query user($id: uuid!) {
   }
 }
 
-query users($where: users_bool_exp!) {
+query users($where: usersBoolExp!) {
   users(where: $where) {
     ...userFields
   }
@@ -49,7 +49,7 @@ mutation getUsersByRefreshTokenAndUpdateRefreshTokenExpiresAt(
       ]
     }
   ) {
-    affected_rows
+    affectedRows: affected_rows
   }
 }
 
@@ -88,15 +88,15 @@ query getUsersByPAT($patHash: String!) {
   }
 }
 
-mutation updateUser($id: uuid!, $user: users_set_input!) {
+mutation updateUser($id: uuid!, $user: usersSetInput!) {
   updateUser(pk_columns: { id: $id }, _set: $user) {
     ...userFields
   }
 }
 
-mutation updateUserWhere($where: users_bool_exp!, $user: users_set_input!) {
+mutation updateUserWhere($where: usersBoolExp!, $user: usersSetInput!) {
   updateUsers(where: $where, _set: $user) {
-    affected_rows
+    affectedRows: affected_rows
   }
 }
 
@@ -109,7 +109,7 @@ mutation rotateUsersTicket(
     _set: { ticket: $newTicket, ticketExpiresAt: $newTicketExpiresAt }
     where: { ticket: { _eq: $oldTicket } }
   ) {
-    affected_rows
+    affectedRows: affected_rows
   }
 }
 
@@ -136,7 +136,7 @@ mutation changeEmailsByTicket(
   }
 }
 
-mutation insertUser($user: users_insert_input!) {
+mutation insertUser($user: usersInsertInput!) {
   insertUser(object: $user) {
     ...userFields
   }
@@ -144,7 +144,7 @@ mutation insertUser($user: users_insert_input!) {
 
 mutation deleteUser($userId: uuid!) {
   deleteAuthUserRoles(where: { userId: { _eq: $userId } }) {
-    affected_rows
+    affectedRows: affected_rows
   }
 
   deleteUser(id: $userId) {
@@ -157,7 +157,7 @@ mutation deanonymizeUser($userId: uuid!, $avatarUrl: String, $role: String!) {
     where: { user: { id: { _eq: $userId } } }
     _set: { role: $role }
   ) {
-    affected_rows
+    affectedRows: affected_rows
   }
 
   updateUser(
@@ -169,7 +169,7 @@ mutation deanonymizeUser($userId: uuid!, $avatarUrl: String, $role: String!) {
 }
 
 mutation insertUserProviderToUser(
-  $userProvider: authUserProviders_insert_input!
+  $userProvider: authUserProvidersInsertInput!
 ) {
   insertAuthUserProvider(object: $userProvider) {
     id
@@ -182,14 +182,14 @@ query getUserByTicket($ticket: String!) {
   }
 }
 
-mutation updateUsersByTicket($ticket: String!, $user: users_set_input!) {
+mutation updateUsersByTicket($ticket: String!, $user: usersSetInput!) {
   updateUsers(
     where: {
       _and: [{ ticket: { _eq: $ticket } }, { ticketExpiresAt: { _gt: now } }]
     }
     _set: $user
   ) {
-    affected_rows
+    affectedRows: affected_rows
     returning {
       ...userFields
     }
