@@ -25,12 +25,19 @@ export interface SourceConfiguration {
   };
 }
 
+export type NamingConvention = 'hasura-default' | 'graphql-default';
+
+export interface SourceCustomization {
+  naming_convention?: NamingConvention;
+}
+
 // ! V3
 export interface Source {
   name: string;
   kind: 'postgres'; // TODO
   tables: TableEntry[];
   configuration: SourceConfiguration;
+  customization?: SourceCustomization;
 }
 
 /**

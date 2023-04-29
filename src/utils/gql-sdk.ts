@@ -9,7 +9,7 @@ import {
 import { ENV } from './env';
 
 const isGraphqlNamingConvention =
-  ENV.HASURA_GRAPHQL_NAMING_CONVENTION === 'graphql';
+  ENV.HASURA_GRAPHQL_NAMING_CONVENTION === 'graphql-default';
 
 export * from './__generated__/graphql-request-default';
 
@@ -52,8 +52,8 @@ export const gqlSdk = {
     return gqlSdkDefaultNaming.users(variables, requestHeaders);
   },
   insertUser: choose(
-    gqlSdkGraphqlNaming.insertUser,
-    gqlSdkDefaultNaming.insertUser
+    gqlSdkDefaultNaming.insertUser,
+    gqlSdkGraphqlNaming.insertUser
   ),
   updateUser: choose(
     gqlSdkDefaultNaming.updateUser,

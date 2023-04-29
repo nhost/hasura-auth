@@ -22,6 +22,9 @@ export const EMPTY_METADATA: HasuraMetadataV3 = {
           },
         },
       },
+      customization: {
+        naming_convention: 'hasura-default',
+      },
     },
   ],
 };
