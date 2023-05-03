@@ -22,7 +22,7 @@ jobs:
     services:
       postgres:
         # TODO bump
-        image: postgres:14.6
+        image: nhost/postgres:12-v0.0.6
         env:
           POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
         options: >-
@@ -31,8 +31,6 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-          -v ${{ github.workspace }}/docker/data/db:/var/lib/postgresql/data
-          -v ${{ github.workspace }}/docker/initdb.d:/docker-entrypoint-initdb.d:ro
       graphql-engine:
         image: hasura/graphql-engine:v2.15.2
         env:
