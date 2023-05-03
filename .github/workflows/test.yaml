@@ -31,8 +31,8 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-          -v /${PWD}/docker/data/db:/var/lib/postgresql/data
-          -v /${PWD}/docker/initdb.d:/docker-entrypoint-initdb.d:ro
+          -v ${{ github.workspace }}/docker/data/db:/var/lib/postgresql/data
+          -v ${{ github.workspace }}/docker/initdb.d:/docker-entrypoint-initdb.d:ro
       graphql-engine:
         image: hasura/graphql-engine:v2.15.2
         env:
