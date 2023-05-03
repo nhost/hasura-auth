@@ -32,7 +32,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
         volumes:
-          - ./docker/initdb.d:/docker-entrypoint-initdb.d:ro
+          - docker/initdb.d:/docker-entrypoint-initdb.d:ro
       graphql-engine:
         image: hasura/graphql-engine:v2.15.2
         env:
