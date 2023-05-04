@@ -106,7 +106,7 @@ export const oauthProviders = Router()
       !(providerConfig.client_id && providerConfig.client_secret) &&
       !(providerConfig.key && providerConfig.secret)
     ) {
-      logger.warn(`Missing client id/key or secret for provider ${provider}`);
+      logger.warn(`Missing client id/key or secret for provider "${provider}"`);
       return sendError(
         res,
         'invalid-oauth-configuration',
