@@ -155,6 +155,9 @@ export const hasuraAuthMetadataPatch: MetadataPatch = {
       {
         table: { name: 'user_providers', schema },
         configuration: {
+          column_config: {
+            refresh_token: null,
+          },
           custom_name: 'authUserProviders',
           custom_root_fields: {
             select: 'authUserProviders',

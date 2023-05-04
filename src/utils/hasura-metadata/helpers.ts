@@ -30,7 +30,45 @@ export const patchTableObject = (
   );
 
   if (!existingTable) {
-    sourceObject.tables.push(tableEntry);
+    sourceObject.tables.push({
+      ...tableEntry,
+      configuration: {
+        ...tableEntry.configuration,
+        column_config: Object.keys(
+          tableEntry.configuration?.column_config || {}
+        ).reduce((finalColumnConfig, currentConfigKey) => {
+          if (
+            tableEntry.configuration?.column_config?.[currentConfigKey] === null
+          ) {
+            return finalColumnConfig;
+          }
+
+          return {
+            ...finalColumnConfig,
+            [currentConfigKey]: {
+              ...tableEntry.configuration?.column_config?.[currentConfigKey],
+            },
+          };
+        }, {}),
+        custom_column_names: Object.keys(
+          tableEntry.configuration?.custom_column_names || {}
+        ).reduce((finalColumnConfig, currentConfigKey) => {
+          if (
+            tableEntry.configuration?.custom_column_names?.[
+              currentConfigKey
+            ] === null
+          ) {
+            return finalColumnConfig;
+          }
+
+          return {
+            ...finalColumnConfig,
+            [currentConfigKey]:
+              tableEntry.configuration?.custom_column_names?.[currentConfigKey],
+          };
+        }, {}),
+      },
+    });
 
     return;
   }
@@ -85,65 +123,64 @@ export const patchTableObject = (
     }
   }
   if (configuration) {
-    if (existingTable.configuration) {
-      // * Merge table configuration
-      const existingConfig = existingTable.configuration;
-
-      // * Change custom name if not already set
-      if (configuration.custom_name) {
-        existingConfig.custom_name = configuration.custom_name;
-      }
-
-      // * Add/replace column configurations
-      existingConfig.column_config = existingConfig.column_config
-        ? Object.keys(existingConfig.column_config).reduce(
-            (finalColumnConfig, currentConfigKey) => {
-              if (configuration.column_config?.[currentConfigKey] === null) {
-                return finalColumnConfig;
-              }
-
-              return {
-                ...finalColumnConfig,
-                [currentConfigKey]: {
-                  ...existingConfig.column_config[currentConfigKey],
-                  ...configuration.column_config?.[currentConfigKey],
-                },
-              };
-            },
-            {}
-          )
-        : { ...configuration.column_config };
-
-      // * Add/replace custom column names
-      existingConfig.custom_column_names = existingConfig.custom_column_names
-        ? Object.keys(existingConfig.custom_column_names).reduce(
-            (finalColumnConfig, currentConfigKey) => {
-              if (
-                configuration.custom_column_names?.[currentConfigKey] === null
-              ) {
-                return finalColumnConfig;
-              }
-
-              return {
-                ...finalColumnConfig,
-                [currentConfigKey]:
-                  existingConfig.custom_column_names?.[currentConfigKey] ||
-                  configuration.custom_column_names?.[currentConfigKey],
-              };
-            },
-            {}
-          )
-        : { ...configuration.custom_column_names };
-
-      // * Add/replace custom root fields
-      existingConfig.custom_root_fields = {
-        ...existingConfig.custom_root_fields,
-        ...configuration.custom_root_fields,
-      };
-    } else {
-      // * No existing configuration: use the new one
-      existingTable.configuration = tableEntry.configuration;
+    if (!existingTable.configuration) {
+      existingTable.configuration = configuration;
     }
+
+    // * Merge table configuration
+    const existingConfig = existingTable.configuration;
+
+    // * Change custom name if not already set
+    if (configuration.custom_name) {
+      existingConfig.custom_name = configuration.custom_name;
+    }
+
+    // * Add/replace column configurations
+    existingConfig.column_config = existingConfig.column_config
+      ? Object.keys(existingConfig.column_config).reduce(
+          (finalColumnConfig, currentConfigKey) => {
+            if (configuration.column_config?.[currentConfigKey] === null) {
+              return finalColumnConfig;
+            }
+
+            return {
+              ...finalColumnConfig,
+              [currentConfigKey]: {
+                ...existingConfig.column_config[currentConfigKey],
+                ...configuration.column_config?.[currentConfigKey],
+              },
+            };
+          },
+          {}
+        )
+      : { ...configuration.column_config };
+
+    // * Add/replace custom column names
+    existingConfig.custom_column_names = existingConfig.custom_column_names
+      ? Object.keys(existingConfig.custom_column_names).reduce(
+          (finalColumnConfig, currentConfigKey) => {
+            if (
+              configuration.custom_column_names?.[currentConfigKey] === null
+            ) {
+              return finalColumnConfig;
+            }
+
+            return {
+              ...finalColumnConfig,
+              [currentConfigKey]:
+                existingConfig.custom_column_names?.[currentConfigKey] ||
+                configuration.custom_column_names?.[currentConfigKey],
+            };
+          },
+          {}
+        )
+      : { ...configuration.custom_column_names };
+
+    // * Add/replace custom root fields
+    existingConfig.custom_root_fields = {
+      ...existingConfig.custom_root_fields,
+      ...configuration.custom_root_fields,
+    };
   }
 
   if (select_permissions) {
@@ -222,6 +259,8 @@ export const patchMetadataObject = (
 ) => {
   if (additions?.tables) {
     for (const table of additions.tables) {
+      // TODO: THIS IS PROBABLY NOT FILTERING OUT NULLISH VALUES WHEN THERE IS
+      // NO EXISTING CONFIG YET!!!
       patchTableObject(metadata, table);
     }
   }

@@ -24,6 +24,7 @@ Object {
       "tables": Array [
         Object {
           "configuration": Object {
+            "column_config": Object {},
             "custom_column_names": Object {
               "id": "id",
               "options": "options",
@@ -48,13 +49,10 @@ Object {
         },
         Object {
           "configuration": Object {
-            "column_config": Object {
-              "refresh_token": null,
-            },
+            "column_config": Object {},
             "custom_column_names": Object {
               "created_at": "createdAt",
               "expires_at": "expiresAt",
-              "refresh_token": null,
               "refresh_token_hash": "refreshTokenHash",
               "user_id": "userId",
             },
@@ -153,6 +151,7 @@ Object {
             },
           ],
           "configuration": Object {
+            "column_config": Object {},
             "custom_column_names": Object {
               "role": "role",
             },
@@ -176,6 +175,7 @@ Object {
         },
         Object {
           "configuration": Object {
+            "column_config": Object {},
             "custom_column_names": Object {
               "access_token": "accessToken",
               "created_at": "createdAt",
@@ -220,6 +220,7 @@ Object {
         },
         Object {
           "configuration": Object {
+            "column_config": Object {},
             "custom_column_names": Object {
               "created_at": "createdAt",
               "id": "id",
@@ -310,6 +311,7 @@ Object {
             },
           ],
           "configuration": Object {
+            "column_config": Object {},
             "custom_column_names": Object {
               "active_mfa_type": "activeMfaType",
               "avatar_url": "avatarUrl",
@@ -378,6 +380,7 @@ Object {
             },
           ],
           "configuration": Object {
+            "column_config": Object {},
             "custom_column_names": Object {
               "id": "id",
             },
@@ -401,6 +404,7 @@ Object {
         },
         Object {
           "configuration": Object {
+            "column_config": Object {},
             "custom_column_names": Object {
               "credential_id": "credentialId",
               "credential_public_key": "credentialPublicKey",
