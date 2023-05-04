@@ -1,5 +1,18 @@
 ## Changelog
 
+## 0.19.2
+
+### Patch Changes
+
+- 9a7e027: chore(logs): add masked headers and query parameters to logs
+- 11e1eb3: feat(pat): allow users to create personal access tokens
+
+## 0.19.1
+
+### Patch Changes
+
+- 73b7642: Introduce support for using wildcards with redirect URLs
+
 ## 0.19.0
 
 ### Minor Changes
