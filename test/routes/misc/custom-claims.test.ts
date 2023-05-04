@@ -1,9 +1,7 @@
-import { Client } from 'pg';
+import { authMetadataSource } from '@/metadata';
+import { ENV, escapeValueToPg, overrideMetadata } from '@/utils';
 import * as faker from 'faker';
-
-import { patchMetadata } from '@/utils';
-import { escapeValueToPg, ENV } from '@/utils';
-
+import { Client } from 'pg';
 import { request } from '../../server';
 import { decodeAccessToken } from '../../utils';
 
@@ -38,67 +36,244 @@ describe('custom JWT claims', () => {
     } catch (e) {
       console.log('cannot create custom jwt test tables');
     }
-    await patchMetadata({
-      additions: {
-        tables: [
-          { table: { schema: 'public', name: 'projects' } },
-          {
-            table: { schema: 'public', name: 'project_members' },
-            object_relationships: [
-              {
-                name: 'project',
-                using: {
-                  foreign_key_constraint_on: 'project_id',
+
+    await overrideMetadata({
+      ...authMetadataSource,
+      tables: [
+        ...authMetadataSource.tables.filter(
+          ({ table }) => table.name !== 'users'
+        ),
+        { table: { schema: 'public', name: 'projects' } },
+        {
+          table: { schema: 'public', name: 'project_members' },
+          object_relationships: [
+            {
+              name: 'project',
+              using: {
+                foreign_key_constraint_on: 'project_id',
+              },
+            },
+          ],
+        },
+        { table: { schema: 'public', name: 'organisations' } },
+        {
+          table: { schema: 'public', name: 'profiles' },
+          object_relationships: [
+            {
+              name: 'organisation',
+              using: {
+                foreign_key_constraint_on: 'organisation_id',
+              },
+            },
+          ],
+          array_relationships: [
+            {
+              name: 'contributesTo',
+              using: {
+                foreign_key_constraint_on: {
+                  table: {
+                    schema: 'public',
+                    name: 'project_members',
+                  },
+                  column: 'user_id',
                 },
               },
-            ],
+            },
+          ],
+        },
+        {
+          table: {
+            name: 'users',
+            schema: 'auth',
           },
-          { table: { schema: 'public', name: 'organisations' } },
-          {
-            table: { schema: 'public', name: 'profiles' },
-            object_relationships: [
-              {
-                name: 'organisation',
-                using: {
-                  foreign_key_constraint_on: 'organisation_id',
-                },
+          configuration: {
+            column_config: {
+              active_mfa_type: {
+                custom_name: 'activeMfaType',
               },
-            ],
-            array_relationships: [
-              {
-                name: 'contributesTo',
-                using: {
-                  foreign_key_constraint_on: {
-                    table: {
-                      schema: 'public',
-                      name: 'project_members',
-                    },
-                    column: 'user_id',
+              avatar_url: {
+                custom_name: 'avatarUrl',
+              },
+              created_at: {
+                custom_name: 'createdAt',
+              },
+              default_role: {
+                custom_name: 'defaultRole',
+              },
+              disabled: {
+                custom_name: 'disabled',
+              },
+              display_name: {
+                custom_name: 'displayName',
+              },
+              email: {
+                custom_name: 'email',
+              },
+              email_verified: {
+                custom_name: 'emailVerified',
+              },
+              id: {
+                custom_name: 'id',
+              },
+              is_anonymous: {
+                custom_name: 'isAnonymous',
+              },
+              last_seen: {
+                custom_name: 'lastSeen',
+              },
+              locale: {
+                custom_name: 'locale',
+              },
+              new_email: {
+                custom_name: 'newEmail',
+              },
+              otp_hash: {
+                custom_name: 'otpHash',
+              },
+              otp_hash_expires_at: {
+                custom_name: 'otpHashExpiresAt',
+              },
+              otp_method_last_used: {
+                custom_name: 'otpMethodLastUsed',
+              },
+              password_hash: {
+                custom_name: 'passwordHash',
+              },
+              phone_number: {
+                custom_name: 'phoneNumber',
+              },
+              phone_number_verified: {
+                custom_name: 'phoneNumberVerified',
+              },
+              ticket: {
+                custom_name: 'ticket',
+              },
+              ticket_expires_at: {
+                custom_name: 'ticketExpiresAt',
+              },
+              totp_secret: {
+                custom_name: 'totpSecret',
+              },
+              updated_at: {
+                custom_name: 'updatedAt',
+              },
+              webauthn_current_challenge: {
+                custom_name: 'currentChallenge',
+              },
+            },
+            custom_column_names: {
+              active_mfa_type: 'activeMfaType',
+              avatar_url: 'avatarUrl',
+              created_at: 'createdAt',
+              default_role: 'defaultRole',
+              disabled: 'disabled',
+              display_name: 'displayName',
+              email: 'email',
+              email_verified: 'emailVerified',
+              id: 'id',
+              is_anonymous: 'isAnonymous',
+              last_seen: 'lastSeen',
+              locale: 'locale',
+              new_email: 'newEmail',
+              otp_hash: 'otpHash',
+              otp_hash_expires_at: 'otpHashExpiresAt',
+              otp_method_last_used: 'otpMethodLastUsed',
+              password_hash: 'passwordHash',
+              phone_number: 'phoneNumber',
+              phone_number_verified: 'phoneNumberVerified',
+              ticket: 'ticket',
+              ticket_expires_at: 'ticketExpiresAt',
+              totp_secret: 'totpSecret',
+              updated_at: 'updatedAt',
+              webauthn_current_challenge: 'currentChallenge',
+            },
+            custom_name: 'users',
+            custom_root_fields: {
+              delete: 'deleteUsers',
+              delete_by_pk: 'deleteUser',
+              insert: 'insertUsers',
+              insert_one: 'insertUser',
+              select: 'users',
+              select_aggregate: 'usersAggregate',
+              select_by_pk: 'user',
+              update: 'updateUsers',
+              update_by_pk: 'updateUser',
+            },
+          },
+          object_relationships: [
+            {
+              name: 'defaultRoleByRole',
+              using: {
+                foreign_key_constraint_on: 'default_role',
+              },
+            },
+            {
+              name: 'profile',
+              using: {
+                foreign_key_constraint_on: {
+                  column: 'id',
+                  table: {
+                    schema: 'public',
+                    name: 'profiles',
                   },
                 },
               },
-            ],
-          },
-          {
-            table: { schema: 'auth', name: 'users' },
-            object_relationships: [
-              {
-                name: 'profile',
-                using: {
-                  foreign_key_constraint_on: {
-                    column: 'id',
-                    table: {
-                      schema: 'public',
-                      name: 'profiles',
-                    },
+            },
+          ],
+          array_relationships: [
+            {
+              name: 'refreshTokens',
+              using: {
+                foreign_key_constraint_on: {
+                  column: 'user_id',
+                  table: {
+                    name: 'refresh_tokens',
+                    schema: 'auth',
                   },
                 },
               },
-            ],
-          },
-        ],
-      },
+            },
+            {
+              name: 'roles',
+              using: {
+                foreign_key_constraint_on: {
+                  column: 'user_id',
+                  table: {
+                    name: 'user_roles',
+                    schema: 'auth',
+                  },
+                },
+              },
+            },
+            {
+              name: 'securityKeys',
+              using: {
+                foreign_key_constraint_on: {
+                  column: 'user_id',
+                  table: {
+                    name: 'user_security_keys',
+                    schema: 'auth',
+                  },
+                },
+              },
+            },
+            {
+              name: 'userProviders',
+              using: {
+                foreign_key_constraint_on: {
+                  column: 'user_id',
+                  table: {
+                    name: 'user_providers',
+                    schema: 'auth',
+                  },
+                },
+              },
+            },
+          ],
+        },
+      ],
     });
+
     await request.post('/change-env').send({
       AUTH_DISABLE_NEW_USERS: false,
       AUTH_EMAIL_SIGNIN_EMAIL_VERIFIED_REQUIRED: false,
@@ -106,19 +281,7 @@ describe('custom JWT claims', () => {
   }, 10000);
 
   afterAll(async () => {
-    await patchMetadata({
-      deletions: {
-        tables: [
-          { schema: 'public', name: 'project_members' },
-          { schema: 'public', name: 'organisations' },
-          { schema: 'public', name: 'profiles' },
-          { schema: 'public', name: 'projects' },
-        ],
-        relationships: [
-          { table: { schema: 'auth', name: 'users' }, relationship: 'profile' },
-        ],
-      },
-    });
+    await overrideMetadata(authMetadataSource);
     await client.query(
       `DROP TABLE public.project_members;
         DROP TABLE public.profiles;

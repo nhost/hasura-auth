@@ -1,286 +1,42 @@
 import { logger } from '@/logger';
 import { exportMetadata, replaceMetadata } from './api';
-import { HasuraMetadataV3, QualifiedTable, TableEntry } from './types';
-
-const getSource = (metadata: HasuraMetadataV3, source = 'default') => {
-  const sourceObject = metadata.sources.find((s) => s.name === source);
-  if (!sourceObject) {
-    throw Error(`Source ${source} not found`);
-  }
-  return sourceObject;
-};
+import { HasuraMetadataV3, Source } from './types';
 
 /**
- * Modify a metadata object in-place and add a table to it
- * If the table exists, it will be overwritten,
- * and the missing relationships will be added
+ * Extends the original metadata and its source with the new source. Excludes
+ * every existing metadata that is related to the `auth` schema and blindly
+ * concatenates the new source's tables to the existing ones.
  *
- * @deprecated Instead of patching, just blindly replace the metadata instead.
+ * @param metadata - The original metadata
+ * @param source - The new source
+ * @returns The new metadata with the new source
  */
-export const patchTableObject = (
+export function extendMetadataSource(
   metadata: HasuraMetadataV3,
-  tableEntry: TableEntry,
-  source = 'default'
-): void => {
-  const sourceObject = getSource(metadata, source);
-  const existingTable = sourceObject.tables.find(
-    (t) =>
-      t.table.name === tableEntry.table.name &&
-      t.table.schema === tableEntry.table.schema
-  );
+  source: Source
+): HasuraMetadataV3 {
+  return {
+    ...metadata,
+    sources: metadata.sources.map((originalSource) => {
+      if (originalSource.name !== source.name) {
+        return originalSource;
+      }
 
-  if (!existingTable) {
-    sourceObject.tables.push({
-      ...tableEntry,
-      configuration: {
-        ...tableEntry.configuration,
-        column_config: Object.keys(
-          tableEntry.configuration?.column_config || {}
-        ).reduce((finalColumnConfig, currentConfigKey) => {
-          if (
-            tableEntry.configuration?.column_config?.[currentConfigKey] === null
-          ) {
-            return finalColumnConfig;
-          }
-
-          return {
-            ...finalColumnConfig,
-            [currentConfigKey]: {
-              ...tableEntry.configuration?.column_config?.[currentConfigKey],
-            },
-          };
-        }, {}),
-        custom_column_names: Object.keys(
-          tableEntry.configuration?.custom_column_names || {}
-        ).reduce((finalColumnConfig, currentConfigKey) => {
-          if (
-            tableEntry.configuration?.custom_column_names?.[
-              currentConfigKey
-            ] === null
-          ) {
-            return finalColumnConfig;
-          }
-
-          return {
-            ...finalColumnConfig,
-            [currentConfigKey]:
-              tableEntry.configuration?.custom_column_names?.[currentConfigKey],
-          };
-        }, {}),
-      },
-    });
-
-    return;
-  }
-
-  const {
-    array_relationships,
-    object_relationships,
-    select_permissions,
-    delete_permissions,
-    configuration,
-  } = tableEntry;
-
-  // * Merge the new table entry with the existing one
-  if (array_relationships) {
-    const existingRelationships = existingTable.array_relationships;
-    if (existingRelationships) {
-      // * Merge array_relationships
-      array_relationships.forEach((addedRel) => {
-        const existingRel = existingRelationships.find(
-          (c) => c.name === addedRel.name
-        );
-        if (existingRel) {
-          existingRel.comment = addedRel.comment;
-          existingRel.using = addedRel.using;
-        } else {
-          existingRelationships.push(addedRel);
-        }
-      });
-    } else {
-      // * No existing relationships: add all the new ones
-      existingTable.array_relationships = [...array_relationships];
-    }
-  }
-  if (object_relationships) {
-    const existingRelationships = existingTable.object_relationships;
-    if (existingRelationships) {
-      // * Merge object_relationships
-      object_relationships.forEach((addedRel) => {
-        const existingRel = existingRelationships.find(
-          (c) => c.name === addedRel.name
-        );
-        if (existingRel) {
-          existingRel.comment = addedRel.comment;
-          existingRel.using = addedRel.using;
-        } else {
-          existingRelationships.push(addedRel);
-        }
-      });
-    } else {
-      // * No existing relationships: add all the new ones
-      existingTable.object_relationships = [...object_relationships];
-    }
-  }
-  if (configuration) {
-    if (!existingTable.configuration) {
-      existingTable.configuration = configuration;
-    }
-
-    // * Merge table configuration
-    const existingConfig = existingTable.configuration;
-
-    // * Change custom name if not already set
-    if (configuration.custom_name) {
-      existingConfig.custom_name = configuration.custom_name;
-    }
-
-    // * Add/replace column configurations
-    existingConfig.column_config = existingConfig.column_config
-      ? Object.keys(existingConfig.column_config).reduce(
-          (finalColumnConfig, currentConfigKey) => {
-            if (configuration.column_config?.[currentConfigKey] === null) {
-              return finalColumnConfig;
-            }
-
-            return {
-              ...finalColumnConfig,
-              [currentConfigKey]: {
-                ...existingConfig.column_config[currentConfigKey],
-                ...configuration.column_config?.[currentConfigKey],
-              },
-            };
-          },
-          {}
-        )
-      : { ...configuration.column_config };
-
-    // * Add/replace custom column names
-    existingConfig.custom_column_names = existingConfig.custom_column_names
-      ? Object.keys(existingConfig.custom_column_names).reduce(
-          (finalColumnConfig, currentConfigKey) => {
-            if (
-              configuration.custom_column_names?.[currentConfigKey] === null
-            ) {
-              return finalColumnConfig;
-            }
-
-            return {
-              ...finalColumnConfig,
-              [currentConfigKey]:
-                existingConfig.custom_column_names?.[currentConfigKey] ||
-                configuration.custom_column_names?.[currentConfigKey],
-            };
-          },
-          {}
-        )
-      : { ...configuration.custom_column_names };
-
-    // * Add/replace custom root fields
-    existingConfig.custom_root_fields = {
-      ...existingConfig.custom_root_fields,
-      ...configuration.custom_root_fields,
-    };
-  }
-
-  if (select_permissions) {
-    existingTable.select_permissions = [...select_permissions];
-  }
-
-  if (delete_permissions) {
-    existingTable.delete_permissions = [...delete_permissions];
-  }
-
-  // TODO merge other fields (permissions, computed fields, etc.) - not required by Hasura-auth yet
-};
-
-/**
- * Remove a table from a metadata object in-place
- */
-export const removeTableMetadata = (
-  metadata: HasuraMetadataV3,
-  { name, schema }: QualifiedTable,
-  source = 'default'
-) => {
-  const sourceObject = getSource(metadata, source);
-  if (sourceObject.tables) {
-    sourceObject.tables = sourceObject.tables.filter(
-      (t) => !(t.table.name === name && t.table.schema === schema)
-    );
-  }
-};
-
-/**
- * Remove a relationship from a table in a metadata object in-place
- */
-export const removeRelationship = (
-  metadata: HasuraMetadataV3,
-  { name, schema }: QualifiedTable,
-  relationship: string,
-  source = 'default'
-) => {
-  const sourceObject = getSource(metadata, source);
-
-  const existingTable = sourceObject.tables?.find(
-    (t) => t.table.name === name && t.table.schema === schema
-  );
-  if (existingTable) {
-    if (existingTable.object_relationships) {
-      existingTable.object_relationships =
-        existingTable.object_relationships.filter(
-          (r) => r.name !== relationship
-        );
-    }
-    if (existingTable.array_relationships) {
-      existingTable.array_relationships =
-        existingTable.array_relationships.filter(
-          (r) => r.name !== relationship
-        );
-    }
-  }
-};
-
-export interface MetadataPatch {
-  additions?: {
-    tables?: TableEntry[];
-  };
-  deletions?: {
-    tables?: QualifiedTable[];
-    relationships?: {
-      table: QualifiedTable;
-      relationship: string;
-    }[];
+      return {
+        ...originalSource,
+        tables: originalSource.tables
+          .filter(({ table }) => table.schema !== 'auth')
+          .concat(source.tables),
+      };
+    }),
   };
 }
 
-export const patchMetadataObject = (
-  metadata: HasuraMetadataV3,
-  { additions, deletions }: MetadataPatch
-) => {
-  if (additions?.tables) {
-    for (const table of additions.tables) {
-      // TODO: THIS IS PROBABLY NOT FILTERING OUT NULLISH VALUES WHEN THERE IS
-      // NO EXISTING CONFIG YET!!!
-      patchTableObject(metadata, table);
-    }
-  }
-  if (deletions?.tables) {
-    for (const table of deletions.tables) {
-      removeTableMetadata(metadata, table);
-    }
-  }
-  if (deletions?.relationships) {
-    for (const rel of deletions.relationships) {
-      removeRelationship(metadata, rel.table, rel.relationship);
-    }
-  }
-};
-
-export const patchMetadata = async (patch: MetadataPatch) => {
+export const overrideMetadata = async (source: Source) => {
   logger.debug('Exporting metadata...');
   const metadata = await exportMetadata();
+  const mergedMetadata = extendMetadataSource(metadata, source);
 
-  patchMetadataObject(metadata, patch);
-  logger.debug('Applying metadata patch...');
-  await replaceMetadata(metadata);
+  logger.debug('Overriding metadata...');
+  await replaceMetadata(mergedMetadata);
 };
