@@ -292,21 +292,22 @@ export const PROVIDERS_CONFIG: Record<
       scope: ['user:read:email'],
     },
     profile: ({ profile: { data } }) => {
-      if (Array.isArray(data)) {
-        const [profile] = data;
+      if (!Array.isArray(data)) {
         return {
-          id: profile.id,
-          email: profile.email,
-          displayName: profile.display_name,
-          avatarUrl: profile.profile_image_url,
+          id: null,
+          email: null,
+          displayName: null,
+          avatarUrl: null,
         };
       }
 
+      const [profile] = data;
+
       return {
-        id: null,
-        email: null,
-        displayName: null,
-        avatarUrl: null,
+        id: profile.id,
+        email: profile.email,
+        displayName: profile.display_name,
+        avatarUrl: profile.profile_image_url,
       };
     },
   },
