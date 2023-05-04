@@ -61,7 +61,7 @@ export type UserRegistrationOptionsWithRedirect = UserRegistrationOptions & {
 };
 
 export type User = Pick<
-  NonNullable<UserQuery['user']>,
+  NonNullable<UserQuery['authUser']>,
   | 'id'
   | 'createdAt'
   | 'displayName'

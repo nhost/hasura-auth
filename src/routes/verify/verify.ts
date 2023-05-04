@@ -47,7 +47,7 @@ export const verifyHandler: RequestHandler<
         ],
       },
     })
-    .then((gqlRes) => gqlRes.users[0]);
+    .then((gqlRes) => gqlRes.authUsers[0]);
 
   if (!user) {
     return sendError(res, 'invalid-ticket', { redirectTo }, true);

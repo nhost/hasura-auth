@@ -52,7 +52,7 @@ export const signInOtpHandler: RequestHandler<
         ],
       },
     })
-    .then((gqlres) => gqlres.users[0]);
+    .then((gqlres) => gqlres.authUsers[0]);
 
   if (!user) {
     return sendError(res, 'invalid-otp');

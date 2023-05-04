@@ -229,17 +229,17 @@ export const hasuraAuthMetadataPatch: MetadataPatch = {
       {
         table: { name: 'users', schema },
         configuration: {
-          custom_name: 'users',
+          custom_name: 'authUsers',
           custom_root_fields: {
-            select: 'users',
-            select_by_pk: 'user',
-            select_aggregate: 'usersAggregate',
-            insert: 'insertUsers',
-            insert_one: 'insertUser',
-            update: 'updateUsers',
-            update_by_pk: 'updateUser',
-            delete: 'deleteUsers',
-            delete_by_pk: 'deleteUser',
+            select: 'authUsers',
+            select_by_pk: 'authUser',
+            select_aggregate: 'authUsersAggregate',
+            insert: 'insertAuthUsers',
+            insert_one: 'insertAuthUser',
+            update: 'updateAuthUsers',
+            update_by_pk: 'updateAuthUser',
+            delete: 'deleteAuthUsers',
+            delete_by_pk: 'deleteAuthUser',
           },
           custom_column_names: {
             id: 'id',

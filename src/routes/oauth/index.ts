@@ -225,7 +225,7 @@ export const oauthProviders = Router()
 
     const { access_token: accessToken, refresh_token: refreshToken } = response;
 
-    let user: NonNullable<InsertUserMutation['insertUser']> | null = null;
+    let user: NonNullable<InsertUserMutation['insertAuthUser']> | null = null;
 
     // * Look for the user-provider
     const {

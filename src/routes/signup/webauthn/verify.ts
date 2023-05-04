@@ -66,7 +66,7 @@ export const signInVerifyWebauthnHandler: RequestHandler<
   }
 
   const {
-    users: [user],
+    authUsers: [user],
   } = await gqlSdk.users({ where: { currentChallenge: { _eq: challenge } } });
 
   if (!user) {

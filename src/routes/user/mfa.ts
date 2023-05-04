@@ -23,7 +23,7 @@ export const userMFAHandler: RequestHandler<
 
   const { userId } = req.auth as RequestAuth;
 
-  const { user } = await gqlSdk.user({
+  const { authUser: user } = await gqlSdk.user({
     id: userId,
   });
 

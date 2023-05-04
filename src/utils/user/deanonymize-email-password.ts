@@ -33,7 +33,7 @@ export const handleDeanonymizeUserEmailPassword = async (
   userId: string,
   res: Response
 ): Promise<unknown> => {
-  const { user } = await gqlSdk.user({
+  const { authUser: user } = await gqlSdk.user({
     id: userId,
   });
   if (user?.isAnonymous !== true) {

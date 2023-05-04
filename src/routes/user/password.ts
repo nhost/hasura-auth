@@ -27,7 +27,7 @@ export const userPasswordHandler: RequestHandler<
     if (!req.auth?.userId) {
       return sendError(res, 'unauthenticated-user');
     }
-    user = (await gqlSdk.user({ id: req.auth?.userId })).user;
+    user = (await gqlSdk.user({ id: req.auth?.userId })).authUser;
   }
 
   if (!user) {

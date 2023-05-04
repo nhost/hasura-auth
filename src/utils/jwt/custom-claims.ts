@@ -71,7 +71,7 @@ const createCustomFieldQuery = (jwtFields: Record<string, string>): string => {
       __variables: {
         userId: 'uuid!',
       },
-      user: {
+      authUser: {
         __args: {
           id: new VariableType('userId'),
         },
@@ -96,7 +96,7 @@ export const generateCustomClaims = async (userId: string) => {
   try {
     // * Fetch user data that is required for all custom expression to be evaluated
     const {
-      data: { user },
+      data: { authUser: user },
     } = await client.rawRequest(request, {
       userId,
     });

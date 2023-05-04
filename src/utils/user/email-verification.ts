@@ -20,7 +20,7 @@ const sendEmailIfNotVerified = async ({
 }: {
   email: string;
   newEmail: string;
-  user: NonNullable<UserQuery['user']>;
+  user: NonNullable<UserQuery['authUser']>;
   displayName: string;
   ticket?: string | null;
   redirectTo: string;

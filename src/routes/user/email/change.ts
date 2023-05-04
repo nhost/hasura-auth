@@ -56,7 +56,7 @@ export const userEmailChange: RequestHandler<
     },
   });
 
-  const user = updatedUserResponse.updateUser;
+  const user = updatedUserResponse.updateAuthUser;
 
   if (!user) {
     return sendError(res, 'user-not-found');

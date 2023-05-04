@@ -1,4 +1,4 @@
-fragment userFields on users {
+fragment userFields on authUsers {
   id
   createdAt
   disabled
@@ -24,13 +24,13 @@ fragment userFields on users {
 }
 
 query user($id: uuid!) {
-  user(id: $id) {
+  authUser(id: $id) {
     ...userFields
   }
 }
 
-query users($where: users_bool_exp!) {
-  users(where: $where) {
+query users($where: authUsers_bool_exp!) {
+  authUsers(where: $where) {
     ...userFields
   }
 }
@@ -88,14 +88,14 @@ query getUsersByPAT($patHash: String!) {
   }
 }
 
-mutation updateUser($id: uuid!, $user: users_set_input!) {
-  updateUser(pk_columns: { id: $id }, _set: $user) {
+mutation updateUser($id: uuid!, $user: authUsers_set_input!) {
+  updateAuthUser(pk_columns: { id: $id }, _set: $user) {
     ...userFields
   }
 }
 
-mutation updateUserWhere($where: users_bool_exp!, $user: users_set_input!) {
-  updateUsers(where: $where, _set: $user) {
+mutation updateUserWhere($where: authUsers_bool_exp!, $user: authUsers_set_input!) {
+  updateAuthUsers(where: $where, _set: $user) {
     affected_rows
   }
 }
@@ -105,7 +105,7 @@ mutation rotateUsersTicket(
   $newTicket: String!
   $newTicketExpiresAt: timestamptz!
 ) {
-  updateUsers(
+  updateAuthUsers(
     _set: { ticket: $newTicket, ticketExpiresAt: $newTicketExpiresAt }
     where: { ticket: { _eq: $oldTicket } }
   ) {
@@ -119,7 +119,7 @@ mutation changeEmailsByTicket(
   $newTicket: String!
   $now: timestamptz!
 ) {
-  updateUsers(
+  updateAuthUsers(
     where: {
       _and: [{ ticket: { _eq: $ticket } }, { ticketExpiresAt: { _gt: $now } }]
     }
@@ -136,8 +136,8 @@ mutation changeEmailsByTicket(
   }
 }
 
-mutation insertUser($user: users_insert_input!) {
-  insertUser(object: $user) {
+mutation insertUser($user: authUsers_insert_input!) {
+  insertAuthUser(object: $user) {
     ...userFields
   }
 }
@@ -147,7 +147,7 @@ mutation deleteUser($userId: uuid!) {
     affected_rows
   }
 
-  deleteUser(id: $userId) {
+  deleteAuthUser(id: $userId) {
     ...userFields
   }
 }
@@ -160,7 +160,7 @@ mutation deanonymizeUser($userId: uuid!, $avatarUrl: String, $role: String!) {
     affected_rows
   }
 
-  updateUser(
+  updateAuthUser(
     pk_columns: { id: $userId }
     _set: { avatarUrl: $avatarUrl, defaultRole: $role }
   ) {
@@ -177,13 +177,13 @@ mutation insertUserProviderToUser(
 }
 
 query getUserByTicket($ticket: String!) {
-  users(where: { ticket: { _eq: $ticket } }) {
+  authUsers(where: { ticket: { _eq: $ticket } }) {
     ...userFields
   }
 }
 
-mutation updateUsersByTicket($ticket: String!, $user: users_set_input!) {
-  updateUsers(
+mutation updateUsersByTicket($ticket: String!, $user: authUsers_set_input!) {
+  updateAuthUsers(
     where: {
       _and: [{ ticket: { _eq: $ticket } }, { ticketExpiresAt: { _gt: now } }]
     }

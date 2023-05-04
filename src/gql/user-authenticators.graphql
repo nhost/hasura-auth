@@ -12,14 +12,14 @@ query getUserSecurityKeys($id: uuid!) {
 }
 
 query getUserChallenge($id: uuid!) {
-  user(id: $id) {
+  authUser(id: $id) {
     id
     currentChallenge
   }
 }
 
 mutation updateUserChallenge($userId: uuid!, $challenge: String!) {
-  updateUser(
+  updateAuthUser(
     pk_columns: { id: $userId }
     _set: { currentChallenge: $challenge }
   ) {

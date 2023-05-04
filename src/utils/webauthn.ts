@@ -13,7 +13,7 @@ export const getWebAuthnRelyingParty = () =>
   ENV.AUTH_CLIENT_URL && new URL(ENV.AUTH_CLIENT_URL).hostname;
 
 export const getCurrentChallenge = async (id: string) => {
-  const { user } = await gqlSdk.getUserChallenge({ id });
+  const { authUser: user } = await gqlSdk.getUserChallenge({ id });
 
   if (!user?.currentChallenge) {
     throw Error('invalid-request');

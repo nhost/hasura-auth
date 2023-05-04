@@ -49,7 +49,7 @@ export const getSignInResponse = async ({
   userId: string;
   checkMFA: boolean;
 }): Promise<SignInResponse> => {
-  const { user } = await gqlSdk.user({
+  const { authUser: user } = await gqlSdk.user({
     id: userId,
   });
   if (!user) {

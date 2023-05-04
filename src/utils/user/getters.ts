@@ -6,7 +6,7 @@ export const getUserByPhoneNumber = async ({
 }: {
   phoneNumber: string;
 }) => {
-  const { users } = await gqlSdk.users({
+  const { authUsers: users } = await gqlSdk.users({
     where: {
       phoneNumber: {
         _eq: phoneNumber,
@@ -22,7 +22,7 @@ export const getUser = async ({
 }: {
   userId: string;
 }): Promise<User> => {
-  const { user } = await gqlSdk.user({
+  const { authUser: user } = await gqlSdk.user({
     id: userId,
   });
 
@@ -64,7 +64,7 @@ export const getUser = async ({
 };
 
 export const getUserByEmail = async (email: string) => {
-  const { users } = await gqlSdk.users({
+  const { authUsers: users } = await gqlSdk.users({
     where: {
       email: {
         _eq: email,
@@ -82,7 +82,7 @@ export const getUserByEmail = async (email: string) => {
 export const getUserByTicket = async (ticket: string) => {
   const now = new Date();
 
-  const { users } = await gqlSdk.users({
+  const { authUsers: users } = await gqlSdk.users({
     where: {
       _and: [
         {
