@@ -14,7 +14,6 @@ env:
   JWT_ALGORITHM: HS256
   JWT_KEY: never_use_this_secret_key_in_production_this_is_only_for_CI_testing_098hu32r4389ufb4n38994321
   POSTGRES_PASSWORD: postgrespassword
-  AUTH_SMTP_HOST: localhost
 
 jobs:
   test:
