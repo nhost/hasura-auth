@@ -1,7 +1,7 @@
 import { Response } from 'express';
 import expressWinston, { LoggerOptions } from 'express-winston';
 import winston from 'winston';
-import { ENV } from './utils';
+import { ENV } from './utils/env';
 export const LOG_LEVEL = process.env.AUTH_LOG_LEVEL || 'info';
 
 // * Create a common Winston logger that can be used in both middlewares and manually
