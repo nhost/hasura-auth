@@ -1,6 +1,7 @@
 import { sendError } from '@/errors';
 import { logger } from '@/logger';
 import { getUser, gqlSdk } from '@/utils';
+import { AuthRefreshTokenTypes_Enum } from '@/utils/__generated__/graphql-request';
 import { RequestHandler } from 'express';
 import Joi from 'joi';
 import { v4 as uuidv4 } from 'uuid';
@@ -52,7 +53,7 @@ export const createPATHandler: RequestHandler<
         refreshToken: personalAccessToken,
         expiresAt: new Date(expiresAt),
         metadata,
-        type: 'pat',
+        type: AuthRefreshTokenTypes_Enum.Pat,
       },
     });
 
