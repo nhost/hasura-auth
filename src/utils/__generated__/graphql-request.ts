@@ -18,7 +18,6 @@ export type Scalars = {
   bytea: any;
   citext: any;
   jsonb: any;
-  refresh_token_type: any;
   timestamptz: any;
   uuid: any;
 };
@@ -712,6 +711,7 @@ export type AuthRefreshTokens_Insert_Input = {
   id?: InputMaybe<Scalars['uuid']>;
   metadata?: InputMaybe<Scalars['jsonb']>;
   refreshTokenHash?: InputMaybe<Scalars['String']>;
+  refreshTokenType?: InputMaybe<AuthRefreshTokenTypes_Obj_Rel_Insert_Input>;
   type?: InputMaybe<AuthRefreshTokenTypes_Enum>;
   user?: InputMaybe<Users_Obj_Rel_Insert_Input>;
   userId?: InputMaybe<Scalars['uuid']>;
@@ -2843,19 +2843,6 @@ export type Query_RootUsersAggregateArgs = {
   offset?: InputMaybe<Scalars['Int']>;
   order_by?: InputMaybe<Array<Users_Order_By>>;
   where?: InputMaybe<Users_Bool_Exp>;
-};
-
-/** Boolean expression to compare columns of type "refresh_token_type". All fields are combined with logical 'AND'. */
-export type Refresh_Token_Type_Comparison_Exp = {
-  _eq?: InputMaybe<Scalars['refresh_token_type']>;
-  _gt?: InputMaybe<Scalars['refresh_token_type']>;
-  _gte?: InputMaybe<Scalars['refresh_token_type']>;
-  _in?: InputMaybe<Array<Scalars['refresh_token_type']>>;
-  _is_null?: InputMaybe<Scalars['Boolean']>;
-  _lt?: InputMaybe<Scalars['refresh_token_type']>;
-  _lte?: InputMaybe<Scalars['refresh_token_type']>;
-  _neq?: InputMaybe<Scalars['refresh_token_type']>;
-  _nin?: InputMaybe<Array<Scalars['refresh_token_type']>>;
 };
 
 export type Subscription_Root = {
