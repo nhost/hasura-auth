@@ -31,6 +31,27 @@ export const hasuraAuthMetadataPatch: MetadataPatch = {
         },
       },
       {
+        table: { name: 'refresh_token_type', schema: 'auth' },
+        is_enum: true,
+        configuration: {
+          custom_name: 'refreshTokenType',
+        },
+        array_relationships: [
+          {
+            name: 'refreshTokens',
+            using: {
+              foreign_key_constraint_on: {
+                column: 'type',
+                table: {
+                  name: 'refresh_tokens',
+                  schema: 'auth',
+                },
+              },
+            },
+          },
+        ],
+      },
+      {
         table: { name: 'refresh_tokens', schema },
         configuration: {
           custom_name: 'authRefreshTokens',
@@ -48,12 +69,19 @@ export const hasuraAuthMetadataPatch: MetadataPatch = {
           custom_column_names: {
             refresh_token: 'refreshToken',
             refresh_token_hash: 'refreshTokenHash',
+            type: 'type',
             created_at: 'createdAt',
             expires_at: 'expiresAt',
             user_id: 'userId',
           },
         },
         object_relationships: [
+          {
+            name: 'refreshTokenType',
+            using: {
+              foreign_key_constraint_on: 'type',
+            },
+          },
           {
             name: 'user',
             using: {

@@ -61,6 +61,11 @@ export const createPATHandler: RequestHandler<
     });
   } catch (error) {
     logger.error(error);
+
+    if (error instanceof Error) {
+      return sendError(res, 'internal-error', { customMessage: error.message });
+    }
+
     return sendError(res, 'internal-error');
   }
 };

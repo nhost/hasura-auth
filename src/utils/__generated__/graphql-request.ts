@@ -18197,7 +18197,7 @@ export const GetUsersByRefreshTokenDocument = gql`
 export const GetUsersByPatDocument = gql`
     query getUsersByPAT($patHash: String!) {
   authRefreshTokens(
-    where: {_and: [{refreshTokenHash: {_eq: $patHash}}, {user: {disabled: {_eq: false}}}, {expiresAt: {_gte: now}}, {type: {_eq: "pat"}}]}
+    where: {_and: [{refreshTokenHash: {_eq: $patHash}}, {user: {disabled: {_eq: false}}}, {expiresAt: {_gte: now}}, {type: {_eq: pat}}]}
   ) {
     refreshToken
     user {
