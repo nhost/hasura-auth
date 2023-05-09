@@ -84,6 +84,38 @@ export const authMetadataSource: Source = {
       ],
     },
     {
+      table: { name: 'refresh_token_types', schema: 'auth' },
+      is_enum: true,
+      configuration: {
+        custom_name: 'authRefreshTokenTypes',
+        custom_root_fields: {
+          select: 'authRefreshTokenTypes',
+          select_by_pk: 'authRefreshTokenType',
+          select_aggregate: 'authRefreshTokenTypesAggregate',
+          insert: 'insertAuthRefreshTokenTypes',
+          insert_one: 'insertAuthRefreshTokenType',
+          update: 'updateAuthRefreshTokenTypes',
+          update_by_pk: 'updateAuthRefreshTokenType',
+          delete: 'deleteAuthRefreshTokenTypes',
+          delete_by_pk: 'deleteAuthRefreshTokenType',
+        },
+      },
+      array_relationships: [
+        {
+          name: 'refreshTokens',
+          using: {
+            foreign_key_constraint_on: {
+              column: 'type',
+              table: {
+                name: 'refresh_tokens',
+                schema: 'auth',
+              },
+            },
+          },
+        },
+      ],
+    },
+    {
       table: {
         name: 'refresh_tokens',
         schema: 'auth',
@@ -123,6 +155,12 @@ export const authMetadataSource: Source = {
         },
       },
       object_relationships: [
+        {
+          name: 'refreshTokenType',
+          using: {
+            foreign_key_constraint_on: 'type',
+          },
+        },
         {
           name: 'user',
           using: {
