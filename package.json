@@ -10,7 +10,7 @@
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "build": "rimraf dist && tsc --project tsconfig.build.json && tsc-alias",
-    "start": "node ./dist/start.js",
+    "start": "node -r newrelic ./dist/start.js",
     "lint": "eslint --ext .ts .",
     "lint:fix": "npm run lint --fix",
     "dev": "run-p  dev:start",
@@ -40,6 +40,7 @@
     "graphql": "16.2.0",
     "graphql-request": "^3.7.0",
     "graphql-tag": "2.12.6",
+    "newrelic": "*",
     "gravatar": "^1.8.1",
     "helmet": "3.22.0",
     "hibp": "9.0.0",
