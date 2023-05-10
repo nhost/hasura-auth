@@ -225,4 +225,8 @@ export const ENV = {
   // get AUTH_SKIP_SERVE() {
   //   return castBooleanEnv('AUTH_SKIP_SERVE', false);
   // },
+
+  get AUTH_PG_POOL_MAX_CONNECTIONS() {
+    return castInvEnv('AUTH_PG_POOL_MAX_CONNECTIONS', 10)
+  }
 };

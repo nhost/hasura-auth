@@ -14,7 +14,7 @@ import {
 } from './utils';
 
 const pool = new Pool({
-  max: 20,
+  max: ENV.AUTH_PG_POOL_MAX_CONNECTIONS,
   connectionString: ENV.HASURA_GRAPHQL_DATABASE_URL,
   idleTimeoutMillis: 30000,
 });
