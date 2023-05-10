@@ -22,7 +22,7 @@ export const tokenHandler: RequestHandler<
 
   // 1 in 10 request will delete expired refresh tokens
   // TODO: CRONJOB in the future.
-  if (Math.random() < 0.1) {
+  if (Math.random() < 0.001) {
     // no await
     pgClient.deleteExpiredRefreshTokens();
   }

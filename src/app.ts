@@ -18,7 +18,10 @@ if (process.env.NODE_ENV === 'production') {
 addOpenApiRoute(app);
 app.use(httpLogger);
 
-app.use(helmet(), json(), cors());
+app.use(helmet(), json(), cors({
+  maxAge: 86400
+}));
+
 app.use(authMiddleware);
 
 app.use(router);
