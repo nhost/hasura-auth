@@ -17,7 +17,7 @@ import {
   SignInResponse,
   UserRegistrationOptionsWithRedirect,
 } from '@/types';
-import { emailClient } from '@/email';
+import { sendEmail } from '@/email';
 
 export type SignUpVerifyWebAuthnRequestBody = {
   credential: RegistrationCredentialJSON;
@@ -65,7 +65,7 @@ export const signInVerifyWebauthnHandler: RequestHandler<
     });
   }
 
-  const user = await pgClient.getUserByChallence(challenge);
+  const user = await pgClient.getUserByChallenge(challenge);
   if (!user) {
     return sendError(res, 'user-not-found');
   }
@@ -116,7 +116,7 @@ export const signInVerifyWebauthnHandler: RequestHandler<
         ticket,
         redirectTo
       );
-      await emailClient.send({
+      await sendEmail({
         template,
         message: {
           to: newEmail,

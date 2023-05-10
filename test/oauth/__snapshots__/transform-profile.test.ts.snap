@@ -10,16 +10,11 @@ Object {
   "locale": "en",
   "metadata": Object {},
   "passwordHash": null,
-  "roles": Object {
-    "data": Array [
-      Object {
-        "role": "me",
-      },
-      Object {
-        "role": "user",
-      },
-    ],
-  },
+  "roles": Array [
+    "me",
+    "user",
+    "editor",
+  ],
 }
 `;
 
@@ -33,16 +28,11 @@ Object {
   "locale": "en",
   "metadata": Object {},
   "passwordHash": null,
-  "roles": Object {
-    "data": Array [
-      Object {
-        "role": "me",
-      },
-      Object {
-        "role": "user",
-      },
-    ],
-  },
+  "roles": Array [
+    "me",
+    "user",
+    "editor",
+  ],
 }
 `;
 
@@ -56,15 +46,10 @@ Object {
   "locale": "en",
   "metadata": Object {},
   "passwordHash": null,
-  "roles": Object {
-    "data": Array [
-      Object {
-        "role": "me",
-      },
-      Object {
-        "role": "user",
-      },
-    ],
-  },
+  "roles": Array [
+    "me",
+    "user",
+    "editor",
+  ],
 }
 `;

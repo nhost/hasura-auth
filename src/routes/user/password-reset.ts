@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { ReasonPhrases } from 'http-status-codes';
 
-import { emailClient } from '@/email';
+import { sendEmail } from '@/email';
 import {
   getUserByEmail,
   generateTicketExpiresAt,
@@ -58,14 +58,13 @@ export const userPasswordResetHandler: RequestHandler<
     ticket,
     redirectTo
   );
-  await emailClient.send({
+  await sendEmail({
     template,
     locals: {
       link,
       displayName: user.displayName,
       email,
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      newEmail: user.newEmail!,
+      newEmail: user.newEmail,
       ticket,
       redirectTo: encodeURIComponent(redirectTo),
       locale: user.locale ?? ENV.AUTH_LOCALE_DEFAULT,

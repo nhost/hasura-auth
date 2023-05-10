@@ -119,7 +119,7 @@ export type User = {
   passwordHash: string | null;
   otpHash: string | null;
   otpHashExpiresAt?: Date;
-  currentChallenge: string | null;
+  webauthnCurrentChallenge: string | null;
   ticketExpiresAt?: Date;
   otpMethodLastUsed?: string;
   lastSeen: Date;
@@ -127,11 +127,13 @@ export type User = {
 
 export type SessionUser = Pick<
   User,
+  | 'createdAt'
   | 'id'
   | 'displayName'
   | 'avatarUrl'
   | 'locale'
   | 'email'
+  | 'roles'
   | 'isAnonymous'
   | 'defaultRole'
   | 'metadata'

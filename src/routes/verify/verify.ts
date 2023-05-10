@@ -1,10 +1,5 @@
 import { RequestHandler } from 'express';
-import {
-  getNewRefreshToken,
-  generateRedirectUrl,
-  getUserByEmail,
-  pgClient,
-} from '@/utils';
+import { generateRedirectUrl, getUserByEmail, pgClient } from '@/utils';
 import { Joi, redirectTo } from '@/validation';
 import { sendError } from '@/errors';
 import { EmailType, EMAIL_TYPES } from '@/types';
@@ -83,14 +78,8 @@ export const verifyHandler: RequestHandler<
     // just redirecting the user to the client (as signed-in).
   }
 
-  const refreshToken = await getNewRefreshToken(user.id);
-  // ! temparily send the refresh token in both hash and query parameter
-  // TODO at a later stage, only send as a query parameter
-  const redirectUrl = generateRedirectUrl(
-    redirectTo,
-    { refreshToken, type },
-    `refreshToken=${refreshToken}&type=${type}`
-  );
+  const refreshToken = await pgClient.insertRefreshToken(user.id);
+  const redirectUrl = generateRedirectUrl(redirectTo, { refreshToken, type });
 
   return res.redirect(redirectUrl);
 };

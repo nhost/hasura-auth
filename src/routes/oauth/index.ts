@@ -7,7 +7,6 @@ import { ERRORS, sendError } from '@/errors';
 import {
   ENV,
   generateRedirectUrl,
-  getNewRefreshToken,
   getUserByEmail,
   insertUser,
   pgClient,
@@ -158,7 +157,7 @@ export const oauthProviders = Router()
    * 4. Connect the user to the provider
    * 5. Generate and return a new refresh token
    */
-  .use(async ({ session, query }, res) => {
+  .all(`${OAUTH_ROUTE}/:provider/callback`, async ({ session, query }, res) => {
     const { grant, options, redirectTo = ENV.AUTH_CLIENT_URL } = { ...session };
     // * Destroy the session as it is only needed for the oauth flow
     await new Promise((resolve) => {
@@ -225,30 +224,33 @@ export const oauthProviders = Router()
 
     const { access_token: accessToken, refresh_token: refreshToken } = response;
 
-    let user: User | null = null;
+    let userId: string | null = null;
 
     // * Look for the user-provider
     const result = await pgClient.getUserByProvider(provider, providerUserId);
 
     if (result.user) {
       // * The userProvider already exists. Update it with the new tokens
-      user = result.user;
+      userId = result.user.id;
       await pgClient.updateAuthUserprovider(result.id, {
         accessToken,
         refreshToken,
       });
     } else {
+      let user: User | null = null;
       if (profile.email) {
         user = await getUserByEmail(profile.email);
       }
       if (user) {
+        userId = user.id;
+
         // * add this provider to existing user with the same email
         const result = await pgClient.insertUserProviderToUser({
           userId: user.id,
           providerId: provider,
           providerUserId,
-          accessToken,
           refreshToken,
+          accessToken,
         });
 
         if (!result) {
@@ -260,21 +262,23 @@ export const oauthProviders = Router()
         // TODO feature: check if registration is enabled
         const userInput = await transformOauthProfile(profile, options);
         const { id } = await insertUser(userInput);
+        userId = id;
         await pgClient.insertUserProviderToUser({
           userId: id,
           providerId: provider,
           providerUserId,
-          accessToken,
           refreshToken,
+          accessToken,
         });
       }
     }
 
-    if (user) {
-      const refreshToken: string = await getNewRefreshToken(user.id);
+    if (userId) {
+      const refreshToken = await pgClient.insertRefreshToken(userId);
       // * redirect back user to app url
-      return res.redirect(`${redirectTo}?refreshToken=${refreshToken}`);
+      return res.redirect(generateRedirectUrl(redirectTo, { refreshToken }));
     }
 
+    logger.error('Could not retrieve user ID');
     return sendErrorFromQuery(undefined, 'OAuth request cancelled');
   });

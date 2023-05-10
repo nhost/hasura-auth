@@ -2,7 +2,7 @@ import { User } from '@/types';
 import { PoolClient } from 'pg';
 import { SqlUser } from './types';
 
-export const cameliseUser = (user: SqlUser | null): User | null => {
+export const cameliseUser = (user?: SqlUser | null): User | null => {
   if (!user) {
     return null;
   }
@@ -27,7 +27,7 @@ export const cameliseUser = (user: SqlUser | null): User | null => {
     ticket,
     password_hash,
     otp_hash,
-    current_challenge,
+    webauthn_current_challenge,
     ticket_expires_at,
     otp_method_last_used,
     otp_hash_expires_at,
@@ -55,7 +55,7 @@ export const cameliseUser = (user: SqlUser | null): User | null => {
     passwordHash: password_hash,
     otpHash: otp_hash,
     otpMethodLastUsed: otp_method_last_used,
-    currentChallenge: current_challenge,
+    webauthnCurrentChallenge: webauthn_current_challenge,
     ticketExpiresAt: ticket_expires_at,
     otpHashExpiresAt: otp_hash_expires_at,
     lastSeen: last_seen,
@@ -89,13 +89,13 @@ export const snakeiseUser = (
     ticket,
     passwordHash,
     otpHash,
-    currentChallenge,
+    webauthnCurrentChallenge,
     ticketExpiresAt,
     otpMethodLastUsed,
     otpHashExpiresAt,
     lastSeen,
   } = user;
-  return {
+  const result: Partial<SqlUser> = {
     avatar_url: avatarUrl,
     created_at: createdAt,
     disabled,
@@ -117,21 +117,28 @@ export const snakeiseUser = (
     password_hash: passwordHash,
     otp_hash: otpHash,
     otp_method_last_used: otpMethodLastUsed,
-    current_challenge: currentChallenge,
+    webauthn_current_challenge: webauthnCurrentChallenge,
     ticket_expires_at: ticketExpiresAt,
     otp_hash_expires_at: otpHashExpiresAt,
     last_seen: lastSeen,
   };
+  Object.keys(result).forEach((k) => {
+    const key = k as keyof typeof result;
+    if (result[key] === undefined) {
+      delete result[key];
+    }
+  });
+  return result;
 };
 
 export const createUserQueryWhere = (where: string) =>
   `SELECT u.*, r.roles FROM "auth"."users" u 
-    left join lateral (
-            select user_id, coalesce(json_agg(role), '[]') AS roles
-            from "auth"."user_roles" r
-            where r.user_id = u.id
-            group by user_id, role
-        ) r on r.user_id = id AND ${where};`;
+    LEFT JOIN lateral (
+            SELECT user_id, coalesce(json_agg(role), '[]') AS roles
+            FROM "auth"."user_roles" r
+            WHERE r.user_id = u.id
+            GROUP BY user_id
+        ) r ON r.user_id = id WHERE ${where};`;
 
 export const createUserQueryByColumn = (column: string) =>
   createUserQueryWhere(`u.${column} = $1`);
@@ -141,4 +148,17 @@ export const getUserById = async (client: PoolClient, userId: string) => {
     userId,
   ]);
   return rows[0];
+};
+
+export const insertUserRoles = async (
+  client: PoolClient,
+  userId: string,
+  roles: string[]
+) => {
+  await client.query(
+    `INSERT INTO "auth"."user_roles" (user_id, role) VALUES ${roles
+      .map((_, i) => `($1, $${i + 2})`)
+      .join(', ')} ON CONFLICT DO NOTHING;`,
+    [userId, ...roles]
+  );
 };

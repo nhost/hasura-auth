@@ -2,8 +2,8 @@ import { Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { ReasonPhrases } from 'http-status-codes';
 
-import { createEmailRedirectionLink, getUserByEmail, pgClient } from '@/utils';
-import { emailClient } from '@/email';
+import { pgClient, createEmailRedirectionLink, getUserByEmail } from '@/utils';
+import { sendEmail } from '@/email';
 import { sendError } from '@/errors';
 
 import { ENV } from '../env';
@@ -80,7 +80,7 @@ export const handleDeanonymizeUserEmailPassword = async (
       ticket,
       redirectTo
     );
-    await emailClient.send({
+    await sendEmail({
       template,
       message: {
         to: email,
@@ -107,8 +107,7 @@ export const handleDeanonymizeUserEmailPassword = async (
         link,
         displayName: user.displayName,
         email,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        newEmail: user.newEmail!,
+        newEmail: user.newEmail,
         ticket,
         redirectTo: encodeURIComponent(redirectTo),
         locale: user.locale ?? ENV.AUTH_LOCALE_DEFAULT,

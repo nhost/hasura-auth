@@ -1,15 +1,18 @@
+import { v4 as uuidv4 } from 'uuid';
 import { User } from '@/types';
 import { SessionData } from 'express-session';
 import { Pool } from 'pg';
 export * from './types';
 
 import { ENV } from '../env';
+import { hashRefreshToken, newRefreshExpiry } from '../refresh-token';
 import { SqlUser, UserSecurityKey } from './types';
 import {
   cameliseUser,
   createUserQueryByColumn,
   createUserQueryWhere,
   getUserById,
+  insertUserRoles,
   snakeiseUser,
 } from './utils';
 
@@ -51,22 +54,22 @@ export const pgClient = {
 
   insertRefreshToken: async (
     userId: string,
-    refreshToken: string,
-    expiresAt: Date
+    refreshToken: string = uuidv4()
   ) => {
     const client = await pool.connect();
     await client.query(
       `INSERT INTO "auth"."refresh_tokens" (user_id, refresh_token, expires_at) VALUES($1, $2, $3);`,
-      [userId, refreshToken, expiresAt]
+      [userId, refreshToken, new Date(newRefreshExpiry())]
     );
     client.release();
+    return refreshToken;
   },
 
   deleteRefreshToken: async (refreshToken: string) => {
     const client = await pool.connect();
     await client.query(
-      `DELETE FROM "auth"."refresh_tokens" WHERE refresh_token = $1;`,
-      [refreshToken]
+      `DELETE FROM "auth"."refresh_tokens" WHERE refresh_token_hash = $1;`,
+      [hashRefreshToken(refreshToken)]
     );
     client.release();
   },
@@ -92,9 +95,10 @@ export const pgClient = {
     const client = await pool.connect();
     const { rows } = await client.query<{ role: string }>(
       `INSERT INTO "auth"."roles" (role) VALUES ${roles
-        .map((role) => `('${role}')`)
+        .map((_, i) => `($${i + 1})`)
         .join(', ')} ON CONFLICT DO NOTHING
-        RETURNING role;`
+        RETURNING role;`,
+      roles
     );
     client.release();
     return rows.map((row) => row.role);
@@ -103,7 +107,7 @@ export const pgClient = {
   getUserSecurityKeys: async (userId: string) => {
     const client = await pool.connect();
     const { rows } = await client.query<UserSecurityKey>(
-      `SELECT id, counter, credential_id, credential_public_key, transports FROM "auth"."security_keys" WHERE user_id = $1;`,
+      `SELECT id, counter, credential_id, credential_public_key, transports FROM "auth"."user_security_keys" WHERE user_id = $1;`,
       [userId]
     );
     client.release();
@@ -112,8 +116,8 @@ export const pgClient = {
 
   getUserChallenge: async (userId: string) => {
     const client = await pool.connect();
-    const { rows } = await client.query<{ current_challenge: string }>(
-      `SELECT current_challenge FROM "auth"."users" WHERE id = $1;`,
+    const { rows } = await client.query<{ webauthn_current_challenge: string }>(
+      `SELECT webauthn_current_challenge FROM "auth"."users" WHERE id = $1;`,
       [userId]
     );
     client.release();
@@ -123,7 +127,7 @@ export const pgClient = {
   updateUserChallenge: async (userId: string, challenge: string) => {
     const client = await pool.connect();
     await client.query(
-      `UPDATE "auth"."users" SET current_challenge = $1 WHERE id = $2;`,
+      `UPDATE "auth"."users" SET webauthn_current_challenge = $1 WHERE id = $2;`,
       [challenge, userId]
     );
     client.release();
@@ -147,7 +151,7 @@ export const pgClient = {
     const {
       rows: [{ id }],
     } = await client.query<{ id: string }>(
-      `INSERT INTO "auth"."security_keys" (user_id, counter, credential_id, credential_public_key, nickname) VALUES($1, $2, $3, $4, $5) RETURNING id;`,
+      `INSERT INTO "auth"."user_security_keys" (user_id, counter, credential_id, credential_public_key, nickname) VALUES($1, $2, $3, $4, $5) RETURNING id;`,
       [user_id, counter, credential_id, credential_public_key, nickname]
     );
     client.release();
@@ -157,7 +161,7 @@ export const pgClient = {
   updateUserSecurityKey: async (securityKeyId: string, counter: number) => {
     const client = await pool.connect();
     await client.query(
-      `UPDATE "auth"."security_keys" SET counter = $1 WHERE id = $2;`,
+      `UPDATE "auth"."user_security_keys" SET counter = $1 WHERE id = $2;`,
       [counter, securityKeyId]
     );
     client.release();
@@ -165,11 +169,7 @@ export const pgClient = {
 
   insertUserRoles: async (userId: string, roles: string[]) => {
     const client = await pool.connect();
-    await client.query(
-      `INSERT INTO "auth"."user_roles" (user_id, role) VALUES ${roles
-        .map((role) => `('${userId}', '${role}')`)
-        .join(', ')};`
-    );
+    await insertUserRoles(client, userId, roles);
     client.release();
   },
 
@@ -205,25 +205,22 @@ export const pgClient = {
   }) => {
     const client = await pool.connect();
     const { rows } = await client.query(
-      `INSERT INTO "auth"."user_providers" (user_id, provider_id, provider_user_id, refresh_token, access_token) VALUES($1, $2, $3, $4, $5, $6);`,
+      `INSERT INTO "auth"."user_providers" (user_id, provider_id, provider_user_id, refresh_token, access_token) VALUES($1, $2, $3, $4, $5) RETURNING *;`,
       [userId, providerId, providerUserId, refreshToken, accessToken]
     );
     client.release();
     return rows[0];
   },
 
-  updateRefreshTokenExpiresAt: async (
-    refreshToken: string,
-    expires_at: Date
-  ) => {
+  updateRefreshTokenExpiresAt: async (refreshToken: string) => {
     const client = await pool.connect();
     await client.query(
       `UPDATE "auth"."refresh_tokens" rt SET expires_at = $1 FROM "auth"."users" u 
         WHERE rt.user_id = u.id
-          AND rt.refresh_token = $2 
+          AND rt.refresh_token_hash = $2 
           AND rt.expires_at < NOW() 
           AND u.disabled = false ;`,
-      [expires_at, refreshToken]
+      [new Date(newRefreshExpiry()), hashRefreshToken(refreshToken)]
     );
     client.release();
   },
@@ -231,12 +228,13 @@ export const pgClient = {
   getUserByRefreshToken: async (refreshToken: string) => {
     const client = await pool.connect();
     const { rows } = await client.query<{ id: string }>(
-      `SELECT u.id FROM "auth"."refresh_tokens" rt, "auth"."users" u
-        WHERE rt.user_id = u.id
-          AND rt.refresh_token = $1
+      `SELECT u.id 
+        FROM auth.refresh_tokens AS rt
+        JOIN auth.users AS u ON rt.user_id = u.id
+        WHERE rt.refresh_token_hash = $1
           AND u.disabled = false
           AND rt.expires_at > NOW();`,
-      [refreshToken]
+      [hashRefreshToken(refreshToken)]
     );
 
     const user = await getUserById(client, rows[0]?.id);
@@ -290,19 +288,19 @@ export const pgClient = {
     const {
       rows: [user],
     } = await client.query<SqlUser>(
-      createUserQueryWhere(`u.ticket = $1 and u.ticket_expires_at > NOW()`),
+      createUserQueryWhere(`u.ticket = $1 AND u.ticket_expires_at > NOW()`),
       [ticket]
     );
     client.release();
     return cameliseUser(user);
   },
 
-  getUserByChallence: async (challenge: string) => {
+  getUserByChallenge: async (challenge: string) => {
     const client = await pool.connect();
     const {
       rows: [user],
     } = await client.query<SqlUser>(
-      createUserQueryByColumn('current_challenge'),
+      createUserQueryByColumn('webauthn_current_challenge'),
       [challenge]
     );
     client.release();
@@ -312,7 +310,7 @@ export const pgClient = {
   getUserByProvider: async (providerId: string, providerUserId: string) => {
     const client = await pool.connect();
     const { rows } = await client.query<{ user_id?: string; id: string }>(
-      `SELECT user_id, id FROM "auth"."user_providers" WHERE up.provider_id = $1 AND up.provider_user_id = $2;`,
+      `SELECT user_id, id FROM "auth"."user_providers" WHERE provider_id = $1 AND provider_user_id = $2;`,
       [providerId, providerUserId]
     );
     let user: SqlUser | null = null;
@@ -321,7 +319,7 @@ export const pgClient = {
       user = await getUserById(client, userId);
     }
     client.release();
-    return { id: rows[0].id, user: cameliseUser(user) };
+    return { id: rows[0]?.id, user: cameliseUser(user) };
   },
 
   updateAuthUserprovider: async (
@@ -339,12 +337,15 @@ export const pgClient = {
     client.release();
   },
 
-  insertUser: async (user: Partial<SqlUser>) => {
+  insertUser: async (user: Partial<User>) => {
     const client = await pool.connect();
-    const { roles, ...rest } = user;
+    const transformedUser = snakeiseUser(user) as Partial<SqlUser>;
+    const { roles, ...rest } = transformedUser;
     const columns = Object.keys(rest);
     const values = Object.values(rest);
-    const { rows } = await client.query<SqlUser>(
+    const {
+      rows: [insertedUser],
+    } = await client.query<SqlUser>(
       `INSERT INTO "auth"."users" (${columns.join(',')}) VALUES(${[
         ...columns.keys(),
       ]
@@ -352,11 +353,11 @@ export const pgClient = {
         .join(',')}) RETURNING *;`,
       values
     );
-    // TODO roles
-    console.log('TODO roles', roles);
-
+    if (roles) {
+      await insertUserRoles(client, insertedUser.id, roles);
+    }
     client.release();
-    return cameliseUser(rows[0]);
+    return cameliseUser(insertedUser);
   },
 
   updateUser: async ({ id, user }: { id: string; user: Partial<User> }) => {
@@ -371,8 +372,9 @@ export const pgClient = {
         .join(',')} WHERE id = $${columns.length + 1} RETURNING *;`,
       [...values, id]
     );
-    // TODO roles
-    console.log('TODO roles', roles);
+    if (roles) {
+      await insertUserRoles(client, id, roles);
+    }
     client.release();
     return cameliseUser(rows[0]);
   },

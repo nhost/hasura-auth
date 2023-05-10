@@ -9,7 +9,7 @@ import {
   createEmailRedirectionLink,
   pgClient,
 } from '@/utils';
-import { emailClient } from '@/email';
+import { sendEmail } from '@/email';
 import { sendError } from '@/errors';
 import { Joi, email, redirectTo } from '@/validation';
 import { EMAIL_TYPES } from '@/types';
@@ -66,7 +66,7 @@ export const userEmailSendVerificationEmailHandler: RequestHandler<
     ticket,
     redirectTo
   );
-  await emailClient.send({
+  await sendEmail({
     template,
     message: {
       to: email,
@@ -93,8 +93,7 @@ export const userEmailSendVerificationEmailHandler: RequestHandler<
       link,
       displayName: user.displayName,
       email: user.email,
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      newEmail: user.newEmail!,
+      newEmail: user.newEmail,
       ticket,
       redirectTo: encodeURIComponent(redirectTo),
       locale: user.locale ?? ENV.AUTH_LOCALE_DEFAULT,
