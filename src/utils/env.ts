@@ -227,6 +227,6 @@ export const ENV = {
   // },
 
   get AUTH_PG_POOL_MAX_CONNECTIONS() {
-    return castInvEnv('AUTH_PG_POOL_MAX_CONNECTIONS', 10)
+    return castIntEnv('AUTH_PG_POOL_MAX_CONNECTIONS', 10)
   }
 };
