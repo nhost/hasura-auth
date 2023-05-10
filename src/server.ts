@@ -22,8 +22,13 @@ export const start = async () => {
   // wait for hasura to be ready
   await waitForHasura();
   // apply migrations and metadata
-  await applyMigrations();
-  await applyMetadata();
+  if (ENV.AUTH_APPLY_MIGRATIONS) {
+    logger.info(`Applying migrations and metadata`);
+    await applyMigrations();
+    await applyMetadata();
+  } else {
+    logger.info(`Skipping migrations and metadata`);
+  }
   // }
 
   // * Insert missing default allowed roles into the database

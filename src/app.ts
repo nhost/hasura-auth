@@ -6,8 +6,9 @@ import cors from 'cors';
 import router from './routes';
 import { serverErrors } from './errors';
 import { authMiddleware } from './middleware/auth';
-import { addOpenApiRoute } from './openapi';
-import { uncaughtErrorLogger, httpLogger } from './logger';
+import { uncaughtErrorLogger, httpLogger, logger } from './logger';
+import { ENV } from "@/utils";
+import { addOpenApiRoute } from "@/openapi";
 
 const app = express();
 
@@ -15,7 +16,10 @@ if (process.env.NODE_ENV === 'production') {
   app.set('trust proxy', 1);
 }
 
-addOpenApiRoute(app);
+if (ENV.AUTH_OPENAPI_SPEC) {
+  logger.info('OpenAPI spec is enabled');
+  addOpenApiRoute(app);
+}
 app.use(httpLogger);
 
 app.use(helmet(), json(), cors({

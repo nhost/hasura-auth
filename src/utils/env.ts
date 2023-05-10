@@ -227,6 +227,14 @@ export const ENV = {
   // },
 
   get AUTH_PG_POOL_MAX_CONNECTIONS() {
-    return castIntEnv('AUTH_PG_POOL_MAX_CONNECTIONS', 10)
+    return castIntEnv('AUTH_PG_POOL_MAX_CONNECTIONS', 10);
+  },
+
+  get AUTH_APPLY_MIGRATIONS() {
+    return castBooleanEnv('AUTH_APPLY_MIGRATIONS', true);
+  },
+
+  get AUTH_OPENAPI_SPEC() {
+    return castBooleanEnv('AUTH_OPENAPI_SPEC', true);
   }
 };
