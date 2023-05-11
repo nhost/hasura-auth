@@ -24,7 +24,6 @@ export const tokenHandler: RequestHandler<{},
   const user = await pgClient.getUserByRefreshToken(refreshToken);
 
   if (!user) {
-    console.log('cache hit', refreshToken);
     cache.set(refreshToken, true);
     return sendError(res, 'invalid-refresh-token');
   }
