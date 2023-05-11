@@ -6,6 +6,8 @@ import NodeCache from 'node-cache';
 
 const cache = new NodeCache({ stdTTL: 60 * 60 * 24 });
 
+const tokenCache = new NodeCache({ stdTTL: 850 });
+
 export const tokenSchema = Joi.object({
   refreshToken,
 }).meta({ className: 'TokenSchema' });
@@ -27,6 +29,10 @@ export const tokenHandler: RequestHandler<{},
     return sendError(res, 'invalid-refresh-token');
   }
 
+  if (tokenCache.get(user.id)) {
+    return res.send(tokenCache.get(user.id));
+  }
+
   // 1 in 10 request will delete expired refresh tokens
   // TODO: CRONJOB in the future.
   if (Math.random() < 0.001) {
@@ -38,6 +44,8 @@ export const tokenHandler: RequestHandler<{},
     user,
     currentRefreshToken: refreshToken,
   });
+
+  tokenCache.set(user.id, session);
 
   return res.send(session);
 };
