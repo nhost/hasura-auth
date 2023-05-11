@@ -15,6 +15,7 @@ import {
   insertUserRoles,
   snakeiseUser,
 } from './utils';
+import nr from "newrelic";
 
 const pool = new Pool({
   max: ENV.AUTH_PG_POOL_MAX_CONNECTIONS,
@@ -23,32 +24,33 @@ const pool = new Pool({
 });
 
 export const pgClient = {
+  async query<T>(text: string, params?: any[]) {
+    const client = await nr.startSegment('pg-pool:connect', true, async () => pool.connect());
+    const result = nr.startSegment('pg-pool:query', true, () => client.query<T>(text, params));
+    await nr.startSegment('pg-pool:release', true, async () => client.release());
+    return result;
+  },
+
   insertProviderRequest: async (id: string, options: SessionData) => {
-    const client = await pool.connect();
-    await client.query(
+    await pgClient.query(
       `INSERT INTO "auth"."provider_requests" (id, options) VALUES($1, $2) 
         ON CONFLICT(id) DO UPDATE SET options = EXCLUDED.options;`,
       [id, options]
     );
-    client.release();
   },
 
   deleteProviderRequest: async (id: string) => {
-    const client = await pool.connect();
-    await client.query(
+    await pgClient.query(
       `DELETE FROM "auth"."provider_requests" WHERE id = $1;`,
       [id]
     );
-    client.release();
   },
 
   providerRequest: async (id: string) => {
-    const client = await pool.connect();
-    const { rows } = await client.query<{ options: SessionData }>(
+    const { rows } = await pgClient.query<{ options: SessionData }>(
       `SELECT options FROM "auth"."provider_requests" WHERE id = $1;`,
       [id]
     );
-    client.release();
     return rows[0];
   },
 
@@ -56,51 +58,41 @@ export const pgClient = {
     userId: string,
     refreshToken: string = uuidv4()
   ) => {
-    const client = await pool.connect();
-    await client.query(
+    await pgClient.query(
       `INSERT INTO "auth"."refresh_tokens" (user_id, refresh_token, expires_at) VALUES($1, $2, $3);`,
       [userId, refreshToken, new Date(newRefreshExpiry())]
     );
-    client.release();
     return refreshToken;
   },
 
   deleteRefreshToken: async (refreshToken: string) => {
-    const client = await pool.connect();
-    await client.query(
+    await pgClient.query(
       `DELETE FROM "auth"."refresh_tokens" WHERE refresh_token_hash = $1;`,
       [hashRefreshToken(refreshToken)]
     );
-    client.release();
   },
 
   deleteUserRefreshTokens: async (userId: string) => {
-    const client = await pool.connect();
-    await client.query(
+    await pgClient.query(
       `DELETE FROM "auth"."refresh_tokens" WHERE user_id = $1;`,
       [userId]
     );
-    client.release();
   },
 
   deleteExpiredRefreshTokens: async () => {
-    const client = await pool.connect();
-    await client.query(
+    await pgClient.query(
       `DELETE FROM "auth"."refresh_tokens" WHERE expires_at < NOW();`
     );
-    client.release();
   },
 
   upsertRoles: async (roles: string[]) => {
-    const client = await pool.connect();
-    const { rows } = await client.query<{ role: string }>(
+    const { rows } = await pgClient.query<{ role: string }>(
       `INSERT INTO "auth"."roles" (role) VALUES ${roles
         .map((_, i) => `($${i + 1})`)
         .join(', ')} ON CONFLICT DO NOTHING
         RETURNING role;`,
       roles
     );
-    client.release();
     return rows.map((row) => row.role);
   },
 
@@ -203,18 +195,15 @@ export const pgClient = {
     refreshToken?: string;
     accessToken?: string;
   }) => {
-    const client = await pool.connect();
-    const { rows } = await client.query(
+    const { rows } = await pgClient.query(
       `INSERT INTO "auth"."user_providers" (user_id, provider_id, provider_user_id, refresh_token, access_token) VALUES($1, $2, $3, $4, $5) RETURNING *;`,
       [userId, providerId, providerUserId, refreshToken, accessToken]
     );
-    client.release();
     return rows[0];
   },
 
   updateRefreshTokenExpiresAt: async (refreshToken: string) => {
-    const client = await pool.connect();
-    await client.query(
+    await pgClient.query(
       `UPDATE "auth"."refresh_tokens" rt SET expires_at = $1 FROM "auth"."users" u 
         WHERE rt.user_id = u.id
           AND rt.refresh_token_hash = $2 
@@ -222,12 +211,10 @@ export const pgClient = {
           AND u.disabled = false ;`,
       [new Date(newRefreshExpiry()), hashRefreshToken(refreshToken)]
     );
-    client.release();
   },
 
   getUserByRefreshToken: async (refreshToken: string) => {
-    const client = await pool.connect();
-    const { rows } = await client.query<{ id: string }>(
+    const { rows } = await pgClient.query<{ id: string }>(
       `SELECT u.id 
         FROM auth.refresh_tokens AS rt
         JOIN auth.users AS u ON rt.user_id = u.id
@@ -237,9 +224,7 @@ export const pgClient = {
       [hashRefreshToken(refreshToken)]
     );
 
-    const user = await getUserById(client, rows[0]?.id);
-    client.release();
-    return cameliseUser(user);
+    return  await pgClient.getUserById(rows[0]?.id);
   },
 
   getUserById: async (userId: string) => {
