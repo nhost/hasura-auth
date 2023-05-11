@@ -2,7 +2,6 @@ import { RequestHandler } from 'express';
 import { getNewOrUpdateCurrentSession, pgClient } from '@/utils';
 import { sendError } from '@/errors';
 import { Joi, refreshToken } from '@/validation';
-import nr from 'newrelic';
 import NodeCache from 'node-cache';
 
 const cache = new NodeCache({ stdTTL: 60 * 60 * 24 });
@@ -20,7 +19,7 @@ export const tokenHandler: RequestHandler<{},
     return sendError(res, 'invalid-refresh-token');
   }
 
-  const user = await nr.startSegment('getUserByRefreshToken', true, async () => pgClient.getUserByRefreshToken(refreshToken));
+  const user = await pgClient.getUserByRefreshToken(refreshToken);
 
   if (!user) {
     console.log('cache hit', refreshToken);
@@ -32,13 +31,13 @@ export const tokenHandler: RequestHandler<{},
   // TODO: CRONJOB in the future.
   if (Math.random() < 0.001) {
     // no await
-    await nr.startSegment('deleteExpiredRefreshTokens', true, pgClient.deleteExpiredRefreshTokens);
+    await pgClient.deleteExpiredRefreshTokens();
   }
 
-  const session = nr.startSegment('getNewOrUpdateCurrentSession', true, async () => await getNewOrUpdateCurrentSession({
+  const session = await getNewOrUpdateCurrentSession({
     user,
     currentRefreshToken: refreshToken,
-  }));
+  });
 
   return res.send(session);
 };

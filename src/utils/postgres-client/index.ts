@@ -25,8 +25,8 @@ const pool = new Pool({
 
 export const pgClient = {
   async query<T>(text: string, params?: any[]) {
-    const client = await nr.startSegment('pg-pool:connect', true, async () => pool.connect());
-    const result = nr.startSegment('pg-pool:query', true, () => client.query<T>(text, params));
+    const client = await nr.startSegment('pg-pool:connect', true, async () => await pool.connect());
+    const result = nr.startSegment('pg-pool:query', true, async () => await client.query<T>(text, params));
     await nr.startSegment('pg-pool:release', true, async () => client.release());
     return result;
   },
