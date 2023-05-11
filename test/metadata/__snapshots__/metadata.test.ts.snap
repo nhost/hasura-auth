@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`metadata operations should apply metadata entirely for the auth schema 1`] = `
+exports[`metadata operations should patch metadata from an empty project 1`] = `
 Object {
   "sources": Array [
     Object {
@@ -24,14 +24,7 @@ Object {
       "tables": Array [
         Object {
           "configuration": Object {
-            "column_config": Object {
-              "id": Object {
-                "custom_name": "id",
-              },
-              "options": Object {
-                "custom_name": "options",
-              },
-            },
+            "column_config": Object {},
             "custom_column_names": Object {
               "id": "id",
               "options": "options",
@@ -57,48 +50,6 @@ Object {
         Object {
           "array_relationships": Array [
             Object {
-              "name": "userProviders",
-              "using": Object {
-                "foreign_key_constraint_on": Object {
-                  "column": "provider_id",
-                  "table": Object {
-                    "name": "user_providers",
-                    "schema": "auth",
-                  },
-                },
-              },
-            },
-          ],
-          "configuration": Object {
-            "column_config": Object {
-              "id": Object {
-                "custom_name": "id",
-              },
-            },
-            "custom_column_names": Object {
-              "id": "id",
-            },
-            "custom_name": "authProviders",
-            "custom_root_fields": Object {
-              "delete": "deleteAuthProviders",
-              "delete_by_pk": "deleteAuthProvider",
-              "insert": "insertAuthProviders",
-              "insert_one": "insertAuthProvider",
-              "select": "authProviders",
-              "select_aggregate": "authProvidersAggregate",
-              "select_by_pk": "authProvider",
-              "update": "updateAuthProviders",
-              "update_by_pk": "updateAuthProvider",
-            },
-          },
-          "table": Object {
-            "name": "providers",
-            "schema": "auth",
-          },
-        },
-        Object {
-          "array_relationships": Array [
-            Object {
               "name": "refreshTokens",
               "using": Object {
                 "foreign_key_constraint_on": Object {
@@ -112,6 +63,8 @@ Object {
             },
           ],
           "configuration": Object {
+            "column_config": Object {},
+            "custom_column_names": Object {},
             "custom_name": "authRefreshTokenTypes",
             "custom_root_fields": Object {
               "delete": "deleteAuthRefreshTokenTypes",
@@ -133,20 +86,7 @@ Object {
         },
         Object {
           "configuration": Object {
-            "column_config": Object {
-              "created_at": Object {
-                "custom_name": "createdAt",
-              },
-              "expires_at": Object {
-                "custom_name": "expiresAt",
-              },
-              "refresh_token_hash": Object {
-                "custom_name": "refreshTokenHash",
-              },
-              "user_id": Object {
-                "custom_name": "userId",
-              },
-            },
+            "column_config": Object {},
             "custom_column_names": Object {
               "created_at": "createdAt",
               "expires_at": "expiresAt",
@@ -188,12 +128,6 @@ Object {
             },
           ],
           "object_relationships": Array [
-            Object {
-              "name": "refreshTokenType",
-              "using": Object {
-                "foreign_key_constraint_on": "type",
-              },
-            },
             Object {
               "name": "user",
               "using": Object {
@@ -254,11 +188,7 @@ Object {
             },
           ],
           "configuration": Object {
-            "column_config": Object {
-              "role": Object {
-                "custom_name": "role",
-              },
-            },
+            "column_config": Object {},
             "custom_column_names": Object {
               "role": "role",
             },
@@ -282,29 +212,7 @@ Object {
         },
         Object {
           "configuration": Object {
-            "column_config": Object {
-              "access_token": Object {
-                "custom_name": "accessToken",
-              },
-              "created_at": Object {
-                "custom_name": "createdAt",
-              },
-              "id": Object {
-                "custom_name": "id",
-              },
-              "provider_id": Object {
-                "custom_name": "providerId",
-              },
-              "provider_user_id": Object {
-                "custom_name": "providerUserId",
-              },
-              "updated_at": Object {
-                "custom_name": "updatedAt",
-              },
-              "user_id": Object {
-                "custom_name": "userId",
-              },
-            },
+            "column_config": Object {},
             "custom_column_names": Object {
               "access_token": "accessToken",
               "created_at": "createdAt",
@@ -330,15 +238,15 @@ Object {
           },
           "object_relationships": Array [
             Object {
-              "name": "provider",
-              "using": Object {
-                "foreign_key_constraint_on": "provider_id",
-              },
-            },
-            Object {
               "name": "user",
               "using": Object {
                 "foreign_key_constraint_on": "user_id",
+              },
+            },
+            Object {
+              "name": "provider",
+              "using": Object {
+                "foreign_key_constraint_on": "provider_id",
               },
             },
           ],
@@ -349,20 +257,7 @@ Object {
         },
         Object {
           "configuration": Object {
-            "column_config": Object {
-              "created_at": Object {
-                "custom_name": "createdAt",
-              },
-              "id": Object {
-                "custom_name": "id",
-              },
-              "role": Object {
-                "custom_name": "role",
-              },
-              "user_id": Object {
-                "custom_name": "userId",
-              },
-            },
+            "column_config": Object {},
             "custom_column_names": Object {
               "created_at": "createdAt",
               "id": "id",
@@ -384,15 +279,15 @@ Object {
           },
           "object_relationships": Array [
             Object {
-              "name": "roleByRole",
-              "using": Object {
-                "foreign_key_constraint_on": "role",
-              },
-            },
-            Object {
               "name": "user",
               "using": Object {
                 "foreign_key_constraint_on": "user_id",
+              },
+            },
+            Object {
+              "name": "roleByRole",
+              "using": Object {
+                "foreign_key_constraint_on": "role",
               },
             },
           ],
@@ -402,62 +297,14 @@ Object {
           },
         },
         Object {
-          "configuration": Object {
-            "column_config": Object {
-              "credential_id": Object {
-                "custom_name": "credentialId",
-              },
-              "credential_public_key": Object {
-                "custom_name": "credentialPublicKey",
-              },
-              "id": Object {
-                "custom_name": "id",
-              },
-              "user_id": Object {
-                "custom_name": "userId",
-              },
-            },
-            "custom_column_names": Object {
-              "credential_id": "credentialId",
-              "credential_public_key": "credentialPublicKey",
-              "id": "id",
-              "user_id": "userId",
-            },
-            "custom_name": "authUserSecurityKeys",
-            "custom_root_fields": Object {
-              "delete": "deleteAuthUserSecurityKeys",
-              "delete_by_pk": "deleteAuthUserSecurityKey",
-              "insert": "insertAuthUserSecurityKeys",
-              "insert_one": "insertAuthUserSecurityKey",
-              "select": "authUserSecurityKeys",
-              "select_aggregate": "authUserSecurityKeysAggregate",
-              "select_by_pk": "authUserSecurityKey",
-              "update": "updateAuthUserSecurityKeys",
-              "update_by_pk": "updateAuthUserSecurityKey",
-            },
-          },
-          "object_relationships": Array [
-            Object {
-              "name": "user",
-              "using": Object {
-                "foreign_key_constraint_on": "user_id",
-              },
-            },
-          ],
-          "table": Object {
-            "name": "user_security_keys",
-            "schema": "auth",
-          },
-        },
-        Object {
           "array_relationships": Array [
             Object {
-              "name": "refreshTokens",
+              "name": "userProviders",
               "using": Object {
                 "foreign_key_constraint_on": Object {
                   "column": "user_id",
                   "table": Object {
-                    "name": "refresh_tokens",
+                    "name": "user_providers",
                     "schema": "auth",
                   },
                 },
@@ -476,6 +323,18 @@ Object {
               },
             },
             Object {
+              "name": "refreshTokens",
+              "using": Object {
+                "foreign_key_constraint_on": Object {
+                  "column": "user_id",
+                  "table": Object {
+                    "name": "refresh_tokens",
+                    "schema": "auth",
+                  },
+                },
+              },
+            },
+            Object {
               "name": "securityKeys",
               "using": Object {
                 "foreign_key_constraint_on": Object {
@@ -487,94 +346,9 @@ Object {
                 },
               },
             },
-            Object {
-              "name": "userProviders",
-              "using": Object {
-                "foreign_key_constraint_on": Object {
-                  "column": "user_id",
-                  "table": Object {
-                    "name": "user_providers",
-                    "schema": "auth",
-                  },
-                },
-              },
-            },
           ],
           "configuration": Object {
-            "column_config": Object {
-              "active_mfa_type": Object {
-                "custom_name": "activeMfaType",
-              },
-              "avatar_url": Object {
-                "custom_name": "avatarUrl",
-              },
-              "created_at": Object {
-                "custom_name": "createdAt",
-              },
-              "default_role": Object {
-                "custom_name": "defaultRole",
-              },
-              "disabled": Object {
-                "custom_name": "disabled",
-              },
-              "display_name": Object {
-                "custom_name": "displayName",
-              },
-              "email": Object {
-                "custom_name": "email",
-              },
-              "email_verified": Object {
-                "custom_name": "emailVerified",
-              },
-              "id": Object {
-                "custom_name": "id",
-              },
-              "is_anonymous": Object {
-                "custom_name": "isAnonymous",
-              },
-              "last_seen": Object {
-                "custom_name": "lastSeen",
-              },
-              "locale": Object {
-                "custom_name": "locale",
-              },
-              "new_email": Object {
-                "custom_name": "newEmail",
-              },
-              "otp_hash": Object {
-                "custom_name": "otpHash",
-              },
-              "otp_hash_expires_at": Object {
-                "custom_name": "otpHashExpiresAt",
-              },
-              "otp_method_last_used": Object {
-                "custom_name": "otpMethodLastUsed",
-              },
-              "password_hash": Object {
-                "custom_name": "passwordHash",
-              },
-              "phone_number": Object {
-                "custom_name": "phoneNumber",
-              },
-              "phone_number_verified": Object {
-                "custom_name": "phoneNumberVerified",
-              },
-              "ticket": Object {
-                "custom_name": "ticket",
-              },
-              "ticket_expires_at": Object {
-                "custom_name": "ticketExpiresAt",
-              },
-              "totp_secret": Object {
-                "custom_name": "totpSecret",
-              },
-              "updated_at": Object {
-                "custom_name": "updatedAt",
-              },
-              "webauthn_current_challenge": Object {
-                "custom_name": "currentChallenge",
-              },
-            },
+            "column_config": Object {},
             "custom_column_names": Object {
               "active_mfa_type": "activeMfaType",
               "avatar_url": "avatarUrl",
@@ -627,209 +401,6 @@ Object {
             "schema": "auth",
           },
         },
-      ],
-    },
-  ],
-  "version": 3,
-}
-`;
-
-exports[`metadata operations should override existing metadata for the auth schema 1`] = `
-Object {
-  "sources": Array [
-    Object {
-      "configuration": Object {
-        "connection_info": Object {
-          "database_url": Object {
-            "from_env": "HASURA_GRAPHQL_DATABASE_URL",
-          },
-          "isolation_level": "read-committed",
-          "pool_settings": Object {
-            "connection_lifetime": 600,
-            "idle_timeout": 60,
-            "max_connections": 10,
-            "retries": 1,
-          },
-          "use_prepared_statements": true,
-        },
-      },
-      "kind": "postgres",
-      "name": "default",
-      "tables": Array [
-        Object {
-          "array_relationships": Array [
-            Object {
-              "name": "files",
-              "using": Object {
-                "foreign_key_constraint_on": Object {
-                  "column": "bucket_id",
-                  "table": Object {
-                    "name": "files",
-                    "schema": "storage",
-                  },
-                },
-              },
-            },
-          ],
-          "configuration": Object {
-            "column_config": Object {
-              "cache_control": Object {
-                "custom_name": "cacheControl",
-              },
-              "created_at": Object {
-                "custom_name": "createdAt",
-              },
-              "download_expiration": Object {
-                "custom_name": "downloadExpiration",
-              },
-              "id": Object {
-                "custom_name": "id",
-              },
-              "max_upload_file_size": Object {
-                "custom_name": "maxUploadFileSize",
-              },
-              "min_upload_file_size": Object {
-                "custom_name": "minUploadFileSize",
-              },
-              "presigned_urls_enabled": Object {
-                "custom_name": "presignedUrlsEnabled",
-              },
-              "updated_at": Object {
-                "custom_name": "updatedAt",
-              },
-            },
-            "custom_column_names": Object {
-              "cache_control": "cacheControl",
-              "created_at": "createdAt",
-              "download_expiration": "downloadExpiration",
-              "id": "id",
-              "max_upload_file_size": "maxUploadFileSize",
-              "min_upload_file_size": "minUploadFileSize",
-              "presigned_urls_enabled": "presignedUrlsEnabled",
-              "updated_at": "updatedAt",
-            },
-            "custom_name": "buckets",
-            "custom_root_fields": Object {
-              "delete": "deleteBuckets",
-              "delete_by_pk": "deleteBucket",
-              "insert": "insertBuckets",
-              "insert_one": "insertBucket",
-              "select": "buckets",
-              "select_aggregate": "bucketsAggregate",
-              "select_by_pk": "bucket",
-              "update": "updateBuckets",
-              "update_by_pk": "updateBucket",
-            },
-          },
-          "table": Object {
-            "name": "buckets",
-            "schema": "storage",
-          },
-        },
-        Object {
-          "configuration": Object {
-            "column_config": Object {
-              "bucket_id": Object {
-                "custom_name": "bucketId",
-              },
-              "created_at": Object {
-                "custom_name": "createdAt",
-              },
-              "etag": Object {
-                "custom_name": "etag",
-              },
-              "id": Object {
-                "custom_name": "id",
-              },
-              "is_uploaded": Object {
-                "custom_name": "isUploaded",
-              },
-              "mime_type": Object {
-                "custom_name": "mimeType",
-              },
-              "name": Object {
-                "custom_name": "name",
-              },
-              "size": Object {
-                "custom_name": "size",
-              },
-              "updated_at": Object {
-                "custom_name": "updatedAt",
-              },
-              "uploaded_by_user_id": Object {
-                "custom_name": "uploadedByUserId",
-              },
-            },
-            "custom_column_names": Object {
-              "bucket_id": "bucketId",
-              "created_at": "createdAt",
-              "etag": "etag",
-              "id": "id",
-              "is_uploaded": "isUploaded",
-              "mime_type": "mimeType",
-              "name": "name",
-              "size": "size",
-              "updated_at": "updatedAt",
-              "uploaded_by_user_id": "uploadedByUserId",
-            },
-            "custom_name": "files",
-            "custom_root_fields": Object {
-              "delete": "deleteFiles",
-              "delete_by_pk": "deleteFile",
-              "insert": "insertFiles",
-              "insert_one": "insertFile",
-              "select": "files",
-              "select_aggregate": "filesAggregate",
-              "select_by_pk": "file",
-              "update": "updateFiles",
-              "update_by_pk": "updateFile",
-            },
-          },
-          "object_relationships": Array [
-            Object {
-              "name": "bucket",
-              "using": Object {
-                "foreign_key_constraint_on": "bucket_id",
-              },
-            },
-          ],
-          "table": Object {
-            "name": "files",
-            "schema": "storage",
-          },
-        },
-        Object {
-          "configuration": Object {
-            "column_config": Object {
-              "id": Object {
-                "custom_name": "id",
-              },
-              "options": Object {
-                "custom_name": "options",
-              },
-            },
-            "custom_column_names": Object {
-              "id": "id",
-              "options": "options",
-            },
-            "custom_name": "authProviderRequests",
-            "custom_root_fields": Object {
-              "delete": "deleteAuthProviderRequests",
-              "delete_by_pk": "deleteAuthProviderRequest",
-              "insert": "insertAuthProviderRequests",
-              "insert_one": "insertAuthProviderRequest",
-              "select": "authProviderRequests",
-              "select_aggregate": "authProviderRequestsAggregate",
-              "select_by_pk": "authProviderRequest",
-              "update": "updateAuthProviderRequests",
-              "update_by_pk": "updateAuthProviderRequest",
-            },
-          },
-          "table": Object {
-            "name": "provider_requests",
-            "schema": "auth",
-          },
-        },
         Object {
           "array_relationships": Array [
             Object {
@@ -846,11 +417,7 @@ Object {
             },
           ],
           "configuration": Object {
-            "column_config": Object {
-              "id": Object {
-                "custom_name": "id",
-              },
-            },
+            "column_config": Object {},
             "custom_column_names": Object {
               "id": "id",
             },
@@ -873,326 +440,8 @@ Object {
           },
         },
         Object {
-          "array_relationships": Array [
-            Object {
-              "name": "refreshTokens",
-              "using": Object {
-                "foreign_key_constraint_on": Object {
-                  "column": "type",
-                  "table": Object {
-                    "name": "refresh_tokens",
-                    "schema": "auth",
-                  },
-                },
-              },
-            },
-          ],
           "configuration": Object {
-            "custom_name": "authRefreshTokenTypes",
-            "custom_root_fields": Object {
-              "delete": "deleteAuthRefreshTokenTypes",
-              "delete_by_pk": "deleteAuthRefreshTokenType",
-              "insert": "insertAuthRefreshTokenTypes",
-              "insert_one": "insertAuthRefreshTokenType",
-              "select": "authRefreshTokenTypes",
-              "select_aggregate": "authRefreshTokenTypesAggregate",
-              "select_by_pk": "authRefreshTokenType",
-              "update": "updateAuthRefreshTokenTypes",
-              "update_by_pk": "updateAuthRefreshTokenType",
-            },
-          },
-          "is_enum": true,
-          "table": Object {
-            "name": "refresh_token_types",
-            "schema": "auth",
-          },
-        },
-        Object {
-          "configuration": Object {
-            "column_config": Object {
-              "created_at": Object {
-                "custom_name": "createdAt",
-              },
-              "expires_at": Object {
-                "custom_name": "expiresAt",
-              },
-              "refresh_token_hash": Object {
-                "custom_name": "refreshTokenHash",
-              },
-              "user_id": Object {
-                "custom_name": "userId",
-              },
-            },
-            "custom_column_names": Object {
-              "created_at": "createdAt",
-              "expires_at": "expiresAt",
-              "refresh_token_hash": "refreshTokenHash",
-              "user_id": "userId",
-            },
-            "custom_name": "authRefreshTokens",
-            "custom_root_fields": Object {
-              "delete": "deleteAuthRefreshTokens",
-              "delete_by_pk": "deleteAuthRefreshToken",
-              "insert": "insertAuthRefreshTokens",
-              "insert_one": "insertAuthRefreshToken",
-              "select": "authRefreshTokens",
-              "select_aggregate": "authRefreshTokensAggregate",
-              "select_by_pk": "authRefreshToken",
-              "update": "updateAuthRefreshTokens",
-              "update_by_pk": "updateAuthRefreshToken",
-            },
-          },
-          "delete_permissions": Array [
-            Object {
-              "permission": Object {
-                "filter": Object {
-                  "_and": Array [
-                    Object {
-                      "user_id": Object {
-                        "_eq": "X-Hasura-User-Id",
-                      },
-                    },
-                    Object {
-                      "type": Object {
-                        "_eq": "pat",
-                      },
-                    },
-                  ],
-                },
-              },
-              "role": "user",
-            },
-          ],
-          "object_relationships": Array [
-            Object {
-              "name": "refreshTokenType",
-              "using": Object {
-                "foreign_key_constraint_on": "type",
-              },
-            },
-            Object {
-              "name": "user",
-              "using": Object {
-                "foreign_key_constraint_on": "user_id",
-              },
-            },
-          ],
-          "select_permissions": Array [
-            Object {
-              "permission": Object {
-                "columns": Array [
-                  "id",
-                  "created_at",
-                  "expires_at",
-                  "metadata",
-                  "type",
-                  "user_id",
-                ],
-                "filter": Object {
-                  "user_id": Object {
-                    "_eq": "X-Hasura-User-Id",
-                  },
-                },
-              },
-              "role": "user",
-            },
-          ],
-          "table": Object {
-            "name": "refresh_tokens",
-            "schema": "auth",
-          },
-        },
-        Object {
-          "array_relationships": Array [
-            Object {
-              "name": "userRoles",
-              "using": Object {
-                "foreign_key_constraint_on": Object {
-                  "column": "role",
-                  "table": Object {
-                    "name": "user_roles",
-                    "schema": "auth",
-                  },
-                },
-              },
-            },
-            Object {
-              "name": "usersByDefaultRole",
-              "using": Object {
-                "foreign_key_constraint_on": Object {
-                  "column": "default_role",
-                  "table": Object {
-                    "name": "users",
-                    "schema": "auth",
-                  },
-                },
-              },
-            },
-          ],
-          "configuration": Object {
-            "column_config": Object {
-              "role": Object {
-                "custom_name": "role",
-              },
-            },
-            "custom_column_names": Object {
-              "role": "role",
-            },
-            "custom_name": "authRoles",
-            "custom_root_fields": Object {
-              "delete": "deleteAuthRoles",
-              "delete_by_pk": "deleteAuthRole",
-              "insert": "insertAuthRoles",
-              "insert_one": "insertAuthRole",
-              "select": "authRoles",
-              "select_aggregate": "authRolesAggregate",
-              "select_by_pk": "authRole",
-              "update": "updateAuthRoles",
-              "update_by_pk": "updateAuthRole",
-            },
-          },
-          "table": Object {
-            "name": "roles",
-            "schema": "auth",
-          },
-        },
-        Object {
-          "configuration": Object {
-            "column_config": Object {
-              "access_token": Object {
-                "custom_name": "accessToken",
-              },
-              "created_at": Object {
-                "custom_name": "createdAt",
-              },
-              "id": Object {
-                "custom_name": "id",
-              },
-              "provider_id": Object {
-                "custom_name": "providerId",
-              },
-              "provider_user_id": Object {
-                "custom_name": "providerUserId",
-              },
-              "updated_at": Object {
-                "custom_name": "updatedAt",
-              },
-              "user_id": Object {
-                "custom_name": "userId",
-              },
-            },
-            "custom_column_names": Object {
-              "access_token": "accessToken",
-              "created_at": "createdAt",
-              "id": "id",
-              "provider_id": "providerId",
-              "provider_user_id": "providerUserId",
-              "refresh_token": "refreshToken",
-              "updated_at": "updatedAt",
-              "user_id": "userId",
-            },
-            "custom_name": "authUserProviders",
-            "custom_root_fields": Object {
-              "delete": "deleteAuthUserProviders",
-              "delete_by_pk": "deleteAuthUserProvider",
-              "insert": "insertAuthUserProviders",
-              "insert_one": "insertAuthUserProvider",
-              "select": "authUserProviders",
-              "select_aggregate": "authUserProvidersAggregate",
-              "select_by_pk": "authUserProvider",
-              "update": "updateAuthUserProviders",
-              "update_by_pk": "updateAuthUserProvider",
-            },
-          },
-          "object_relationships": Array [
-            Object {
-              "name": "provider",
-              "using": Object {
-                "foreign_key_constraint_on": "provider_id",
-              },
-            },
-            Object {
-              "name": "user",
-              "using": Object {
-                "foreign_key_constraint_on": "user_id",
-              },
-            },
-          ],
-          "table": Object {
-            "name": "user_providers",
-            "schema": "auth",
-          },
-        },
-        Object {
-          "configuration": Object {
-            "column_config": Object {
-              "created_at": Object {
-                "custom_name": "createdAt",
-              },
-              "id": Object {
-                "custom_name": "id",
-              },
-              "role": Object {
-                "custom_name": "role",
-              },
-              "user_id": Object {
-                "custom_name": "userId",
-              },
-            },
-            "custom_column_names": Object {
-              "created_at": "createdAt",
-              "id": "id",
-              "role": "role",
-              "user_id": "userId",
-            },
-            "custom_name": "authUserRoles",
-            "custom_root_fields": Object {
-              "delete": "deleteAuthUserRoles",
-              "delete_by_pk": "deleteAuthUserRole",
-              "insert": "insertAuthUserRoles",
-              "insert_one": "insertAuthUserRole",
-              "select": "authUserRoles",
-              "select_aggregate": "authUserRolesAggregate",
-              "select_by_pk": "authUserRole",
-              "update": "updateAuthUserRoles",
-              "update_by_pk": "updateAuthUserRole",
-            },
-          },
-          "object_relationships": Array [
-            Object {
-              "name": "roleByRole",
-              "using": Object {
-                "foreign_key_constraint_on": "role",
-              },
-            },
-            Object {
-              "name": "user",
-              "using": Object {
-                "foreign_key_constraint_on": "user_id",
-              },
-            },
-          ],
-          "table": Object {
-            "name": "user_roles",
-            "schema": "auth",
-          },
-        },
-        Object {
-          "configuration": Object {
-            "column_config": Object {
-              "credential_id": Object {
-                "custom_name": "credentialId",
-              },
-              "credential_public_key": Object {
-                "custom_name": "credentialPublicKey",
-              },
-              "id": Object {
-                "custom_name": "id",
-              },
-              "user_id": Object {
-                "custom_name": "userId",
-              },
-            },
+            "column_config": Object {},
             "custom_column_names": Object {
               "credential_id": "credentialId",
               "credential_public_key": "credentialPublicKey",
@@ -1222,184 +471,6 @@ Object {
           ],
           "table": Object {
             "name": "user_security_keys",
-            "schema": "auth",
-          },
-        },
-        Object {
-          "array_relationships": Array [
-            Object {
-              "name": "refreshTokens",
-              "using": Object {
-                "foreign_key_constraint_on": Object {
-                  "column": "user_id",
-                  "table": Object {
-                    "name": "refresh_tokens",
-                    "schema": "auth",
-                  },
-                },
-              },
-            },
-            Object {
-              "name": "roles",
-              "using": Object {
-                "foreign_key_constraint_on": Object {
-                  "column": "user_id",
-                  "table": Object {
-                    "name": "user_roles",
-                    "schema": "auth",
-                  },
-                },
-              },
-            },
-            Object {
-              "name": "securityKeys",
-              "using": Object {
-                "foreign_key_constraint_on": Object {
-                  "column": "user_id",
-                  "table": Object {
-                    "name": "user_security_keys",
-                    "schema": "auth",
-                  },
-                },
-              },
-            },
-            Object {
-              "name": "userProviders",
-              "using": Object {
-                "foreign_key_constraint_on": Object {
-                  "column": "user_id",
-                  "table": Object {
-                    "name": "user_providers",
-                    "schema": "auth",
-                  },
-                },
-              },
-            },
-          ],
-          "configuration": Object {
-            "column_config": Object {
-              "active_mfa_type": Object {
-                "custom_name": "activeMfaType",
-              },
-              "avatar_url": Object {
-                "custom_name": "avatarUrl",
-              },
-              "created_at": Object {
-                "custom_name": "createdAt",
-              },
-              "default_role": Object {
-                "custom_name": "defaultRole",
-              },
-              "disabled": Object {
-                "custom_name": "disabled",
-              },
-              "display_name": Object {
-                "custom_name": "displayName",
-              },
-              "email": Object {
-                "custom_name": "email",
-              },
-              "email_verified": Object {
-                "custom_name": "emailVerified",
-              },
-              "id": Object {
-                "custom_name": "id",
-              },
-              "is_anonymous": Object {
-                "custom_name": "isAnonymous",
-              },
-              "last_seen": Object {
-                "custom_name": "lastSeen",
-              },
-              "locale": Object {
-                "custom_name": "locale",
-              },
-              "new_email": Object {
-                "custom_name": "newEmail",
-              },
-              "otp_hash": Object {
-                "custom_name": "otpHash",
-              },
-              "otp_hash_expires_at": Object {
-                "custom_name": "otpHashExpiresAt",
-              },
-              "otp_method_last_used": Object {
-                "custom_name": "otpMethodLastUsed",
-              },
-              "password_hash": Object {
-                "custom_name": "passwordHash",
-              },
-              "phone_number": Object {
-                "custom_name": "phoneNumber",
-              },
-              "phone_number_verified": Object {
-                "custom_name": "phoneNumberVerified",
-              },
-              "ticket": Object {
-                "custom_name": "ticket",
-              },
-              "ticket_expires_at": Object {
-                "custom_name": "ticketExpiresAt",
-              },
-              "totp_secret": Object {
-                "custom_name": "totpSecret",
-              },
-              "updated_at": Object {
-                "custom_name": "updatedAt",
-              },
-              "webauthn_current_challenge": Object {
-                "custom_name": "currentChallenge",
-              },
-            },
-            "custom_column_names": Object {
-              "active_mfa_type": "activeMfaType",
-              "avatar_url": "avatarUrl",
-              "created_at": "createdAt",
-              "default_role": "defaultRole",
-              "disabled": "disabled",
-              "display_name": "displayName",
-              "email": "email",
-              "email_verified": "emailVerified",
-              "id": "id",
-              "is_anonymous": "isAnonymous",
-              "last_seen": "lastSeen",
-              "locale": "locale",
-              "new_email": "newEmail",
-              "otp_hash": "otpHash",
-              "otp_hash_expires_at": "otpHashExpiresAt",
-              "otp_method_last_used": "otpMethodLastUsed",
-              "password_hash": "passwordHash",
-              "phone_number": "phoneNumber",
-              "phone_number_verified": "phoneNumberVerified",
-              "ticket": "ticket",
-              "ticket_expires_at": "ticketExpiresAt",
-              "totp_secret": "totpSecret",
-              "updated_at": "updatedAt",
-              "webauthn_current_challenge": "currentChallenge",
-            },
-            "custom_name": "users",
-            "custom_root_fields": Object {
-              "delete": "deleteUsers",
-              "delete_by_pk": "deleteUser",
-              "insert": "insertUsers",
-              "insert_one": "insertUser",
-              "select": "users",
-              "select_aggregate": "usersAggregate",
-              "select_by_pk": "user",
-              "update": "updateUsers",
-              "update_by_pk": "updateUser",
-            },
-          },
-          "object_relationships": Array [
-            Object {
-              "name": "defaultRoleByRole",
-              "using": Object {
-                "foreign_key_constraint_on": "default_role",
-              },
-            },
-          ],
-          "table": Object {
-            "name": "users",
             "schema": "auth",
           },
         },
