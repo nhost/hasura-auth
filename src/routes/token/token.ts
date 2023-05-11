@@ -16,7 +16,7 @@ export const tokenHandler: RequestHandler<{},
   { refreshToken: string }> = async (req, res) => {
   const { refreshToken } = req.body;
 
-  if (cache.get(refreshToken)) {
+  if (cache.get(refreshToken) === true) {
     return sendError(res, 'invalid-refresh-token');
   }
 
