@@ -21,6 +21,7 @@ specifiers:
   '@types/micromatch': ^4.0.2
   '@types/newrelic': ^9.13.0
   '@types/node': ^17.0.9
+  '@types/node-cache': ^4.2.5
   '@types/node-fetch': ^2.5.7
   '@types/nodemailer': 6.4.0
   '@types/pg': ^7.14.11
@@ -79,6 +80,7 @@ specifiers:
   micromatch: ^4.0.5
   newrelic: ^10.1.0
   nocache: ^2.1.0
+  node-cache: ^5.1.2
   node-fetch: ^2.6.1
   nodemailer: 6.4.16
   npm-run-all: ^4.1.5
@@ -106,6 +108,7 @@ dependencies:
   '@djgrant/postgres-migrations': 4.1.0-rc.1
   '@simplewebauthn/server': 5.3.0
   '@types/newrelic': 9.13.0
+  '@types/node-cache': 4.2.5
   axios: 0.21.1
   bcryptjs: 2.4.3
   body-parser: 1.19.0
@@ -138,6 +141,7 @@ dependencies:
   micromatch: 4.0.5
   newrelic: 10.1.0
   nocache: 2.1.0
+  node-cache: 5.1.2
   node-fetch: 2.6.7
   nodemailer: 6.4.16
   otplib: 12.0.1
@@ -1650,6 +1654,13 @@ packages:
     resolution: {integrity: sha512-Dj2fh+1SvR9KIZmk/ZcrzHmfF1f/2vSsIlYvKD49KtPcxRBKOWFRP9wyHtq+B6YCqIv+fHN97NtgJiq7OJaRzw==}
     dev: false
 
+  /@types/node-cache/4.2.5:
+    resolution: {integrity: sha512-faK2Owokboz53g8ooq2dw3iDJ6/HMTCIa2RvMte5WMTiABy+wA558K+iuyRtlR67Un5q9gEKysSDtqZYbSa0Pg==}
+    deprecated: This is a stub types definition. node-cache provides its own type definitions, so you do not need this installed.
+    dependencies:
+      node-cache: 5.1.2
+    dev: false
+
   /@types/node-fetch/2.6.1:
     resolution: {integrity: sha512-oMqjURCaxoSIsHSr1E47QHzbmzNR5rK8McHuNb11BOM9cHcIK3Avy0s/b2JlXHoQGTYS3NsvWzV1M0iK7l0wbA==}
     dependencies:
@@ -2810,6 +2821,11 @@ packages:
     resolution: {integrity: sha512-JQHZ2QMW6l3aH/j6xCqQThY/9OH4D/9ls34cgkUBiEeocRTU04tHfKPBsUK1PqZCUQM7GiA0IIXJSuXHI64Kbg==}
     engines: {node: '>=0.8'}
     dev: true
+
+  /clone/2.1.2:
+    resolution: {integrity: sha512-3Pe/CF1Nn94hyhIYpjtiLhdCoEoz0DqQ+988E9gmeEdQZlojxnOb74wctFyuwWQHzqyf9X7C7MG8juUpqBJT8w==}
+    engines: {node: '>=0.8'}
+    dev: false
 
   /co/4.6.0:
     resolution: {integrity: sha1-bqa989hTrlTMuOR7+gvz+QMfsYQ=}
@@ -7327,6 +7343,13 @@ packages:
   /nocache/2.1.0:
     resolution: {integrity: sha512-0L9FvHG3nfnnmaEQPjT9xhfN4ISk0A8/2j4M37Np4mcDesJjHgEUfgPhdCyZuFI954tjokaIj/A3NdpFNdEh4Q==}
     engines: {node: '>=4.0.0'}
+    dev: false
+
+  /node-cache/5.1.2:
+    resolution: {integrity: sha512-t1QzWwnk4sjLWaQAS8CHgOJ+RAfmHpxFWmc36IWTiWHQfs0w5JDMBS1b1ZxQteo0vVVuWJvIUKHDkkeK7vIGCg==}
+    engines: {node: '>= 8.0.0'}
+    dependencies:
+      clone: 2.1.2
     dev: false
 
   /node-fetch/2.6.7:

@@ -3,6 +3,9 @@ import { getNewOrUpdateCurrentSession, pgClient } from '@/utils';
 import { sendError } from '@/errors';
 import { Joi, refreshToken } from '@/validation';
 import nr from 'newrelic';
+import NodeCache from 'node-cache';
+
+const cache = new NodeCache({ stdTTL: 60 * 60 * 24 });
 
 export const tokenSchema = Joi.object({
   refreshToken,
@@ -13,9 +16,15 @@ export const tokenHandler: RequestHandler<{},
   { refreshToken: string }> = async (req, res) => {
   const { refreshToken } = req.body;
 
+  if (cache.get(refreshToken)) {
+    return sendError(res, 'invalid-refresh-token');
+  }
+
   const user = await nr.startSegment('getUserByRefreshToken', true, async () => pgClient.getUserByRefreshToken(refreshToken));
 
   if (!user) {
+    console.log('cache hit', refreshToken);
+    cache.set(refreshToken, true);
     return sendError(res, 'invalid-refresh-token');
   }
 
