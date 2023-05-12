@@ -47,7 +47,7 @@ export const createPATHandler: RequestHandler<
 
     const personalAccessToken = uuidv4();
 
-    await gqlSdk.insertRefreshToken({
+    const { insertAuthRefreshToken } = await gqlSdk.insertRefreshToken({
       refreshToken: {
         userId: id,
         refreshTokenHash: hash(personalAccessToken),
@@ -57,7 +57,7 @@ export const createPATHandler: RequestHandler<
       },
     });
 
-    return res.send({ personalAccessToken });
+    return res.send({ id: insertAuthRefreshToken?.id, personalAccessToken });
   } catch (error) {
     logger.error(error);
 
