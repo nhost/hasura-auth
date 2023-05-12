@@ -101,8 +101,9 @@ describe('personal access token', () => {
       })
       .expect(StatusCodes.OK);
 
-    const { personalAccessToken } = patResponse.body;
+    const { id, personalAccessToken } = patResponse.body;
 
+    expect(id).toBeDefined();
     expect(personalAccessToken).toBeDefined();
 
     const patSignInResponse = await request
