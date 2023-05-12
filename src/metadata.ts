@@ -66,9 +66,6 @@ export const hasuraAuthMetadataPatch: MetadataPatch = {
         table: { name: 'refresh_tokens', schema },
         configuration: {
           custom_name: 'authRefreshTokens',
-          column_config: {
-            refresh_token: null,
-          },
           custom_root_fields: {
             select: 'authRefreshTokens',
             select_by_pk: 'authRefreshToken',
@@ -81,7 +78,6 @@ export const hasuraAuthMetadataPatch: MetadataPatch = {
             delete_by_pk: 'deleteAuthRefreshToken',
           },
           custom_column_names: {
-            refresh_token: null,
             refresh_token_hash: 'refreshTokenHash',
             created_at: 'createdAt',
             expires_at: 'expiresAt',
@@ -187,9 +183,6 @@ export const hasuraAuthMetadataPatch: MetadataPatch = {
       {
         table: { name: 'user_providers', schema },
         configuration: {
-          column_config: {
-            refresh_token: null,
-          },
           custom_name: 'authUserProviders',
           custom_root_fields: {
             select: 'authUserProviders',
@@ -437,6 +430,13 @@ export const hasuraAuthMetadataPatch: MetadataPatch = {
     tables: [{ name: 'user_authenticators', schema }],
     relationships: [
       { table: { name: 'users', schema }, relationship: 'authenticators' },
+    ],
+    columnConfigs: [
+      {
+        source: 'default',
+        table: { name: 'refresh_tokens', schema },
+        column: 'refresh_token',
+      },
     ],
   },
 };

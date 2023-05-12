@@ -14,8 +14,6 @@ const getSource = (metadata: HasuraMetadataV3, source = 'default') => {
  * Modify a metadata object in-place and add a table to it
  * If the table exists, it will be overwritten,
  * and the missing relationships will be added
- *
- * @deprecated Instead of patching, just blindly replace the metadata instead.
  */
 export const patchTableObject = (
   metadata: HasuraMetadataV3,
@@ -30,45 +28,7 @@ export const patchTableObject = (
   );
 
   if (!existingTable) {
-    sourceObject.tables.push({
-      ...tableEntry,
-      configuration: {
-        ...tableEntry.configuration,
-        column_config: Object.keys(
-          tableEntry.configuration?.column_config || {}
-        ).reduce((finalColumnConfig, currentConfigKey) => {
-          if (
-            tableEntry.configuration?.column_config?.[currentConfigKey] === null
-          ) {
-            return finalColumnConfig;
-          }
-
-          return {
-            ...finalColumnConfig,
-            [currentConfigKey]: {
-              ...tableEntry.configuration?.column_config?.[currentConfigKey],
-            },
-          };
-        }, {}),
-        custom_column_names: Object.keys(
-          tableEntry.configuration?.custom_column_names || {}
-        ).reduce((finalColumnConfig, currentConfigKey) => {
-          if (
-            tableEntry.configuration?.custom_column_names?.[
-              currentConfigKey
-            ] === null
-          ) {
-            return finalColumnConfig;
-          }
-
-          return {
-            ...finalColumnConfig,
-            [currentConfigKey]:
-              tableEntry.configuration?.custom_column_names?.[currentConfigKey],
-          };
-        }, {}),
-      },
-    });
+    sourceObject.tables.push(tableEntry);
 
     return;
   }
@@ -136,45 +96,16 @@ export const patchTableObject = (
     }
 
     // * Add/replace column configurations
-    existingConfig.column_config = existingConfig.column_config
-      ? Object.keys(existingConfig.column_config).reduce(
-          (finalColumnConfig, currentConfigKey) => {
-            if (configuration.column_config?.[currentConfigKey] === null) {
-              return finalColumnConfig;
-            }
-
-            return {
-              ...finalColumnConfig,
-              [currentConfigKey]: {
-                ...existingConfig.column_config[currentConfigKey],
-                ...configuration.column_config?.[currentConfigKey],
-              },
-            };
-          },
-          {}
-        )
-      : { ...configuration.column_config };
+    existingConfig.column_config = {
+      ...existingConfig.column_config,
+      ...configuration.column_config,
+    };
 
     // * Add/replace custom column names
-    existingConfig.custom_column_names = existingConfig.custom_column_names
-      ? Object.keys(existingConfig.custom_column_names).reduce(
-          (finalColumnConfig, currentConfigKey) => {
-            if (
-              configuration.custom_column_names?.[currentConfigKey] === null
-            ) {
-              return finalColumnConfig;
-            }
-
-            return {
-              ...finalColumnConfig,
-              [currentConfigKey]:
-                existingConfig.custom_column_names?.[currentConfigKey] ||
-                configuration.custom_column_names?.[currentConfigKey],
-            };
-          },
-          {}
-        )
-      : { ...configuration.custom_column_names };
+    existingConfig.custom_column_names = {
+      ...existingConfig.custom_column_names,
+      ...configuration.custom_column_names,
+    };
 
     // * Add/replace custom root fields
     existingConfig.custom_root_fields = {
@@ -240,6 +171,52 @@ export const removeRelationship = (
   }
 };
 
+function removeColumnConfig(
+  metadata: HasuraMetadataV3,
+  targetSource: string,
+  targetTable: QualifiedTable,
+  targetColumn: string
+) {
+  const sourceObject = getSource(metadata, targetSource);
+
+  const existingTable = sourceObject.tables?.find(
+    ({ table }) =>
+      table.name === targetTable.name && table.schema === targetTable.schema
+  );
+
+  if (!existingTable || !existingTable.configuration) {
+    return;
+  }
+
+  const existingConfiguration = existingTable.configuration;
+
+  existingTable.configuration.column_config = Object.keys(
+    existingConfiguration.column_config || {}
+  ).reduce((config, currentKey) => {
+    if (currentKey === targetColumn) {
+      return config;
+    }
+
+    return {
+      ...config,
+      [currentKey]: existingConfiguration.column_config[currentKey],
+    };
+  }, {});
+
+  existingTable.configuration.custom_column_names = Object.keys(
+    existingConfiguration.custom_column_names || {}
+  ).reduce((config, currentKey) => {
+    if (currentKey === targetColumn) {
+      return config;
+    }
+
+    return {
+      ...config,
+      [currentKey]: existingConfiguration.custom_column_names?.[currentKey],
+    };
+  }, {});
+}
+
 export interface MetadataPatch {
   additions?: {
     tables?: TableEntry[];
@@ -250,6 +227,11 @@ export interface MetadataPatch {
       table: QualifiedTable;
       relationship: string;
     }[];
+    columnConfigs?: {
+      source: string;
+      table: QualifiedTable;
+      column: string;
+    }[];
   };
 }
 
@@ -259,8 +241,6 @@ export const patchMetadataObject = (
 ) => {
   if (additions?.tables) {
     for (const table of additions.tables) {
-      // TODO: THIS IS PROBABLY NOT FILTERING OUT NULLISH VALUES WHEN THERE IS
-      // NO EXISTING CONFIG YET!!!
       patchTableObject(metadata, table);
     }
   }
@@ -272,6 +252,12 @@ export const patchMetadataObject = (
   if (deletions?.relationships) {
     for (const rel of deletions.relationships) {
       removeRelationship(metadata, rel.table, rel.relationship);
+    }
+  }
+
+  if (deletions?.columnConfigs) {
+    for (const config of deletions.columnConfigs) {
+      removeColumnConfig(metadata, config.source, config.table, config.column);
     }
   }
 };
