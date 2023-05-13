@@ -27,7 +27,7 @@ export const ENV = {
     return castStringEnv('HASURA_GRAPHQL_GRAPHQL_URL');
   },
   get HASURA_GRAPHQL_NAMING_CONVENTION() {
-    return castStringEnv('HASURA_GRAPHQL_NAMING_CONVENTION');
+    return castStringEnv('HASURA_GRAPHQL_NAMING_CONVENTION', 'hasura-default');
   },
 
   // SERVER
