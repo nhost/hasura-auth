@@ -19,6 +19,9 @@ Object {
           "use_prepared_statements": true,
         },
       },
+      "customization": Object {
+        "naming_convention": "hasura-default",
+      },
       "kind": "postgres",
       "name": "default",
       "tables": Array [

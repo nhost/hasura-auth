@@ -7,8 +7,8 @@ import {
   getUserByEmail,
   gqlSdk,
   insertUser,
+  InsertUserMutation,
 } from '@/utils';
-import { InsertUserMutation } from '@/utils/__generated__/graphql-request';
 import {
   queryValidator,
   redirectTo as redirectToRule,

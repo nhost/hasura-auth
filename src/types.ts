@@ -1,4 +1,4 @@
-import { UserQuery } from './utils/__generated__/graphql-request';
+import { UserQuery } from './utils/gql-sdk';
 
 export type ClaimValueType =
   | string

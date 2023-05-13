@@ -1,5 +1,8 @@
 import { logger } from './logger';
-import { MetadataPatch, patchMetadata } from './utils';
+import { MetadataPatch, NamingConvention, patchMetadata } from './utils';
+import { ENV } from './utils/env';
+
+const namingConvention = ENV.HASURA_GRAPHQL_NAMING_CONVENTION as NamingConvention;
 
 const schema = 'auth';
 /**
@@ -8,6 +11,9 @@ const schema = 'auth';
  */
 export const hasuraAuthMetadataPatch: MetadataPatch = {
   additions: {
+    customization: {
+      naming_convention: namingConvention,
+    },
     tables: [
       {
         table: { name: 'provider_requests', schema },

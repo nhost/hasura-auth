@@ -1,6 +1,6 @@
 import { logger } from '@/logger';
 import { exportMetadata, replaceMetadata } from './api';
-import { HasuraMetadataV3, QualifiedTable, TableEntry } from './types';
+import { HasuraMetadataV3, QualifiedTable, SourceCustomization, TableEntry } from './types';
 
 const getSource = (metadata: HasuraMetadataV3, source = 'default') => {
   const sourceObject = metadata.sources.find((s) => s.name === source);
@@ -171,6 +171,7 @@ export const removeRelationship = (
 
 export interface MetadataPatch {
   additions?: {
+    customization?: SourceCustomization;
     tables?: TableEntry[];
   };
   deletions?: {
@@ -190,6 +191,13 @@ export const patchMetadataObject = (
     for (const table of additions.tables) {
       patchTableObject(metadata, table);
     }
+  }
+  if (additions?.customization) {
+    const sourceObject = getSource(metadata);
+    sourceObject.customization = {
+      ...sourceObject.customization,
+      ...additions.customization,
+    };
   }
   if (deletions?.tables) {
     for (const table of deletions.tables) {

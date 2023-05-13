@@ -1,6 +1,6 @@
 import { JWTPayload, SignJWT } from 'jose';
 import { ClaimValueType } from '@/types';
-import { UserFieldsFragment } from '../__generated__/graphql-request';
+import { UserFieldsFragment } from '../gql-sdk';
 import { ENV } from '../env';
 import { generateCustomClaims } from './custom-claims';
 import { createSecretKey } from 'crypto';

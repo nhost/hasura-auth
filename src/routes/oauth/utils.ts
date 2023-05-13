@@ -6,8 +6,7 @@ import {
   locale as localeValidator,
   email as emailValidator,
 } from '@/validation';
-import { InsertUserMutationVariables } from '@/utils/__generated__/graphql-request';
-import { ENV, getGravatarUrl } from '@/utils';
+import { ENV, getGravatarUrl, InsertUserMutationVariables } from '@/utils';
 import { UserRegistrationOptions } from '@/types';
 
 import { OAUTH_ROUTE, PROVIDERS_CONFIG } from './config';
