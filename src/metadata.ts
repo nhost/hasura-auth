@@ -31,6 +31,38 @@ export const hasuraAuthMetadataPatch: MetadataPatch = {
         },
       },
       {
+        table: { name: 'refresh_token_types', schema: 'auth' },
+        is_enum: true,
+        configuration: {
+          custom_name: 'authRefreshTokenTypes',
+          custom_root_fields: {
+            select: 'authRefreshTokenTypes',
+            select_by_pk: 'authRefreshTokenType',
+            select_aggregate: 'authRefreshTokenTypesAggregate',
+            insert: 'insertAuthRefreshTokenTypes',
+            insert_one: 'insertAuthRefreshTokenType',
+            update: 'updateAuthRefreshTokenTypes',
+            update_by_pk: 'updateAuthRefreshTokenType',
+            delete: 'deleteAuthRefreshTokenTypes',
+            delete_by_pk: 'deleteAuthRefreshTokenType',
+          },
+        },
+        array_relationships: [
+          {
+            name: 'refreshTokens',
+            using: {
+              foreign_key_constraint_on: {
+                column: 'type',
+                table: {
+                  name: 'refresh_tokens',
+                  schema: 'auth',
+                },
+              },
+            },
+          },
+        ],
+      },
+      {
         table: { name: 'refresh_tokens', schema },
         configuration: {
           custom_name: 'authRefreshTokens',
@@ -46,7 +78,6 @@ export const hasuraAuthMetadataPatch: MetadataPatch = {
             delete_by_pk: 'deleteAuthRefreshToken',
           },
           custom_column_names: {
-            refresh_token: 'refreshToken',
             refresh_token_hash: 'refreshTokenHash',
             created_at: 'createdAt',
             expires_at: 'expiresAt',
@@ -58,6 +89,47 @@ export const hasuraAuthMetadataPatch: MetadataPatch = {
             name: 'user',
             using: {
               foreign_key_constraint_on: 'user_id',
+            },
+          },
+        ],
+        select_permissions: [
+          {
+            role: 'user',
+            permission: {
+              columns: [
+                'id',
+                'created_at',
+                'expires_at',
+                'metadata',
+                'type',
+                'user_id',
+              ],
+              filter: {
+                user_id: {
+                  _eq: 'X-Hasura-User-Id',
+                },
+              },
+            },
+          },
+        ],
+        delete_permissions: [
+          {
+            role: 'user',
+            permission: {
+              filter: {
+                _and: [
+                  {
+                    user_id: {
+                      _eq: 'X-Hasura-User-Id',
+                    },
+                  },
+                  {
+                    type: {
+                      _eq: 'pat',
+                    },
+                  },
+                ],
+              },
             },
           },
         ],
@@ -358,6 +430,13 @@ export const hasuraAuthMetadataPatch: MetadataPatch = {
     tables: [{ name: 'user_authenticators', schema }],
     relationships: [
       { table: { name: 'users', schema }, relationship: 'authenticators' },
+    ],
+    columnConfigs: [
+      {
+        source: 'default',
+        table: { name: 'refresh_tokens', schema },
+        column: 'refresh_token',
+      },
     ],
   },
 };

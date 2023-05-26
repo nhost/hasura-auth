@@ -1,11 +1,16 @@
-import { v4 as uuidv4 } from 'uuid';
 import { gqlSdk } from '@/utils';
-import { ENV } from './env';
 import crypto from 'crypto';
+import { v4 as uuidv4 } from 'uuid';
+import { ENV } from './env';
 
 /** Hash using SHA256, and prefix with \x so it matches the Postgres hexadecimal syntax */
-const hash = (value: string) =>
+export const hash = (value: string) =>
   `\\x${crypto.createHash('sha256').update(value).digest('hex')}`;
+
+export const getUserByPAT = async (pat: string) => {
+  const result = await gqlSdk.getUsersByPAT({ patHash: hash(pat) });
+  return result.authRefreshTokens[0]?.user;
+};
 
 export const getUserByRefreshToken = async (refreshToken: string) => {
   const result = await gqlSdk.getUsersByRefreshToken({
@@ -36,24 +41,29 @@ const newRefreshExpiry = () => {
 };
 
 export const updateRefreshTokenExpiry = async (refreshToken: string) => {
-  await gqlSdk.getUsersByRefreshTokenAndUpdateRefreshTokenExpiresAt({
-    refreshTokenHash: hash(refreshToken),
-    expiresAt: new Date(newRefreshExpiry()),
-  });
+  const { updateAuthRefreshTokens } =
+    await gqlSdk.getUsersByRefreshTokenAndUpdateRefreshTokenExpiresAt({
+      refreshTokenHash: hash(refreshToken),
+      expiresAt: new Date(newRefreshExpiry()),
+    });
 
-  return refreshToken;
+  return { refreshToken, id: updateAuthRefreshTokens?.returning[0]?.id };
 };
 
 export const getNewRefreshToken = async (
   userId: string,
   refreshToken = uuidv4()
 ) => {
-  await gqlSdk.insertRefreshToken({
+  const { insertAuthRefreshToken } = await gqlSdk.insertRefreshToken({
     refreshToken: {
       userId,
-      refreshToken,
+      refreshTokenHash: hash(refreshToken),
       expiresAt: new Date(newRefreshExpiry()),
     },
   });
-  return refreshToken;
+
+  return {
+    id: insertAuthRefreshToken?.id,
+    refreshToken,
+  };
 };

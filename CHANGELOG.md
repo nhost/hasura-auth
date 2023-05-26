@@ -1,5 +1,38 @@
 ## Changelog
 
+## 0.20.1
+
+### Patch Changes
+
+- d412a93: feat: add `refreshTokenId` to session
+
+## 0.20.0
+
+### Minor Changes
+
+- 50a1b1d: chore: migrate `refresh_token` column to `id`
+
+  ⚠️ **Warning**: This is a breaking change.
+
+  We've renamed the `refresh_token` column to `id`. While this change will improve the functionality of Hasura Auth, it may cause issues for any permissions or relationships that were using the old `refresh_token` column.
+
+  Please note that any permissions or relationships that were using the `refresh_token` column will be affected by this change. If you're using the `refresh_token` column in any way, you'll need to update your code to use the new `id` column and ensure that your app works as expected.
+
+## 0.19.3
+
+### Patch Changes
+
+- 29eff81: fix(oauth): be more verbose when a provider fails
+- 5529f7d: fix(pat): replace enum type with an enum table to fix issues with PAT creation
+- 005e259: chore(logs): add `AUTH_SHOW_LOG_QUERY_PARAMS` environment variable to control query parameter visibility
+
+## 0.19.2
+
+### Patch Changes
+
+- 9a7e027: chore(logs): add masked headers and query parameters to logs
+- 11e1eb3: feat(pat): allow users to create personal access tokens
+
 ## 0.19.1
 
 ### Patch Changes

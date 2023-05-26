@@ -50,6 +50,9 @@ mutation getUsersByRefreshTokenAndUpdateRefreshTokenExpiresAt(
     }
   ) {
     affected_rows
+    returning {
+      id
+    }
   }
 }
 
@@ -63,7 +66,25 @@ query getUsersByRefreshToken($refreshTokenHash: String!) {
       ]
     }
   ) {
-    refreshToken
+    id
+    user {
+      ...userFields
+    }
+  }
+}
+
+query getUsersByPAT($patHash: String!) {
+  authRefreshTokens(
+    where: {
+      _and: [
+        { refreshTokenHash: { _eq: $patHash } }
+        { user: { disabled: { _eq: false } } }
+        { expiresAt: { _gte: now } }
+        { type: { _eq: pat } }
+      ]
+    }
+  ) {
+    id
     user {
       ...userFields
     }
