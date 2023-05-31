@@ -59,13 +59,12 @@ export const transformOauthProfile = async (
 
   const emailVerified = !!normalised.emailVerified;
 
-  let allowedRoles: string[] =  ENV.AUTH_USER_DEFAULT_ALLOWED_ROLES;
+  let allowedRoles: string[] = ENV.AUTH_USER_DEFAULT_ALLOWED_ROLES;
 
-  if(options?.allowedRoles){
-    if(Array.isArray(options.allowedRoles)){
+  if (options?.allowedRoles) {
+    if (Array.isArray(options.allowedRoles)) {
       allowedRoles = options.allowedRoles;
-    }
-    else if (typeof options.allowedRoles === 'string') {
+    } else if (typeof options.allowedRoles === 'string') {
       //if for some reason it comes as a string, split it
       allowedRoles = (options.allowedRoles as string).split(',');
     }
@@ -78,11 +77,9 @@ export const transformOauthProfile = async (
     emailVerified,
     defaultRole: options?.defaultRole || ENV.AUTH_USER_DEFAULT_ROLE,
     roles: {
-      data: allowedRoles.map(
-        (role) => ({
-          role,
-        })
-      ),
+      data: allowedRoles.map((role) => ({
+        role,
+      })),
     },
     locale,
     displayName,

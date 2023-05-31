@@ -87,7 +87,7 @@ describe('OAuth helpers', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should handle an array of allowed roles', async() => {
+  it('should handle an array of allowed roles', async () => {
     const facebookProfile = {
       id: '1234567890123456',
       name: 'Bob Smith',
@@ -105,12 +105,12 @@ describe('OAuth helpers', () => {
       profile: facebookProfile,
     });
     const output = await transformOauthProfile(normalisedProfile, {
-      allowedRoles: ['user', 'me']
+      allowedRoles: ['user', 'me'],
     });
     expect(output).toMatchSnapshot();
-  })
+  });
 
-  it('should handle comma separated allowedRoles',  async() => {
+  it('should handle comma separated allowedRoles', async () => {
     const facebookProfile = {
       id: '1234567890123456',
       name: 'Bob Smith',
@@ -128,8 +128,8 @@ describe('OAuth helpers', () => {
       profile: facebookProfile,
     });
     const output = await transformOauthProfile(normalisedProfile, {
-      allowedRoles: 'user,me' as any
+      allowedRoles: 'user,me' as any,
     });
     expect(output).toMatchSnapshot();
-  })
+  });
 });
