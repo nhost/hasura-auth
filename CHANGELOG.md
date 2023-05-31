@@ -1,5 +1,11 @@
 ## Changelog
 
+## 0.20.2
+
+### Patch Changes
+
+- f4b67ac: fix(startup): Apply migrations before waiting for Hasura to start. The migrations don't depend on Hasura.
+
 ## 0.20.1
 
 ### Patch Changes

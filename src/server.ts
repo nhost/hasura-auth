@@ -19,10 +19,10 @@ export const start = async () => {
   const { applyMigrations } = await import('./migrations');
   const { applyMetadata } = await import('./metadata');
 
-  // wait for hasura to be ready
-  await waitForHasura();
   // apply migrations and metadata
   await applyMigrations();
+  // wait for hasura to be ready
+  await waitForHasura();
   await applyMetadata();
   // }
 
