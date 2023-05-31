@@ -2,4 +2,4 @@
 'hasura-auth': patch
 ---
 
-Fix issue where hasura auth-crashes when adding allowed roles upon signin with provider
+fix: don't crash when adding allowed roles upon sign-in with a provider
