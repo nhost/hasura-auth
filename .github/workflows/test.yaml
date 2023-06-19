@@ -39,9 +39,3 @@ jobs:
       - name: Run tests
         shell: bash
         run: make test
-
-      - name: Upload test results
-        uses: actions/upload-artifact@v1
-        with:
-          name: coverage
-          path: coverage
