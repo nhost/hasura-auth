@@ -10,9 +10,10 @@ on:
       - '!*.md'
 
 env:
+  POSTGRES_PASSWORD: postgrespassword
   HASURA_GRAPHQL_ADMIN_SECRET: test_secret_key
   HASURA_GRAPHQL_JWT_SECRET: '{"type":"HS256", "key":"never_use_this_secret_key_in_production_this_is_only_for_CI_testing_098hu32r4389ufb4n38994321","issuer":"hasura-auth"}'
-  POSTGRES_PASSWORD: postgrespassword
+  HASURA_GRAPHQL_DATABASE_URL: postgres://postgres:postgrespassword@localhost:5432/postgres
   HASURA_GRAPHQL_GRAPHQL_URL: http://localhost:8080/v1/graphql
 
 jobs:
