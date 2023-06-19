@@ -25,8 +25,10 @@ jobs:
       - name: Install Node and dependencies
         uses: ./.github/actions/install-dependencies
 
-      - name: Run Jest tests
+      - name: Run tests
+        shell: bash
         run: make test
+
       - name: Upload test results
         uses: actions/upload-artifact@v1
         with:
