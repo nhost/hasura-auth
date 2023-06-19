@@ -33,7 +33,7 @@ test: check-port install dev-env-up ## Run end-to-end tests.
 
 .PHONY: check-port
 check-port:
-	[[ -z $$(lsof -t -i tcp:$(PORT)) ]] || (echo "The port $(PORT) is already in use"; exit 1;)
+	[ -z $$(lsof -t -i tcp:$(PORT)) ] || (echo "The port $(PORT) is already in use"; exit 1;)
 
 .PHONY: docgen
 docgen: check-port install dev-env-up ## Generate the openapi.json file.
