@@ -82,7 +82,7 @@ export const PROVIDERS_CONFIG: Record<
       return {
         id: payload.oid,
         displayName: payload.name,
-        email: payload.email,
+        email: payload.upn,
       };
     },
   },
