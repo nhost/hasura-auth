@@ -77,7 +77,7 @@ if (ENV.AUTH_SMS_PROVIDER) {
 }
 else {
   errors.push(
-    `Incorrect SMS provider - AUTH_SMS_PROVIDER of value '${ENV.AUTH_SMS_PROVIDER}' is not one of the supported. Supported providers are: 'twilio'`
+    `Incorrect SMS provider - AUTH_SMS_PROVIDER of value '${ENV.AUTH_SMS_PROVIDER}' is not one of the supported. Supported providers are: 'twilio', 'alicloud'`
   );
 }
 
