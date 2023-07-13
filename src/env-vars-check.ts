@@ -69,7 +69,7 @@ if (ENV.AUTH_SMS_PROVIDER) {
     ].forEach((env) => {
       if (isUnset(process.env[env])) {
         errors.push(
-          `Env var ${env} is required when the Twilio is set as SMS provider, but no value was provided`
+          `Env var ${env} is required when the Alicloud is set as SMS provider, but no value was provided`
         );
       }
     });
