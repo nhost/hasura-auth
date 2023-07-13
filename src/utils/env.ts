@@ -81,6 +81,23 @@ export const ENV = {
     return castStringEnv('AUTH_SMS_TWILIO_MESSAGING_SERVICE_ID');
   },
 
+  // ALICLOUD
+  get AUTH_SMS_ALICLOUD_ACCESS_KEY_ID() {
+    return castStringEnv('AUTH_SMS_ALICLOUD_ACCESS_KEY_ID');
+  },
+  get AUTH_SMS_ALICLOUD_ACCESS_KEY_SECRET() {
+    return castStringEnv('AUTH_SMS_ALICLOUD_ACCESS_KEY_SECRET');
+  },
+  get AUTH_SMS_ALICLOUD_ENDPOINT() {
+    return castStringEnv('AUTH_SMS_ALICLOUD_ENDPOINT');
+  },
+  get AUTH_SMS_ALICLOUD_SIGN_NAME() {
+    return castStringEnv('AUTH_SMS_ALICLOUD_SIGN_NAME');
+  },
+  get AUTH_SMS_ALICLOUD_TEMPLATE_CODE() {
+    return castStringEnv('AUTH_SMS_ALICLOUD_TEMPLATE_CODE');
+  },
+
   // GRAVATAR
   get AUTH_GRAVATAR_ENABLED() {
     return castBooleanEnv('AUTH_GRAVATAR_ENABLED', true);

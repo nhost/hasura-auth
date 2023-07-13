@@ -58,11 +58,27 @@ if (ENV.AUTH_SMS_PROVIDER) {
         );
       }
     });
-  } else {
-    errors.push(
-      `Incorrect SMS provider - AUTH_SMS_PROVIDER of value '${ENV.AUTH_SMS_PROVIDER}' is not one of the supported. Supported providers are: 'twilio'`
-    );
   }
+  else if (ENV.AUTH_SMS_PROVIDER === 'alicloud') {
+    [
+      'AUTH_SMS_ALICLOUD_ACCESS_KEY_ID',
+      'AUTH_SMS_ALICLOUD_ACCESS_KEY_SECRET',
+      'AUTH_SMS_ALICLOUD_ENDPOINT',
+      'AUTH_SMS_ALICLOUD_SIGN_NAME',
+      'AUTH_SMS_ALICLOUD_TEMPLATE_CODE'
+    ].forEach((env) => {
+      if (isUnset(process.env[env])) {
+        errors.push(
+          `Env var ${env} is required when the Twilio is set as SMS provider, but no value was provided`
+        );
+      }
+    });
+  }
+}
+else {
+  errors.push(
+    `Incorrect SMS provider - AUTH_SMS_PROVIDER of value '${ENV.AUTH_SMS_PROVIDER}' is not one of the supported. Supported providers are: 'twilio'`
+  );
 }
 
 if (ENV.AUTH_WEBAUTHN_ENABLED) {

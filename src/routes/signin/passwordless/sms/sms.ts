@@ -15,6 +15,8 @@ import { Joi, phoneNumber, registrationOptions } from '@/validation';
 import { isTestingPhoneNumber, isVerifySid } from '@/utils/twilio';
 import { logger } from '@/logger';
 import { renderTemplate } from '@/templates';
+import Dysmsapi20170525, * as $Dysmsapi20170525 from '@alicloud/dysmsapi20170525';
+import * as OpenApi from '@alicloud/openapi-client';
 
 export type PasswordLessSmsRequestBody = {
   phoneNumber: string;
@@ -95,35 +97,15 @@ export const signInPasswordlessSmsHandler: RequestHandler<
     throw Error('No sms provider set');
   }
 
-  const twilioClient = twilio(
-    ENV.AUTH_SMS_TWILIO_ACCOUNT_SID,
-    ENV.AUTH_SMS_TWILIO_AUTH_TOKEN
-  );
 
   try {
-    const messagingServiceSid = ENV.AUTH_SMS_TWILIO_MESSAGING_SERVICE_ID;
-
-    if (isVerifySid(messagingServiceSid)) {
-      await twilioClient.verify
-        .services(messagingServiceSid)
-        .verifications.create({
-          channel: 'sms',
-          to: phoneNumber,
-        });
-    } else {
-      const template = 'signin-passwordless-sms';
-      const message = await renderTemplate(`${template}/text`, {
-        locale: user.locale ?? ENV.AUTH_LOCALE_DEFAULT,
-        displayName: user.displayName,
-        code: otp,
-      });
-
-      await twilioClient.messages.create({
-        body: message ?? `Your code is ${otp}`,
-        from: ENV.AUTH_SMS_TWILIO_MESSAGING_SERVICE_ID,
-        to: phoneNumber,
-      });
+    switch (ENV.AUTH_SMS_PROVIDER) {
+      case "twilio":
+        await sendSmsWithTwilio(phoneNumber, user, otp);
+      case "alicloud":
+        await sendSmsWithAlicloud(phoneNumber, otp);
     }
+
   } catch (error: any) {
     logger.error('Error sending sms');
     logger.error(error);
@@ -139,3 +121,68 @@ export const signInPasswordlessSmsHandler: RequestHandler<
 
   return res.json(ReasonPhrases.OK);
 };
+
+
+
+async function sendSmsWithTwilio(phoneNumber: string, user: any, otp: string) {
+  const twilioClient = twilio(
+    ENV.AUTH_SMS_TWILIO_ACCOUNT_SID,
+    ENV.AUTH_SMS_TWILIO_AUTH_TOKEN
+  );
+  const messagingServiceSid = ENV.AUTH_SMS_TWILIO_MESSAGING_SERVICE_ID;
+
+  if (isVerifySid(messagingServiceSid)) {
+    await twilioClient.verify
+      .services(messagingServiceSid)
+      .verifications.create({
+        channel: 'sms',
+        to: phoneNumber,
+      });
+  } else {
+    const template = 'signin-passwordless-sms';
+    const message = await renderTemplate(`${template}/text`, {
+      locale: user.locale ?? ENV.AUTH_LOCALE_DEFAULT,
+      displayName: user.displayName,
+      code: otp,
+    });
+
+    await twilioClient.messages.create({
+      body: message ?? `Your code is ${otp}`,
+      from: ENV.AUTH_SMS_TWILIO_MESSAGING_SERVICE_ID,
+      to: phoneNumber,
+    });
+  }
+}
+
+
+
+
+
+async function sendSmsWithAlicloud(phoneNumber: string, otp: string) {
+  let config = new OpenApi.Config({
+    accessKeyId: ENV.AUTH_SMS_ALICLOUD_ACCESS_KEY_ID,
+    accessKeySecret: ENV.AUTH_SMS_ALICLOUD_ACCESS_KEY_SECRET,
+  });
+
+  config.endpoint = ENV.AUTH_SMS_ALICLOUD_ENDPOINT;
+  const client = new Dysmsapi20170525(config);
+
+
+  const signName = ENV.AUTH_SMS_ALICLOUD_SIGN_NAME;
+  const templateCode = ENV.AUTH_SMS_ALICLOUD_TEMPLATE_CODE;
+
+  const request = new $Dysmsapi20170525.SendSmsRequest({
+    signName: signName,
+    templateCode: templateCode,
+    phoneNumbers: phoneNumber,
+    templateParam: JSON.stringify({ "code": otp })
+  });
+
+  const response = await client.sendSms(request);
+
+  if (response.body.code !== "OK") {
+    logger.error(response)
+    throw Error(response.body.message)
+  }
+
+}
