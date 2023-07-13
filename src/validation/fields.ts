@@ -27,6 +27,7 @@ export const passwordInsert = password
           {
             message,
             path: ['password'],
+            type: 'password'
           },
         ],
         value
