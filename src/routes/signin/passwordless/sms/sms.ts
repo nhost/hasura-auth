@@ -103,7 +103,7 @@ export const signInPasswordlessSmsHandler: RequestHandler<
       case "twilio":
         await sendSmsWithTwilio(phoneNumber, user, otp);
       case "alicloud":
-        await sendSmsWithAlicloud(phoneNumber, otp);
+        await sendSmsWithAlicloud(phoneNumber, user, otp);
     }
 
   } catch (error: any) {
@@ -158,24 +158,24 @@ async function sendSmsWithTwilio(phoneNumber: string, user: any, otp: string) {
 
 
 
-async function sendSmsWithAlicloud(phoneNumber: string, otp: string) {
+async function sendSmsWithAlicloud(phoneNumber: string, user: any, otp: string) {
   let config = new OpenApi.Config({
     accessKeyId: ENV.AUTH_SMS_ALICLOUD_ACCESS_KEY_ID,
     accessKeySecret: ENV.AUTH_SMS_ALICLOUD_ACCESS_KEY_SECRET,
+    endpoint: ENV.AUTH_SMS_ALICLOUD_ENDPOINT
   });
 
-  config.endpoint = ENV.AUTH_SMS_ALICLOUD_ENDPOINT;
+  let locale = user.locale ?? ENV.AUTH_LOCALE_DEFAULT;
+  let template = ENV.AUTH_SMS_ALICLOUD_TEMPLATE_LOCALE[locale] ?? {
+    templateCode: ENV.AUTH_SMS_ALICLOUD_TEMPLATE_CODE_DEFAULT,
+    signName: ENV.AUTH_SMS_ALICLOUD_SIGN_NAME_DEFAULT
+  };
+
   const client = new Dysmsapi20170525(config);
-
-
-  const signName = ENV.AUTH_SMS_ALICLOUD_SIGN_NAME;
-  const templateCode = ENV.AUTH_SMS_ALICLOUD_TEMPLATE_CODE;
-
   const request = new $Dysmsapi20170525.SendSmsRequest({
-    signName: signName,
-    templateCode: templateCode,
     phoneNumbers: phoneNumber,
-    templateParam: JSON.stringify({ "code": otp })
+    templateParam: JSON.stringify({ "code": otp }),
+    ...template
   });
 
   const response = await client.sendSms(request);

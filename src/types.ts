@@ -115,3 +115,12 @@ export const EMAIL_TYPES = {
   PASSWORD_RESET: 'passwordReset',
 } as const;
 export type EmailType = typeof EMAIL_TYPES[keyof typeof EMAIL_TYPES];
+
+type AlicloudTemplate = {
+  signName: string;
+  templateCode: string;
+}
+
+export type AlicloudTemplateLocale = {
+  [locale: string]: AlicloudTemplate
+}

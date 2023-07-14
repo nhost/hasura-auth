@@ -1,5 +1,5 @@
 import { logger } from '@/logger';
-import { JwtSecret } from '@/types';
+import { JwtSecret, AlicloudTemplateLocale } from '@/types';
 import {
   castBooleanEnv,
   castIntEnv,
@@ -91,11 +91,14 @@ export const ENV = {
   get AUTH_SMS_ALICLOUD_ENDPOINT() {
     return castStringEnv('AUTH_SMS_ALICLOUD_ENDPOINT');
   },
-  get AUTH_SMS_ALICLOUD_SIGN_NAME() {
-    return castStringEnv('AUTH_SMS_ALICLOUD_SIGN_NAME');
+  get AUTH_SMS_ALICLOUD_SIGN_NAME_DEFAULT() {
+    return castStringEnv('AUTH_SMS_ALICLOUD_SIGN_NAME_DEFAULT');
   },
-  get AUTH_SMS_ALICLOUD_TEMPLATE_CODE() {
-    return castStringEnv('AUTH_SMS_ALICLOUD_TEMPLATE_CODE');
+  get AUTH_SMS_ALICLOUD_TEMPLATE_CODE_DEFAULT() {
+    return castStringEnv('AUTH_SMS_ALICLOUD_TEMPLATE_CODE_DEFAULT');
+  },
+  get AUTH_SMS_ALICLOUD_TEMPLATE_LOCALE() {
+    return castObjectEnv<AlicloudTemplateLocale>('AUTH_SMS_ALICLOUD_TEMPLATE_LOCALE')
   },
 
   // GRAVATAR
