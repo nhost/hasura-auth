@@ -37,7 +37,7 @@
                },
                "status" : {
                   "enum" : [
-                     404
+                     409
                   ]
                }
             },
@@ -232,6 +232,27 @@
             },
             "type" : "object"
          },
+         "InvalidExpiryDateError" : {
+            "additionalProperties" : false,
+            "properties" : {
+               "error" : {
+                  "enum" : [
+                     "invalid-expiry-date"
+                  ]
+               },
+               "message" : {
+                  "enum" : [
+                     "The expiry date must be greater than the current date"
+                  ]
+               },
+               "status" : {
+                  "enum" : [
+                     400
+                  ]
+               }
+            },
+            "type" : "object"
+         },
          "InvalidOauthConfigurationError" : {
             "additionalProperties" : false,
             "properties" : {
@@ -264,6 +285,27 @@
                "message" : {
                   "enum" : [
                      "Invalid or expired OTP"
+                  ]
+               },
+               "status" : {
+                  "enum" : [
+                     401
+                  ]
+               }
+            },
+            "type" : "object"
+         },
+         "InvalidPatError" : {
+            "additionalProperties" : false,
+            "properties" : {
+               "error" : {
+                  "enum" : [
+                     "invalid-pat"
+                  ]
+               },
+               "message" : {
+                  "enum" : [
+                     "Invalid or expired personal access token"
                   ]
                },
                "status" : {
@@ -1479,7 +1521,7 @@
             "type" : "object"
          },
          "Version" : {
-            "example" : "0.17.1",
+            "example" : "0.21.2",
             "type" : "string"
          }
       },
@@ -1498,7 +1540,7 @@
       },
       "termsOfService" : "",
       "title" : "Hasura auth",
-      "version" : "0.17.1"
+      "version" : "0.21.2"
    },
    "openapi" : "3.0.0",
    "paths" : {
@@ -1562,6 +1604,60 @@
             "summary" : "Generate a secret to request the activation of Time-based One-Time Password (TOTP) multi-factor authentication",
             "tags" : [
                "User management"
+            ]
+         }
+      },
+      "/pat" : {
+         "post" : {
+            "deprecated" : false,
+            "parameters" : [],
+            "requestBody" : {
+               "content" : {
+                  "application/json" : {
+                     "schema" : {
+                        "$ref" : "#/components/schemas/CreatePATSchema"
+                     }
+                  }
+               },
+               "description" : "",
+               "required" : true
+            },
+            "responses" : {
+               "200" : {
+                  "content" : {
+                     "application/json" : {
+                        "schema" : {
+                           "$ref" : "#/components/schemas/SessionModel"
+                        }
+                     }
+                  },
+                  "description" : "User successfully authenticated"
+               },
+               "400" : {
+                  "content" : {
+                     "application/json" : {
+                        "schema" : {
+                           "$ref" : "#/components/schemas/InvalidRequestError"
+                        }
+                     }
+                  },
+                  "description" : "The payload is invalid"
+               },
+               "401" : {
+                  "content" : {
+                     "application/json" : {
+                        "schema" : {
+                           "$ref" : "#/components/schemas/UnauthorizedError"
+                        }
+                     }
+                  },
+                  "description" : "Unauthenticated user or invalid token"
+               }
+            },
+            "security" : [],
+            "summary" : "Create a Personal Access Token (PAT)",
+            "tags" : [
+               "General"
             ]
          }
       },
@@ -1914,6 +2010,60 @@
             },
             "security" : [],
             "summary" : "Passwordless authentication from a one-time password code received by SMS",
+            "tags" : [
+               "Authentication"
+            ]
+         }
+      },
+      "/signin/pat" : {
+         "post" : {
+            "deprecated" : false,
+            "parameters" : [],
+            "requestBody" : {
+               "content" : {
+                  "application/json" : {
+                     "schema" : {
+                        "$ref" : "#/components/schemas/SignInPATSchema"
+                     }
+                  }
+               },
+               "description" : "",
+               "required" : true
+            },
+            "responses" : {
+               "200" : {
+                  "content" : {
+                     "application/json" : {
+                        "schema" : {
+                           "$ref" : "#/components/schemas/SessionPayload"
+                        }
+                     }
+                  },
+                  "description" : "User successfully authenticated"
+               },
+               "400" : {
+                  "content" : {
+                     "application/json" : {
+                        "schema" : {
+                           "$ref" : "#/components/schemas/InvalidRequestError"
+                        }
+                     }
+                  },
+                  "description" : "The payload is invalid"
+               },
+               "404" : {
+                  "content" : {
+                     "application/json" : {
+                        "schema" : {
+                           "$ref" : "#/components/schemas/DisabledEndpointError"
+                        }
+                     }
+                  },
+                  "description" : "The feature is not activated"
+               }
+            },
+            "security" : [],
+            "summary" : "Sign in with a Personal Access Token (PAT)",
             "tags" : [
                "Authentication"
             ]
