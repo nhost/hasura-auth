@@ -4,6 +4,7 @@ import {
   verifyRegistrationResponse,
 } from '@simplewebauthn/server';
 import { RegistrationCredentialJSON } from '@simplewebauthn/typescript-types';
+import base64url from 'base64url';
 
 import { ENV } from './env';
 import { gqlSdk } from './gql-sdk';
@@ -27,11 +28,12 @@ export const verifyWebAuthnRegistration = async (
   nickname?: string
 ) => {
   const expectedChallenge = await getCurrentChallenge(id);
+  const expectedChallengeBase64 = base64url.encode(expectedChallenge);
   let verification: VerifiedRegistrationResponse;
   try {
     verification = await verifyRegistrationResponse({
       credential,
-      expectedChallenge,
+      expectedChallenge: expectedChallengeBase64,
       expectedOrigin: ENV.AUTH_WEBAUTHN_RP_ORIGINS,
       expectedRPID: getWebAuthnRelyingParty(),
     });
