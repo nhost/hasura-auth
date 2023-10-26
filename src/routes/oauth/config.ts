@@ -53,9 +53,10 @@ export const PROVIDERS_CONFIG: Record<
     },
     profile: ({ jwt }) => {
       const payload = jwt?.id_token?.payload;
+      const user = jwt?.user;
       // * See https://developer.apple.com/forums/thread/118209
-      const displayName = payload?.name
-        ? `${payload.name.firstName} ${payload.name.lastName}`
+      const displayName = user?.name
+        ? `${user.name.firstName} ${user.name.lastName}`
         : payload.email;
       return {
         id: payload.sub,
