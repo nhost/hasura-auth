@@ -51,9 +51,10 @@ export const PROVIDERS_CONFIG: Record<
         response_mode: 'form_post',
       },
     },
-    profile: ({ jwt }) => {
+    profile: ({ jwt, profile }) => {
       const payload = jwt?.id_token?.payload;
-      const user = jwt?.user;
+      const user = JSON.parse(profile);
+
       // * See https://developer.apple.com/forums/thread/118209
       const displayName = user?.name
         ? `${user.name.firstName} ${user.name.lastName}`
