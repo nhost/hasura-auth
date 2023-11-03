@@ -12,6 +12,8 @@ import {
   signUpWebauthnHandler,
   signUpWebauthnSchema,
 } from './webauthn';
+import { alwaysAllow, verifyCaptcha } from '@/middleware/auth';
+import { ENV } from '@/utils/env';
 
 const router = Router();
 
@@ -27,6 +29,7 @@ const router = Router();
 router.post(
   '/signup/email-password',
   bodyValidator(signUpEmailPasswordSchema),
+  ENV.AUTH_SIGNUP_RECAPTCHA_CHALLENGE ? verifyCaptcha : alwaysAllow,
   aw(signUpEmailPasswordHandler)
 );
 

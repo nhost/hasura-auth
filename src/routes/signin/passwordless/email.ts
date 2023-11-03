@@ -19,12 +19,14 @@ import { Joi, email, registrationOptions } from '@/validation';
 export type PasswordLessEmailRequestBody = {
   email: string;
   options: UserRegistrationOptionsWithRedirect;
+  recaptchaChallenge?: string;
 };
 
 export const signInPasswordlessEmailSchema =
   Joi.object<PasswordLessEmailRequestBody>({
     email: email.required(),
     options: registrationOptions,
+    recaptchaChallenge: Joi.string().allow('').optional(),
   }).meta({ className: 'SignInPasswordlessEmailSchema' });
 
 export const signInPasswordlessEmailHandler: RequestHandler<

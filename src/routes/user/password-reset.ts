@@ -19,6 +19,7 @@ export const userPasswordResetSchema = Joi.object({
   options: Joi.object({
     redirectTo,
   }).default(),
+  recaptchaChallenge: Joi.string().allow('').optional(),
 }).meta({ className: 'UserPasswordResetSchema' });
 
 export const userPasswordResetHandler: RequestHandler<

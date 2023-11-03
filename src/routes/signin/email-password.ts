@@ -9,6 +9,7 @@ import { Joi, email, password } from '@/validation';
 export const signInEmailPasswordSchema = Joi.object({
   email: email.required(),
   password: password.required(),
+  recaptchaChallenge: Joi.string().allow('').optional(),
 }).meta({ className: 'SignInEmailPasswordSchema' });
 
 export const signInEmailPasswordHandler: RequestHandler<

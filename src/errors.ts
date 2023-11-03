@@ -147,6 +147,14 @@ export const ERRORS = asErrors({
     status: StatusCodes.INTERNAL_SERVER_ERROR,
     message: 'Invalid OAuth configuration',
   },
+  'missing-or-invalid-captcha': {
+    status: StatusCodes.UNAUTHORIZED,
+    message: 'Missing or Invalid recaptcha challenge',
+  },
+  'missing-captcha-site-key': {
+    status: StatusCodes.INTERNAL_SERVER_ERROR,
+    message: 'Missing catpcha site key',
+  },
 });
 
 export const sendError = (

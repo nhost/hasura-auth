@@ -1,8 +1,12 @@
 import { Router } from 'express';
 
-import { asyncWrapper as aw } from '@/utils';
+import { ENV, asyncWrapper as aw } from '@/utils';
 import { bodyValidator } from '@/validation';
-import { authenticationGate } from '@/middleware/auth';
+import {
+  alwaysAllow,
+  authenticationGate,
+  verifyCaptcha,
+} from '@/middleware/auth';
 
 import { userMFAHandler, userMfaSchema } from './mfa';
 import { userHandler } from './user';
@@ -51,6 +55,7 @@ router.get('/user', authenticationGate, aw(userHandler));
 router.post(
   '/user/password/reset',
   bodyValidator(userPasswordResetSchema),
+  ENV.AUTH_SIGNIN_RECAPTCHA_CHALLENGE ? verifyCaptcha : alwaysAllow,
   aw(userPasswordResetHandler)
 );
 
