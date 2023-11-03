@@ -53,17 +53,14 @@ export const PROVIDERS_CONFIG: Record<
     },
     profile: ({ jwt, profile }) => {
       const payload = jwt?.id_token?.payload;
-      let user;
-      try {
-        user = JSON.parse(profile);
-      } catch {
-        user = profile;
-      }
 
-      // * See https://developer.apple.com/forums/thread/118209
-      const displayName = user?.name
-        ? `${user.name.firstName} ${user.name.lastName}`
-        : payload.email;
+      const isProfileError = typeof profile === 'object' && profile.error;
+      const userProfile = !isProfileError ? JSON.parse(profile) : null;
+      const displayName =
+        isProfileError && !userProfile
+          ? payload.email
+          : `${userProfile.name.firstName} ${userProfile.name.lastName}`;
+
       return {
         id: payload.sub,
         displayName,
