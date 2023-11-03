@@ -5,6 +5,7 @@ import { GrantProvider, GrantResponse } from 'grant';
 import jwt from 'jsonwebtoken';
 import { NormalisedProfile } from './utils';
 export const OAUTH_ROUTE = '/signin/provider';
+import { logger } from '@/logger';
 
 const azureBaseUrl = 'https://login.microsoftonline.com';
 const workosBaseUrl = 'https://api.workos.com/sso';
@@ -54,12 +55,22 @@ export const PROVIDERS_CONFIG: Record<
     profile: ({ jwt, profile }) => {
       const payload = jwt?.id_token?.payload;
 
-      const isProfileError = typeof profile === 'object' && profile.error;
-      const userProfile = !isProfileError ? JSON.parse(profile) : null;
-      const displayName =
-        isProfileError && !userProfile
-          ? payload.email
-          : `${userProfile.name.firstName} ${userProfile.name.lastName}`;
+      let displayName;
+
+      if (profile) {
+        try {
+          const userProfile = JSON.parse(profile);
+
+          displayName = userProfile.name
+            ? `${userProfile.name.firstName} ${userProfile.name.lastName}`
+            : displayName;
+        } catch (error) {
+          logger.warn(error);
+
+          // use the user's email as fallback
+          displayName = payload.email;
+        }
+      }
 
       return {
         id: payload.sub,
