@@ -66,7 +66,7 @@ export const PROVIDERS_CONFIG: Record<
             : displayName;
         } catch (error) {
           logger.warn(
-            `Problem trying to parse user data from apple's response: ${error}`
+            `Problem trying to parse user data from Apple's response: ${error}. Using the user's email as a fallback.`
           );
 
           // use the user's email as fallback
