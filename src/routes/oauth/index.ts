@@ -147,7 +147,6 @@ export const oauthProviders = Router()
    * Grant middleware: handle the oauth flow until the callback
    * @see {@link file://./config/index.ts}
    */
-  // })
   .use((req, res, next) => {
     res.locals.grant = {dynamic: {
         origin: `${req.protocol}://${req.headers.host}${ENV.AUTH_API_PREFIX}`},
