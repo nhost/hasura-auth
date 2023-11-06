@@ -65,7 +65,9 @@ export const PROVIDERS_CONFIG: Record<
             ? `${userProfile.name.firstName} ${userProfile.name.lastName}`
             : displayName;
         } catch (error) {
-          logger.warn(error);
+          logger.warn(
+            `Problem trying to parse user data from apple's response: ${error}`
+          );
 
           // use the user's email as fallback
           displayName = payload.email;
