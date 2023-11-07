@@ -152,7 +152,6 @@ export const oauthProviders = Router()
         origin: `${req.protocol}://${req.headers.host}`},
     };
     next();
-
   })
   .use(grant.express(grantConfig))
 
