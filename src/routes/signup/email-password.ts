@@ -7,7 +7,9 @@ import { createUserAndSendVerificationEmail } from '@/utils/user/email-verificat
 import { Joi, email, passwordInsert, registrationOptions } from '@/validation';
 
 export const signUpEmailPasswordSchema = Joi.object({
-  email: email.required(),
+  email: email.required().messages({
+    'email-domain-not-allowed': 'This email is not allowed to sign up',
+  }),
   password: passwordInsert.required(),
   options: registrationOptions,
 }).meta({ className: 'SignUpEmailPasswordSchema' });
