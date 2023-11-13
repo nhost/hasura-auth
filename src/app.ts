@@ -1,8 +1,8 @@
-import { sendError } from '@/errors';
 import { ReasonPhrases } from 'http-status-codes';
 import { json } from 'body-parser';
 import cors from 'cors';
 import express from 'express';
+// import {IRouter} from 'express';
 import helmet from 'helmet';
 import { serverErrors } from './errors';
 import { httpLogger, logger, uncaughtErrorLogger } from './logger';
@@ -23,7 +23,18 @@ addOpenApiRoute(app);
 app.use(httpLogger);
 app.use(helmet(), json(), cors());
 app.use(authMiddleware);
+
+
+/**
+ * GET /healthz
+ * @summary Check if the server is up and running
+ * @return 200 - Success - application/json
+ * @tags General
+ */
+app.get('/healthz', (_req, res) => res.json(ReasonPhrases.OK));
+
 app.use(ENV.AUTH_API_PREFIX, router);
+
 app.use(uncaughtErrorLogger, serverErrors);
 
 process.on('unhandledRejection', (reason) => {
@@ -46,18 +57,6 @@ process.on('uncaughtException', (err, origin) => {
     origin,
   });
   process.exit(1);
-});
-
-/**
- * GET /healthz
- * @summary Check if the server is up and running
- * @return 200 - Success - application/json
- * @tags General
- */
-app.get('/healthz', (_req, res) => res.json(ReasonPhrases.OK));
-
-app.use('/', (_req, res) => {
-  return sendError(res,  'bad-request');
 });
 
 export { app };
