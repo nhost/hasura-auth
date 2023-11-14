@@ -230,7 +230,7 @@ describe('email-password', () => {
         email,
         password,
       })
-      .expect(StatusCodes.UNAUTHORIZED);
+      .expect(StatusCodes.FORBIDDEN);
 
     expect(body.message).toEqual('Sign up is disabled.');
   });

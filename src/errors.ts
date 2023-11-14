@@ -152,7 +152,7 @@ export const ERRORS = asErrors({
     message: 'Invalid OAuth configuration',
   },
   'signup-disabled': {
-    status: StatusCodes.UNAUTHORIZED,
+    status: StatusCodes.FORBIDDEN,
     message: 'Sign up is disabled.',
   },
 });
