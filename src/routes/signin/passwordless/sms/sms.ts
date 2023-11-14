@@ -19,12 +19,14 @@ import { renderTemplate } from '@/templates';
 export type PasswordLessSmsRequestBody = {
   phoneNumber: string;
   options: UserRegistrationOptions;
+  recaptchaChallenge?: string;
 };
 
 export const signInPasswordlessSmsSchema =
   Joi.object<PasswordLessSmsRequestBody>({
     phoneNumber,
     options: registrationOptions,
+    recaptchaChallenge: Joi.string().allow('').optional(),
   }).meta({ className: 'SignInPasswordlessSmsSchema' });
 
 export const signInPasswordlessSmsHandler: RequestHandler<

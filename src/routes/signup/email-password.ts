@@ -10,6 +10,7 @@ export const signUpEmailPasswordSchema = Joi.object({
   email: email.required(),
   password: passwordInsert.required(),
   options: registrationOptions,
+  recaptchaChallenge: Joi.string().allow('').optional(),
 }).meta({ className: 'SignUpEmailPasswordSchema' });
 
 export const signUpEmailPasswordHandler: RequestHandler<

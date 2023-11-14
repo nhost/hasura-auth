@@ -119,6 +119,17 @@ export const ENV = {
     return castIntEnv('AUTH_WEBAUTHN_ATTESTATION_TIMEOUT', 60000);
   },
 
+  // RECAPTCHA
+  get AUTH_RECAPTCHA_SITE_KEY() {
+    return castStringEnv('AUTH_RECAPTCHA_SITE_KEY', '');
+  },
+  get AUTH_RECAPTCHA_GOOGLE_API_KEY() {
+    return castStringEnv('AUTH_RECAPTCHA_GOOGLE_API_KEY', '');
+  },
+  get AUTH_RECAPTCHA_PROJECT_ID() {
+    return castStringEnv('AUTH_RECAPTCHA_PROJECT_ID', '');
+  },
+
   // SIGN UP
   get AUTH_ANONYMOUS_USERS_ENABLED() {
     return castBooleanEnv('AUTH_ANONYMOUS_USERS_ENABLED', false);
@@ -167,6 +178,9 @@ export const ENV = {
     // remove duplicates
     return [...new Set(locales)];
   },
+  get AUTH_SIGNUP_RECAPTCHA_CHALLENGE() {
+    return castBooleanEnv('AUTH_SIGNUP_RECAPTCHA_CHALLENGE', false);
+  },
 
   // SIGN IN
   get AUTH_EMAIL_PASSWORDLESS_ENABLED() {
@@ -178,6 +192,10 @@ export const ENV = {
   get AUTH_EMAIL_SIGNIN_EMAIL_VERIFIED_REQUIRED() {
     return castBooleanEnv('AUTH_EMAIL_SIGNIN_EMAIL_VERIFIED_REQUIRED', true);
   },
+  get AUTH_SIGNIN_RECAPTCHA_CHALLENGE() {
+    return castBooleanEnv('AUTH_SIGNIN_RECAPTCHA_CHALLENGE', false);
+  },
+
   // get AUTH_SIGNIN_PHONE_NUMBER_VERIFIED_REQUIRED() {
   //   return castBooleanEnv('AUTH_SIGNIN_PHONE_NUMBER_VERIFIED_REQUIRED', true);
   // },

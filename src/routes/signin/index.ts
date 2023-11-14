@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import { asyncWrapper as aw } from '@/utils';
+import { ENV, asyncWrapper as aw } from '@/utils';
 import { bodyValidator } from '@/validation';
 
 import { signInAnonymousHandler, signInAnonymousSchema } from './anonymous';
@@ -23,6 +23,7 @@ import {
   signInWebauthnHandler,
   signInWebauthnSchema,
 } from './webauthn';
+import { alwaysAllow, verifyCaptcha } from '@/middleware/auth';
 
 const router = Router();
 
@@ -39,6 +40,7 @@ const router = Router();
 router.post(
   '/signin/email-password',
   bodyValidator(signInEmailPasswordSchema),
+  ENV.AUTH_SIGNIN_RECAPTCHA_CHALLENGE ? verifyCaptcha : alwaysAllow,
   aw(signInEmailPasswordHandler)
 );
 
@@ -55,6 +57,7 @@ router.post(
 router.post(
   '/signin/passwordless/email',
   bodyValidator(signInPasswordlessEmailSchema),
+  ENV.AUTH_SIGNIN_RECAPTCHA_CHALLENGE ? verifyCaptcha : alwaysAllow,
   aw(signInPasswordlessEmailHandler)
 );
 
@@ -70,6 +73,7 @@ router.post(
 router.post(
   '/signin/passwordless/sms',
   bodyValidator(signInPasswordlessSmsSchema),
+  ENV.AUTH_SIGNIN_RECAPTCHA_CHALLENGE ? verifyCaptcha : alwaysAllow,
   aw(signInPasswordlessSmsHandler)
 );
 
