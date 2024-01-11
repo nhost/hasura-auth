@@ -1,0 +1,18 @@
+---
+'hasura-auth': minor
+---
+
+add sms provider alicloud
+
+required env var:
+```
+AUTH_SMS_ALICLOUD_ACCESS_KEY_ID=
+AUTH_SMS_ALICLOUD_ACCESS_KEY_SECRET=
+AUTH_SMS_ALICLOUD_ENDPOINT=
+AUTH_SMS_ALICLOUD_SIGN_NAME_DEFAULT=
+AUTH_SMS_ALICLOUD_TEMPLATE_CODE_DEFAULT=
+```
+optional env var
+```
+AUTH_SMS_ALICLOUD_TEMPLATE_LOCALE=
+```
