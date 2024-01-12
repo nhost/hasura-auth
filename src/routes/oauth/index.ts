@@ -347,7 +347,6 @@ export const oauthProviders = Router()
     if (user) {
       const { refreshToken } = await getNewRefreshToken(user.id);
       // * redirect back user to app url
-      console.log('redirecting to', generateRedirectUrl(redirectTo, { refreshToken }));
       return res.redirect(generateRedirectUrl(redirectTo, { refreshToken }));
     }
 
