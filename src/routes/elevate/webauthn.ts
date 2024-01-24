@@ -1,25 +1,19 @@
 import { sendError } from '@/errors';
 import {
   ENV,
-  getSignInResponse,
   getUser,
   getUserByEmail,
-  gqlSdk,
-  getWebAuthnRelyingParty,
-  getCurrentChallenge,
+  performWebAuthn,
+  verifyWebAuthn,
 } from '@/utils';
 import { RequestHandler } from 'express';
 
-import {
-  generateAuthenticationOptions,
-  verifyAuthenticationResponse,
-} from '@simplewebauthn/server';
+import { SignInResponse } from '@/types';
+import { Joi, email } from '@/validation';
 import {
   AuthenticationCredentialJSON,
   PublicKeyCredentialRequestOptionsJSON,
 } from '@simplewebauthn/typescript-types';
-import { email, Joi } from '@/validation';
-import { SignInResponse } from '@/types';
 
 export type ElevateWebAuthnRequestBody = { email: string };
 export type ElevateWebAuthnResponseBody = PublicKeyCredentialRequestOptionsJSON;
@@ -66,24 +60,7 @@ export const elevateWebauthnHandler: RequestHandler<
     return sendError(res, 'unverified-user');
   }
 
-  const { authUserSecurityKeys } = await gqlSdk.getUserSecurityKeys({
-    id: user.id,
-  });
-
-  const options = generateAuthenticationOptions({
-    rpID: getWebAuthnRelyingParty(),
-    userVerification: 'preferred',
-    timeout: ENV.AUTH_WEBAUTHN_ATTESTATION_TIMEOUT,
-    allowCredentials: authUserSecurityKeys.map((securityKey) => ({
-      id: Buffer.from(securityKey.credentialId, 'base64url'),
-      type: 'public-key',
-    })),
-  });
-
-  await gqlSdk.updateUserChallenge({
-    userId: user.id,
-    challenge: options.challenge,
-  });
+  const options = await performWebAuthn(user.id);
 
   return res.send(options);
 };
@@ -138,68 +115,13 @@ export const elevateVerifyWebauthnHandler: RequestHandler<
     return sendError(res, 'unverified-user');
   }
 
-  const expectedChallenge = await getCurrentChallenge(user.id);
-
-  const { authUserSecurityKeys } = await gqlSdk.getUserSecurityKeys({
-    id: user.id,
-  });
-  const securityKey = authUserSecurityKeys?.find(
-    ({ credentialId }) => credentialId === credential.id
-  );
-
-  if (!securityKey) {
-    return sendError(res, 'invalid-request');
-  }
-
-  const securityKeyDevice = {
-    counter: securityKey.counter,
-    credentialID: Buffer.from(securityKey.credentialId, 'base64url'),
-    credentialPublicKey: Buffer.from(
-      securityKey.credentialPublicKey.substr(2),
-      'hex'
-    ),
-  };
-
-  let verification;
-  try {
-    verification = verifyAuthenticationResponse({
-      credential,
-      expectedChallenge,
-      expectedOrigin: ENV.AUTH_WEBAUTHN_RP_ORIGINS,
-      expectedRPID: getWebAuthnRelyingParty(),
-      authenticator: securityKeyDevice,
-      requireUserVerification: true,
-    });
-  } catch (e) {
-    const error = e as Error;
-    return sendError(res, 'invalid-webauthn-security-key', {
-      customMessage: error.message,
-    });
-  }
-
-  const { verified } = verification;
-
-  if (!verified) {
-    return sendError(res, 'invalid-webauthn-verification');
-  }
-
-  const { authenticationInfo } = verification;
-  const { newCounter } = authenticationInfo;
-
-  if (securityKey.counter != newCounter) {
-    await gqlSdk.updateUserSecurityKey({
-      id: securityKey.id,
-      counter: newCounter,
-    });
-  }
-
-  const signInResponse = await getSignInResponse({
-    userId: user.id,
-    checkMFA: false,
-    extraClaims: {
+  await verifyWebAuthn(
+    user.id,
+    credential,
+    (code, payload) => sendError(res, code, payload),
+    (signInResponse) => res.send(signInResponse),
+    {
       [`x-nhost-auth-elevated`]: user.id,
-    },
-  });
-
-  return res.send(signInResponse);
+    }
+  );
 };

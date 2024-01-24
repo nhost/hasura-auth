@@ -1,13 +1,21 @@
-import { User } from '@/types';
+import { ClaimValueType, SignInResponse, User } from '@/types';
+import { type Response } from 'express';
 import {
   VerifiedRegistrationResponse,
+  generateAuthenticationOptions,
+  verifyAuthenticationResponse,
   verifyRegistrationResponse,
 } from '@simplewebauthn/server';
-import { RegistrationCredentialJSON } from '@simplewebauthn/typescript-types';
+import {
+  AuthenticationCredentialJSON,
+  RegistrationCredentialJSON,
+} from '@simplewebauthn/typescript-types';
 
+import { AuthUserSecurityKeys_Insert_Input } from './__generated__/graphql-request';
 import { ENV } from './env';
 import { gqlSdk } from './gql-sdk';
-import { AuthUserSecurityKeys_Insert_Input } from './__generated__/graphql-request';
+import { ERRORS } from '@/errors';
+import { getSignInResponse } from './session';
 
 export const getWebAuthnRelyingParty = () => {
   if (ENV.AUTH_WEBAUTHN_RP_ID) {
@@ -90,4 +98,105 @@ export const verifyWebAuthnRegistration = async (
   });
 
   return insertAuthUserSecurityKey.id;
+};
+
+export const performWebAuthn = async (userId: string) => {
+  const { authUserSecurityKeys } = await gqlSdk.getUserSecurityKeys({
+    id: userId,
+  });
+
+  const options = generateAuthenticationOptions({
+    rpID: getWebAuthnRelyingParty(),
+    userVerification: 'preferred',
+    timeout: ENV.AUTH_WEBAUTHN_ATTESTATION_TIMEOUT,
+    allowCredentials: authUserSecurityKeys.map((securityKey) => ({
+      id: Buffer.from(securityKey.credentialId, 'base64url'),
+      type: 'public-key',
+    })),
+  });
+
+  await gqlSdk.updateUserChallenge({
+    userId: userId,
+    challenge: options.challenge,
+  });
+
+  return options;
+};
+
+export const verifyWebAuthn = async (
+  userId: string,
+  credential: AuthenticationCredentialJSON,
+  onError: (
+    code: keyof typeof ERRORS,
+    payload?: { customMessage?: string; redirectTo?: string }
+  ) => void | Response,
+  onSuccess: (signInResponse: SignInResponse) => Response,
+  extraClaims?: {
+    [key: string]: ClaimValueType;
+  }
+) => {
+  const expectedChallenge = await getCurrentChallenge(userId);
+
+  const { authUserSecurityKeys } = await gqlSdk.getUserSecurityKeys({
+    id: userId,
+  });
+
+  const securityKey = authUserSecurityKeys?.find(
+    ({ credentialId }) => credentialId === credential.id
+  );
+
+  if (!securityKey) {
+    return onError('invalid-request');
+  }
+
+  const securityKeyDevice = {
+    counter: securityKey.counter,
+    credentialID: Buffer.from(securityKey.credentialId, 'base64url'),
+    credentialPublicKey: Buffer.from(
+      securityKey.credentialPublicKey.substr(2),
+      'hex'
+    ),
+  };
+
+  let verification;
+  try {
+    verification = verifyAuthenticationResponse({
+      credential,
+      expectedChallenge,
+      expectedOrigin: ENV.AUTH_WEBAUTHN_RP_ORIGINS,
+      expectedRPID: getWebAuthnRelyingParty(),
+      authenticator: securityKeyDevice,
+      requireUserVerification: true,
+    });
+  } catch (e) {
+    const error = e as Error;
+
+    return onError('invalid-webauthn-security-key', {
+      customMessage: error.message,
+    });
+  }
+
+  const { verified } = verification;
+
+  if (!verified) {
+    return onError('invalid-webauthn-verification');
+  }
+
+  const { authenticationInfo } = verification;
+  const { newCounter } = authenticationInfo;
+
+  if (securityKey.counter != newCounter) {
+    await gqlSdk.updateUserSecurityKey({
+      id: securityKey.id,
+      counter: newCounter,
+    });
+  }
+
+  const signInResponse = await getSignInResponse({
+    userId: userId,
+    checkMFA: false,
+    extraClaims: extraClaims,
+  });
+
+  return onSuccess(signInResponse);
 };
