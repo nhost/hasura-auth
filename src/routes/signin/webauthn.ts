@@ -4,10 +4,11 @@ import { RequestHandler } from 'express';
 
 import { SignInResponse } from '@/types';
 import { Joi, email } from '@/validation';
+
 import {
-  AuthenticationCredentialJSON,
+  AuthenticationResponseJSON,
   PublicKeyCredentialRequestOptionsJSON,
-} from '@simplewebauthn/typescript-types';
+} from '@simplewebauthn/types';
 
 export type SignInWebAuthnRequestBody = { email: string };
 export type SignInWebAuthnResponseBody = PublicKeyCredentialRequestOptionsJSON;
@@ -49,7 +50,7 @@ export const signInWebauthnHandler: RequestHandler<
 };
 
 export type SignInVerifyWebAuthnRequestBody = {
-  credential: AuthenticationCredentialJSON;
+  credential: AuthenticationResponseJSON;
   email: string;
 };
 

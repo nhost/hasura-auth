@@ -1,20 +1,22 @@
 import { ClaimValueType, SignInResponse, User } from '@/types';
 import { type Response } from 'express';
+
 import {
   VerifiedRegistrationResponse,
   generateAuthenticationOptions,
   verifyAuthenticationResponse,
   verifyRegistrationResponse,
 } from '@simplewebauthn/server';
-import {
-  AuthenticationCredentialJSON,
-  RegistrationCredentialJSON,
-} from '@simplewebauthn/typescript-types';
 
+import {
+  AuthenticationResponseJSON,
+  RegistrationResponseJSON,
+} from '@simplewebauthn/types';
+
+import { ERRORS } from '@/errors';
 import { AuthUserSecurityKeys_Insert_Input } from './__generated__/graphql-request';
 import { ENV } from './env';
 import { gqlSdk } from './gql-sdk';
-import { ERRORS } from '@/errors';
 import { getSignInResponse } from './session';
 
 export const getWebAuthnRelyingParty = () => {
@@ -36,14 +38,14 @@ export const getCurrentChallenge = async (id: string) => {
 
 export const verifyWebAuthnRegistration = async (
   { id }: Pick<User, 'id'>,
-  credential: RegistrationCredentialJSON,
+  response: RegistrationResponseJSON,
   nickname?: string
 ) => {
   const expectedChallenge = await getCurrentChallenge(id);
   let verification: VerifiedRegistrationResponse;
   try {
     verification = await verifyRegistrationResponse({
-      credential,
+      response,
       expectedChallenge,
       expectedOrigin: ENV.AUTH_WEBAUTHN_RP_ORIGINS,
       expectedRPID: getWebAuthnRelyingParty(),
@@ -69,9 +71,9 @@ export const verifyWebAuthnRegistration = async (
   } = registrationInfo;
 
   const newSecurityKey: AuthUserSecurityKeys_Insert_Input = {
-    credentialId: credentialId.toString('base64url'),
+    credentialId: Buffer.from(credentialId).toString('base64url'),
     credentialPublicKey: Buffer.from(
-      '\\x' + credentialPublicKey.toString('hex')
+      '\\x' + Buffer.from(credentialPublicKey).toString('hex')
     ).toString(),
     counter,
     nickname,
@@ -125,7 +127,7 @@ export const performWebAuthn = async (userId: string) => {
 
 export const verifyWebAuthn = async (
   userId: string,
-  credential: AuthenticationCredentialJSON,
+  response: AuthenticationResponseJSON,
   onError: (
     code: keyof typeof ERRORS,
     payload?: { customMessage?: string; redirectTo?: string }
@@ -142,7 +144,7 @@ export const verifyWebAuthn = async (
   });
 
   const securityKey = authUserSecurityKeys?.find(
-    ({ credentialId }) => credentialId === credential.id
+    ({ credentialId }) => credentialId === response.id
   );
 
   if (!securityKey) {
@@ -160,8 +162,8 @@ export const verifyWebAuthn = async (
 
   let verification;
   try {
-    verification = verifyAuthenticationResponse({
-      credential,
+    verification = await verifyAuthenticationResponse({
+      response,
       expectedChallenge,
       expectedOrigin: ENV.AUTH_WEBAUTHN_RP_ORIGINS,
       expectedRPID: getWebAuthnRelyingParty(),

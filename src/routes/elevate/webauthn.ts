@@ -10,10 +10,11 @@ import { RequestHandler } from 'express';
 
 import { SignInResponse } from '@/types';
 import { Joi, email } from '@/validation';
+
 import {
-  AuthenticationCredentialJSON,
+  AuthenticationResponseJSON,
   PublicKeyCredentialRequestOptionsJSON,
-} from '@simplewebauthn/typescript-types';
+} from '@simplewebauthn/types';
 
 export type ElevateWebAuthnRequestBody = { email: string };
 export type ElevateWebAuthnResponseBody = PublicKeyCredentialRequestOptionsJSON;
@@ -66,7 +67,7 @@ export const elevateWebauthnHandler: RequestHandler<
 };
 
 export type ElevateVerifyWebAuthnRequestBody = {
-  credential: AuthenticationCredentialJSON;
+  credential: AuthenticationResponseJSON;
   email: string;
 };
 
