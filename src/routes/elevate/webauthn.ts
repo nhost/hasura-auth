@@ -45,8 +45,7 @@ export const elevateWebauthnHandler: RequestHandler<
     return sendError(res, 'user-not-found');
   }
 
-  const { body } = req;
-  const { email } = body;
+  const { email } = req.body;
 
   const user = await getUserByEmail(email);
 
@@ -89,7 +88,7 @@ export const elevateWebauthnHandler: RequestHandler<
   return res.send(options);
 };
 
-export type ElevnateVerifyWebAuthnRequestBody = {
+export type ElevateVerifyWebAuthnRequestBody = {
   credential: AuthenticationCredentialJSON;
   email: string;
 };
@@ -97,7 +96,7 @@ export type ElevnateVerifyWebAuthnRequestBody = {
 export type ElevateVerifyWebAuthnResponseBody = SignInResponse;
 
 export const elevateVerifyWebauthnSchema =
-  Joi.object<ElevnateVerifyWebAuthnRequestBody>({
+  Joi.object<ElevateVerifyWebAuthnRequestBody>({
     email: email.required(),
     credential: Joi.object().required(),
   }).meta({ className: 'ElevateVerifyWebauthnSchema' });
@@ -105,7 +104,7 @@ export const elevateVerifyWebauthnSchema =
 export const elevateVerifyWebauthnHandler: RequestHandler<
   {},
   ElevateVerifyWebAuthnResponseBody,
-  ElevnateVerifyWebAuthnRequestBody
+  ElevateVerifyWebAuthnRequestBody
 > = async (req, res) => {
   if (!ENV.AUTH_WEBAUTHN_ENABLED) {
     return sendError(res, 'disabled-endpoint');
@@ -198,7 +197,7 @@ export const elevateVerifyWebauthnHandler: RequestHandler<
     userId: user.id,
     checkMFA: false,
     extraClaims: {
-      [`x-nhost-auth-elevated`]: true,
+      [`x-nhost-auth-elevated`]: user.id,
     },
   });
 
