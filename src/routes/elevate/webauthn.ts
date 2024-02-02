@@ -122,7 +122,7 @@ export const elevateVerifyWebauthnHandler: RequestHandler<
     (code, payload) => sendError(res, code, payload),
     (signInResponse) => res.send(signInResponse),
     {
-      [`x-nhost-auth-elevated`]: user.id,
+      [`x-hasura-auth-elevated`]: user.id,
     }
   );
 };
