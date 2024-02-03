@@ -71,7 +71,7 @@ router.post(
 router.post(
   '/user/password',
   bodyValidator(userPasswordSchema),
-  authenticationGate(true, false, (req) => req.body.ticket !== undefined),
+  // authenticationGate(true, false, (req) => req.body.ticket !== undefined), // this is done in the handler because the handler has an auhtenticated and unauthenticated mode.............
   aw(userPasswordHandler)
 );
 

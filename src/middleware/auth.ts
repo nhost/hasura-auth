@@ -42,18 +42,26 @@ export const authenticationGate = (
       return next();
     }
 
-    const { authUserSecurityKeys } = await gqlSdk.getUserSecurityKeys({
-      id: auth.userId,
-    });
-
-    if (authUserSecurityKeys.length === 0 && ENV.AUTH_REQUIRE_ELEVATED_CLAIM === 'recommended') {
-        return next();
+    if (await failsElevatedCheck(auth.userId, bypassIfNoKeys)) {
+        return sendError(res, 'elevated-claim-required');
     }
 
-    if (authUserSecurityKeys.length === 0 && bypassIfNoKeys) {
-        return next();
-    }
-
-    return sendError(res, 'elevated-claim-required');
+    return next();
   };
 }
+
+export const failsElevatedCheck = async (userId: string, bypassIfNoKeys = false) => {
+  const response = await gqlSdk.getUserSecurityKeys({
+    id: userId,
+  });
+
+  if (response.authUserSecurityKeys.length === 0 && ENV.AUTH_REQUIRE_ELEVATED_CLAIM === 'recommended') {
+    return false;
+  }
+
+  if (response.authUserSecurityKeys.length === 0 && bypassIfNoKeys) {
+    return false;
+  }
+
+  return true;
+};
