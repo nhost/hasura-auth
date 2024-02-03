@@ -30,9 +30,11 @@ export const authenticationGate = (
       return sendError(res, 'unauthenticated-user');
     }
 
-    const auth = req.auth as RequestAuth;
-    if (await failsElevatedCheck(auth, bypassIfNoKeys)) {
+    if (checkElevatedPermissions) {
+      const auth = req.auth as RequestAuth;
+      if (await failsElevatedCheck(auth, bypassIfNoKeys)) {
         return sendError(res, 'elevated-claim-required');
+      }
     }
 
     return next();
@@ -40,14 +42,7 @@ export const authenticationGate = (
 }
 
 export const failsElevatedCheck = async (auth: RequestAuth, bypassIfNoKeys = false) => {
-  if (!checkElevatedPermissions ||
-    ENV.AUTH_REQUIRE_ELEVATED_CLAIM === 'disabled' ||
-    !ENV.AUTH_WEBAUTHN_ENABLED
-  ) {
-    return false;
-  }
-
-  if (auth.elevated) {
+  if (ENV.AUTH_REQUIRE_ELEVATED_CLAIM === 'disabled' || !ENV.AUTH_WEBAUTHN_ENABLED || auth.elevated) {
     return false;
   }
 
