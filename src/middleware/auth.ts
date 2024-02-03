@@ -31,14 +31,6 @@ export const authenticationGate = (
     }
 
     const auth = req.auth as RequestAuth;
-
-    if (!checkElevatedPermissions ||
-        ENV.AUTH_REQUIRE_ELEVATED_CLAIM === 'disabled' ||
-        !ENV.AUTH_WEBAUTHN_ENABLED
-    ) {
-      return next();
-    }
-
     if (await failsElevatedCheck(auth, bypassIfNoKeys)) {
         return sendError(res, 'elevated-claim-required');
     }
@@ -48,6 +40,13 @@ export const authenticationGate = (
 }
 
 export const failsElevatedCheck = async (auth: RequestAuth, bypassIfNoKeys = false) => {
+  if (!checkElevatedPermissions ||
+    ENV.AUTH_REQUIRE_ELEVATED_CLAIM === 'disabled' ||
+    !ENV.AUTH_WEBAUTHN_ENABLED
+  ) {
+    return false;
+  }
+
   if (auth.elevated) {
     return false;
   }
