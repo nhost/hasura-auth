@@ -38,7 +38,11 @@ const router = Router();
  * @security BearerAuth
  * @tags User management
  */
-router.get('/user', authenticationGate(false), aw(userHandler));
+router.get(
+    '/user',
+    authenticationGate(false),
+    aw(userHandler),
+);
 
 /**
  * POST /user/password/reset
@@ -66,8 +70,8 @@ router.post(
  */
 router.post(
   '/user/password',
-  authenticationGate(true, false, (req) => req.body.ticket !== undefined),
   bodyValidator(userPasswordSchema),
+  authenticationGate(true, false, (req) => req.body.ticket !== undefined),
   aw(userPasswordHandler)
 );
 
@@ -97,8 +101,8 @@ router.post(
  */
 router.post(
   '/user/email/change',
-  authenticationGate(true),
   bodyValidator(userEmailChangeSchema),
+  authenticationGate(true),
   aw(userEmailChange)
 );
 
@@ -114,8 +118,8 @@ router.post(
  */
 router.post(
   '/user/mfa',
-  authenticationGate(true),
   bodyValidator(userMfaSchema),
+  authenticationGate(true),
   aw(userMFAHandler)
 );
 
@@ -131,8 +135,8 @@ router.post(
  */
 router.post(
   '/user/deanonymize',
-  authenticationGate(false),
   bodyValidator(userDeanonymizeSchema),
+  authenticationGate(false),
   aw(userDeanonymizeHandler)
 );
 

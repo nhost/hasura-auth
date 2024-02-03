@@ -31,15 +31,17 @@ export const authenticationGate = (
       return sendError(res, 'unauthenticated-user');
     }
 
+    const auth = req.auth as RequestAuth;
+
     if (!checkElevatedPermissions ||
         ENV.AUTH_REQUIRE_ELEVATED_CLAIM === 'disabled' ||
         !ENV.AUTH_WEBAUTHN_ENABLED ||
+        auth.elevated ||
         bypassFn(req)
        ) {
       return next();
     }
 
-    const auth = req.auth as RequestAuth;
     const { authUserSecurityKeys } = await gqlSdk.getUserSecurityKeys({
       id: auth.userId,
     });
@@ -52,10 +54,6 @@ export const authenticationGate = (
         return next();
     }
 
-    if (!auth.elevated) {
-        return sendError(res, 'elevated-claim-required');
-    }
-
-    return next();
+    return sendError(res, 'elevated-claim-required');
   };
 }
