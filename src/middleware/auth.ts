@@ -21,7 +21,11 @@ export const authMiddleware: RequestHandler = async (req, _, next) => {
   next();
 };
 
-export const authenticationGate = (checkElevatedPermissions: boolean, bypassIfNoKeys = false): RequestHandler => {
+export const authenticationGate = (
+    checkElevatedPermissions: boolean,
+    bypassIfNoKeys = false,
+    bypassFn: (req: any) => boolean = () => false,
+): RequestHandler => {
   return async (req, res, next) => {
     if (!req.auth) {
       return sendError(res, 'unauthenticated-user');
@@ -29,7 +33,9 @@ export const authenticationGate = (checkElevatedPermissions: boolean, bypassIfNo
 
     if (!checkElevatedPermissions ||
         ENV.AUTH_REQUIRE_ELEVATED_CLAIM === 'disabled' ||
-        !ENV.AUTH_WEBAUTHN_ENABLED) {
+        !ENV.AUTH_WEBAUTHN_ENABLED ||
+        bypassFn(req)
+       ) {
       return next();
     }
 

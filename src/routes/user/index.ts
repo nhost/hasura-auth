@@ -66,7 +66,7 @@ router.post(
  */
 router.post(
   '/user/password',
-  authenticationGate(true),
+  authenticationGate(true, false, (req) => req.body.ticket !== undefined),
   bodyValidator(userPasswordSchema),
   aw(userPasswordHandler)
 );
