@@ -38,7 +38,7 @@ const router = Router();
  * @security BearerAuth
  * @tags User management
  */
-router.get('/user', authenticationGate, aw(userHandler));
+router.get('/user', authenticationGate(false), aw(userHandler));
 
 /**
  * POST /user/password/reset
@@ -66,6 +66,7 @@ router.post(
  */
 router.post(
   '/user/password',
+  authenticationGate(true),
   bodyValidator(userPasswordSchema),
   aw(userPasswordHandler)
 );
@@ -96,8 +97,8 @@ router.post(
  */
 router.post(
   '/user/email/change',
+  authenticationGate(true),
   bodyValidator(userEmailChangeSchema),
-  authenticationGate,
   aw(userEmailChange)
 );
 
@@ -113,8 +114,8 @@ router.post(
  */
 router.post(
   '/user/mfa',
+  authenticationGate(true),
   bodyValidator(userMfaSchema),
-  authenticationGate,
   aw(userMFAHandler)
 );
 
@@ -130,8 +131,8 @@ router.post(
  */
 router.post(
   '/user/deanonymize',
+  authenticationGate(false),
   bodyValidator(userDeanonymizeSchema),
-  authenticationGate,
   aw(userDeanonymizeHandler)
 );
 
@@ -161,7 +162,11 @@ router.post(
  * @return {DisabledEndpointError} 404 - The feature is not activated - application/json
  * @tags User management
  */
-router.post('/user/webauthn/add', aw(addSecurityKeyHandler));
+router.post(
+  '/user/webauthn/add',
+  authenticationGate(true, true),
+  aw(addSecurityKeyHandler),
+);
 
 // TODO add @return payload on success
 /**
