@@ -30,7 +30,7 @@ export const userPasswordHandler: RequestHandler<
       return sendError(res, 'unauthenticated-user');
     }
 
-    if (await failsElevatedCheck(req.auth?.userId)) {
+    if (await failsElevatedCheck(req.auth)) {
         return sendError(res, 'elevated-claim-required');
     }
 

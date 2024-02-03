@@ -24,7 +24,6 @@ export const authMiddleware: RequestHandler = async (req, _, next) => {
 export const authenticationGate = (
     checkElevatedPermissions: boolean,
     bypassIfNoKeys = false,
-    bypassFn: (req: any) => boolean = () => false,
 ): RequestHandler => {
   return async (req, res, next) => {
     if (!req.auth) {
@@ -35,14 +34,12 @@ export const authenticationGate = (
 
     if (!checkElevatedPermissions ||
         ENV.AUTH_REQUIRE_ELEVATED_CLAIM === 'disabled' ||
-        !ENV.AUTH_WEBAUTHN_ENABLED ||
-        auth.elevated ||
-        bypassFn(req)
-       ) {
+        !ENV.AUTH_WEBAUTHN_ENABLED
+    ) {
       return next();
     }
 
-    if (await failsElevatedCheck(auth.userId, bypassIfNoKeys)) {
+    if (await failsElevatedCheck(auth, bypassIfNoKeys)) {
         return sendError(res, 'elevated-claim-required');
     }
 
@@ -50,9 +47,13 @@ export const authenticationGate = (
   };
 }
 
-export const failsElevatedCheck = async (userId: string, bypassIfNoKeys = false) => {
+export const failsElevatedCheck = async (auth: RequestAuth, bypassIfNoKeys = false) => {
+  if (auth.elevated) {
+    return false;
+  }
+
   const response = await gqlSdk.getUserSecurityKeys({
-    id: userId,
+    id: auth.userId,
   });
 
   if (response.authUserSecurityKeys.length === 0 && ENV.AUTH_REQUIRE_ELEVATED_CLAIM === 'recommended') {
