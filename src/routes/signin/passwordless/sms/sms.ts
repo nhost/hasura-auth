@@ -102,8 +102,10 @@ export const signInPasswordlessSmsHandler: RequestHandler<
     switch (ENV.AUTH_SMS_PROVIDER) {
       case "twilio":
         await sendSmsWithTwilio(phoneNumber, user, otp);
+        break;
       case "alicloud":
         await sendSmsWithAlicloud(phoneNumber, user, otp);
+        break;
     }
 
   } catch (error: any) {
