@@ -45,6 +45,5 @@ export const EmailValidator: CustomValidator = (email, helper) => {
     return email;
   }
 
-  // return helper.message({custom:'Email is not valid'});
-return helper.message({custom:'redirectTo'});
+  return helper.message({custom:'Email is not valid'});
 };
