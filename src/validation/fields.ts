@@ -83,7 +83,7 @@ export const redirectTo = Joi.string()
         new URL(value);
         return value;
       } catch {
-        return helper.error('redirectTo');
+        return helper.message({custom:'redirectTo'});
       }
     }
 
@@ -105,7 +105,7 @@ export const redirectTo = Joi.string()
 
     const valueUrl = new URL(value);
     if (!micromatch.isMatch(valueUrl.hostname, hostnames, { nocase: true })) {
-      return helper.error('redirectTo');
+      return helper.message({custom:'redirectTo'});
     }
 
     // * We allow any sub-path of the allowed redirect urls.
@@ -139,10 +139,10 @@ export const redirectTo = Joi.string()
         nocase: true,
       });
       if (match) return value;
-      return helper.error('redirectTo');
+      return helper.message({custom:'redirectTo'});
     } catch {
       // * value is not a valid URL
-      return helper.error('redirectTo');
+      return helper.message({custom:'redirectTo'});
     }
   })
   .example(`${ENV.AUTH_CLIENT_URL}/catch-redirection`);
@@ -186,7 +186,7 @@ export const registrationOptions =
     .custom((value, helper) => {
       const { allowedRoles, defaultRole } = value;
       if (!allowedRoles.includes(defaultRole)) {
-        return helper.error('Default role must be part of allowed roles');
+        return helper.message({custom:'Default role must be part of allowed roles'});
       }
       // check if allowedRoles is a subset of allowed user roles
       if (
@@ -194,7 +194,7 @@ export const registrationOptions =
           ENV.AUTH_USER_DEFAULT_ALLOWED_ROLES.includes(role)
         )
       ) {
-        return helper.error('Allowed roles must be a subset of allowedRoles');
+        return helper.message({custom:'Allowed roles must be a subset of allowedRoles'});
       }
       return value;
     });
