@@ -83,7 +83,7 @@ export const redirectTo = Joi.string()
         new URL(value);
         return value;
       } catch {
-        return helper.message({custom:'redirectTo'});
+        return helper.error('redirectTo');
       }
     }
 
@@ -105,7 +105,7 @@ export const redirectTo = Joi.string()
 
     const valueUrl = new URL(value);
     if (!micromatch.isMatch(valueUrl.hostname, hostnames, { nocase: true })) {
-      return helper.message({custom:'redirectTo'});
+      return helper.error('redirectTo');
     }
 
     // * We allow any sub-path of the allowed redirect urls.
@@ -139,10 +139,10 @@ export const redirectTo = Joi.string()
         nocase: true,
       });
       if (match) return value;
-      return helper.message({custom:'redirectTo'});
+      return helper.error('redirectTo');
     } catch {
       // * value is not a valid URL
-      return helper.message({custom:'redirectTo'});
+      return helper.error('redirectTo');
     }
   })
   .example(`${ENV.AUTH_CLIENT_URL}/catch-redirection`);
