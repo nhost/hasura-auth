@@ -1,7 +1,13 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
+	"log/slog"
+	"net/http"
+	"os"
+	"os/exec"
+	"time"
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/gin-contrib/cors"
@@ -21,6 +27,7 @@ const (
 	flagTrustedProxies     = "trusted-proxies"
 	flagAllowCORSOrigin    = "allow-cors-origin"
 	flagPostgresConnection = "postgres"
+	flagNodeServerPath     = "node-server-path"
 )
 
 func CommandServe() *cli.Command {
@@ -64,22 +71,33 @@ func CommandServe() *cli.Command {
 				Category: "postgres",
 				EnvVars:  []string{"POSTGRES_CONNECTION"},
 			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagNodeServerPath,
+				Usage:    "Path to the node server",
+				Value:    ".",
+				Category: "node",
+				EnvVars:  []string{"NODE_SERVER_PATH"},
+			},
 		},
 		Action: serve,
 	}
 }
 
-func serve(cCtx *cli.Context) error {
-	logger := getLogger(cCtx.Bool(flagDebug), cCtx.Bool(flagLogFormatJSON))
-	logger.Info(cCtx.App.Name + " v" + cCtx.App.Version)
-	logFlags(logger, cCtx)
+func getNodeServer(ctx context.Context, nodeServerPath string) *exec.Cmd {
+	cmd := exec.CommandContext(ctx, "pnpm", "start")
+	cmd.Dir = nodeServerPath
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	return cmd
+}
 
+func getGoServer(cCtx *cli.Context, logger *slog.Logger) (*http.Server, error) {
 	r := gin.New()
 
 	loader := openapi3.NewLoader()
 	doc, err := loader.LoadFromData(api.OpenAPISchema)
 	if err != nil {
-		return fmt.Errorf("failed to load OpenAPI schema: %w", err)
+		return nil, fmt.Errorf("failed to load OpenAPI schema: %w", err)
 	}
 	doc.AddServer(&openapi3.Server{ //nolint:exhaustruct
 		URL: cCtx.String(flagPathPrefix),
@@ -110,8 +128,48 @@ func serve(cCtx *cli.Context) error {
 		},
 	)
 
-	if err := r.Run(cCtx.String(flagBind)); err != nil {
-		return fmt.Errorf("failed to start server: %w", err)
+	server := &http.Server{ //nolint:exhaustruct
+		Addr:              cCtx.String(flagBind),
+		Handler:           r,
+		ReadHeaderTimeout: 5 * time.Second, //nolint:gomnd
+	}
+
+	return server, nil
+}
+
+func serve(cCtx *cli.Context) error {
+	logger := getLogger(cCtx.Bool(flagDebug), cCtx.Bool(flagLogFormatJSON))
+	logger.Info(cCtx.App.Name + " v" + cCtx.App.Version)
+	logFlags(logger, cCtx)
+
+	ctx, cancel := context.WithCancel(cCtx.Context)
+	defer cancel()
+
+	nodeServer := getNodeServer(ctx, cCtx.String(flagNodeServerPath))
+	go func() {
+		defer cancel()
+		if err := nodeServer.Run(); err != nil {
+			logger.Error("node server failed", slog.String("error", err.Error()))
+		}
+	}()
+
+	server, err := getGoServer(cCtx, logger)
+	if err != nil {
+		return fmt.Errorf("failed to create server: %w", err)
+	}
+
+	go func() {
+		defer cancel()
+		if err := server.ListenAndServe(); err != nil {
+			logger.Error("server failed", slog.String("error", err.Error()))
+		}
+	}()
+
+	<-ctx.Done()
+
+	logger.Info("shutting down server")
+	if err := server.Shutdown(ctx); err != nil {
+		return fmt.Errorf("failed to shutdown server: %w", err)
 	}
 
 	return nil

@@ -143,6 +143,7 @@
               go-migrate
               sqlc
               nodejs
+              nodePackages.pnpm
             ] ++ checkDeps ++ buildInputs ++ nativeBuildInputs;
           };
         };
