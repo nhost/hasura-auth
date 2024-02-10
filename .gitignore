@@ -9,3 +9,4 @@ package-lock.json
 
 docker/data
 .env
+result
