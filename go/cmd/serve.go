@@ -13,14 +13,12 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/nhost/hasura-auth/go/api"
-	"github.com/nhost/hasura-auth/go/controller"
 	"github.com/nhost/hasura-auth/go/middleware"
-	ginmiddleware "github.com/oapi-codegen/gin-middleware"
 	"github.com/urfave/cli/v2"
 )
 
 const (
-	flagPathPrefix         = "path-prefix"
+	flagAPIPrefix          = "api-prefix"
 	flagBind               = "bind"
 	flagDebug              = "debug"
 	flagLogFormatJSON      = "log-format-json"
@@ -36,15 +34,16 @@ func CommandServe() *cli.Command {
 		Usage: "Serve the application",
 		Flags: []cli.Flag{
 			&cli.StringFlag{ //nolint: exhaustruct
-				Name:     flagPathPrefix,
+				Name:     flagAPIPrefix,
 				Usage:    "prefix for all routes",
 				Value:    "/v1",
 				Category: "server",
+				EnvVars:  []string{"AUTH_API_PREFIX"},
 			},
 			&cli.StringFlag{ //nolint: exhaustruct
 				Name:     flagBind,
 				Usage:    "bind address",
-				Value:    ":8091",
+				Value:    ":4000",
 				Category: "server",
 			},
 			&cli.BoolFlag{ //nolint: exhaustruct
@@ -92,7 +91,7 @@ func getNodeServer(ctx context.Context, nodeServerPath string) *exec.Cmd {
 }
 
 func getGoServer(cCtx *cli.Context, logger *slog.Logger) (*http.Server, error) {
-	r := gin.New()
+	router := gin.New()
 
 	loader := openapi3.NewLoader()
 	doc, err := loader.LoadFromData(api.OpenAPISchema)
@@ -100,13 +99,11 @@ func getGoServer(cCtx *cli.Context, logger *slog.Logger) (*http.Server, error) {
 		return nil, fmt.Errorf("failed to load OpenAPI schema: %w", err)
 	}
 	doc.AddServer(&openapi3.Server{ //nolint:exhaustruct
-		URL: cCtx.String(flagPathPrefix),
+		URL: cCtx.String(flagAPIPrefix),
 	})
 
-	auth := &controller.Auth{}
-
-	r.Use(
-		ginmiddleware.OapiRequestValidator(doc),
+	router.Use(
+		// ginmiddleware.OapiRequestValidator(doc),
 		gin.Recovery(),
 		middleware.Logger(logger),
 		cors.New(cors.Config{ //nolint: exhaustruct
@@ -116,21 +113,29 @@ func getGoServer(cCtx *cli.Context, logger *slog.Logger) (*http.Server, error) {
 		}),
 	)
 
-	handler := api.NewStrictHandler(auth, nil)
+	// auth := &controller.Auth{}
+	// handler := api.NewStrictHandler(auth, nil)
+	// api.RegisterHandlersWithOptions(
+	// 	router,
+	// 	handler,
+	// 	api.GinServerOptions{
+	// 		BaseURL: cCtx.String(flagAPIPrefix),
+	// 		Middlewares: []api.MiddlewareFunc{
+	// 			api.MiddlewareFunc(ginmiddleware.OapiRequestValidator(doc)),
+	// 		},
+	// 		ErrorHandler: nil,
+	// 	},
+	// )
 
-	api.RegisterHandlersWithOptions(
-		r,
-		handler,
-		api.GinServerOptions{
-			BaseURL:      cCtx.String(flagPathPrefix),
-			Middlewares:  []api.MiddlewareFunc{},
-			ErrorHandler: nil,
-		},
-	)
+	nodejsHandler, err := nodejsHandler(cCtx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create nodejs handler: %w", err)
+	}
+	router.NoRoute(nodejsHandler)
 
 	server := &http.Server{ //nolint:exhaustruct
 		Addr:              cCtx.String(flagBind),
-		Handler:           r,
+		Handler:           router,
 		ReadHeaderTimeout: 5 * time.Second, //nolint:gomnd
 	}
 
