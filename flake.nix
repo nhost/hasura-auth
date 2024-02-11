@@ -61,10 +61,10 @@
           ];
         };
 
-        node_modules = pkgs.stdenv.mkDerivation {
+        node_modules-builder = pkgs.stdenv.mkDerivation {
           inherit version;
 
-          pname = "node_modules";
+          pname = "node_modules-builder";
 
           nativeBuildInputs = with pkgs; [
             nodePackages.pnpm
@@ -80,7 +80,7 @@
           };
 
           buildPhase = ''
-            pnpm install
+            pnpm install --frozen-lockfile
           '';
 
           installPhase = ''
@@ -88,6 +88,14 @@
             cp -r node_modules $out
           '';
         };
+
+        node_modules-prod = node_modules-builder.overrideAttrs (oldAttrs: {
+          name = "node_modules-prod";
+
+          buildPhase = ''
+            pnpm install --frozen-lockfile --prod
+          '';
+        });
 
 
         name = "hasura-auth";
@@ -154,13 +162,17 @@
             pname = "node-${name}";
 
             buildInputs = with pkgs; [
+              pkgs.nodejs-slim_18
+            ];
+
+            nativeBuildInputs = with pkgs; [
               nodePackages.pnpm
             ];
 
             src = node-src;
 
             buildPhase = ''
-              ln -s ${node_modules}/node_modules node_modules
+              ln -s ${node_modules-builder}/node_modules node_modules
               pnpm build
             '';
 
@@ -170,8 +182,7 @@
               cp -r migrations $out/migrations
               cp -r email-templates $out/email-templates
               cp package.json $out/package.json
-              ln -s ${node_modules}/node_modules $out/node_modules
-              ln -sf ${pkgs.nodePackages.pnpm}/bin/pnpm $out/bin/pnpm
+              ln -s ${node_modules-prod}/node_modules $out/node_modules
             '';
           };
 
@@ -183,7 +194,9 @@
             ] ++ buildInputs;
 
             postInstall = ''
-              wrapProgram $out/bin/hasura-auth --suffix PATH : ${node-auth}/bin/pnpm
+              wrapProgram $out/bin/hasura-auth \
+                  --suffix PATH : ${pkgs.nodejs-slim_18}/bin \
+                  --prefix NODE_SERVER_PATH : ${node-auth}
             '';
           };
 

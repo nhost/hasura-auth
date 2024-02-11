@@ -199,8 +199,8 @@ describe('email-password', () => {
   it('should fail to deanonymize user with already existing email', async () => {
     // set env vars
     await request.post('/change-env').send({
-      DISABLE_NEW_USERS: false,
-      ANONYMOUS_USERS_ENABLED: true,
+      AUTH_DISABLE_NEW_USERS: false,
+      AUTH_ANONYMOUS_USERS_ENABLED: true,
     });
 
     const email = 'joedoe@example.com';

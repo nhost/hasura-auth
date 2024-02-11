@@ -85,21 +85,25 @@ func CommandServe() *cli.Command {
 	}
 }
 
-func getNodeServer(ctx context.Context, nodeServerPath string, port int) *exec.Cmd {
+func getNodeServer(cCtx *cli.Context) *exec.Cmd {
 	env := os.Environ()
 	found := false
+	authPort := strconv.Itoa(cCtx.Int(flagPort) + 1)
 	for i, v := range env {
 		if strings.HasPrefix(v, "AUTH_PORT=") {
 			found = true
-			env[i] = "AUTH_PORT=" + strconv.Itoa(port+1)
+			env[i] = "AUTH_PORT=" + authPort
 		}
 	}
 	if !found {
-		env = append(env, "AUTH_PORT="+strconv.Itoa(port+1))
+		env = append(env, "AUTH_PORT="+authPort)
 	}
+	env = append(env, "NODE_EXTRA_CA_CERTS=/etc/ssl/certs/ca-bundle.crt")
+	env = append(env, "PWD="+cCtx.String(flagNodeServerPath))
+	env = append(env, "AUTH_VERSION="+cCtx.App.Version)
 
-	cmd := exec.CommandContext(ctx, "pnpm", "start")
-	cmd.Dir = nodeServerPath
+	cmd := exec.CommandContext(cCtx.Context, "node", "./dist/start.js")
+	cmd.Dir = cCtx.String(flagNodeServerPath)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Env = env
@@ -166,7 +170,7 @@ func serve(cCtx *cli.Context) error {
 	ctx, cancel := context.WithCancel(cCtx.Context)
 	defer cancel()
 
-	nodeServer := getNodeServer(ctx, cCtx.String(flagNodeServerPath), cCtx.Int(flagPort))
+	nodeServer := getNodeServer(cCtx)
 	go func() {
 		defer cancel()
 		if err := nodeServer.Run(); err != nil {
