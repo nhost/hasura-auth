@@ -58,7 +58,7 @@ describe('passwordless email (magic link)', () => {
 
     const link = message.Content.Headers['X-Link'][0];
     const res = await request
-      .get(link.replace('http://localhost:4000', ''))
+      .get(link.replace('http://127.0.0.2:4000', ''))
       .expect(StatusCodes.MOVED_TEMPORARILY);
 
     expectUrlParameters(res).not.toIncludeAnyMembers([

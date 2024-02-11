@@ -148,6 +148,10 @@ services:
         image: jcalonso/mailhog:v1.0.1
         ports:
             - mode: ingress
+              target: 1025
+              published: "1025"
+              protocol: tcp
+            - mode: ingress
               target: 8025
               published: "8025"
               protocol: tcp
