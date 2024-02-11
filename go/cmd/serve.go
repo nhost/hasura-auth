@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/getkin/kin-openapi/openapi3"
@@ -19,7 +21,7 @@ import (
 
 const (
 	flagAPIPrefix          = "api-prefix"
-	flagBind               = "bind"
+	flagPort               = "port"
 	flagDebug              = "debug"
 	flagLogFormatJSON      = "log-format-json"
 	flagTrustedProxies     = "trusted-proxies"
@@ -41,10 +43,11 @@ func CommandServe() *cli.Command {
 				EnvVars:  []string{"AUTH_API_PREFIX"},
 			},
 			&cli.StringFlag{ //nolint: exhaustruct
-				Name:     flagBind,
-				Usage:    "bind address",
-				Value:    ":4000",
+				Name:     flagPort,
+				Usage:    "Port to bind to",
+				Value:    "4000",
 				Category: "server",
+				EnvVars:  []string{"AUTH_PORT"},
 			},
 			&cli.BoolFlag{ //nolint: exhaustruct
 				Name:     flagDebug,
@@ -82,11 +85,24 @@ func CommandServe() *cli.Command {
 	}
 }
 
-func getNodeServer(ctx context.Context, nodeServerPath string) *exec.Cmd {
+func getNodeServer(ctx context.Context, nodeServerPath string, port int) *exec.Cmd {
+	env := os.Environ()
+	found := false
+	for i, v := range env {
+		if strings.HasPrefix(v, "AUTH_PORT=") {
+			found = true
+			env[i] = "AUTH_PORT=" + strconv.Itoa(port+1)
+		}
+	}
+	if !found {
+		env = append(env, "AUTH_PORT="+strconv.Itoa(port+1))
+	}
+
 	cmd := exec.CommandContext(ctx, "pnpm", "start")
 	cmd.Dir = nodeServerPath
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
+	cmd.Env = env
 	return cmd
 }
 
@@ -115,14 +131,14 @@ func getGoServer(cCtx *cli.Context, logger *slog.Logger) (*http.Server, error) {
 
 	// auth := &controller.Auth{}
 	// handler := api.NewStrictHandler(auth, nil)
+	// mw := api.MiddlewareFunc(ginmiddleware.OapiRequestValidator(doc)),
+
 	// api.RegisterHandlersWithOptions(
 	// 	router,
 	// 	handler,
 	// 	api.GinServerOptions{
 	// 		BaseURL: cCtx.String(flagAPIPrefix),
-	// 		Middlewares: []api.MiddlewareFunc{
-	// 			api.MiddlewareFunc(ginmiddleware.OapiRequestValidator(doc)),
-	// 		},
+	// 		Middlewares: []api.MiddlewareFunc{mw},
 	// 		ErrorHandler: nil,
 	// 	},
 	// )
@@ -134,7 +150,7 @@ func getGoServer(cCtx *cli.Context, logger *slog.Logger) (*http.Server, error) {
 	router.NoRoute(nodejsHandler)
 
 	server := &http.Server{ //nolint:exhaustruct
-		Addr:              cCtx.String(flagBind),
+		Addr:              ":" + cCtx.String(flagPort),
 		Handler:           router,
 		ReadHeaderTimeout: 5 * time.Second, //nolint:gomnd
 	}
@@ -150,7 +166,7 @@ func serve(cCtx *cli.Context) error {
 	ctx, cancel := context.WithCancel(cCtx.Context)
 	defer cancel()
 
-	nodeServer := getNodeServer(ctx, cCtx.String(flagNodeServerPath))
+	nodeServer := getNodeServer(ctx, cCtx.String(flagNodeServerPath), cCtx.Int(flagPort))
 	go func() {
 		defer cancel()
 		if err := nodeServer.Run(); err != nil {

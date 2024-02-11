@@ -1,7 +1,7 @@
 ifdef VER
 VERSION=$(shell echo $(VER) | sed -e 's/^v//g' -e 's/\//_/g')
 else
-VERSION=$(shell cat VERSION)
+VERSION=$(shell grep -oP 'version\s*=\s*"\K[^"]+' flake.nix)
 endif
 
 ifeq ($(shell uname -m),x86_64)
@@ -32,7 +32,7 @@ help: ## Show this help.
 
 .PHONY: get-version
 get-version:  ## Return version
-	@echo $(VERSION) > VERSION
+	@sed -i "s/version\s*=\s*\"[^\"]*\"/version = \"${VERSION}\"/" flake.nix
 	@echo $(VERSION)
 
 
@@ -89,7 +89,7 @@ build-dry-run:  ## Run nix flake check
 .PHONY: build-docker-image
 build-docker-image:  ## Build docker container for native architecture
 	./build/nix-docker-image.sh
-	docker tag graphite:$(VERSION) nhost/graphite:0.0.0-dev
+	docker tag hasura-auth:$(VERSION) nhost/hasura-auth:0.0.0-dev
 
 
 .PHONY: migrations-add
