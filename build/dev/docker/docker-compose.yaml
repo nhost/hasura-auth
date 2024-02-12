@@ -41,8 +41,8 @@ services:
                 - -S
                 - http://localhost:4000/healthz
             timeout: 60s
-            interval: 5s
-            start_period: 60s
+            interval: 10s
+            start_period: 10s
         restart: always
 
     graphql:
@@ -87,8 +87,8 @@ services:
                 - CMD-SHELL
                 - curl http://localhost:8080/healthz > /dev/null 2>&1
             timeout: 60s
-            interval: 5s
-            start_period: 60s
+            interval: 10s
+            start_period: 10s
         restart: always
 
     postgres:
@@ -112,8 +112,8 @@ services:
                 - postgres
                 - -q
             timeout: 60s
-            interval: 5s
-            start_period: 60s
+            interval: 10s
+            start_period: 10s
         ports:
             - mode: ingress
               target: 5432

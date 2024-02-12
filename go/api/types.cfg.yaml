@@ -1,4 +1,4 @@
 package: api
 generate:
   models: true
-output: api/types.gen.go
+output: go/api/types.gen.go

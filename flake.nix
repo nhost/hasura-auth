@@ -29,10 +29,14 @@
             ./pnpm-lock.yaml
             ./tsconfig.build.json
             ./tsconfig.json
+            ./audit-ci.jsonc
+            ./jest.config.js
+            ./.env.example
             (inDirectory "migrations")
             (inDirectory "src")
             (inDirectory "types")
             (inDirectory "email-templates")
+            (inDirectory "test")
           ];
 
           exclude = with nix-filter.lib;[
@@ -49,6 +53,8 @@
             ./go.sum
             ./.golangci.yaml
             ./go/api/openapi.yaml
+            ./go/api/server.cfg.yaml
+            ./go/api/types.cfg.yaml
             isDirectory
             (inDirectory "vendor")
           ];
@@ -143,6 +149,34 @@
           go-checks = nixops-lib.go.check {
             inherit src submodule ldflags tags buildInputs nativeBuildInputs checkDeps;
           };
+
+          node-checks = pkgs.runCommand "check-node"
+            {
+              nativeBuildInputs = with pkgs;
+                [
+                  nodePackages.pnpm
+                  cacert
+                ];
+            }
+            ''
+              mkdir -p $TMPDIR/auth
+              cd $TMPDIR/auth
+              cp -r ${node-src}/* .
+              cp -r ${node-src}/.* .
+              ln -s ${node_modules-builder}/node_modules node_modules
+
+              export XDG_DATA_HOME=$TMPDIR/.local/share
+
+              echo "➜ Running pnpm audit"
+              pnpx audit-ci --config ./audit-ci.jsonc
+              echo "➜ Running pnpm build"
+              pnpm build
+              echo "➜ Running pnpm test"
+              cp .env.example .env
+              pnpm test
+
+              mkdir -p $out
+            '';
         };
 
         devShells = flake-utils.lib.flattenTree rec {
@@ -202,6 +236,10 @@
 
           docker-image = nixops-lib.go.docker-image {
             inherit name version buildInputs;
+
+            contents = with pkgs; [
+              wget
+            ];
 
             package = auth;
           };

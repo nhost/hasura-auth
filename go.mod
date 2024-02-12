@@ -1,6 +1,6 @@
 module github.com/nhost/hasura-auth
 
-go 1.21.6
+go 1.21
 
 require (
 	github.com/getkin/kin-openapi v0.123.0

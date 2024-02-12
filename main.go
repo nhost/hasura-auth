@@ -10,8 +10,8 @@ import (
 
 var Version string
 
-//go:generate oapi-codegen -config api/server.cfg.yaml api/openapi.yaml
-//go:generate oapi-codegen -config api/types.cfg.yaml api/openapi.yaml
+//go:generate oapi-codegen -config go/api/server.cfg.yaml go/api/openapi.yaml
+//go:generate oapi-codegen -config go/api/types.cfg.yaml go/api/openapi.yaml
 func main() {
 	app := &cli.App{ //nolint:exhaustruct
 		Name:    "auth",
