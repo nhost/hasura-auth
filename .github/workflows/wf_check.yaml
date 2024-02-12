@@ -84,7 +84,6 @@ jobs:
 
     - name: "Start containters for integration tests"
       run: |
-        cp build/demo-movies/.secrets.ci build/demo-movies/.secrets
         make build-docker-image
         nix develop -c make dev-env-up
       if: ${{ steps.verify-build.outputs.BUILD_NEEDED == 'yes' }}
