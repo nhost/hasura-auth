@@ -220,7 +220,7 @@
             '';
           };
 
-          auth = nixops-lib.go.package {
+          hasura-auth = nixops-lib.go.package {
             inherit name submodule description src version ldflags nativeBuildInputs;
 
             buildInputs = with pkgs; [
@@ -241,10 +241,10 @@
               wget
             ];
 
-            package = auth;
+            package = hasura-auth;
           };
 
-          default = auth;
+          default = hasura-auth;
         };
       }
     );
