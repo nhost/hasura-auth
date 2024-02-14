@@ -12,7 +12,6 @@ import (
 	"time"
 
 	"github.com/getkin/kin-openapi/openapi3"
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/nhost/hasura-auth/go/api"
 	"github.com/nhost/hasura-auth/go/middleware"
@@ -25,7 +24,6 @@ const (
 	flagDebug              = "debug"
 	flagLogFormatJSON      = "log-format-json"
 	flagTrustedProxies     = "trusted-proxies"
-	flagAllowCORSOrigin    = "allow-cors-origin"
 	flagPostgresConnection = "postgres"
 	flagNodeServerPath     = "node-server-path"
 )
@@ -59,12 +57,6 @@ func CommandServe() *cli.Command {
 				Name:     flagLogFormatJSON,
 				Usage:    "format logs in JSON",
 				Category: "general",
-			},
-			&cli.StringSliceFlag{ //nolint: exhaustruct
-				Name:     flagAllowCORSOrigin,
-				Usage:    "Allow CORS from these origins",
-				Value:    cli.NewStringSlice("*"),
-				Category: "server",
 			},
 			&cli.StringFlag{ //nolint: exhaustruct
 				Name:     flagPostgresConnection,
@@ -126,11 +118,6 @@ func getGoServer(cCtx *cli.Context, logger *slog.Logger) (*http.Server, error) {
 		// ginmiddleware.OapiRequestValidator(doc),
 		gin.Recovery(),
 		middleware.Logger(logger),
-		cors.New(cors.Config{ //nolint: exhaustruct
-			AllowOrigins:     cCtx.StringSlice(flagAllowCORSOrigin),
-			AllowMethods:     []string{"GET", "POST"},
-			AllowCredentials: true,
-		}),
 	)
 
 	// auth := &controller.Auth{}
