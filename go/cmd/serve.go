@@ -134,7 +134,7 @@ func getGoServer(cCtx *cli.Context, logger *slog.Logger) (*http.Server, error) {
 	// 	},
 	// )
 
-	nodejsHandler, err := nodejsHandler(cCtx)
+	nodejsHandler, err := nodejsHandler()
 	if err != nil {
 		return nil, fmt.Errorf("failed to create nodejs handler: %w", err)
 	}

@@ -7,11 +7,10 @@ import (
 	"net/url"
 
 	"github.com/gin-gonic/gin"
-	"github.com/urfave/cli/v2"
 )
 
-func nodejsHandler(cCtx *cli.Context) (gin.HandlerFunc, error) {
-	remote, err := url.Parse("http://localhost:4001" + cCtx.String(flagAPIPrefix))
+func nodejsHandler() (gin.HandlerFunc, error) {
+	remote, err := url.Parse("http://localhost:4001")
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse nodejs url: %w", err)
 	}
