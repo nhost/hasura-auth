@@ -77,7 +77,7 @@ jobs:
         echo BUILD_NEEDED=$BUILD_NEEDED >> $GITHUB_OUTPUT
 
     - name: "Setup nix-remote-builder"
-      uses: dbarrosop/nix-remote-builder-aws@v0.3.0
+      uses: dbarrosop/nix-remote-builder-aws@asd
       id: nix-remote-builder
       with:
         name: ${{ inputs.NAME }}-${{ inputs.GIT_REF }}
