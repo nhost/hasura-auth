@@ -90,7 +90,7 @@ jobs:
 
     - name: "Setup nix-remote-builder in nix.conf"
       run: |
-          echo "builders = ssh://${{ steps.nix-remote-builder.outputs.publicDnsName }} aarch64-linux;" >> ~/.config/nix/nix.conf
+          echo "builders = ssh://ec2-user@${{ steps.nix-remote-builder.outputs.publicDnsName }} aarch64-linux;" >> ~/.config/nix/nix.conf
       if: ${{ ( matrix.platform == 'aarch64' ) && steps.verify-build.outputs.BUILD_NEEDED == 'yes' }}
 
     - name: Cache nix store
