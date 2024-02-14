@@ -90,6 +90,7 @@ jobs:
 
     - name: "Run checks"
       run: make check
+      if: ${{ steps.verify-build.outputs.BUILD_NEEDED == 'yes' }}
 
     - name: "Cache nix store on s3"
       run: |

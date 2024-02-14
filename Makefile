@@ -47,7 +47,7 @@ check-dry-run:  ## Run nix flake check
 		--dry-run \
 		--json \
 		--print-build-logs \
-		.\#checks.$(ARCH)-$(OS).go-checks
+		.\#checks.$(ARCH)-$(OS).node-checks
 
 
 .PHONY: dev-env-up
