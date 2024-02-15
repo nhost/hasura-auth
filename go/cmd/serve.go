@@ -22,7 +22,7 @@ const (
 	flagAPIPrefix          = "api-prefix"
 	flagPort               = "port"
 	flagDebug              = "debug"
-	flagLogFormatJSON      = "log-format-json"
+	flagLogFormatTEXT      = "log-format-text"
 	flagTrustedProxies     = "trusted-proxies"
 	flagPostgresConnection = "postgres"
 	flagNodeServerPath     = "node-server-path"
@@ -54,9 +54,10 @@ func CommandServe() *cli.Command {
 				EnvVars:  []string{"DEBUG"},
 			},
 			&cli.BoolFlag{ //nolint: exhaustruct
-				Name:     flagLogFormatJSON,
-				Usage:    "format logs in JSON",
+				Name:     flagLogFormatTEXT,
+				Usage:    "format logs in plain text",
 				Category: "general",
+				EnvVars:  []string{"LOG_FORMAT_TEXT"},
 			},
 			&cli.StringFlag{ //nolint: exhaustruct
 				Name:     flagPostgresConnection,
@@ -150,7 +151,7 @@ func getGoServer(cCtx *cli.Context, logger *slog.Logger) (*http.Server, error) {
 }
 
 func serve(cCtx *cli.Context) error {
-	logger := getLogger(cCtx.Bool(flagDebug), cCtx.Bool(flagLogFormatJSON))
+	logger := getLogger(cCtx.Bool(flagDebug), cCtx.Bool(flagLogFormatTEXT))
 	logger.Info(cCtx.App.Name + " v" + cCtx.App.Version)
 	logFlags(logger, cCtx)
 

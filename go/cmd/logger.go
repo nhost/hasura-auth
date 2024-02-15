@@ -11,7 +11,7 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func getLogger(debug bool, formatJSON bool) *slog.Logger {
+func getLogger(debug bool, formatTEXT bool) *slog.Logger {
 	var logLevel slog.Level
 	var addSource bool
 	if debug {
@@ -25,18 +25,18 @@ func getLogger(debug bool, formatJSON bool) *slog.Logger {
 	}
 
 	var handler slog.Handler
-	if formatJSON {
-		handler = slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
-			AddSource:   addSource,
-			Level:       logLevel,
-			ReplaceAttr: nil,
-		})
-	} else {
+	if formatTEXT {
 		handler = tint.NewHandler(os.Stdout, &tint.Options{
 			AddSource:   addSource,
 			Level:       logLevel,
 			TimeFormat:  time.StampMilli,
 			NoColor:     false,
+			ReplaceAttr: nil,
+		})
+	} else {
+		handler = slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+			AddSource:   addSource,
+			Level:       logLevel,
 			ReplaceAttr: nil,
 		})
 	}
