@@ -13,13 +13,15 @@ var Version string
 //go:generate oapi-codegen -config go/api/server.cfg.yaml go/api/openapi.yaml
 //go:generate oapi-codegen -config go/api/types.cfg.yaml go/api/openapi.yaml
 func main() {
+	serveCmd := cmd.CommandServe()
 	app := &cli.App{ //nolint:exhaustruct
 		Name:    "auth",
 		Version: Version,
 		Usage:   "Nhost Auth API server",
 		Commands: []*cli.Command{
-			cmd.CommandServe(),
+			serveCmd,
 		},
+		Action: serveCmd.Action,
 	}
 
 	if err := app.Run(os.Args); err != nil {
