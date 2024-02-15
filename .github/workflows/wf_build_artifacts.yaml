@@ -147,7 +147,6 @@ jobs:
 
     - name: "Build artifact"
       run: |
-        make get-version VER=0.0.0-dev # we revert this to avoid rebuilding just due to version change
         nix build .\#packages.${{ matrix.platform }}-linux.hasura-auth
         zip -r result.zip result
 

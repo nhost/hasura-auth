@@ -15,13 +15,12 @@ var Version string
 func main() {
 	serveCmd := cmd.CommandServe()
 	app := &cli.App{ //nolint:exhaustruct
-		Name:    "auth",
-		Version: Version,
-		Usage:   "Nhost Auth API server",
-		Commands: []*cli.Command{
-			serveCmd,
-		},
-		Action: serveCmd.Action,
+		Name:     "auth",
+		Version:  Version,
+		Usage:    "Nhost Auth API server",
+		Flags:    serveCmd.Flags,
+		Commands: []*cli.Command{},
+		Action:   serveCmd.Action,
 	}
 
 	if err := app.Run(os.Args); err != nil {

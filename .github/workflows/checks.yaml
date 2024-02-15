@@ -21,7 +21,7 @@ jobs:
     uses: ./.github/workflows/wf_build_artifacts.yaml
     with:
       NAME: hasura-auth
-      VERSION: ${{ github.sha }}
+      VERSION: 0.0.0-dev # hardcoded to avoid rebuilding
       DOCKER: true
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_PRODUCTION_CORE_ACCOUNT_ID }}
