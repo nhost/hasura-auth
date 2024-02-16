@@ -23,23 +23,24 @@ import (
 )
 
 const (
-	flagAPIPrefix           = "api-prefix"
-	flagPort                = "port"
-	flagDebug               = "debug"
-	flagLogFormatTEXT       = "log-format-text"
-	flagTrustedProxies      = "trusted-proxies"
-	flagPostgresConnection  = "postgres"
-	flagNodeServerPath      = "node-server-path"
-	flagDatabseURL          = "database-url"
-	flagDisableSignup       = "disable-signup"
-	flagConcealErrors       = "conceal-errors"
-	flagDefaultAllowedRoles = "default-allowed-roles"
-	flagDefaultRole         = "default-role"
-	flagDefaultLocale       = "default-locale"
-	flagDisableNewUsers     = "disable-new-users"
-	flagGravatarEnabled     = "gravatar-enabled"
-	flagGravatarDefault     = "gravatar-default"
-	flagGravatarRating      = "gravatar-rating"
+	flagAPIPrefix             = "api-prefix"
+	flagPort                  = "port"
+	flagDebug                 = "debug"
+	flagLogFormatTEXT         = "log-format-text"
+	flagTrustedProxies        = "trusted-proxies"
+	flagPostgresConnection    = "postgres"
+	flagNodeServerPath        = "node-server-path"
+	flagDatabseURL            = "database-url"
+	flagDisableSignup         = "disable-signup"
+	flagConcealErrors         = "conceal-errors"
+	flagDefaultAllowedRoles   = "default-allowed-roles"
+	flagDefaultRole           = "default-role"
+	flagDefaultLocale         = "default-locale"
+	flagDisableNewUsers       = "disable-new-users"
+	flagGravatarEnabled       = "gravatar-enabled"
+	flagGravatarDefault       = "gravatar-default"
+	flagGravatarRating        = "gravatar-rating"
+	flagRefreshTokenExpiresIn = "refresh-token-expires-in"
 )
 
 func CommandServe() *cli.Command { //nolint:funlen
@@ -169,6 +170,13 @@ func CommandServe() *cli.Command { //nolint:funlen
 				Category: "gravatar",
 				EnvVars:  []string{"AUTH_GRAVATAR_RATING"},
 			},
+			&cli.IntFlag{ //nolint: exhaustruct
+				Name:     flagRefreshTokenExpiresIn,
+				Usage:    "Refresh token expires in (seconds)",
+				Value:    2592000, //nolint:gomnd
+				Category: "jwt",
+				EnvVars:  []string{"AUTH_REFRESH_TOKEN_EXPIRES_IN"},
+			},
 		},
 		Action: serve,
 	}
@@ -220,15 +228,16 @@ func getGoServer(cCtx *cli.Context, db *sql.Queries, logger *slog.Logger) (*http
 	auth := controller.New(
 		db,
 		controller.Config{
-			ConcealErrors:       cCtx.Bool(flagConcealErrors),
-			DisableSignup:       cCtx.Bool(flagDisableSignup),
-			DisableNewUsers:     cCtx.Bool(flagDisableNewUsers),
-			DefaultAllowedRoles: cCtx.StringSlice(flagDefaultAllowedRoles),
-			DefaultRole:         cCtx.String(flagDefaultRole),
-			DefaultLocale:       cCtx.String(flagDefaultLocale),
-			GravatarEnabled:     cCtx.Bool(flagGravatarEnabled),
-			GravatarDefault:     cCtx.String(flagGravatarDefault),
-			GravatarRating:      cCtx.String(flagGravatarRating),
+			ConcealErrors:         cCtx.Bool(flagConcealErrors),
+			DisableSignup:         cCtx.Bool(flagDisableSignup),
+			DisableNewUsers:       cCtx.Bool(flagDisableNewUsers),
+			DefaultAllowedRoles:   cCtx.StringSlice(flagDefaultAllowedRoles),
+			DefaultRole:           cCtx.String(flagDefaultRole),
+			DefaultLocale:         cCtx.String(flagDefaultLocale),
+			GravatarEnabled:       cCtx.Bool(flagGravatarEnabled),
+			GravatarDefault:       cCtx.String(flagGravatarDefault),
+			GravatarRating:        cCtx.String(flagGravatarRating),
+			RefreshTokenExpiresIn: cCtx.Int(flagRefreshTokenExpiresIn),
 		},
 	)
 	handler := api.NewStrictHandler(auth, []api.StrictMiddlewareFunc{})

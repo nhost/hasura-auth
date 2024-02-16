@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+	"crypto/sha256"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -21,6 +22,11 @@ func hashPassword(password string) (string, error) {
 		return "", fmt.Errorf("error hashing password: %w", err)
 	}
 	return string(hash), nil
+}
+
+func hashRefreshToken(token []byte) string {
+	hash := sha256.Sum256(token)
+	return fmt.Sprintf("%x", hash)
 }
 
 func deptr[T any](x *T) T { //nolint:ireturn
@@ -69,20 +75,26 @@ func (ctrl *Controller) PostSignupEmailPassword( //nolint:ireturn
 
 	gravatarURL := ctrl.gravatarURL(email.String)
 
+	refreshToken := uuid.New()
+
 	user, err := ctrl.db.InsertUser(
 		ctx, sql.InsertUserParams{
-			Disabled:        ctrl.config.DisableNewUsers,
-			DisplayName:     deptr(options.DisplayName),
-			AvatarUrl:       gravatarURL,
-			Email:           email,
-			PasswordHash:    sql.Text(hashedPassword),
-			Ticket:          sql.Text("verifyEmail:" + uuid.NewString()),
-			TicketExpiresAt: sql.TimestampTz(time.Now().Add(30 * 24 * time.Hour)),
-			EmailVerified:   false,
-			Locale:          deptr(options.Locale),
-			DefaultRole:     deptr(options.DefaultRole),
-			Metadata:        metadata,
-			Roles:           deptr(options.AllowedRoles),
+			Disabled:         ctrl.config.DisableNewUsers,
+			DisplayName:      deptr(options.DisplayName),
+			AvatarUrl:        gravatarURL,
+			Email:            email,
+			PasswordHash:     sql.Text(hashedPassword),
+			Ticket:           sql.Text("verifyEmail:" + uuid.NewString()),
+			TicketExpiresAt:  sql.TimestampTz(time.Now().Add(30 * 24 * time.Hour)),
+			EmailVerified:    false,
+			Locale:           deptr(options.Locale),
+			DefaultRole:      deptr(options.DefaultRole),
+			Metadata:         metadata,
+			Roles:            deptr(options.AllowedRoles),
+			RefreshTokenHash: sql.Text(hashRefreshToken(refreshToken[:])),
+			RefreshTokenExpiresAt: sql.TimestampTz(time.Now().Add(
+				time.Duration(ctrl.config.RefreshTokenExpiresIn) * time.Second),
+			),
 		},
 	)
 	if err != nil {
@@ -93,7 +105,7 @@ func (ctrl *Controller) PostSignupEmailPassword( //nolint:ireturn
 		Session: &api.Session{
 			AccessToken:          "",
 			AccessTokenExpiresIn: 0,
-			RefreshToken:         "",
+			RefreshToken:         refreshToken.String(),
 			User: &api.User{
 				AvatarUrl:           gravatarURL,
 				CreatedAt:           user.CreatedAt.Time,

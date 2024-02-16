@@ -101,36 +101,45 @@ WITH inserted_user AS (
         email_verified,
         locale,
         default_role,
-        metadata
+        metadata,
+        last_seen
     ) VALUES (
-      $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11
+      $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, now()
     )
     RETURNING id, created_at
+), inserted_refresh_token AS (
+    INSERT INTO auth.refresh_tokens (user_id, refresh_token_hash, expires_at)
+        SELECT inserted_user.id, $13, $14
+        FROM inserted_user
+    RETURNING id AS refresh_token_id
 )
 INSERT INTO auth.user_roles (user_id, role)
     SELECT inserted_user.id, roles.role
     FROM inserted_user, unnest($12::TEXT[]) AS roles(role)
-RETURNING user_id, (SELECT created_at FROM inserted_user WHERE id = user_id)
+RETURNING user_id, (SELECT created_at FROM inserted_user WHERE id = user_id), (SELECT refresh_token_id FROM inserted_refresh_token WHERE user_id = user_id)
 `
 
 type InsertUserParams struct {
-	Disabled        bool
-	DisplayName     string
-	AvatarUrl       string
-	Email           pgtype.Text
-	PasswordHash    pgtype.Text
-	Ticket          pgtype.Text
-	TicketExpiresAt pgtype.Timestamptz
-	EmailVerified   bool
-	Locale          string
-	DefaultRole     string
-	Metadata        []byte
-	Roles           []string
+	Disabled              bool
+	DisplayName           string
+	AvatarUrl             string
+	Email                 pgtype.Text
+	PasswordHash          pgtype.Text
+	Ticket                pgtype.Text
+	TicketExpiresAt       pgtype.Timestamptz
+	EmailVerified         bool
+	Locale                string
+	DefaultRole           string
+	Metadata              []byte
+	Roles                 []string
+	RefreshTokenHash      pgtype.Text
+	RefreshTokenExpiresAt pgtype.Timestamptz
 }
 
 type InsertUserRow struct {
-	UserID    uuid.UUID
-	CreatedAt pgtype.Timestamptz
+	UserID         uuid.UUID
+	CreatedAt      pgtype.Timestamptz
+	RefreshTokenID uuid.UUID
 }
 
 func (q *Queries) InsertUser(ctx context.Context, arg InsertUserParams) (InsertUserRow, error) {
@@ -147,8 +156,10 @@ func (q *Queries) InsertUser(ctx context.Context, arg InsertUserParams) (InsertU
 		arg.DefaultRole,
 		arg.Metadata,
 		arg.Roles,
+		arg.RefreshTokenHash,
+		arg.RefreshTokenExpiresAt,
 	)
 	var i InsertUserRow
-	err := row.Scan(&i.UserID, &i.CreatedAt)
+	err := row.Scan(&i.UserID, &i.CreatedAt, &i.RefreshTokenID)
 	return i, err
 }

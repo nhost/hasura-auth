@@ -19,13 +19,19 @@ WITH inserted_user AS (
         email_verified,
         locale,
         default_role,
-        metadata
+        metadata,
+        last_seen
     ) VALUES (
-      $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11
+      $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, now()
     )
     RETURNING id, created_at
+), inserted_refresh_token AS (
+    INSERT INTO auth.refresh_tokens (user_id, refresh_token_hash, expires_at)
+        SELECT inserted_user.id, @refresh_token_hash, @refresh_token_expires_at
+        FROM inserted_user
+    RETURNING id AS refresh_token_id
 )
 INSERT INTO auth.user_roles (user_id, role)
     SELECT inserted_user.id, roles.role
     FROM inserted_user, unnest(@roles::TEXT[]) AS roles(role)
-RETURNING user_id, (SELECT created_at FROM inserted_user WHERE id = user_id);
+RETURNING user_id, (SELECT created_at FROM inserted_user WHERE id = user_id)

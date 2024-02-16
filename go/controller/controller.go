@@ -3,15 +3,16 @@ package controller
 import "github.com/nhost/hasura-auth/go/sql"
 
 type Config struct {
-	ConcealErrors       bool
-	DisableSignup       bool
-	DisableNewUsers     bool
-	DefaultAllowedRoles []string
-	DefaultRole         string
-	DefaultLocale       string
-	GravatarEnabled     bool
-	GravatarDefault     string
-	GravatarRating      string
+	ConcealErrors         bool
+	DisableSignup         bool
+	DisableNewUsers       bool
+	DefaultAllowedRoles   []string
+	DefaultRole           string
+	DefaultLocale         string
+	GravatarEnabled       bool
+	GravatarDefault       string
+	GravatarRating        string
+	RefreshTokenExpiresIn int
 }
 
 type Controller struct {
