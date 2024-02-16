@@ -89,58 +89,6 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email pgtype.Text) (AuthUs
 }
 
 const insertUser = `-- name: InsertUser :one
-INSERT INTO auth.users (
-    disabled,
-    display_name,
-    avatar_url,
-    email,
-    password_hash,
-    ticket,
-    ticket_expires_at,
-    email_verified,
-    locale,
-    default_role,
-    metadata
-) VALUES (
-  $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11
-)
-RETURNING id
-`
-
-type InsertUserParams struct {
-	Disabled        bool
-	DisplayName     string
-	AvatarUrl       string
-	Email           pgtype.Text
-	PasswordHash    pgtype.Text
-	Ticket          pgtype.Text
-	TicketExpiresAt pgtype.Timestamptz
-	EmailVerified   bool
-	Locale          string
-	DefaultRole     string
-	Metadata        []byte
-}
-
-func (q *Queries) InsertUser(ctx context.Context, arg InsertUserParams) (uuid.UUID, error) {
-	row := q.db.QueryRow(ctx, insertUser,
-		arg.Disabled,
-		arg.DisplayName,
-		arg.AvatarUrl,
-		arg.Email,
-		arg.PasswordHash,
-		arg.Ticket,
-		arg.TicketExpiresAt,
-		arg.EmailVerified,
-		arg.Locale,
-		arg.DefaultRole,
-		arg.Metadata,
-	)
-	var id uuid.UUID
-	err := row.Scan(&id)
-	return id, err
-}
-
-const insertUserRoles = `-- name: InsertUserRoles :one
 WITH inserted_user AS (
     INSERT INTO auth.users (
         disabled,
@@ -165,7 +113,7 @@ INSERT INTO auth.user_roles (user_id, role)
 RETURNING user_id, (SELECT created_at FROM inserted_user WHERE id = user_id)
 `
 
-type InsertUserRolesParams struct {
+type InsertUserParams struct {
 	Disabled        bool
 	DisplayName     string
 	AvatarUrl       string
@@ -180,13 +128,13 @@ type InsertUserRolesParams struct {
 	Roles           []string
 }
 
-type InsertUserRolesRow struct {
+type InsertUserRow struct {
 	UserID    uuid.UUID
 	CreatedAt pgtype.Timestamptz
 }
 
-func (q *Queries) InsertUserRoles(ctx context.Context, arg InsertUserRolesParams) (InsertUserRolesRow, error) {
-	row := q.db.QueryRow(ctx, insertUserRoles,
+func (q *Queries) InsertUser(ctx context.Context, arg InsertUserParams) (InsertUserRow, error) {
+	row := q.db.QueryRow(ctx, insertUser,
 		arg.Disabled,
 		arg.DisplayName,
 		arg.AvatarUrl,
@@ -200,7 +148,7 @@ func (q *Queries) InsertUserRoles(ctx context.Context, arg InsertUserRolesParams
 		arg.Metadata,
 		arg.Roles,
 	)
-	var i InsertUserRolesRow
+	var i InsertUserRow
 	err := row.Scan(&i.UserID, &i.CreatedAt)
 	return i, err
 }

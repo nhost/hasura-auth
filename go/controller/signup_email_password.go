@@ -69,8 +69,8 @@ func (ctrl *Controller) PostSignupEmailPassword( //nolint:ireturn
 
 	gravatarURL := ctrl.gravatarURL(email.String)
 
-	user, err := ctrl.db.InsertUserRoles(
-		ctx, sql.InsertUserRolesParams{
+	user, err := ctrl.db.InsertUser(
+		ctx, sql.InsertUserParams{
 			Disabled:        ctrl.config.DisableNewUsers,
 			DisplayName:     deptr(options.DisplayName),
 			AvatarUrl:       gravatarURL,
