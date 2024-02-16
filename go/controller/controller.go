@@ -1,6 +1,12 @@
 package controller
 
-import "github.com/nhost/hasura-auth/go/sql"
+import (
+	"fmt"
+	"time"
+
+	"github.com/google/uuid"
+	"github.com/nhost/hasura-auth/go/sql"
+)
 
 type Config struct {
 	ConcealErrors         bool
@@ -13,6 +19,8 @@ type Config struct {
 	GravatarDefault       string
 	GravatarRating        string
 	RefreshTokenExpiresIn int
+	AccessTokenExpiresIn  int
+	JWTSecret             string
 }
 
 type Controller struct {
@@ -20,9 +28,17 @@ type Controller struct {
 	validator   *Validator
 	config      Config
 	gravatarURL func(string) string
+	jwtGetter   func(uuid.UUID) (string, int64, error)
 }
 
-func New(db *sql.Queries, config Config) *Controller {
+func New(db *sql.Queries, config Config) (*Controller, error) {
+	jwtGetter, err := NewJWTGetter(
+		[]byte(config.JWTSecret),
+		time.Duration(config.AccessTokenExpiresIn)*time.Second,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error creating jwt getter: %w", err)
+	}
 	return &Controller{
 		db:        db,
 		config:    config,
@@ -30,5 +46,6 @@ func New(db *sql.Queries, config Config) *Controller {
 		gravatarURL: GravatarURLFunc(
 			config.GravatarEnabled, config.GravatarDefault, config.GravatarRating,
 		),
-	}
+		jwtGetter: jwtGetter,
+	}, nil
 }

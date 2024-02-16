@@ -40,7 +40,7 @@ func ptr[T any](x T) *T {
 	return &x
 }
 
-func (ctrl *Controller) PostSignupEmailPassword( //nolint:ireturn
+func (ctrl *Controller) PostSignupEmailPassword( //nolint:ireturn,funlen
 	ctx context.Context,
 	req api.PostSignupEmailPasswordRequestObject,
 ) (api.PostSignupEmailPasswordResponseObject, error) {
@@ -101,10 +101,15 @@ func (ctrl *Controller) PostSignupEmailPassword( //nolint:ireturn
 		return nil, fmt.Errorf("error inserting user: %w", err)
 	}
 
+	accessToken, expiresIn, err := ctrl.jwtGetter(user.UserID)
+	if err != nil {
+		return nil, fmt.Errorf("error getting jwt: %w", err)
+	}
+
 	return api.PostSignupEmailPassword200JSONResponse{
 		Session: &api.Session{
-			AccessToken:          "",
-			AccessTokenExpiresIn: 0,
+			AccessToken:          accessToken,
+			AccessTokenExpiresIn: expiresIn,
 			RefreshToken:         refreshToken.String(),
 			User: &api.User{
 				AvatarUrl:           gravatarURL,

@@ -85,8 +85,8 @@ components:
         accessToken:
           type: string
         accessTokenExpiresIn:
-          format: float
-          type: number
+          type: integer
+          format: int64
         refreshToken:
           description: Refresh token during authentication or when refreshing the JWT
           example: 2c35b6f3-c4b9-48e3-978a-d4d0f1d42e24

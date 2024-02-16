@@ -34,4 +34,4 @@ WITH inserted_user AS (
 INSERT INTO auth.user_roles (user_id, role)
     SELECT inserted_user.id, roles.role
     FROM inserted_user, unnest(@roles::TEXT[]) AS roles(role)
-RETURNING user_id, (SELECT created_at FROM inserted_user WHERE id = user_id)
+RETURNING user_id, (SELECT created_at FROM inserted_user WHERE id = user_id);

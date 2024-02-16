@@ -131,12 +131,12 @@ func TestGetJWTFunc(t *testing.T) {
 			t.Parallel()
 			tc := tc
 
-			getterFn, err := controller.JWTGetterFn(tc.key, tc.expiresIn)
+			getterFn, err := controller.NewJWTGetter(tc.key, tc.expiresIn)
 			if err != nil {
 				t.Fatalf("GetJWTFunc() err = %v; want nil", err)
 			}
 
-			accessToken, err := getterFn(tc.userID)
+			accessToken, _, err := getterFn(tc.userID)
 			if err != nil {
 				t.Fatalf("fn() err = %v; want nil", err)
 			}

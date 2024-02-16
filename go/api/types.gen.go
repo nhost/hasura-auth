@@ -34,8 +34,8 @@ type ErrorResponseError string
 
 // Session defines model for Session.
 type Session struct {
-	AccessToken          string  `json:"accessToken"`
-	AccessTokenExpiresIn float32 `json:"accessTokenExpiresIn"`
+	AccessToken          string `json:"accessToken"`
+	AccessTokenExpiresIn int64  `json:"accessTokenExpiresIn"`
 
 	// RefreshToken Refresh token during authentication or when refreshing the JWT
 	RefreshToken string `json:"refreshToken"`

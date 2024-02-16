@@ -23,24 +23,26 @@ import (
 )
 
 const (
-	flagAPIPrefix             = "api-prefix"
-	flagPort                  = "port"
-	flagDebug                 = "debug"
-	flagLogFormatTEXT         = "log-format-text"
-	flagTrustedProxies        = "trusted-proxies"
-	flagPostgresConnection    = "postgres"
-	flagNodeServerPath        = "node-server-path"
-	flagDatabseURL            = "database-url"
-	flagDisableSignup         = "disable-signup"
-	flagConcealErrors         = "conceal-errors"
-	flagDefaultAllowedRoles   = "default-allowed-roles"
-	flagDefaultRole           = "default-role"
-	flagDefaultLocale         = "default-locale"
-	flagDisableNewUsers       = "disable-new-users"
-	flagGravatarEnabled       = "gravatar-enabled"
-	flagGravatarDefault       = "gravatar-default"
-	flagGravatarRating        = "gravatar-rating"
-	flagRefreshTokenExpiresIn = "refresh-token-expires-in"
+	flagAPIPrefix              = "api-prefix"
+	flagPort                   = "port"
+	flagDebug                  = "debug"
+	flagLogFormatTEXT          = "log-format-text"
+	flagTrustedProxies         = "trusted-proxies"
+	flagPostgresConnection     = "postgres"
+	flagNodeServerPath         = "node-server-path"
+	flagDatabseURL             = "database-url"
+	flagDisableSignup          = "disable-signup"
+	flagConcealErrors          = "conceal-errors"
+	flagDefaultAllowedRoles    = "default-allowed-roles"
+	flagDefaultRole            = "default-role"
+	flagDefaultLocale          = "default-locale"
+	flagDisableNewUsers        = "disable-new-users"
+	flagGravatarEnabled        = "gravatar-enabled"
+	flagGravatarDefault        = "gravatar-default"
+	flagGravatarRating         = "gravatar-rating"
+	flagRefreshTokenExpiresIn  = "refresh-token-expires-in"
+	flagAccessTokensExpiresIn  = "access-tokens-expires-in"
+	flagHasuraGraphqlJWTSecret = "hasura-graphql-jwt-secret" //nolint:gosec
 )
 
 func CommandServe() *cli.Command { //nolint:funlen
@@ -176,6 +178,19 @@ func CommandServe() *cli.Command { //nolint:funlen
 				Value:    2592000, //nolint:gomnd
 				Category: "jwt",
 				EnvVars:  []string{"AUTH_REFRESH_TOKEN_EXPIRES_IN"},
+			},
+			&cli.IntFlag{ //nolint: exhaustruct
+				Name:     flagAccessTokensExpiresIn,
+				Usage:    "Access tokens expires in (seconds)",
+				Value:    3600, //nolint:gomnd
+				Category: "jwt",
+				EnvVars:  []string{"AUTH_ACCESS_TOKENS_EXPIRES_IN"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagHasuraGraphqlJWTSecret,
+				Usage:    "Hasura GraphQL JWT secret",
+				Category: "jwt",
+				EnvVars:  []string{"HASURA_GRAPHQL_JWT_SECRET"},
 			},
 		},
 		Action: serve,

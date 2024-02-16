@@ -116,7 +116,7 @@ WITH inserted_user AS (
 INSERT INTO auth.user_roles (user_id, role)
     SELECT inserted_user.id, roles.role
     FROM inserted_user, unnest($12::TEXT[]) AS roles(role)
-RETURNING user_id, (SELECT created_at FROM inserted_user WHERE id = user_id), (SELECT refresh_token_id FROM inserted_refresh_token WHERE user_id = user_id)
+RETURNING user_id, (SELECT created_at FROM inserted_user WHERE id = user_id)
 `
 
 type InsertUserParams struct {
@@ -137,9 +137,8 @@ type InsertUserParams struct {
 }
 
 type InsertUserRow struct {
-	UserID         uuid.UUID
-	CreatedAt      pgtype.Timestamptz
-	RefreshTokenID uuid.UUID
+	UserID    uuid.UUID
+	CreatedAt pgtype.Timestamptz
 }
 
 func (q *Queries) InsertUser(ctx context.Context, arg InsertUserParams) (InsertUserRow, error) {
@@ -160,6 +159,6 @@ func (q *Queries) InsertUser(ctx context.Context, arg InsertUserParams) (InsertU
 		arg.RefreshTokenExpiresAt,
 	)
 	var i InsertUserRow
-	err := row.Scan(&i.UserID, &i.CreatedAt, &i.RefreshTokenID)
+	err := row.Scan(&i.UserID, &i.CreatedAt)
 	return i, err
 }

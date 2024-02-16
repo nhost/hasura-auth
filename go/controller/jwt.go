@@ -33,11 +33,11 @@ func decodeJWTSecret(jwtSecretb []byte) (JWTSecret, error) {
 	return jwtSecret, nil
 }
 
-func JWTGetterFn(
+func NewJWTGetter(
 	jwtSecretb []byte,
 	accessTokenExpiresIn time.Duration,
 ) (
-	func(userID uuid.UUID) (string, error),
+	func(userID uuid.UUID) (string, int64, error),
 	error,
 ) {
 	jwtSecret, err := decodeJWTSecret(jwtSecretb)
@@ -48,7 +48,7 @@ func JWTGetterFn(
 	mySigningKey := []byte(jwtSecret.Key)
 	method := jwt.GetSigningMethod(jwtSecret.Type)
 
-	return func(userID uuid.UUID) (string, error) {
+	return func(userID uuid.UUID) (string, int64, error) {
 		now := time.Now()
 		iat := now.Unix()
 		exp := now.Add(accessTokenExpiresIn).Unix()
@@ -74,10 +74,10 @@ func JWTGetterFn(
 		token := jwt.NewWithClaims(method, claims)
 		ss, err := token.SignedString(mySigningKey)
 		if err != nil {
-			return "", fmt.Errorf("error signing token: %w", err)
+			return "", 0, fmt.Errorf("error signing token: %w", err)
 		}
 
-		return ss, nil
+		return ss, exp, nil
 	}, nil
 }
 
