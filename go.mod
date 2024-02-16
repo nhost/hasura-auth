@@ -5,7 +5,10 @@ go 1.21
 require (
 	github.com/getkin/kin-openapi v0.123.0
 	github.com/gin-gonic/gin v1.9.1
-	github.com/google/uuid v1.6.0
+	github.com/golang-jwt/jwt/v5 v5.2.0
+	github.com/google/go-cmp v0.5.5
+	github.com/google/uuid v1.5.0
+	github.com/jackc/pgx/v5 v5.3.1
 	github.com/lmittmann/tint v1.0.4
 	github.com/oapi-codegen/gin-middleware v1.0.1
 	github.com/oapi-codegen/runtime v1.1.1
@@ -14,8 +17,7 @@ require (
 )
 
 require (
-	github.com/apapsch/go-jsonmerge/v2 v2.0.0 // indirect
-	github.com/bytedance/sonic v1.11.2 // indirect
+	github.com/bytedance/sonic v1.10.1 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20230717121745-296ad89f973d // indirect
 	github.com/chenzhuoyu/iasm v0.9.1 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.3 // indirect
