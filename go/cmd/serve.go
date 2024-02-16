@@ -13,22 +13,36 @@ import (
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v5"
 	"github.com/nhost/hasura-auth/go/api"
+	"github.com/nhost/hasura-auth/go/controller"
 	"github.com/nhost/hasura-auth/go/middleware"
+	"github.com/nhost/hasura-auth/go/sql"
+	ginmiddleware "github.com/oapi-codegen/gin-middleware"
 	"github.com/urfave/cli/v2"
 )
 
 const (
-	flagAPIPrefix          = "api-prefix"
-	flagPort               = "port"
-	flagDebug              = "debug"
-	flagLogFormatTEXT      = "log-format-text"
-	flagTrustedProxies     = "trusted-proxies"
-	flagPostgresConnection = "postgres"
-	flagNodeServerPath     = "node-server-path"
+	flagAPIPrefix           = "api-prefix"
+	flagPort                = "port"
+	flagDebug               = "debug"
+	flagLogFormatTEXT       = "log-format-text"
+	flagTrustedProxies      = "trusted-proxies"
+	flagPostgresConnection  = "postgres"
+	flagNodeServerPath      = "node-server-path"
+	flagDatabseURL          = "database-url"
+	flagDisableSignup       = "disable-signup"
+	flagConcealErrors       = "conceal-errors"
+	flagDefaultAllowedRoles = "default-allowed-roles"
+	flagDefaultRole         = "default-role"
+	flagDefaultLocale       = "default-locale"
+	flagDisableNewUsers     = "disable-new-users"
+	flagGravatarEnabled     = "gravatar-enabled"
+	flagGravatarDefault     = "gravatar-default"
+	flagGravatarRating      = "gravatar-rating"
 )
 
-func CommandServe() *cli.Command {
+func CommandServe() *cli.Command { //nolint:funlen
 	return &cli.Command{ //nolint: exhaustruct
 		Name:  "serve",
 		Usage: "Serve the application",
@@ -64,7 +78,7 @@ func CommandServe() *cli.Command {
 				Usage:    "Postgres connection string",
 				Value:    "postgres://postgres:postgres@localhost:5432/local?sslmode=disable",
 				Category: "postgres",
-				EnvVars:  []string{"POSTGRES_CONNECTION"},
+				EnvVars:  []string{"POSTGRES_CONNECTION", "HASURA_GRAPHQL_DATABASE_URL"},
 			},
 			&cli.StringFlag{ //nolint: exhaustruct
 				Name:     flagNodeServerPath,
@@ -72,6 +86,88 @@ func CommandServe() *cli.Command {
 				Value:    ".",
 				Category: "node",
 				EnvVars:  []string{"NODE_SERVER_PATH"},
+			},
+			&cli.BoolFlag{ //nolint: exhaustruct
+				Name:     flagDisableSignup,
+				Usage:    "Disable signup",
+				Value:    false,
+				Category: "signup",
+				EnvVars:  []string{"AUTH_DISABLE_SIGNUP"},
+			},
+			&cli.BoolFlag{ //nolint: exhaustruct
+				Name:     flagConcealErrors,
+				Usage:    "Conceal errors",
+				Value:    false,
+				Category: "server",
+				EnvVars:  []string{"AUTH_CONCEAL_ERRORS"},
+			},
+			&cli.StringSliceFlag{ //nolint: exhaustruct
+				Name:     flagDefaultAllowedRoles,
+				Usage:    "Default allowed roles",
+				Category: "signup",
+				Value:    cli.NewStringSlice("user", "me"),
+				EnvVars:  []string{"AUTH_USER_DEFAULT_ALLOWED_ROLES"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagDefaultRole,
+				Usage:    "Default role",
+				Category: "signup",
+				Value:    "user",
+				EnvVars:  []string{"AUTH_USER_DEFAULT_ROLE"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagDefaultLocale,
+				Usage:    "Default locale",
+				Category: "signup",
+				Value:    "en",
+				EnvVars:  []string{"AUTH_LOCALE_DEFAULT"},
+			},
+			&cli.BoolFlag{ //nolint: exhaustruct
+				Name:     flagDisableNewUsers,
+				Usage:    "Disable new users",
+				Category: "signup",
+				EnvVars:  []string{"AUTH_DISABLE_NEW_USERS"},
+			},
+			&cli.BoolFlag{ //nolint: exhaustruct
+				Name:     flagGravatarEnabled,
+				Usage:    "Enable gravatar",
+				Category: "gravatar",
+				Value:    true,
+				EnvVars:  []string{"AUTH_GRAVATAR_ENABLED"},
+			},
+			&cli.GenericFlag{ //nolint: exhaustruct
+				Name: flagGravatarDefault,
+				Value: &EnumValue{ //nolint: exhaustruct
+					Enum: []string{
+						"blank",
+						"identicon",
+						"monsterid",
+						"wavatar",
+						"retro",
+						"robohash",
+						"mp",
+						"404",
+					},
+					Default: "blank",
+				},
+				Usage:    "Gravatar default",
+				Category: "gravatar",
+				EnvVars:  []string{"AUTH_GRAVATAR_DEFAULT"},
+			},
+			&cli.GenericFlag{ //nolint: exhaustruct
+				Name: flagGravatarRating,
+				Value: &EnumValue{ //nolint: exhaustruct
+					Enum: []string{
+						"g",
+						"pg",
+						"r",
+						"x",
+					},
+					Default: "g",
+				},
+				Usage:    "Gravatar rating",
+				Category: "gravatar",
+				EnvVars:  []string{"AUTH_GRAVATAR_RATING"},
 			},
 		},
 		Action: serve,
@@ -103,7 +199,7 @@ func getNodeServer(cCtx *cli.Context) *exec.Cmd {
 	return cmd
 }
 
-func getGoServer(cCtx *cli.Context, logger *slog.Logger) (*http.Server, error) {
+func getGoServer(cCtx *cli.Context, db *sql.Queries, logger *slog.Logger) (*http.Server, error) {
 	router := gin.New()
 
 	loader := openapi3.NewLoader()
@@ -121,19 +217,31 @@ func getGoServer(cCtx *cli.Context, logger *slog.Logger) (*http.Server, error) {
 		middleware.Logger(logger),
 	)
 
-	// auth := &controller.Auth{}
-	// handler := api.NewStrictHandler(auth, nil)
-	// mw := api.MiddlewareFunc(ginmiddleware.OapiRequestValidator(doc)),
-
-	// api.RegisterHandlersWithOptions(
-	// 	router,
-	// 	handler,
-	// 	api.GinServerOptions{
-	// 		BaseURL: cCtx.String(flagAPIPrefix),
-	// 		Middlewares: []api.MiddlewareFunc{mw},
-	// 		ErrorHandler: nil,
-	// 	},
-	// )
+	auth := controller.New(
+		db,
+		controller.Config{
+			ConcealErrors:       cCtx.Bool(flagConcealErrors),
+			DisableSignup:       cCtx.Bool(flagDisableSignup),
+			DisableNewUsers:     cCtx.Bool(flagDisableNewUsers),
+			DefaultAllowedRoles: cCtx.StringSlice(flagDefaultAllowedRoles),
+			DefaultRole:         cCtx.String(flagDefaultRole),
+			DefaultLocale:       cCtx.String(flagDefaultLocale),
+			GravatarEnabled:     cCtx.Bool(flagGravatarEnabled),
+			GravatarDefault:     cCtx.String(flagGravatarDefault),
+			GravatarRating:      cCtx.String(flagGravatarRating),
+		},
+	)
+	handler := api.NewStrictHandler(auth, []api.StrictMiddlewareFunc{})
+	mw := api.MiddlewareFunc(ginmiddleware.OapiRequestValidator(doc))
+	api.RegisterHandlersWithOptions(
+		router,
+		handler,
+		api.GinServerOptions{
+			BaseURL:      cCtx.String(flagAPIPrefix),
+			Middlewares:  []api.MiddlewareFunc{mw},
+			ErrorHandler: nil,
+		},
+	)
 
 	nodejsHandler, err := nodejsHandler()
 	if err != nil {
@@ -166,7 +274,13 @@ func serve(cCtx *cli.Context) error {
 		}
 	}()
 
-	server, err := getGoServer(cCtx, logger)
+	conn, err := pgx.Connect(ctx, cCtx.String(flagPostgresConnection))
+	if err != nil {
+		return fmt.Errorf("failed to connect to postgres: %w", err)
+	}
+	defer conn.Close(ctx)
+
+	server, err := getGoServer(cCtx, sql.New(conn), logger)
 	if err != nil {
 		return fmt.Errorf("failed to create server: %w", err)
 	}

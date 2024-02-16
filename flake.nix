@@ -126,6 +126,7 @@
           nhost-cli
           mockgen
           oapi-codegen
+          postgresql_146-client
         ];
 
 

@@ -12,26 +12,6 @@ info:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
 paths:
-  /signin/email-password:
-    post:
-      description: Sign in and existing user using email and password
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/SignInEmailPasswordSchema"
-        required: true
-      responses:
-        200:
-          description: Sign in was successful
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SessionPayload"
-      tags:
-        - signin
-        - email-and-password
-
   /signup/email-password:
     post:
       requestBody:
@@ -49,6 +29,21 @@ paths:
           description: >-
             Successfully registered. Null session means email verification is
             pending
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: >-
+            Signup mechanism is disabled
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: >-
+            User with given email already exists
+
       summary: Signup with email and password
       tags:
         - signup
@@ -56,19 +51,34 @@ paths:
 
 components:
   schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          description: HTTP status error code
+          type: integer
+        message:
+          description: Human friendly error message
+          type: string
+        error:
+          description: Error code that identifies the application error
+          type: string
+          enum:
+            - internal-server-error
+            - invalid-request
+            - signup-disabled
+            - email-already-in-use
+      required:
+        - code
+        - message
+        - error
+
     SessionPayload:
       type: object
       properties:
-        mfa:
-          $ref: "#/components/schemas/MFA"
         session:
           $ref: "#/components/schemas/Session"
 
-    MFA:
-      type: object
-      properties:
-        ticket:
-          type: string
     Session:
       type: object
       properties:
@@ -92,16 +102,6 @@ components:
     User:
       additionalProperties: false
       properties:
-        activeMfaType:
-          anyOf:
-            - enum:
-                - ''
-              type: string
-            - enum:
-                - totp
-              type: string
-          description: Multi-factor authentication type. A null value deactivates MFA
-          example: totp
         avatarUrl:
           type: string
         createdAt:
@@ -109,9 +109,6 @@ components:
           type: string
         defaultRole:
           default: user
-          enum:
-            - me
-            - user
           example: user
           type: string
         displayName:
@@ -160,13 +157,9 @@ components:
           example:
             - me
             - user
-          items:
-            oneOf:
-              - enum:
-                  - me
-              - enum:
-                  - user
           type: array
+          items:
+            type: string
       required:
         - createdAt
         - displayName
@@ -183,21 +176,6 @@ components:
         - roles
       type: object
 
-    SignInEmailPasswordSchema:
-      type: object
-      properties:
-        email:
-          description: A valid email
-          example: john.smith@nhost.io
-          format: email
-          type: string
-        password:
-          example: Str0ngPassw#ord-94|%
-          type: string
-      required:
-        - email
-        - password
-
     SignUpEmailPasswordSchema:
       properties:
         email:
@@ -205,59 +183,50 @@ components:
           example: john.smith@nhost.io
           format: email
           type: string
-        options:
-          additionalProperties: false
-          properties:
-            allowedRoles:
-              default:
-                - me
-                - user
-              example:
-                - me
-                - user
-              items:
-                oneOf:
-                  - enum:
-                      - me
-                  - enum:
-                      - user
-              type: array
-            defaultRole:
-              default: user
-              enum:
-                - me
-                - user
-              example: user
-              type: string
-            displayName:
-              example: John Smith
-              type: string
-            locale:
-              default: en
-              description: A two-characters locale
-              example: en
-              maxLength: 2
-              minLength: 2
-              type: string
-            metadata:
-              additionalProperties: false
-              default: {}
-              example:
-                firstName: John
-                lastName: Smith
-              properties: {}
-              type: object
-            redirectTo:
-              default: https://my-app.com
-              example: https://my-app.com/catch-redirection
-              type: string
-          type: object
         password:
           description: A password of minimum 3 characters
           example: Str0ngPassw#ord-94|%
           minLength: 3
           type: string
+        options:
+          $ref: "#/components/schemas/SignUpOptions"
       required:
         - email
         - password
       type: object
+
+    SignUpOptions:
+      additionalProperties: false
+      properties:
+        allowedRoles:
+          default:
+            - me
+            - user
+          example:
+            - me
+            - user
+          type: array
+          items:
+            type: string
+        defaultRole:
+          default: user
+          example: user
+          type: string
+        displayName:
+          example: John Smith
+          type: string
+        locale:
+          default: en
+          description: A two-characters locale
+          example: en
+          maxLength: 2
+          minLength: 2
+          type: string
+        metadata:
+          additionalProperties: false
+          default: {}
+          example:
+            firstName: John
+            lastName: Smith
+          properties: {}
+          type: object

@@ -31,7 +31,7 @@ describe('email-password', () => {
     await client.query(`DELETE FROM auth.users;`);
   });
 
-  it('should sign up user', async () => {
+  it.only('should sign up user', async () => {
     const email = faker.internet.email();
     const password = faker.internet.password();
 

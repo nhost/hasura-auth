@@ -43,6 +43,11 @@ github.com/gabriel-vasile/mimetype/internal/magic
 # github.com/getkin/kin-openapi v0.123.0
 ## explicit; go 1.20
 github.com/getkin/kin-openapi/openapi3
+github.com/getkin/kin-openapi/openapi3filter
+github.com/getkin/kin-openapi/routers
+github.com/getkin/kin-openapi/routers/gorillamux
+github.com/getkin/kin-openapi/routers/legacy
+github.com/getkin/kin-openapi/routers/legacy/pathpattern
 # github.com/gin-contrib/sse v0.1.0
 ## explicit; go 1.12
 github.com/gin-contrib/sse
@@ -83,6 +88,9 @@ github.com/goccy/go-json/internal/runtime
 # github.com/google/uuid v1.6.0
 ## explicit
 github.com/google/uuid
+# github.com/gorilla/mux v1.8.1
+## explicit; go 1.20
+github.com/gorilla/mux
 # github.com/invopop/yaml v0.2.0
 ## explicit; go 1.14
 github.com/invopop/yaml
@@ -119,6 +127,9 @@ github.com/modern-go/reflect2
 # github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826
 ## explicit
 github.com/mohae/deepcopy
+# github.com/oapi-codegen/gin-middleware v1.0.1
+## explicit; go 1.20
+github.com/oapi-codegen/gin-middleware
 # github.com/oapi-codegen/runtime v1.1.1
 ## explicit; go 1.20
 github.com/oapi-codegen/runtime
@@ -165,11 +176,14 @@ github.com/urfave/cli/v2
 # github.com/xrash/smetrics v0.0.0-20231213231151-1d8dd44e695e
 ## explicit
 github.com/xrash/smetrics
-# golang.org/x/arch v0.7.0
-## explicit; go 1.18
+# golang.org/x/arch v0.5.0
+## explicit; go 1.17
 golang.org/x/arch/x86/x86asm
-# golang.org/x/crypto v0.20.0
+# golang.org/x/crypto v0.19.0
 ## explicit; go 1.18
+golang.org/x/crypto/bcrypt
+golang.org/x/crypto/blowfish
+golang.org/x/crypto/pbkdf2
 golang.org/x/crypto/sha3
 # golang.org/x/net v0.21.0
 ## explicit; go 1.18
