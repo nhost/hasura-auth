@@ -230,3 +230,7 @@ components:
             lastName: Smith
           properties: {}
           type: object
+        redirectTo:
+          default: https://my-app.com
+          example: https://my-app.com/catch-redirection
+          type: string

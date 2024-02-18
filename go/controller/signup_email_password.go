@@ -10,7 +10,9 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/nhost/hasura-auth/go/api"
+	"github.com/nhost/hasura-auth/go/notifications"
 	"github.com/nhost/hasura-auth/go/sql"
 	openapi_types "github.com/oapi-codegen/runtime/types"
 	"golang.org/x/crypto/bcrypt"
@@ -40,7 +42,7 @@ func ptr[T any](x T) *T {
 	return &x
 }
 
-func (ctrl *Controller) PostSignupEmailPassword( //nolint:ireturn,funlen
+func (ctrl *Controller) PostSignupEmailPassword( //nolint:ireturn
 	ctx context.Context,
 	req api.PostSignupEmailPasswordRequestObject,
 ) (api.PostSignupEmailPasswordResponseObject, error) {
@@ -75,10 +77,83 @@ func (ctrl *Controller) PostSignupEmailPassword( //nolint:ireturn,funlen
 
 	gravatarURL := ctrl.gravatarURL(email.String)
 
-	refreshToken := uuid.New()
+	if ctrl.config.RequireEmailVerification {
+		return ctrl.postSignupEmailPasswordWithEmailVerification(
+			ctx, email, hashedPassword, gravatarURL, options, metadata,
+		)
+	}
 
-	user, err := ctrl.db.InsertUser(
+	return ctrl.postSignupEmailPasswordWithoutEmailVerification(
+		ctx, email, hashedPassword, gravatarURL, options, metadata,
+	)
+}
+
+func (ctrl *Controller) postSignupEmailPasswordWithEmailVerification( //nolint:ireturn
+	ctx context.Context,
+	email pgtype.Text,
+	hashedPassword string,
+	gravatarURL string,
+	options *api.SignUpOptions,
+	metadata []byte,
+) (api.PostSignupEmailPasswordResponseObject, error) {
+	ticket := "verifyEmail:" + uuid.NewString()
+	_, err := ctrl.db.InsertUser(
 		ctx, sql.InsertUserParams{
+			Disabled:        ctrl.config.DisableNewUsers,
+			DisplayName:     deptr(options.DisplayName),
+			AvatarUrl:       gravatarURL,
+			Email:           email,
+			PasswordHash:    sql.Text(hashedPassword),
+			Ticket:          sql.Text(ticket),
+			TicketExpiresAt: sql.TimestampTz(time.Now().Add(30 * 24 * time.Hour)),
+			EmailVerified:   false,
+			Locale:          deptr(options.Locale),
+			DefaultRole:     deptr(options.DefaultRole),
+			Metadata:        metadata,
+			Roles:           deptr(options.AllowedRoles),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error inserting user: %w", err)
+	}
+
+	link, err := GenLink(*ctrl.config.ServerURL, LinkTypeEmailVerify, ticket, deptr(options.RedirectTo))
+	if err != nil {
+		return nil, fmt.Errorf("problem generating email verification link: %w", err)
+	}
+
+	if err := ctrl.email.SendEmailVerify(
+		email.String,
+		deptr(options.Locale),
+		notifications.EmailVerifyData{
+			Link:        link,
+			DisplayName: deptr(options.DisplayName),
+			Email:       email.String,
+			Ticket:      ticket,
+			RedirectTo:  deptr(options.RedirectTo),
+			ServerURL:   ctrl.config.ServerURL.String(),
+			ClientURL:   ctrl.config.ClientURL.String(),
+		},
+	); err != nil {
+		return nil, fmt.Errorf("problem sending email: %w", err)
+	}
+
+	return api.PostSignupEmailPassword200JSONResponse{
+		Session: nil,
+	}, nil
+}
+
+func (ctrl *Controller) postSignupEmailPasswordWithoutEmailVerification( //nolint:ireturn
+	ctx context.Context,
+	email pgtype.Text,
+	hashedPassword string,
+	gravatarURL string,
+	options *api.SignUpOptions,
+	metadata []byte,
+) (api.PostSignupEmailPasswordResponseObject, error) {
+	refreshToken := uuid.New()
+	user, err := ctrl.db.InsertUserWithRefreshToken(
+		ctx, sql.InsertUserWithRefreshTokenParams{
 			Disabled:         ctrl.config.DisableNewUsers,
 			DisplayName:      deptr(options.DisplayName),
 			AvatarUrl:        gravatarURL,

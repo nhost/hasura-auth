@@ -64,8 +64,9 @@ type SignUpOptions struct {
 	DisplayName  *string   `json:"displayName,omitempty"`
 
 	// Locale A two-characters locale
-	Locale   *string                 `json:"locale,omitempty"`
-	Metadata *map[string]interface{} `json:"metadata,omitempty"`
+	Locale     *string                 `json:"locale,omitempty"`
+	Metadata   *map[string]interface{} `json:"metadata,omitempty"`
+	RedirectTo *string                 `json:"redirectTo,omitempty"`
 }
 
 // User defines model for User.

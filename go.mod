@@ -13,6 +13,8 @@ require (
 	github.com/oapi-codegen/gin-middleware v1.0.1
 	github.com/oapi-codegen/runtime v1.1.1
 	github.com/urfave/cli/v2 v2.27.1
+	github.com/valyala/fasttemplate v1.2.2
+	go.uber.org/mock v0.4.0
 	golang.org/x/crypto v0.19.0
 )
 
@@ -45,6 +47,7 @@ require (
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.11 // indirect
+	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 // indirect
 	golang.org/x/arch v0.5.0 // indirect
 	golang.org/x/net v0.19.0 // indirect

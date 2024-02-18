@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"net/url"
 	"os"
 	"os/exec"
 	"strconv"
@@ -23,26 +24,36 @@ import (
 )
 
 const (
-	flagAPIPrefix              = "api-prefix"
-	flagPort                   = "port"
-	flagDebug                  = "debug"
-	flagLogFormatTEXT          = "log-format-text"
-	flagTrustedProxies         = "trusted-proxies"
-	flagPostgresConnection     = "postgres"
-	flagNodeServerPath         = "node-server-path"
-	flagDatabseURL             = "database-url"
-	flagDisableSignup          = "disable-signup"
-	flagConcealErrors          = "conceal-errors"
-	flagDefaultAllowedRoles    = "default-allowed-roles"
-	flagDefaultRole            = "default-role"
-	flagDefaultLocale          = "default-locale"
-	flagDisableNewUsers        = "disable-new-users"
-	flagGravatarEnabled        = "gravatar-enabled"
-	flagGravatarDefault        = "gravatar-default"
-	flagGravatarRating         = "gravatar-rating"
-	flagRefreshTokenExpiresIn  = "refresh-token-expires-in"
-	flagAccessTokensExpiresIn  = "access-tokens-expires-in"
-	flagHasuraGraphqlJWTSecret = "hasura-graphql-jwt-secret" //nolint:gosec
+	flagAPIPrefix                        = "api-prefix"
+	flagPort                             = "port"
+	flagDebug                            = "debug"
+	flagLogFormatTEXT                    = "log-format-text"
+	flagTrustedProxies                   = "trusted-proxies"
+	flagPostgresConnection               = "postgres"
+	flagNodeServerPath                   = "node-server-path"
+	flagDatabseURL                       = "database-url"
+	flagDisableSignup                    = "disable-signup"
+	flagConcealErrors                    = "conceal-errors"
+	flagDefaultAllowedRoles              = "default-allowed-roles"
+	flagDefaultRole                      = "default-role"
+	flagDefaultLocale                    = "default-locale"
+	flagDisableNewUsers                  = "disable-new-users"
+	flagGravatarEnabled                  = "gravatar-enabled"
+	flagGravatarDefault                  = "gravatar-default"
+	flagGravatarRating                   = "gravatar-rating"
+	flagRefreshTokenExpiresIn            = "refresh-token-expires-in"
+	flagAccessTokensExpiresIn            = "access-tokens-expires-in"
+	flagHasuraGraphqlJWTSecret           = "hasura-graphql-jwt-secret" //nolint:gosec
+	flagEmailSigninEmailVerifiedRequired = "email-verification-required"
+	flagSMTPHost                         = "smtp-host"
+	flagSMTPPort                         = "smtp-port"
+	flagSMTPUser                         = "smtp-user"
+	flagSMTPPassword                     = "smtp-password"
+	flagSMTPSender                       = "smtp-sender"
+	flagSMTPAPIHedaer                    = "smtp-api-header"
+	flagSMTPAuthMethod                   = "smtp-auth-method"
+	flagClientURL                        = "client-url"
+	flagServerURL                        = "server-url"
 )
 
 func CommandServe() *cli.Command { //nolint:funlen
@@ -134,7 +145,7 @@ func CommandServe() *cli.Command { //nolint:funlen
 			&cli.BoolFlag{ //nolint: exhaustruct
 				Name:     flagGravatarEnabled,
 				Usage:    "Enable gravatar",
-				Category: "gravatar",
+				Category: "signup",
 				Value:    true,
 				EnvVars:  []string{"AUTH_GRAVATAR_ENABLED"},
 			},
@@ -154,7 +165,7 @@ func CommandServe() *cli.Command { //nolint:funlen
 					Default: "blank",
 				},
 				Usage:    "Gravatar default",
-				Category: "gravatar",
+				Category: "signup",
 				EnvVars:  []string{"AUTH_GRAVATAR_DEFAULT"},
 			},
 			&cli.GenericFlag{ //nolint: exhaustruct
@@ -169,7 +180,7 @@ func CommandServe() *cli.Command { //nolint:funlen
 					Default: "g",
 				},
 				Usage:    "Gravatar rating",
-				Category: "gravatar",
+				Category: "signup",
 				EnvVars:  []string{"AUTH_GRAVATAR_RATING"},
 			},
 			&cli.IntFlag{ //nolint: exhaustruct
@@ -191,6 +202,74 @@ func CommandServe() *cli.Command { //nolint:funlen
 				Usage:    "Hasura GraphQL JWT secret",
 				Category: "jwt",
 				EnvVars:  []string{"HASURA_GRAPHQL_JWT_SECRET"},
+			},
+			&cli.BoolFlag{ //nolint: exhaustruct
+				Name:     flagEmailSigninEmailVerifiedRequired,
+				Usage:    "Require email to be verified for email signin",
+				Category: "signup",
+				EnvVars:  []string{"AUTH_EMAIL_SIGNIN_EMAIL_VERIFIED_REQUIRED"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagSMTPHost,
+				Usage:    "SMTP Host",
+				Category: "smtp",
+				EnvVars:  []string{"AUTH_SMTP_HOST"},
+			},
+			&cli.UintFlag{ //nolint: exhaustruct
+				Name:     flagSMTPPort,
+				Usage:    "SMTP port",
+				Category: "smtp",
+				Value:    587, //nolint:gomnd
+				EnvVars:  []string{"AUTH_SMTP_PORT"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagSMTPUser,
+				Usage:    "SMTP user",
+				Category: "smtp",
+				EnvVars:  []string{"AUTH_SMTP_USER"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagSMTPPassword,
+				Usage:    "SMTP password",
+				Category: "smtp",
+				EnvVars:  []string{"AUTH_SMTP_PASS"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagSMTPSender,
+				Usage:    "SMTP sender",
+				Category: "smtp",
+				EnvVars:  []string{"AUTH_SMTP_SENDER"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagSMTPAPIHedaer,
+				Usage:    "SMTP API Header. Maps to header X-SMTPAPI",
+				Category: "smtp",
+				EnvVars:  []string{"AUTH_SMTP_X_SMTPAPI_HEADER"},
+			},
+			&cli.GenericFlag{ //nolint: exhaustruct
+				Name: flagSMTPAuthMethod,
+				Value: &EnumValue{ //nolint: exhaustruct
+					Enum: []string{
+						"PLAIN",
+						"CRAM-Md5",
+					},
+					Default: "PLAIN",
+				},
+				Usage:    "SMTP Authentication method",
+				Category: "smtp",
+				EnvVars:  []string{"AUTH_SMTP_AUTH_METHOD"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagClientURL,
+				Usage:    "Client URL",
+				Category: "application",
+				EnvVars:  []string{"AUTH_CLIENT_URL"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagServerURL,
+				Usage:    "Server URL",
+				Category: "server",
+				EnvVars:  []string{"AUTH_SERVER_URL"},
 			},
 		},
 		Action: serve,
@@ -222,6 +301,36 @@ func getNodeServer(cCtx *cli.Context) *exec.Cmd {
 	return cmd
 }
 
+func getConfig(cCtx *cli.Context) (controller.Config, error) {
+	serverURL, err := url.Parse(cCtx.String(flagServerURL))
+	if err != nil {
+		return controller.Config{}, fmt.Errorf("problem parsing server url: %w", err)
+	}
+
+	clientURL, err := url.Parse(cCtx.String(flagClientURL))
+	if err != nil {
+		return controller.Config{}, fmt.Errorf("problem parsing client url: %w", err)
+	}
+
+	return controller.Config{
+		AccessTokenExpiresIn:     cCtx.Int(flagAccessTokensExpiresIn),
+		ClientURL:                clientURL,
+		ConcealErrors:            cCtx.Bool(flagConcealErrors),
+		DisableSignup:            cCtx.Bool(flagDisableSignup),
+		DisableNewUsers:          cCtx.Bool(flagDisableNewUsers),
+		DefaultAllowedRoles:      cCtx.StringSlice(flagDefaultAllowedRoles),
+		DefaultRole:              cCtx.String(flagDefaultRole),
+		DefaultLocale:            cCtx.String(flagDefaultLocale),
+		GravatarEnabled:          cCtx.Bool(flagGravatarEnabled),
+		GravatarDefault:          GetEnumValue(cCtx, flagGravatarDefault),
+		GravatarRating:           cCtx.String(flagGravatarRating),
+		JWTSecret:                cCtx.String(flagHasuraGraphqlJWTSecret),
+		RefreshTokenExpiresIn:    cCtx.Int(flagRefreshTokenExpiresIn),
+		RequireEmailVerification: cCtx.Bool(flagEmailSigninEmailVerifiedRequired),
+		ServerURL:                serverURL,
+	}, nil
+}
+
 func getGoServer(cCtx *cli.Context, db *sql.Queries, logger *slog.Logger) (*http.Server, error) {
 	router := gin.New()
 
@@ -240,22 +349,21 @@ func getGoServer(cCtx *cli.Context, db *sql.Queries, logger *slog.Logger) (*http
 		middleware.Logger(logger),
 	)
 
-	auth := controller.New(
-		db,
-		controller.Config{
-			ConcealErrors:         cCtx.Bool(flagConcealErrors),
-			DisableSignup:         cCtx.Bool(flagDisableSignup),
-			DisableNewUsers:       cCtx.Bool(flagDisableNewUsers),
-			DefaultAllowedRoles:   cCtx.StringSlice(flagDefaultAllowedRoles),
-			DefaultRole:           cCtx.String(flagDefaultRole),
-			DefaultLocale:         cCtx.String(flagDefaultLocale),
-			GravatarEnabled:       cCtx.Bool(flagGravatarEnabled),
-			GravatarDefault:       cCtx.String(flagGravatarDefault),
-			GravatarRating:        cCtx.String(flagGravatarRating),
-			RefreshTokenExpiresIn: cCtx.Int(flagRefreshTokenExpiresIn),
-		},
-	)
-	handler := api.NewStrictHandler(auth, []api.StrictMiddlewareFunc{})
+	emailer, err := getEmailer(cCtx, logger)
+	if err != nil {
+		return nil, fmt.Errorf("problem creating emailer: %w", err)
+	}
+
+	config, err := getConfig(cCtx)
+	if err != nil {
+		return nil, fmt.Errorf("problem creating config: %w", err)
+	}
+
+	ctrl, err := controller.New(db, config, emailer)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create controller: %w", err)
+	}
+	handler := api.NewStrictHandler(ctrl, []api.StrictMiddlewareFunc{})
 	mw := api.MiddlewareFunc(ginmiddleware.OapiRequestValidator(doc))
 	api.RegisterHandlersWithOptions(
 		router,
