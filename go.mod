@@ -6,7 +6,7 @@ require (
 	github.com/getkin/kin-openapi v0.123.0
 	github.com/gin-gonic/gin v1.9.1
 	github.com/golang-jwt/jwt/v5 v5.2.0
-	github.com/google/go-cmp v0.5.5
+	github.com/google/go-cmp v0.6.0
 	github.com/google/uuid v1.5.0
 	github.com/jackc/pgx/v5 v5.3.1
 	github.com/lmittmann/tint v1.0.4
@@ -16,6 +16,7 @@ require (
 	github.com/valyala/fasttemplate v1.2.2
 	go.uber.org/mock v0.4.0
 	golang.org/x/crypto v0.19.0
+	k8s.io/client-go v0.29.2
 )
 
 require (
@@ -53,7 +54,6 @@ require (
 	golang.org/x/net v0.19.0 // indirect
 	golang.org/x/sys v0.17.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
-	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
-	google.golang.org/protobuf v1.32.0 // indirect
+	google.golang.org/protobuf v1.31.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

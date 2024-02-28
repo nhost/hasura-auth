@@ -53,8 +53,9 @@ components:
   schemas:
     ErrorResponse:
       type: object
+      additionalProperties: false
       properties:
-        code:
+        status:
           description: HTTP status error code
           type: integer
         message:
@@ -68,19 +69,27 @@ components:
             - invalid-request
             - signup-disabled
             - email-already-in-use
+            - password-too-short
+            - password-in-hibp-database
+            - role-not-allowed
+            - locale-not-allowed
+            - default-role-must-be-in-allowed-roles
+            - redirecTo-not-allowed
       required:
-        - code
+        - status
         - message
         - error
 
     SessionPayload:
       type: object
+      additionalProperties: false
       properties:
         session:
           $ref: "#/components/schemas/Session"
 
     Session:
       type: object
+      additionalProperties: false
       properties:
         accessToken:
           type: string
@@ -100,6 +109,7 @@ components:
         - refreshToken
 
     User:
+      type: object
       additionalProperties: false
       properties:
         avatarUrl:
@@ -108,7 +118,6 @@ components:
           format: date-time
           type: string
         defaultRole:
-          default: user
           example: user
           type: string
         displayName:
@@ -120,7 +129,6 @@ components:
           format: email
           type: string
         emailVerified:
-          default: false
           type: boolean
         id:
           description: Id of the user
@@ -128,32 +136,25 @@ components:
           pattern: \b[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b
           type: string
         isAnonymous:
-          default: false
           type: boolean
         locale:
-          default: en
           description: A two-characters locale
           example: en
           maxLength: 2
           minLength: 2
           type: string
         metadata:
-          additionalProperties: false
-          default: {}
+          type: object
+          additionalProperties: true
           example:
             firstName: John
             lastName: Smith
           properties: {}
-          type: object
         phoneNumber:
           type: string
         phoneNumberVerified:
-          default: false
           type: boolean
         roles:
-          default:
-            - me
-            - user
           example:
             - me
             - user
@@ -174,9 +175,10 @@ components:
         - phoneNumber
         - phoneNumberVerified
         - roles
-      type: object
 
     SignUpEmailPasswordSchema:
+      type: object
+      additionalProperties: false
       properties:
         email:
           description: A valid email
@@ -193,15 +195,12 @@ components:
       required:
         - email
         - password
-      type: object
 
     SignUpOptions:
+      type: object
       additionalProperties: false
       properties:
         allowedRoles:
-          default:
-            - me
-            - user
           example:
             - me
             - user
@@ -209,28 +208,24 @@ components:
           items:
             type: string
         defaultRole:
-          default: user
           example: user
           type: string
         displayName:
           example: John Smith
           type: string
         locale:
-          default: en
           description: A two-characters locale
           example: en
           maxLength: 2
           minLength: 2
           type: string
         metadata:
-          additionalProperties: false
-          default: {}
+          type: object
+          additionalProperties: true
           example:
             firstName: John
             lastName: Smith
           properties: {}
-          type: object
         redirectTo:
-          default: https://my-app.com
           example: https://my-app.com/catch-redirection
           type: string

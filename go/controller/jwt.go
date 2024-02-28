@@ -1,8 +1,11 @@
+//go:generate mockgen -package mock -destination mock/jwt.go --source=jwt.go
 package controller
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -33,81 +36,104 @@ func decodeJWTSecret(jwtSecretb []byte) (JWTSecret, error) {
 	return jwtSecret, nil
 }
 
+type CustomClaimer interface {
+	GetClaims(ctx context.Context, userID string) (map[string]any, error)
+}
+
+type JWTGetter struct {
+	claimsNamespace      string
+	issuer               string
+	signingKey           []byte
+	method               jwt.SigningMethod
+	customClaimer        CustomClaimer
+	accessTokenExpiresIn time.Duration
+}
+
 func NewJWTGetter(
 	jwtSecretb []byte,
 	accessTokenExpiresIn time.Duration,
-) (
-	func(userID uuid.UUID) (string, int64, error),
-	error,
-) {
+	customClaimer CustomClaimer,
+) (*JWTGetter, error) {
 	jwtSecret, err := decodeJWTSecret(jwtSecretb)
 	if err != nil {
 		return nil, err
 	}
 
-	mySigningKey := []byte(jwtSecret.Key)
 	method := jwt.GetSigningMethod(jwtSecret.Type)
 
-	return func(userID uuid.UUID) (string, int64, error) {
-		now := time.Now()
-		iat := now.Unix()
-		exp := now.Add(accessTokenExpiresIn).Unix()
-
-		// Create the Claims
-		claims := &jwt.MapClaims{
-			"sub": userID.String(),
-			"iss": jwtSecret.Issuer,
-			"iat": iat,
-			"exp": exp,
-			jwtSecret.ClaimsNamespace: map[string]any{
-				"x-hasura-allowed-roles": []string{
-					"admin",
-					"user",
-					"project_manager",
-					"anonymous",
-				},
-				"x-hasura-default-role":     "user",
-				"x-hasura-user-id":          userID.String(),
-				"x-hasura-user-isAnonymous": "false",
-			},
-		}
-		token := jwt.NewWithClaims(method, claims)
-		ss, err := token.SignedString(mySigningKey)
-		if err != nil {
-			return "", 0, fmt.Errorf("error signing token: %w", err)
-		}
-
-		return ss, exp, nil
+	return &JWTGetter{
+		claimsNamespace:      jwtSecret.ClaimsNamespace,
+		issuer:               jwtSecret.Issuer,
+		signingKey:           []byte(jwtSecret.Key),
+		method:               method,
+		customClaimer:        customClaimer,
+		accessTokenExpiresIn: accessTokenExpiresIn,
 	}, nil
 }
 
-func JWTValidateFn(
-	jwtSecretb []byte,
-) (
-	func(jwt string) (*jwt.Token, error),
-	error,
-) {
-	jwtSecret, err := decodeJWTSecret(jwtSecretb)
-	if err != nil {
-		return nil, err
+func (j *JWTGetter) GetToken(
+	ctx context.Context, userID uuid.UUID, allowedRoles []string, defaultRole string,
+) (string, int64, error) {
+	now := time.Now()
+	iat := now.Unix()
+	exp := now.Add(j.accessTokenExpiresIn).Unix()
+
+	var customClaims map[string]any
+	var err error
+	if j.customClaimer != nil {
+		customClaims, err = j.customClaimer.GetClaims(ctx, userID.String())
+		if err != nil {
+			// TODO log error
+			customClaims = map[string]any{}
+		}
 	}
 
-	mySigningKey := []byte(jwtSecret.Key)
+	c := map[string]any{
+		"x-hasura-allowed-roles":    allowedRoles,
+		"x-hasura-default-role":     defaultRole,
+		"x-hasura-user-id":          userID.String(),
+		"x-hasura-user-isAnonymous": "false",
+	}
 
-	return func(accessToken string) (*jwt.Token, error) {
-		jwtToken, err := jwt.Parse(
-			accessToken,
-			func(token *jwt.Token) (interface{}, error) {
-				return mySigningKey, nil
-			},
-			jwt.WithValidMethods([]string{jwtSecret.Type}),
-			jwt.WithIssuer(jwtSecret.Issuer),
-			jwt.WithIssuedAt(),
-			jwt.WithExpirationRequired(),
-		)
-		if err != nil {
-			return nil, fmt.Errorf("error parsing token: %w", err)
+	for k, v := range customClaims {
+		k = strings.ToLower("x-hasura-" + k)
+		if _, ok := c[k]; ok {
+			// we do not allow custom claims to overwrite the default claims
+			continue
 		}
-		return jwtToken, nil
-	}, nil
+		c[k] = v
+	}
+
+	// Create the Claims
+	claims := &jwt.MapClaims{
+		"sub":             userID.String(),
+		"iss":             j.issuer,
+		"iat":             iat,
+		"exp":             exp,
+		j.claimsNamespace: c,
+	}
+	token := jwt.NewWithClaims(j.method, claims)
+	ss, err := token.SignedString(j.signingKey)
+	if err != nil {
+		return "", 0, fmt.Errorf("error signing token: %w", err)
+	}
+
+	return ss, exp, nil
+}
+
+func (j *JWTGetter) Validate(accessToken string) (*jwt.Token, error) {
+	jwtToken, err := jwt.Parse(
+		accessToken,
+		func(token *jwt.Token) (interface{}, error) {
+			return j.signingKey, nil
+		},
+		jwt.WithValidMethods([]string{j.method.Alg()}),
+		jwt.WithIssuer(j.issuer),
+		jwt.WithIssuedAt(),
+		jwt.WithExpirationRequired(),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error parsing token: %w", err)
+	}
+	return jwtToken, nil
 }

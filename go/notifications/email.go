@@ -67,10 +67,10 @@ func (sm *Email) SendEmailVerify(to string, locale string, data EmailVerifyData)
 	}
 
 	headers := map[string]string{
-		"x-ticket":         data.Ticket,
-		"x-redirect-to":    data.RedirectTo,
-		"x-email-template": "email-verify",
-		"x-link":           data.Link,
+		"X-Ticket":         data.Ticket,
+		"X-Redirect-To":    data.RedirectTo,
+		"X-Email-Template": "email-verify",
+		"X-Link":           data.Link,
 	}
 
 	if err := sm.Send(to, subject, body, headers); err != nil {

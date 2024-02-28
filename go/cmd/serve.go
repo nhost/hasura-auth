@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
-	"net/url"
 	"os"
 	"os/exec"
 	"strconv"
@@ -17,6 +16,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/nhost/hasura-auth/go/api"
 	"github.com/nhost/hasura-auth/go/controller"
+	"github.com/nhost/hasura-auth/go/hibp"
 	"github.com/nhost/hasura-auth/go/middleware"
 	"github.com/nhost/hasura-auth/go/sql"
 	ginmiddleware "github.com/oapi-codegen/gin-middleware"
@@ -37,6 +37,7 @@ const (
 	flagDefaultAllowedRoles              = "default-allowed-roles"
 	flagDefaultRole                      = "default-role"
 	flagDefaultLocale                    = "default-locale"
+	flagAllowedLocales                   = "allowed-locales"
 	flagDisableNewUsers                  = "disable-new-users"
 	flagGravatarEnabled                  = "gravatar-enabled"
 	flagGravatarDefault                  = "gravatar-default"
@@ -54,12 +55,20 @@ const (
 	flagSMTPAuthMethod                   = "smtp-auth-method"
 	flagClientURL                        = "client-url"
 	flagServerURL                        = "server-url"
+	flagAllowRedirectURLs                = "allow-redirect-urls"
+	flagEnableChangeEnv                  = "enable-change-env"
+	flagCustomClaims                     = "custom-claims"
+	flagGraphqlURL                       = "graphql-url"
+	flagHasuraAdminSecret                = "hasura-admin-secret" //nolint:gosec
+	flagPasswordMinLength                = "password-min-length"
+	flagPasswordHIBPEnabled              = "password-hibp-enabled"
 )
 
 func CommandServe() *cli.Command { //nolint:funlen
 	return &cli.Command{ //nolint: exhaustruct
 		Name:  "serve",
 		Usage: "Serve the application",
+		//nolint:lll
 		Flags: []cli.Flag{
 			&cli.StringFlag{ //nolint: exhaustruct
 				Name:     flagAPIPrefix,
@@ -89,7 +98,7 @@ func CommandServe() *cli.Command { //nolint:funlen
 			},
 			&cli.StringFlag{ //nolint: exhaustruct
 				Name:     flagPostgresConnection,
-				Usage:    "Postgres connection string",
+				Usage:    "PostgreSQL connection URI: https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING. Required to inject the `auth` schema into the database.",
 				Value:    "postgres://postgres:postgres@localhost:5432/local?sslmode=disable",
 				Category: "postgres",
 				EnvVars:  []string{"POSTGRES_CONNECTION", "HASURA_GRAPHQL_DATABASE_URL"},
@@ -135,6 +144,13 @@ func CommandServe() *cli.Command { //nolint:funlen
 				Category: "signup",
 				Value:    "en",
 				EnvVars:  []string{"AUTH_LOCALE_DEFAULT"},
+			},
+			&cli.StringSliceFlag{ //nolint: exhaustruct
+				Name:     flagAllowedLocales,
+				Usage:    "Allowed locales",
+				Category: "signup",
+				Value:    cli.NewStringSlice("en"),
+				EnvVars:  []string{"AUTH_LOCALE_ALLOWED_LOCALES"},
 			},
 			&cli.BoolFlag{ //nolint: exhaustruct
 				Name:     flagDisableNewUsers,
@@ -199,7 +215,8 @@ func CommandServe() *cli.Command { //nolint:funlen
 			},
 			&cli.StringFlag{ //nolint: exhaustruct
 				Name:     flagHasuraGraphqlJWTSecret,
-				Usage:    "Hasura GraphQL JWT secret",
+				Usage:    "Key used for generating JWTs. Must be `HMAC-SHA`-based and the same as configured in Hasura. More info: https://hasura.io/docs/latest/graphql/core/auth/authentication/jwt.html#running-with-jwt",
+				Required: true,
 				Category: "jwt",
 				EnvVars:  []string{"HASURA_GRAPHQL_JWT_SECRET"},
 			},
@@ -251,7 +268,7 @@ func CommandServe() *cli.Command { //nolint:funlen
 				Value: &EnumValue{ //nolint: exhaustruct
 					Enum: []string{
 						"PLAIN",
-						"CRAM-Md5",
+						"CRAM-MD5",
 					},
 					Default: "PLAIN",
 				},
@@ -265,11 +282,54 @@ func CommandServe() *cli.Command { //nolint:funlen
 				Category: "application",
 				EnvVars:  []string{"AUTH_CLIENT_URL"},
 			},
+			&cli.StringSliceFlag{ //nolint:exhaustruct
+				Name:     flagAllowRedirectURLs,
+				Usage:    "Allowed redirect URLs",
+				Category: "application",
+				EnvVars:  []string{"AUTH_ALLOW_REDIRECT_URLS"},
+			},
 			&cli.StringFlag{ //nolint: exhaustruct
 				Name:     flagServerURL,
 				Usage:    "Server URL",
 				Category: "server",
 				EnvVars:  []string{"AUTH_SERVER_URL"},
+			},
+			&cli.BoolFlag{ //nolint: exhaustruct
+				Name:     flagEnableChangeEnv,
+				Usage:    "Enable change env. Do not do this in production!",
+				Category: "server",
+				EnvVars:  []string{"AUTH_ENABLE_CHANGE_ENV"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagCustomClaims,
+				Usage:    "Custom claims",
+				Category: "jwt",
+				EnvVars:  []string{"AUTH_JWT_CUSTOM_CLAIMS"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagGraphqlURL,
+				Usage:    "Hasura GraphQL endpoint. Required for custom claims",
+				Category: "jwt",
+				EnvVars:  []string{"HASURA_GRAPHQL_GRAPHQL_URL"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagHasuraAdminSecret,
+				Usage:    "Hasura admin secret. Required for custom claims",
+				Category: "jwt",
+				EnvVars:  []string{"HASURA_GRAPHQL_ADMIN_SECRET"},
+			},
+			&cli.IntFlag{ //nolint: exhaustruct
+				Name:     flagPasswordMinLength,
+				Usage:    "Minimum password length",
+				Value:    3, //nolint:gomnd
+				Category: "signup",
+				EnvVars:  []string{"AUTH_PASSWORD_MIN_LENGTH"},
+			},
+			&cli.BoolFlag{ //nolint: exhaustruct
+				Name:     flagPasswordHIBPEnabled,
+				Usage:    "Check user's password against Pwned Passwords https://haveibeenpwned.com/Passwords",
+				Category: "signup",
+				EnvVars:  []string{"AUTH_PASSWORD_HIBP_ENABLED"},
 			},
 		},
 		Action: serve,
@@ -293,42 +353,16 @@ func getNodeServer(cCtx *cli.Context) *exec.Cmd {
 	env = append(env, "PWD="+cCtx.String(flagNodeServerPath))
 	env = append(env, "AUTH_VERSION="+cCtx.App.Version)
 
+	if cCtx.Bool(flagEnableChangeEnv) {
+		env = append(env, "NODE_ENV=development")
+	}
+
 	cmd := exec.CommandContext(cCtx.Context, "node", "./dist/start.js")
 	cmd.Dir = cCtx.String(flagNodeServerPath)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Env = env
 	return cmd
-}
-
-func getConfig(cCtx *cli.Context) (controller.Config, error) {
-	serverURL, err := url.Parse(cCtx.String(flagServerURL))
-	if err != nil {
-		return controller.Config{}, fmt.Errorf("problem parsing server url: %w", err)
-	}
-
-	clientURL, err := url.Parse(cCtx.String(flagClientURL))
-	if err != nil {
-		return controller.Config{}, fmt.Errorf("problem parsing client url: %w", err)
-	}
-
-	return controller.Config{
-		AccessTokenExpiresIn:     cCtx.Int(flagAccessTokensExpiresIn),
-		ClientURL:                clientURL,
-		ConcealErrors:            cCtx.Bool(flagConcealErrors),
-		DisableSignup:            cCtx.Bool(flagDisableSignup),
-		DisableNewUsers:          cCtx.Bool(flagDisableNewUsers),
-		DefaultAllowedRoles:      cCtx.StringSlice(flagDefaultAllowedRoles),
-		DefaultRole:              cCtx.String(flagDefaultRole),
-		DefaultLocale:            cCtx.String(flagDefaultLocale),
-		GravatarEnabled:          cCtx.Bool(flagGravatarEnabled),
-		GravatarDefault:          GetEnumValue(cCtx, flagGravatarDefault),
-		GravatarRating:           cCtx.String(flagGravatarRating),
-		JWTSecret:                cCtx.String(flagHasuraGraphqlJWTSecret),
-		RefreshTokenExpiresIn:    cCtx.Int(flagRefreshTokenExpiresIn),
-		RequireEmailVerification: cCtx.Bool(flagEmailSigninEmailVerifiedRequired),
-		ServerURL:                serverURL,
-	}, nil
 }
 
 func getGoServer(cCtx *cli.Context, db *sql.Queries, logger *slog.Logger) (*http.Server, error) {
@@ -359,7 +393,12 @@ func getGoServer(cCtx *cli.Context, db *sql.Queries, logger *slog.Logger) (*http
 		return nil, fmt.Errorf("problem creating config: %w", err)
 	}
 
-	ctrl, err := controller.New(db, config, emailer)
+	jwtGetter, err := getJWTGetter(cCtx)
+	if err != nil {
+		return nil, fmt.Errorf("problem creating jwt getter: %w", err)
+	}
+
+	ctrl, err := controller.New(db, config, jwtGetter, emailer, hibp.NewClient())
 	if err != nil {
 		return nil, fmt.Errorf("failed to create controller: %w", err)
 	}
@@ -380,6 +419,10 @@ func getGoServer(cCtx *cli.Context, db *sql.Queries, logger *slog.Logger) (*http
 		return nil, fmt.Errorf("failed to create nodejs handler: %w", err)
 	}
 	router.NoRoute(nodejsHandler)
+
+	if cCtx.Bool(flagEnableChangeEnv) {
+		router.POST(cCtx.String(flagAPIPrefix)+"/change-env", ctrl.PostChangeEnv(nodejsHandler))
+	}
 
 	server := &http.Server{ //nolint:exhaustruct
 		Addr:              ":" + cCtx.String(flagPort),

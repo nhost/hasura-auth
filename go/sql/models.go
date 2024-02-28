@@ -64,7 +64,7 @@ type AuthUser struct {
 	PasswordHash             pgtype.Text
 	EmailVerified            bool
 	PhoneNumberVerified      bool
-	NewEmail                 interface{}
+	NewEmail                 pgtype.Text
 	OtpMethodLastUsed        pgtype.Text
 	OtpHash                  pgtype.Text
 	OtpHashExpiresAt         pgtype.Timestamptz

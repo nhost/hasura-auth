@@ -9,9 +9,19 @@ import (
 
 func isSensitive(err api.ErrorResponseError) bool {
 	switch err {
-	case api.SignupDisabled, api.EmailAlreadyInUse:
+	case
+		api.EmailAlreadyInUse,
+		api.RoleNotAllowed,
+		api.SignupDisabled:
 		return true
-	case api.InvalidRequest, api.InternalServerError:
+	case
+		api.DefaultRoleMustBeInAllowedRoles,
+		api.InternalServerError,
+		api.InvalidRequest,
+		api.LocaleNotAllowed,
+		api.PasswordTooShort,
+		api.PasswordInHibpDatabase,
+		api.RedirecToNotAllowed:
 		return false
 	}
 	return false
@@ -21,7 +31,7 @@ type ErrorResponse api.ErrorResponse
 
 func (response ErrorResponse) visit(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(response.Code)
+	w.WriteHeader(response.Status)
 	return json.NewEncoder(w).Encode(response) //nolint:wrapcheck
 }
 
@@ -29,9 +39,9 @@ func (response ErrorResponse) VisitPostSignupEmailPasswordResponse(w http.Respon
 	return response.visit(w)
 }
 
-func (ctrl *Controller) sendError(errType api.ErrorResponseError) ErrorResponse {
+func (ctrl *Controller) sendError(errType api.ErrorResponseError) ErrorResponse { //nolint:funlen,cyclop
 	invalidRequest := ErrorResponse{
-		Code:    http.StatusBadRequest,
+		Status:  http.StatusBadRequest,
 		Error:   api.InvalidRequest,
 		Message: "invalid-request",
 	}
@@ -41,19 +51,56 @@ func (ctrl *Controller) sendError(errType api.ErrorResponseError) ErrorResponse 
 	}
 
 	switch errType {
-	case api.SignupDisabled:
+	case api.DefaultRoleMustBeInAllowedRoles:
 		return ErrorResponse{
-			Code:    http.StatusForbidden,
+			Status:  http.StatusBadRequest,
 			Error:   errType,
-			Message: "Signup is disabled",
+			Message: "Default role must be in allowed roles",
 		}
 	case api.EmailAlreadyInUse:
 		return ErrorResponse{
-			Code:    http.StatusConflict,
+			Status:  http.StatusConflict,
 			Error:   errType,
 			Message: "Email already in use",
 		}
-	case api.InvalidRequest, api.InternalServerError:
+	case api.InternalServerError:
+	case api.InvalidRequest:
+	case api.LocaleNotAllowed:
+		return ErrorResponse{
+			Status:  http.StatusBadRequest,
+			Error:   errType,
+			Message: "Locale not allowed",
+		}
+	case api.PasswordInHibpDatabase:
+		return ErrorResponse{
+			Status:  http.StatusBadRequest,
+			Error:   errType,
+			Message: "Password is in HIBP database",
+		}
+	case api.PasswordTooShort:
+		return ErrorResponse{
+			Status:  http.StatusBadRequest,
+			Error:   errType,
+			Message: "Password is too short",
+		}
+	case api.RedirecToNotAllowed:
+		return ErrorResponse{
+			Status:  http.StatusBadRequest,
+			Error:   errType,
+			Message: "The value of \"options.redirectTo\" is not allowed.",
+		}
+	case api.RoleNotAllowed:
+		return ErrorResponse{
+			Status:  http.StatusBadRequest,
+			Error:   errType,
+			Message: "Role not allowed",
+		}
+	case api.SignupDisabled:
+		return ErrorResponse{
+			Status:  http.StatusForbidden,
+			Error:   errType,
+			Message: "Sign up is disabled.",
+		}
 	}
 
 	return invalidRequest

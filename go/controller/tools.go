@@ -34,9 +34,7 @@ func GenLink(serverURL url.URL, typ LinkType, ticket, redirectTo string) (string
 	query := serverURL.Query()
 	query.Add("type", string(typ))
 	query.Add("ticket", ticket)
-	if redirectTo != "" {
-		query.Add("redirectTo", redirectTo)
-	}
+	query.Add("redirectTo", redirectTo)
 	serverURL.RawQuery = query.Encode()
 
 	return serverURL.String(), nil

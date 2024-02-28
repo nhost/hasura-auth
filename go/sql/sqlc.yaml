@@ -15,9 +15,9 @@ sql:
             go_type:
               import: "github.com/google/uuid"
               type: "UUID"
-          - db_type: "email"
-            go_type:
-              type: "string"
           - column: auth.users.email
+            go_type:
+              type: "pgtype.Text"
+          - column: auth.users.new_email
             go_type:
               type: "pgtype.Text"

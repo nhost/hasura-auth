@@ -11,22 +11,28 @@ import (
 
 // Defines values for ErrorResponseError.
 const (
-	EmailAlreadyInUse   ErrorResponseError = "email-already-in-use"
-	InternalServerError ErrorResponseError = "internal-server-error"
-	InvalidRequest      ErrorResponseError = "invalid-request"
-	SignupDisabled      ErrorResponseError = "signup-disabled"
+	DefaultRoleMustBeInAllowedRoles ErrorResponseError = "default-role-must-be-in-allowed-roles"
+	EmailAlreadyInUse               ErrorResponseError = "email-already-in-use"
+	InternalServerError             ErrorResponseError = "internal-server-error"
+	InvalidRequest                  ErrorResponseError = "invalid-request"
+	LocaleNotAllowed                ErrorResponseError = "locale-not-allowed"
+	PasswordInHibpDatabase          ErrorResponseError = "password-in-hibp-database"
+	PasswordTooShort                ErrorResponseError = "password-too-short"
+	RedirecToNotAllowed             ErrorResponseError = "redirecTo-not-allowed"
+	RoleNotAllowed                  ErrorResponseError = "role-not-allowed"
+	SignupDisabled                  ErrorResponseError = "signup-disabled"
 )
 
 // ErrorResponse defines model for ErrorResponse.
 type ErrorResponse struct {
-	// Code HTTP status error code
-	Code int `json:"code"`
-
 	// Error Error code that identifies the application error
 	Error ErrorResponseError `json:"error"`
 
 	// Message Human friendly error message
 	Message string `json:"message"`
+
+	// Status HTTP status error code
+	Status int `json:"status"`
 }
 
 // ErrorResponseError Error code that identifies the application error

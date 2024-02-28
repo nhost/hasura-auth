@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/nhost/hasura-auth/go/api"
 	"github.com/nhost/hasura-auth/go/notifications"
@@ -46,18 +45,17 @@ func (ctrl *Controller) PostSignupEmailPassword( //nolint:ireturn
 	ctx context.Context,
 	req api.PostSignupEmailPasswordRequestObject,
 ) (api.PostSignupEmailPasswordResponseObject, error) {
-	// TODO: middleware?
 	if ctrl.config.DisableSignup {
 		return ctrl.sendError(api.SignupDisabled), nil
 	}
 
-	email := sql.Text(req.Body.Email)
-	_, err := ctrl.db.GetUserByEmail(ctx, email)
-	if err == nil {
-		return ctrl.sendError(api.EmailAlreadyInUse), nil
+	req, err := ctrl.validator.PostSignupEmailPassword(ctx, req)
+	validationError := new(ValidationError)
+	if errors.As(err, &validationError) {
+		return ctrl.sendError(validationError.ErrorRespnseError), nil
 	}
-	if !errors.Is(err, pgx.ErrNoRows) {
-		return nil, fmt.Errorf("error getting user: %w", err)
+	if err != nil {
+		return nil, fmt.Errorf("error validating signup request: %w", err)
 	}
 
 	hashedPassword, err := hashPassword(req.Body.Password)
@@ -65,26 +63,21 @@ func (ctrl *Controller) PostSignupEmailPassword( //nolint:ireturn
 		return nil, fmt.Errorf("error hashing password: %w", err)
 	}
 
-	options, err := ctrl.validator.SignUpOptions(req.Body.Options, string(req.Body.Email))
-	if err != nil {
-		return nil, fmt.Errorf("error getting signup options: %w", err)
-	}
-
-	metadata, err := json.Marshal(options.Metadata)
+	metadata, err := json.Marshal(req.Body.Options.Metadata)
 	if err != nil {
 		return nil, fmt.Errorf("error marshaling metadata: %w", err)
 	}
 
-	gravatarURL := ctrl.gravatarURL(email.String)
+	gravatarURL := ctrl.gravatarURL(string(req.Body.Email))
 
 	if ctrl.config.RequireEmailVerification {
 		return ctrl.postSignupEmailPasswordWithEmailVerification(
-			ctx, email, hashedPassword, gravatarURL, options, metadata,
+			ctx, sql.Text(req.Body.Email), hashedPassword, gravatarURL, req.Body.Options, metadata,
 		)
 	}
 
 	return ctrl.postSignupEmailPasswordWithoutEmailVerification(
-		ctx, email, hashedPassword, gravatarURL, options, metadata,
+		ctx, sql.Text(req.Body.Email), hashedPassword, gravatarURL, req.Body.Options, metadata,
 	)
 }
 
@@ -152,31 +145,32 @@ func (ctrl *Controller) postSignupEmailPasswordWithoutEmailVerification( //nolin
 	metadata []byte,
 ) (api.PostSignupEmailPasswordResponseObject, error) {
 	refreshToken := uuid.New()
+	expiresAt := time.Now().Add(time.Duration(ctrl.config.RefreshTokenExpiresIn) * time.Second)
 	user, err := ctrl.db.InsertUserWithRefreshToken(
 		ctx, sql.InsertUserWithRefreshTokenParams{
-			Disabled:         ctrl.config.DisableNewUsers,
-			DisplayName:      deptr(options.DisplayName),
-			AvatarUrl:        gravatarURL,
-			Email:            email,
-			PasswordHash:     sql.Text(hashedPassword),
-			Ticket:           sql.Text("verifyEmail:" + uuid.NewString()),
-			TicketExpiresAt:  sql.TimestampTz(time.Now().Add(30 * 24 * time.Hour)),
-			EmailVerified:    false,
-			Locale:           deptr(options.Locale),
-			DefaultRole:      deptr(options.DefaultRole),
-			Metadata:         metadata,
-			Roles:            deptr(options.AllowedRoles),
-			RefreshTokenHash: sql.Text(hashRefreshToken(refreshToken[:])),
-			RefreshTokenExpiresAt: sql.TimestampTz(time.Now().Add(
-				time.Duration(ctrl.config.RefreshTokenExpiresIn) * time.Second),
-			),
+			Disabled:              ctrl.config.DisableNewUsers,
+			DisplayName:           deptr(options.DisplayName),
+			AvatarUrl:             gravatarURL,
+			Email:                 email,
+			PasswordHash:          sql.Text(hashedPassword),
+			Ticket:                sql.Text("verifyEmail:" + uuid.NewString()),
+			TicketExpiresAt:       sql.TimestampTz(time.Now().Add(30 * 24 * time.Hour)),
+			EmailVerified:         false,
+			Locale:                deptr(options.Locale),
+			DefaultRole:           deptr(options.DefaultRole),
+			Metadata:              metadata,
+			Roles:                 deptr(options.AllowedRoles),
+			RefreshTokenHash:      sql.Text(hashRefreshToken(refreshToken[:])),
+			RefreshTokenExpiresAt: sql.TimestampTz(expiresAt),
 		},
 	)
 	if err != nil {
 		return nil, fmt.Errorf("error inserting user: %w", err)
 	}
 
-	accessToken, expiresIn, err := ctrl.jwtGetter(user.UserID)
+	accessToken, expiresIn, err := ctrl.jwtGetter.GetToken(
+		ctx, user.UserID, deptr(options.AllowedRoles), *options.DefaultRole,
+	)
 	if err != nil {
 		return nil, fmt.Errorf("error getting jwt: %w", err)
 	}

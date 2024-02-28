@@ -1,6 +1,7 @@
 package controller_test
 
 import (
+	"context"
 	"crypto"
 	"testing"
 	"time"
@@ -10,6 +11,8 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/google/uuid"
 	"github.com/nhost/hasura-auth/go/controller"
+	"github.com/nhost/hasura-auth/go/controller/mock"
+	"go.uber.org/mock/gomock"
 )
 
 //nolint:lll,gochecknoglobals
@@ -28,14 +31,19 @@ func TestGetJWTFunc(t *testing.T) {
 		name          string
 		key           []byte
 		userID        uuid.UUID
+		allowedRoles  []string
+		defaultRole   string
 		expiresIn     time.Duration
 		expectedToken *jwt.Token
+		customClaimer func(ctrl *gomock.Controller) *mock.MockCustomClaimer
 	}{
 		{
-			name:      "with valid key",
-			key:       jwtSecret,
-			userID:    userID,
-			expiresIn: time.Hour,
+			name:         "with valid key",
+			key:          jwtSecret,
+			userID:       userID,
+			allowedRoles: []string{"admin", "user", "project_manager", "anonymous"},
+			defaultRole:  "user",
+			expiresIn:    time.Hour,
 			expectedToken: &jwt.Token{
 				Raw:    "ignored",
 				Method: &jwt.SigningMethodHMAC{Name: "HS256", Hash: crypto.SHA256},
@@ -60,13 +68,16 @@ func TestGetJWTFunc(t *testing.T) {
 				Signature: []uint8{},
 				Valid:     true,
 			},
+			customClaimer: nil,
 		},
 
 		{
-			name:      "with valid key with issuer",
-			key:       jwtSecretWithIssuer,
-			userID:    userID,
-			expiresIn: time.Hour,
+			name:         "with valid key with issuer",
+			key:          jwtSecretWithIssuer,
+			userID:       userID,
+			allowedRoles: []string{"admin", "user", "project_manager", "anonymous"},
+			defaultRole:  "user",
+			expiresIn:    time.Hour,
 			expectedToken: &jwt.Token{
 				Raw:    "ignored",
 				Method: &jwt.SigningMethodHMAC{Name: "HS256", Hash: crypto.SHA256},
@@ -91,13 +102,16 @@ func TestGetJWTFunc(t *testing.T) {
 				Signature: []uint8{},
 				Valid:     true,
 			},
+			customClaimer: nil,
 		},
 
 		{
-			name:      "with valid key with claims namespace",
-			key:       jwtSecretWithClaimsNamespace,
-			userID:    userID,
-			expiresIn: time.Hour,
+			name:         "with valid key with claims namespace",
+			key:          jwtSecretWithClaimsNamespace,
+			userID:       userID,
+			allowedRoles: []string{"admin", "user", "project_manager", "anonymous"},
+			defaultRole:  "user",
+			expiresIn:    time.Hour,
 			expectedToken: &jwt.Token{
 				Raw:    "ignored",
 				Method: &jwt.SigningMethodHMAC{Name: "HS256", Hash: crypto.SHA256},
@@ -122,6 +136,56 @@ func TestGetJWTFunc(t *testing.T) {
 				Signature: []uint8{},
 				Valid:     true,
 			},
+			customClaimer: nil,
+		},
+
+		{
+			name:         "with custom claims",
+			key:          jwtSecret,
+			userID:       userID,
+			allowedRoles: []string{"admin", "user", "project_manager", "anonymous"},
+			defaultRole:  "user",
+			expiresIn:    time.Hour,
+			expectedToken: &jwt.Token{
+				Raw:    "ignored",
+				Method: &jwt.SigningMethodHMAC{Name: "HS256", Hash: crypto.SHA256},
+				Header: map[string]interface{}{"alg": string("HS256"), "typ": string("JWT")},
+				Claims: jwt.MapClaims{
+					"exp": 1.708103735e+09,
+					"https://hasura.io/jwt/claims": map[string]interface{}{
+						"x-hasura-allowed-roles": []interface{}{
+							"admin",
+							"user",
+							"project_manager",
+							"anonymous",
+						},
+						"x-hasura-default-role":     "user",
+						"x-hasura-user-id":          "585e21fc-3664-4d03-8539-69945342a4f4",
+						"x-hasura-user-isAnonymous": "false",
+						"x-hasura-custom-claim":     "custom-claim-value",
+						"x-hasura-custom-claim-2":   "custom-claim-value-2",
+					},
+					"iat": 1.708100135e+09,
+					"iss": "hasura-auth",
+					"sub": "585e21fc-3664-4d03-8539-69945342a4f4",
+				},
+				Signature: []uint8{},
+				Valid:     true,
+			},
+			customClaimer: func(ctrl *gomock.Controller) *mock.MockCustomClaimer {
+				mockCustomClaimer := mock.NewMockCustomClaimer(ctrl)
+				mockCustomClaimer.EXPECT().GetClaims(
+					gomock.Any(),
+					"585e21fc-3664-4d03-8539-69945342a4f4",
+				).Return(
+					map[string]any{
+						"x-hasura-custom-claim":   "custom-claim-value",
+						"x-hasura-custom-claim-2": "custom-claim-value-2",
+						"x-hasura-user-id":        "custom-claims-that-shadow-default-claims-are-ignored",
+					}, nil,
+				)
+				return mockCustomClaimer
+			},
 		},
 	}
 
@@ -131,23 +195,25 @@ func TestGetJWTFunc(t *testing.T) {
 			t.Parallel()
 			tc := tc
 
-			getterFn, err := controller.NewJWTGetter(tc.key, tc.expiresIn)
+			ctrl := gomock.NewController(t)
+			var customClaimer controller.CustomClaimer
+			if tc.customClaimer != nil {
+				customClaimer = tc.customClaimer(ctrl)
+			}
+			jwtGetter, err := controller.NewJWTGetter(tc.key, tc.expiresIn, customClaimer)
 			if err != nil {
 				t.Fatalf("GetJWTFunc() err = %v; want nil", err)
 			}
 
-			accessToken, _, err := getterFn(tc.userID)
+			accessToken, _, err := jwtGetter.GetToken(
+				context.Background(), tc.userID, tc.allowedRoles, tc.defaultRole,
+			)
 			if err != nil {
 				t.Fatalf("fn() err = %v; want nil", err)
 			}
 			t.Logf("token = %v", accessToken)
 
-			validatorFn, err := controller.JWTValidateFn(tc.key)
-			if err != nil {
-				t.Fatalf("JWTValidatorFn() err = %v; want nil", err)
-			}
-
-			decodedToken, err := validatorFn(accessToken)
+			decodedToken, err := jwtGetter.Validate(accessToken)
 			if err != nil {
 				t.Fatalf("fn() err = %v; want nil", err)
 			}
