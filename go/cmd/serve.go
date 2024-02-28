@@ -13,7 +13,6 @@ import (
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/gin-gonic/gin"
-	"github.com/jackc/pgx/v5"
 	"github.com/nhost/hasura-auth/go/api"
 	"github.com/nhost/hasura-auth/go/controller"
 	"github.com/nhost/hasura-auth/go/hibp"
@@ -31,7 +30,6 @@ const (
 	flagTrustedProxies                   = "trusted-proxies"
 	flagPostgresConnection               = "postgres"
 	flagNodeServerPath                   = "node-server-path"
-	flagDatabseURL                       = "database-url"
 	flagDisableSignup                    = "disable-signup"
 	flagConcealErrors                    = "conceal-errors"
 	flagDefaultAllowedRoles              = "default-allowed-roles"
@@ -449,13 +447,13 @@ func serve(cCtx *cli.Context) error {
 		}
 	}()
 
-	conn, err := pgx.Connect(ctx, cCtx.String(flagPostgresConnection))
+	pool, err := getDBPool(cCtx)
 	if err != nil {
-		return fmt.Errorf("failed to connect to postgres: %w", err)
+		return fmt.Errorf("failed to create database pool: %w", err)
 	}
-	defer conn.Close(ctx)
+	defer pool.Close()
 
-	server, err := getGoServer(cCtx, sql.New(conn), logger)
+	server, err := getGoServer(cCtx, sql.New(pool), logger)
 	if err != nil {
 		return fmt.Errorf("failed to create server: %w", err)
 	}

@@ -19,9 +19,14 @@ func ptr[T any](x T) *T { return &x }
 func getConfig() *controller.Config {
 	clientURL, _ := url.Parse("http://localhost:3000")
 	serverURL, _ := url.Parse("https://local.auth.nhost.run")
+
+	//nolint:lll
 	return &controller.Config{
+		HasuraGraphqlURL:         "http://localhost:8080/v1/graphql",
+		HasuraAdminSecret:        "nhost-admin-secret",
 		AllowedRedirectURLs:      []*url.URL{},
 		ClientURL:                clientURL,
+		CustomClaims:             "",
 		ConcealErrors:            false,
 		DisableSignup:            false,
 		DisableNewUsers:          false,
@@ -36,7 +41,7 @@ func getConfig() *controller.Config {
 		PasswordHIBPEnabled:      false,
 		RefreshTokenExpiresIn:    900,
 		AccessTokenExpiresIn:     259200,
-		JWTSecret:                `{"type":"HS256", "key":"5152fa850c02dc222631cca898ed1485821a70912a6e3649c49076912daa3b62182ba013315915d64f40cddfbb8b58eb5bd11ba225336a6af45bbae07ca873f3","issuer":"hasura-auth"}`, //nolint:lll
+		JWTSecret:                `{"type":"HS256", "key":"5152fa850c02dc222631cca898ed1485821a70912a6e3649c49076912daa3b62182ba013315915d64f40cddfbb8b58eb5bd11ba225336a6af45bbae07ca873f3","issuer":"hasura-auth"}`,
 		RequireEmailVerification: false,
 		ServerURL:                serverURL,
 	}

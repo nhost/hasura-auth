@@ -101,7 +101,6 @@ func (validator *Validator) postSignupEmailPasswordPassword(
 		return &ValidationError{api.PasswordTooShort}
 	}
 
-	fmt.Println("validator.cfg.PasswordHIBPEnabled", validator.cfg.PasswordHIBPEnabled)
 	if validator.cfg.PasswordHIBPEnabled {
 		if pwned, err := validator.hibp.IsPasswordPwned(ctx, password); err != nil {
 			return fmt.Errorf("error checking password with HIBP: %w", err)
