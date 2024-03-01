@@ -2,8 +2,10 @@
 package controller
 
 import (
+	"context"
 	"fmt"
 
+	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/nhost/hasura-auth/go/notifications"
 	"github.com/nhost/hasura-auth/go/sql"
 )
@@ -12,8 +14,16 @@ type Emailer interface {
 	SendEmailVerify(to string, locale string, data notifications.EmailVerifyData) error
 }
 
+type DBClient interface {
+	GetUserByEmail(ctx context.Context, email pgtype.Text) (sql.AuthUser, error)
+	InsertUser(ctx context.Context, arg sql.InsertUserParams) (sql.InsertUserRow, error)
+	InsertUserWithRefreshToken(
+		ctx context.Context, arg sql.InsertUserWithRefreshTokenParams,
+	) (sql.InsertUserWithRefreshTokenRow, error)
+}
+
 type Controller struct {
-	db          *sql.Queries
+	db          DBClient
 	validator   *Validator
 	config      Config
 	gravatarURL func(string) string
@@ -22,7 +32,7 @@ type Controller struct {
 }
 
 func New(
-	db *sql.Queries,
+	db DBClient,
 	config Config,
 	jwtGetter *JWTGetter,
 	emailer Emailer,

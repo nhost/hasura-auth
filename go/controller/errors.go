@@ -39,7 +39,9 @@ func (response ErrorResponse) VisitPostSignupEmailPasswordResponse(w http.Respon
 	return response.visit(w)
 }
 
-func (ctrl *Controller) sendError(errType api.ErrorResponseError) ErrorResponse { //nolint:funlen,cyclop
+func (ctrl *Controller) sendError( //nolint:funlen,cyclop
+	errType api.ErrorResponseError,
+) ErrorResponse {
 	invalidRequest := ErrorResponse{
 		Status:  http.StatusBadRequest,
 		Error:   api.InvalidRequest,

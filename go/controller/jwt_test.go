@@ -3,6 +3,7 @@ package controller_test
 import (
 	"context"
 	"crypto"
+	"log/slog"
 	"testing"
 	"time"
 
@@ -17,9 +18,15 @@ import (
 
 //nolint:lll,gochecknoglobals
 var (
-	jwtSecret                    = []byte(`{"type":"HS256", "key":"5152fa850c02dc222631cca898ed1485821a70912a6e3649c49076912daa3b62182ba013315915d64f40cddfbb8b58eb5bd11ba225336a6af45bbae07ca873f3"}`)
-	jwtSecretWithIssuer          = []byte(`{"type":"HS256", "key":"5152fa850c02dc222631cca898ed1485821a70912a6e3649c49076912daa3b62182ba013315915d64f40cddfbb8b58eb5bd11ba225336a6af45bbae07ca873f3","issuer":"some-issuer"}`)
-	jwtSecretWithClaimsNamespace = []byte(`{"type":"HS256", "key":"5152fa850c02dc222631cca898ed1485821a70912a6e3649c49076912daa3b62182ba013315915d64f40cddfbb8b58eb5bd11ba225336a6af45bbae07ca873f3","claims_namespace":"some/namespace"}`)
+	jwtSecret = []byte(
+		`{"type":"HS256", "key":"5152fa850c02dc222631cca898ed1485821a70912a6e3649c49076912daa3b62182ba013315915d64f40cddfbb8b58eb5bd11ba225336a6af45bbae07ca873f3"}`,
+	)
+	jwtSecretWithIssuer = []byte(
+		`{"type":"HS256", "key":"5152fa850c02dc222631cca898ed1485821a70912a6e3649c49076912daa3b62182ba013315915d64f40cddfbb8b58eb5bd11ba225336a6af45bbae07ca873f3","issuer":"some-issuer"}`,
+	)
+	jwtSecretWithClaimsNamespace = []byte(
+		`{"type":"HS256", "key":"5152fa850c02dc222631cca898ed1485821a70912a6e3649c49076912daa3b62182ba013315915d64f40cddfbb8b58eb5bd11ba225336a6af45bbae07ca873f3","claims_namespace":"some/namespace"}`,
+	)
 )
 
 func TestGetJWTFunc(t *testing.T) {
@@ -179,9 +186,9 @@ func TestGetJWTFunc(t *testing.T) {
 					"585e21fc-3664-4d03-8539-69945342a4f4",
 				).Return(
 					map[string]any{
-						"x-hasura-custom-claim":   "custom-claim-value",
-						"x-hasura-custom-claim-2": "custom-claim-value-2",
-						"x-hasura-user-id":        "custom-claims-that-shadow-default-claims-are-ignored",
+						"custom-claim":   "custom-claim-value",
+						"custom-claim-2": "custom-claim-value-2",
+						"user-id":        "custom-claims-that-shadow-default-claims-are-ignored",
 					}, nil,
 				)
 				return mockCustomClaimer
@@ -206,7 +213,7 @@ func TestGetJWTFunc(t *testing.T) {
 			}
 
 			accessToken, _, err := jwtGetter.GetToken(
-				context.Background(), tc.userID, tc.allowedRoles, tc.defaultRole,
+				context.Background(), tc.userID, tc.allowedRoles, tc.defaultRole, slog.Default(),
 			)
 			if err != nil {
 				t.Fatalf("fn() err = %v; want nil", err)

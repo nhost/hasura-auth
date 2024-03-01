@@ -82,7 +82,10 @@ func (validator *Validator) PostSignupEmailPassword(
 	return req, nil
 }
 
-func (validator *Validator) postSignupEmailPasswordEmail(ctx context.Context, email types.Email) error {
+func (validator *Validator) postSignupEmailPasswordEmail(
+	ctx context.Context,
+	email types.Email,
+) error {
 	_, err := validator.db.GetUserByEmail(ctx, sql.Text(email))
 	if err == nil {
 		return &ValidationError{api.EmailAlreadyInUse}
@@ -166,7 +169,9 @@ type urlMatcher struct {
 
 func newURLMatcher(u *url.URL) (urlMatcher, error) {
 	if u.Scheme == "" {
-		return urlMatcher{}, fmt.Errorf("scheme is required for allowed redirect URL") //nolint:goerr113
+		return urlMatcher{}, fmt.Errorf( //nolint:goerr113
+			"scheme is required for allowed redirect URL",
+		)
 	}
 
 	port := u.Port()

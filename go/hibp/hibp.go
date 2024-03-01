@@ -34,7 +34,11 @@ func sha1Hash(password string) string {
 	return strings.ToUpper(fmt.Sprintf("%x", sha1.Sum(nil)))
 }
 
-func (c *Client) getRangeResponse(ctx context.Context, rnge string, retry int) (*http.Response, error) {
+func (c *Client) getRangeResponse(
+	ctx context.Context,
+	rnge string,
+	retry int,
+) (*http.Response, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, rangeURL+rnge, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %w", err)

@@ -16,7 +16,11 @@ type Templates struct {
 	logger        *slog.Logger
 }
 
-func NewTemplatesFromFilesystem(basePath string, defaultLocale string, logger *slog.Logger) (*Templates, error) {
+func NewTemplatesFromFilesystem(
+	basePath string,
+	defaultLocale string,
+	logger *slog.Logger,
+) (*Templates, error) {
 	templates := make(map[string]*fasttemplate.Template)
 	if err := filepath.Walk(basePath, func(path string, info os.FileInfo, err error) error {
 		if err != nil {

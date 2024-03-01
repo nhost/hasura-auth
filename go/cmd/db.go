@@ -8,17 +8,35 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
+const (
+	poolMinMaxConns          = 4
+	poolMinMinConns          = 1
+	poolMinMaxConnLifetime   = time.Hour
+	poolMinMaxConnIdleTime   = time.Minute * 30
+	poolMinHealthCheckPeriod = time.Minute
+)
+
 func getDBPool(cCtx *cli.Context) (*pgxpool.Pool, error) {
 	config, err := pgxpool.ParseConfig(cCtx.String(flagPostgresConnection))
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse database config: %w", err)
 	}
 
-	config.MaxConns = 4
-	config.MinConns = 1
-	config.MaxConnLifetime = time.Hour
-	config.MaxConnIdleTime = time.Minute * 30 //nolint:gomnd
-	config.HealthCheckPeriod = time.Minute
+	if config.MaxConns < poolMinMaxConns { //
+		config.MaxConns = poolMinMaxConns
+	}
+	if config.MinConns < poolMinMinConns {
+		config.MinConns = poolMinMinConns
+	}
+	if config.MaxConnLifetime < poolMinMaxConnLifetime {
+		config.MaxConnLifetime = poolMinMaxConnLifetime
+	}
+	if config.MaxConnIdleTime < poolMinMaxConnIdleTime {
+		config.MaxConnIdleTime = poolMinMaxConnIdleTime
+	}
+	if config.HealthCheckPeriod < poolMinHealthCheckPeriod {
+		config.HealthCheckPeriod = poolMinHealthCheckPeriod
+	}
 
 	pool, err := pgxpool.NewWithConfig(cCtx.Context, config)
 	if err != nil {

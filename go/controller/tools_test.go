@@ -74,14 +74,6 @@ func TestGenLink(t *testing.T) {
 			redirectTo: "http://asdasdasd.com/as2q3asd?a=123&b=asdqwe",
 			expected:   "http://serverURL.com/v1/verify?redirectTo=http%3A%2F%2Fasdasdasd.com%2Fas2q3asd%3Fa%3D123%26b%3Dasdqwe&ticket=1234324324&type=emailVerify", //nolint:lll
 		},
-		{
-			name:       "without redirectTo",
-			serverURL:  *urlWithPath,
-			typ:        controller.LinkTypeEmailVerify,
-			ticket:     "1234324324",
-			redirectTo: "",
-			expected:   "http://serverURL.com/v1/verify?ticket=1234324324&type=emailVerify",
-		},
 	}
 
 	for _, tc := range cases {

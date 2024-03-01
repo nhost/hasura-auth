@@ -133,7 +133,10 @@ func NewCustomClaims(
 		jsonPaths[name] = j
 	}
 
-	query := fmt.Sprintf("query GetClaims($id: uuid!) { user(id:$id) %s }", claimsMapToGraphql(claims))
+	query := fmt.Sprintf(
+		"query GetClaims($id: uuid!) { user(id:$id) %s }",
+		claimsMapToGraphql(claims),
+	)
 
 	return &CustomClaims{
 		graphqlQuery:       query,
@@ -171,7 +174,7 @@ func (c *CustomClaims) ExtractClaims(data any) (map[string]any, error) {
 	return claims, nil
 }
 
-func (c *CustomClaims) GetClaims(ctx context.Context, userID string) (map[string]any, error) {
+func (c *CustomClaims) makeRequest(ctx context.Context, userID string) (map[string]any, error) {
 	buf := new(bytes.Buffer)
 	if err := json.NewEncoder(buf).Encode(map[string]interface{}{
 		"query": c.graphqlQuery,
@@ -211,12 +214,25 @@ func (c *CustomClaims) GetClaims(ctx context.Context, userID string) (map[string
 
 	if resp.StatusCode != http.StatusOK {
 		body, _ := io.ReadAll(resp.Body)
-		return nil, fmt.Errorf("unexpected status code (%d): %s", resp.StatusCode, body) //nolint:goerr113
+		return nil, fmt.Errorf( //nolint:goerr113
+			"unexpected status code (%d): %s",
+			resp.StatusCode,
+			body,
+		)
 	}
 
 	var data map[string]any
 	if err := json.NewDecoder(resp.Body).Decode(&data); err != nil {
 		return nil, fmt.Errorf("failed to decode response: %w", err)
+	}
+
+	return data, nil
+}
+
+func (c *CustomClaims) GetClaims(ctx context.Context, userID string) (map[string]any, error) {
+	data, err := c.makeRequest(ctx, userID)
+	if err != nil {
+		return nil, err
 	}
 
 	data, ok := data["data"].(map[string]any)

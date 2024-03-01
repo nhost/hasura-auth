@@ -363,7 +363,9 @@ func getNodeServer(cCtx *cli.Context) *exec.Cmd {
 	return cmd
 }
 
-func getGoServer(cCtx *cli.Context, db *sql.Queries, logger *slog.Logger) (*http.Server, error) {
+func getGoServer( //nolint:funlen
+	cCtx *cli.Context, db *sql.Queries, logger *slog.Logger,
+) (*http.Server, error) {
 	router := gin.New()
 
 	loader := openapi3.NewLoader()

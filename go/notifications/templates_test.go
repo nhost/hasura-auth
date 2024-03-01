@@ -69,6 +69,8 @@ func TestGetRawTemplates(t *testing.T) {
 				"fr/signin-passwordless-sms/body.txt",
 				"fr/signin-passwordless/body.html",
 				"fr/signin-passwordless/subject.txt",
+				"test/email-verify/body.html",
+				"test/email-verify/subject.txt",
 			},
 		},
 		{

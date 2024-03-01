@@ -6,11 +6,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log/slog"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/nhost/hasura-auth/go/api"
+	"github.com/nhost/hasura-auth/go/middleware"
 	"github.com/nhost/hasura-auth/go/notifications"
 	"github.com/nhost/hasura-auth/go/sql"
 	openapi_types "github.com/oapi-codegen/runtime/types"
@@ -49,6 +51,8 @@ func (ctrl *Controller) PostSignupEmailPassword( //nolint:ireturn
 		return ctrl.sendError(api.SignupDisabled), nil
 	}
 
+	logger := middleware.LoggerFromContext(ctx)
+
 	req, err := ctrl.validator.PostSignupEmailPassword(ctx, req)
 	validationError := new(ValidationError)
 	if errors.As(err, &validationError) {
@@ -77,7 +81,13 @@ func (ctrl *Controller) PostSignupEmailPassword( //nolint:ireturn
 	}
 
 	return ctrl.postSignupEmailPasswordWithoutEmailVerification(
-		ctx, sql.Text(req.Body.Email), hashedPassword, gravatarURL, req.Body.Options, metadata,
+		ctx,
+		sql.Text(req.Body.Email),
+		hashedPassword,
+		gravatarURL,
+		req.Body.Options,
+		metadata,
+		logger,
 	)
 }
 
@@ -110,7 +120,12 @@ func (ctrl *Controller) postSignupEmailPasswordWithEmailVerification( //nolint:i
 		return nil, fmt.Errorf("error inserting user: %w", err)
 	}
 
-	link, err := GenLink(*ctrl.config.ServerURL, LinkTypeEmailVerify, ticket, deptr(options.RedirectTo))
+	link, err := GenLink(
+		*ctrl.config.ServerURL,
+		LinkTypeEmailVerify,
+		ticket,
+		deptr(options.RedirectTo),
+	)
 	if err != nil {
 		return nil, fmt.Errorf("problem generating email verification link: %w", err)
 	}
@@ -136,13 +151,14 @@ func (ctrl *Controller) postSignupEmailPasswordWithEmailVerification( //nolint:i
 	}, nil
 }
 
-func (ctrl *Controller) postSignupEmailPasswordWithoutEmailVerification( //nolint:ireturn
+func (ctrl *Controller) postSignupEmailPasswordWithoutEmailVerification( //nolint:ireturn,funlen
 	ctx context.Context,
 	email pgtype.Text,
 	hashedPassword string,
 	gravatarURL string,
 	options *api.SignUpOptions,
 	metadata []byte,
+	logger *slog.Logger,
 ) (api.PostSignupEmailPasswordResponseObject, error) {
 	refreshToken := uuid.New()
 	expiresAt := time.Now().Add(time.Duration(ctrl.config.RefreshTokenExpiresIn) * time.Second)
@@ -169,7 +185,7 @@ func (ctrl *Controller) postSignupEmailPasswordWithoutEmailVerification( //nolin
 	}
 
 	accessToken, expiresIn, err := ctrl.jwtGetter.GetToken(
-		ctx, user.UserID, deptr(options.AllowedRoles), *options.DefaultRole,
+		ctx, user.UserID, deptr(options.AllowedRoles), *options.DefaultRole, logger,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("error getting jwt: %w", err)

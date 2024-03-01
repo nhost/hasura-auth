@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"strings"
 	"time"
 
@@ -72,7 +73,11 @@ func NewJWTGetter(
 }
 
 func (j *JWTGetter) GetToken(
-	ctx context.Context, userID uuid.UUID, allowedRoles []string, defaultRole string,
+	ctx context.Context,
+	userID uuid.UUID,
+	allowedRoles []string,
+	defaultRole string,
+	logger *slog.Logger,
 ) (string, int64, error) {
 	now := time.Now()
 	iat := now.Unix()
@@ -83,7 +88,7 @@ func (j *JWTGetter) GetToken(
 	if j.customClaimer != nil {
 		customClaims, err = j.customClaimer.GetClaims(ctx, userID.String())
 		if err != nil {
-			// TODO log error
+			logger.Error("error getting custom claims", slog.String("error", err.Error()))
 			customClaims = map[string]any{}
 		}
 	}
