@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	"crypto/sha1" //nolint:gosec
+	"encoding/hex"
 	"fmt"
 	"io"
 	"net/http"
@@ -31,7 +32,7 @@ func sha1Hash(password string) string {
 	sha1 := sha1.New() //nolint:gosec
 	sha1.Write([]byte(password))
 
-	return strings.ToUpper(fmt.Sprintf("%x", sha1.Sum(nil)))
+	return strings.ToUpper(hex.EncodeToString(sha1.Sum(nil)))
 }
 
 func (c *Client) getRangeResponse(

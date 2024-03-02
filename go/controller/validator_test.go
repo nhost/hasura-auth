@@ -91,6 +91,7 @@ func TestValidatorPostSignupEmailPassword(t *testing.T) { //nolint:maintidx
 					},
 				},
 			},
+			expectedErr: nil,
 		},
 		{
 			name: "user exists",
@@ -258,6 +259,7 @@ func TestValidatorPostSignupEmailPassword(t *testing.T) { //nolint:maintidx
 					},
 				},
 			},
+			expectedErr: nil,
 		},
 		{
 			name: "default role not in allowed roles",

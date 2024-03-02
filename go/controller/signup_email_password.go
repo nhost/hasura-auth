@@ -3,6 +3,7 @@ package controller
 import (
 	"context"
 	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -29,7 +30,7 @@ func hashPassword(password string) (string, error) {
 
 func hashRefreshToken(token []byte) string {
 	hash := sha256.Sum256(token)
-	return fmt.Sprintf("%x", hash)
+	return hex.EncodeToString(hash[:])
 }
 
 func deptr[T any](x *T) T { //nolint:ireturn

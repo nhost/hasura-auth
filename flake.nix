@@ -55,7 +55,12 @@
             ./go/api/openapi.yaml
             ./go/api/server.cfg.yaml
             ./go/api/types.cfg.yaml
+            ./go/sql/schema.sh
+            ./go/sql/sqlc.yaml
+            ./go/sql/query.sql
+            ./go/sql/auth_schema_dump.sql
             isDirectory
+            (inDirectory "email-templates")
             (inDirectory "vendor")
           ];
         };
@@ -126,6 +131,7 @@
           nhost-cli
           mockgen
           oapi-codegen
+          sqlc
           postgresql_146-client
         ];
 
@@ -184,7 +190,6 @@
           default = nixops-lib.go.devShell {
             buildInputs = with pkgs; [
               go-migrate
-              sqlc
               nodejs
               nodePackages.pnpm
             ] ++ checkDeps ++ buildInputs ++ nativeBuildInputs;

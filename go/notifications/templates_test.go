@@ -72,6 +72,7 @@ func TestGetRawTemplates(t *testing.T) {
 				"test/email-verify/body.html",
 				"test/email-verify/subject.txt",
 			},
+			expectedErr: nil,
 		},
 		{
 			name:              "failure",

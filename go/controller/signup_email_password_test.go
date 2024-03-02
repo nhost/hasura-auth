@@ -222,6 +222,7 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx,gocognit,cycl
 				mock := mock.NewMockHIBPClient(ctrl)
 				return mock
 			},
+			customClaimer: nil,
 			request: api.PostSignupEmailPasswordRequestObject{
 				Body: &api.PostSignupEmailPasswordJSONRequestBody{
 					Email:    "jane@acme.com",
@@ -318,6 +319,7 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx,gocognit,cycl
 				mock := mock.NewMockHIBPClient(ctrl)
 				return mock
 			},
+			customClaimer: nil,
 			request: api.PostSignupEmailPasswordRequestObject{
 				Body: &api.PostSignupEmailPasswordJSONRequestBody{
 					Email:    "jane@acme.com",
@@ -401,6 +403,7 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx,gocognit,cycl
 				mock := mock.NewMockHIBPClient(ctrl)
 				return mock
 			},
+			customClaimer: nil,
 			request: api.PostSignupEmailPasswordRequestObject{
 				Body: &api.PostSignupEmailPasswordJSONRequestBody{
 					Email:    "jane@acme.com",
@@ -461,6 +464,7 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx,gocognit,cycl
 				mock := mock.NewMockHIBPClient(ctrl)
 				return mock
 			},
+			customClaimer: nil,
 			request: api.PostSignupEmailPasswordRequestObject{
 				Body: &api.PostSignupEmailPasswordJSONRequestBody{
 					Email:    "jane@acme.com",
@@ -520,6 +524,7 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx,gocognit,cycl
 				mock := mock.NewMockHIBPClient(ctrl)
 				return mock
 			},
+			customClaimer: nil,
 			request: api.PostSignupEmailPasswordRequestObject{
 				Body: &api.PostSignupEmailPasswordJSONRequestBody{
 					Email:    "jane@acme.com",
@@ -553,6 +558,7 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx,gocognit,cycl
 				mock := mock.NewMockHIBPClient(ctrl)
 				return mock
 			},
+			customClaimer: nil,
 			request: api.PostSignupEmailPasswordRequestObject{
 				Body: &api.PostSignupEmailPasswordJSONRequestBody{
 					Email:    "jane@acme.com",
@@ -592,6 +598,7 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx,gocognit,cycl
 				mock := mock.NewMockHIBPClient(ctrl)
 				return mock
 			},
+			customClaimer: nil,
 			request: api.PostSignupEmailPasswordRequestObject{
 				Body: &api.PostSignupEmailPasswordJSONRequestBody{
 					Email:    "jane@acme.com",
@@ -631,6 +638,7 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx,gocognit,cycl
 				mock := mock.NewMockHIBPClient(ctrl)
 				return mock
 			},
+			customClaimer: nil,
 			request: api.PostSignupEmailPasswordRequestObject{
 				Body: &api.PostSignupEmailPasswordJSONRequestBody{
 					Email:    "jane@acme.com",
@@ -676,6 +684,7 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx,gocognit,cycl
 
 				return mock
 			},
+			customClaimer: nil,
 			request: api.PostSignupEmailPasswordRequestObject{
 				Body: &api.PostSignupEmailPasswordJSONRequestBody{
 					Email:    "jane@acme.com",
@@ -744,6 +753,7 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx,gocognit,cycl
 
 				return mock
 			},
+			customClaimer: nil,
 			request: api.PostSignupEmailPasswordRequestObject{
 				Body: &api.PostSignupEmailPasswordJSONRequestBody{
 					Email:    "jane@acme.com",
@@ -817,6 +827,7 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx,gocognit,cycl
 				mock := mock.NewMockHIBPClient(ctrl)
 				return mock
 			},
+			customClaimer: nil,
 			request: api.PostSignupEmailPasswordRequestObject{
 				Body: &api.PostSignupEmailPasswordJSONRequestBody{
 					Email:    "jane@acme.com",
@@ -886,6 +897,7 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx,gocognit,cycl
 				mock := mock.NewMockHIBPClient(ctrl)
 				return mock
 			},
+			customClaimer: nil,
 			request: api.PostSignupEmailPasswordRequestObject{
 				Body: &api.PostSignupEmailPasswordJSONRequestBody{
 					Email:    "jane@acme.com",
@@ -1117,6 +1129,7 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx,gocognit,cycl
 				mock := mock.NewMockHIBPClient(ctrl)
 				return mock
 			},
+			customClaimer: nil,
 			request: api.PostSignupEmailPasswordRequestObject{
 				Body: &api.PostSignupEmailPasswordJSONRequestBody{
 					Email:    "jane@acme.com",
