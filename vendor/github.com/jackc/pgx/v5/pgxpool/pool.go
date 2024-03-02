@@ -85,6 +85,7 @@ type Pool struct {
 	afterConnect          func(context.Context, *pgx.Conn) error
 	beforeAcquire         func(context.Context, *pgx.Conn) bool
 	afterRelease          func(*pgx.Conn) bool
+	beforeClose           func(*pgx.Conn)
 	minConns              int32
 	maxConns              int32
 	maxConnLifetime       time.Duration
@@ -98,8 +99,8 @@ type Pool struct {
 	closeChan chan struct{}
 }
 
-// Config is the configuration struct for creating a pool. It must be created by ParseConfig and then it can be
-// modified. A manually initialized ConnConfig will cause ConnectConfig to panic.
+// Config is the configuration struct for creating a pool. It must be created by [ParseConfig] and then it can be
+// modified.
 type Config struct {
 	ConnConfig *pgx.ConnConfig
 
@@ -111,13 +112,16 @@ type Config struct {
 	AfterConnect func(context.Context, *pgx.Conn) error
 
 	// BeforeAcquire is called before a connection is acquired from the pool. It must return true to allow the
-	// acquision or false to indicate that the connection should be destroyed and a different connection should be
+	// acquisition or false to indicate that the connection should be destroyed and a different connection should be
 	// acquired.
 	BeforeAcquire func(context.Context, *pgx.Conn) bool
 
 	// AfterRelease is called after a connection is released, but before it is returned to the pool. It must return true to
 	// return the connection to the pool or false to destroy the connection.
 	AfterRelease func(*pgx.Conn) bool
+
+	// BeforeClose is called right before a connection is closed and removed from the pool.
+	BeforeClose func(*pgx.Conn)
 
 	// MaxConnLifetime is the duration since creation after which a connection will be automatically closed.
 	MaxConnLifetime time.Duration
@@ -156,7 +160,7 @@ func (c *Config) Copy() *Config {
 // ConnString returns the connection string as parsed by pgxpool.ParseConfig into pgxpool.Config.
 func (c *Config) ConnString() string { return c.ConnConfig.ConnString() }
 
-// New creates a new Pool. See ParseConfig for information on connString format.
+// New creates a new Pool. See [ParseConfig] for information on connString format.
 func New(ctx context.Context, connString string) (*Pool, error) {
 	config, err := ParseConfig(connString)
 	if err != nil {
@@ -166,7 +170,7 @@ func New(ctx context.Context, connString string) (*Pool, error) {
 	return NewWithConfig(ctx, config)
 }
 
-// NewWithConfig creates a new Pool. config must have been created by ParseConfig.
+// NewWithConfig creates a new Pool. config must have been created by [ParseConfig].
 func NewWithConfig(ctx context.Context, config *Config) (*Pool, error) {
 	// Default values are set in ParseConfig. Enforce initial creation by ParseConfig rather than setting defaults from
 	// zero values.
@@ -180,6 +184,7 @@ func NewWithConfig(ctx context.Context, config *Config) (*Pool, error) {
 		afterConnect:          config.AfterConnect,
 		beforeAcquire:         config.BeforeAcquire,
 		afterRelease:          config.AfterRelease,
+		beforeClose:           config.BeforeClose,
 		minConns:              config.MinConns,
 		maxConns:              config.MaxConns,
 		maxConnLifetime:       config.MaxConnLifetime,
@@ -194,6 +199,7 @@ func NewWithConfig(ctx context.Context, config *Config) (*Pool, error) {
 	p.p, err = puddle.NewPool(
 		&puddle.Config[*connResource]{
 			Constructor: func(ctx context.Context) (*connResource, error) {
+				atomic.AddInt64(&p.newConnsCount, 1)
 				connConfig := p.config.ConnConfig.Copy()
 
 				// Connection will continue in background even if Acquire is canceled. Ensure that a connect won't hang forever.
@@ -236,6 +242,9 @@ func NewWithConfig(ctx context.Context, config *Config) (*Pool, error) {
 			Destructor: func(value *connResource) {
 				ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 				conn := value.conn
+				if p.beforeClose != nil {
+					p.beforeClose(conn)
+				}
 				conn.Close(ctx)
 				select {
 				case <-conn.PgConn().CleanupDone():
@@ -258,7 +267,7 @@ func NewWithConfig(ctx context.Context, config *Config) (*Pool, error) {
 	return p, nil
 }
 
-// ParseConfig builds a Config from connString. It parses connString with the same behavior as pgx.ParseConfig with the
+// ParseConfig builds a Config from connString. It parses connString with the same behavior as [pgx.ParseConfig] with the
 // addition of the following variables:
 //
 //   - pool_max_conns: integer greater than 0
@@ -467,8 +476,11 @@ func (p *Pool) createIdleResources(parentCtx context.Context, targetResources in
 
 	for i := 0; i < targetResources; i++ {
 		go func() {
-			atomic.AddInt64(&p.newConnsCount, 1)
 			err := p.p.CreateResource(ctx)
+			// Ignore ErrNotAvailable since it means that the pool has become full since we started creating resource.
+			if err == puddle.ErrNotAvailable {
+				err = nil
+			}
 			errs <- err
 		}()
 	}
@@ -496,7 +508,7 @@ func (p *Pool) Acquire(ctx context.Context) (*Conn, error) {
 		cr := res.Value()
 
 		if res.IdleDuration() > time.Second {
-			err := cr.conn.PgConn().CheckConn()
+			err := cr.conn.Ping(ctx)
 			if err != nil {
 				res.Destroy()
 				continue

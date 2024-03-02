@@ -121,9 +121,7 @@ func (ctrl *Controller) postSignupEmailPasswordWithEmailVerificationOrUserDisabl
 	}
 
 	if ctrl.config.DisableNewUsers {
-		return api.PostSignupEmailPassword200JSONResponse{
-			Session: nil,
-		}, nil
+		return api.PostSignupEmailPassword200JSONResponse{Session: nil}, nil
 	}
 
 	link, err := GenLink(
@@ -152,9 +150,7 @@ func (ctrl *Controller) postSignupEmailPasswordWithEmailVerificationOrUserDisabl
 		return nil, fmt.Errorf("problem sending email: %w", err)
 	}
 
-	return api.PostSignupEmailPassword200JSONResponse{
-		Session: nil,
-	}, nil
+	return api.PostSignupEmailPassword200JSONResponse{Session: nil}, nil
 }
 
 func (ctrl *Controller) postSignupEmailPasswordWithoutEmailVerification( //nolint:ireturn,funlen
