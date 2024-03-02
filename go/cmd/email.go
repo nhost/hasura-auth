@@ -31,8 +31,11 @@ func getEmailer(cCtx *cli.Context, logger *slog.Logger) (*notifications.Email, e
 	password := cCtx.String(flagSMTPPassword)
 	var auth smtp.Auth
 	switch GetEnumValue(cCtx, flagSMTPAuthMethod) {
+	case "LOGIN":
+		logger.Warn("SMTP auth LOGIN method is deprecated, using PLAIN instead")
+		auth = notifications.PlainAuth("", user, password, host)
 	case "PLAIN":
-		auth = smtp.PlainAuth("", user, password, host)
+		auth = notifications.PlainAuth("", user, password, host)
 	case "CRAM-MD5":
 		auth = smtp.CRAMMD5Auth(user, password)
 	default:

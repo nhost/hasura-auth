@@ -265,6 +265,7 @@ func CommandServe() *cli.Command { //nolint:funlen
 				Name: flagSMTPAuthMethod,
 				Value: &EnumValue{ //nolint: exhaustruct
 					Enum: []string{
+						"LOGIN",
 						"PLAIN",
 						"CRAM-MD5",
 					},

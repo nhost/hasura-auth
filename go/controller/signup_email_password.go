@@ -74,8 +74,8 @@ func (ctrl *Controller) PostSignupEmailPassword( //nolint:ireturn
 
 	gravatarURL := ctrl.gravatarURL(string(req.Body.Email))
 
-	if ctrl.config.RequireEmailVerification {
-		return ctrl.postSignupEmailPasswordWithEmailVerification(
+	if ctrl.config.RequireEmailVerification || ctrl.config.DisableNewUsers {
+		return ctrl.postSignupEmailPasswordWithEmailVerificationOrUserDisabled(
 			ctx, sql.Text(req.Body.Email), hashedPassword, gravatarURL, req.Body.Options, metadata,
 		)
 	}
@@ -91,7 +91,7 @@ func (ctrl *Controller) PostSignupEmailPassword( //nolint:ireturn
 	)
 }
 
-func (ctrl *Controller) postSignupEmailPasswordWithEmailVerification( //nolint:ireturn
+func (ctrl *Controller) postSignupEmailPasswordWithEmailVerificationOrUserDisabled( //nolint:ireturn
 	ctx context.Context,
 	email pgtype.Text,
 	hashedPassword string,
@@ -118,6 +118,12 @@ func (ctrl *Controller) postSignupEmailPasswordWithEmailVerification( //nolint:i
 	)
 	if err != nil {
 		return nil, fmt.Errorf("error inserting user: %w", err)
+	}
+
+	if ctrl.config.DisableNewUsers {
+		return api.PostSignupEmailPassword200JSONResponse{
+			Session: nil,
+		}, nil
 	}
 
 	link, err := GenLink(

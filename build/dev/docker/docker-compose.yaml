@@ -24,7 +24,7 @@ services:
             AUTH_PORT: 4000
             AUTH_SERVER_URL: http://127.0.0.2:4000
             AUTH_USER_DEFAULT_ALLOWED_ROLES: 'me,user,editor'
-            AUTH_SMTP_AUTH_METHOD: LOGIN
+            AUTH_SMTP_AUTH_METHOD: PLAIN
             AUTH_SMTP_HOST: mailhog
             AUTH_SMTP_PASS: password
             AUTH_SMTP_PORT: "1025"

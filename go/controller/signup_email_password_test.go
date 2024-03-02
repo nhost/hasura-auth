@@ -417,6 +417,123 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx,gocognit,cycl
 		},
 
 		{
+			name: "disable new users",
+			config: func() *controller.Config {
+				c := getConfig()
+				c.DisableNewUsers = true
+				return c
+			},
+			db: func(ctrl *gomock.Controller) controller.DBClient { //nolint:dupl
+				mock := mock.NewMockDBClient(ctrl)
+
+				mock.EXPECT().GetUserByEmail(
+					gomock.Any(), sql.Text("jane@acme.com"),
+				).Return(sql.AuthUser{}, pgx.ErrNoRows) //nolint:exhaustruct
+
+				mock.EXPECT().InsertUser(
+					gomock.Any(),
+					cmpInsertUser(sql.InsertUserParams{
+						Disabled:        true,
+						DisplayName:     "jane@acme.com",
+						AvatarUrl:       "",
+						Email:           sql.Text("jane@acme.com"),
+						PasswordHash:    pgtype.Text{}, //nolint:exhaustruct
+						Ticket:          pgtype.Text{}, //nolint:exhaustruct
+						TicketExpiresAt: sql.TimestampTz(time.Now().Add(30 * 24 * time.Hour)),
+						EmailVerified:   false,
+						Locale:          "en",
+						DefaultRole:     "user",
+						Metadata:        []byte("null"),
+						Roles:           []string{"user", "me"},
+					}),
+				).Return(sql.InsertUserRow{
+					UserID:    uuid.MustParse("DB477732-48FA-4289-B694-2886A646B6EB"),
+					CreatedAt: sql.TimestampTz(time.Now()),
+				}, nil)
+
+				return mock
+			},
+			emailer: func(ctrl *gomock.Controller) controller.Emailer {
+				mock := mock.NewMockEmailer(ctrl)
+				return mock
+			},
+			hibp: func(ctrl *gomock.Controller) controller.HIBPClient {
+				mock := mock.NewMockHIBPClient(ctrl)
+				return mock
+			},
+			request: api.PostSignupEmailPasswordRequestObject{
+				Body: &api.PostSignupEmailPasswordJSONRequestBody{
+					Email:    "jane@acme.com",
+					Password: "password",
+					Options:  nil,
+				},
+			},
+			expectedResponse: api.PostSignupEmailPassword200JSONResponse{
+				Session: nil,
+			},
+			expectedJWT: nil,
+		},
+
+		{
+			name: "disable new users with email verify",
+			config: func() *controller.Config {
+				c := getConfig()
+				c.DisableNewUsers = true
+				c.RequireEmailVerification = true
+				return c
+			},
+			db: func(ctrl *gomock.Controller) controller.DBClient { //nolint:dupl
+				mock := mock.NewMockDBClient(ctrl)
+
+				mock.EXPECT().GetUserByEmail(
+					gomock.Any(), sql.Text("jane@acme.com"),
+				).Return(sql.AuthUser{}, pgx.ErrNoRows) //nolint:exhaustruct
+
+				mock.EXPECT().InsertUser(
+					gomock.Any(),
+					cmpInsertUser(sql.InsertUserParams{
+						Disabled:        true,
+						DisplayName:     "jane@acme.com",
+						AvatarUrl:       "",
+						Email:           sql.Text("jane@acme.com"),
+						PasswordHash:    pgtype.Text{}, //nolint:exhaustruct
+						Ticket:          pgtype.Text{}, //nolint:exhaustruct
+						TicketExpiresAt: sql.TimestampTz(time.Now().Add(30 * 24 * time.Hour)),
+						EmailVerified:   false,
+						Locale:          "en",
+						DefaultRole:     "user",
+						Metadata:        []byte("null"),
+						Roles:           []string{"user", "me"},
+					}),
+				).Return(sql.InsertUserRow{
+					UserID:    uuid.MustParse("DB477732-48FA-4289-B694-2886A646B6EB"),
+					CreatedAt: sql.TimestampTz(time.Now()),
+				}, nil)
+
+				return mock
+			},
+			emailer: func(ctrl *gomock.Controller) controller.Emailer {
+				mock := mock.NewMockEmailer(ctrl)
+				return mock
+			},
+			hibp: func(ctrl *gomock.Controller) controller.HIBPClient {
+				mock := mock.NewMockHIBPClient(ctrl)
+				return mock
+			},
+			request: api.PostSignupEmailPasswordRequestObject{
+				Body: &api.PostSignupEmailPasswordJSONRequestBody{
+					Email:    "jane@acme.com",
+					Password: "password",
+					Options:  nil,
+				},
+			},
+			expectedResponse: api.PostSignupEmailPassword200JSONResponse{
+				Session: nil,
+			},
+			expectedJWT: nil,
+		},
+
+		{
 			name:   "user duplicated",
 			config: getConfig,
 			db: func(ctrl *gomock.Controller) controller.DBClient {
@@ -942,7 +1059,7 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx,gocognit,cycl
 				c.RequireEmailVerification = true
 				return c
 			},
-			db: func(ctrl *gomock.Controller) controller.DBClient {
+			db: func(ctrl *gomock.Controller) controller.DBClient { //nolint:dupl
 				mock := mock.NewMockDBClient(ctrl)
 
 				mock.EXPECT().GetUserByEmail(
