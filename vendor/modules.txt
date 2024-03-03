@@ -45,6 +45,9 @@ github.com/getkin/kin-openapi/routers
 github.com/getkin/kin-openapi/routers/gorillamux
 github.com/getkin/kin-openapi/routers/legacy
 github.com/getkin/kin-openapi/routers/legacy/pathpattern
+# github.com/gin-contrib/cors v1.5.0
+## explicit; go 1.18
+github.com/gin-contrib/cors
 # github.com/gin-contrib/sse v0.1.0
 ## explicit; go 1.12
 github.com/gin-contrib/sse

@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/getkin/kin-openapi/openapi3"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/nhost/hasura-auth/go/api"
 	"github.com/nhost/hasura-auth/go/controller"
@@ -381,6 +382,7 @@ func getGoServer( //nolint:funlen
 	router.Use(
 		// ginmiddleware.OapiRequestValidator(doc),
 		gin.Recovery(),
+		cors.New(getCORSConfig()),
 		middleware.Logger(logger),
 	)
 
