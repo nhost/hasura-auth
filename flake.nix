@@ -170,6 +170,7 @@
               cd $TMPDIR/auth
               cp -r ${node-src}/* .
               cp -r ${node-src}/.* .
+              cp -r ${src}/* . # we need this to trigger this check on go changes
               ln -s ${node_modules-builder}/node_modules node_modules
 
               export XDG_DATA_HOME=$TMPDIR/.local/share
