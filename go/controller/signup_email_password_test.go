@@ -1044,8 +1044,11 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx,gocognit,cycl
 						"x-hasura-claim1":           "value1",
 						"x-hasura-claim2":           "value2",
 						"x-hasura-claimarray":       []any{"value1", "value2"},
-						"x-hasura-claimobject":      map[string]any{"key1": "value1", "key2": "value2"},
-						"x-hasura-claimnil":         nil,
+						"x-hasura-claimobject": map[string]any{
+							"key1": "value1",
+							"key2": "value2",
+						},
+						"x-hasura-claimnil": nil,
 					},
 					"iat": float64(time.Now().Unix()),
 					"iss": "hasura-auth",
