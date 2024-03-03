@@ -1043,6 +1043,9 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx,gocognit,cycl
 						"x-hasura-user-isAnonymous": "false",
 						"x-hasura-claim1":           "value1",
 						"x-hasura-claim2":           "value2",
+						"x-hasura-claimarray":       []any{"value1", "value2"},
+						"x-hasura-claimobject":      map[string]any{"key1": "value1", "key2": "value2"},
+						"x-hasura-claimnil":         nil,
 					},
 					"iat": float64(time.Now().Unix()),
 					"iss": "hasura-auth",
@@ -1057,8 +1060,11 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx,gocognit,cycl
 					gomock.Any(),
 					"db477732-48fa-4289-b694-2886a646b6eb",
 				).Return(map[string]any{
-					"claim1": "value1",
-					"claim2": "value2",
+					"claim1":      "value1",
+					"claim2":      "value2",
+					"claimArray":  []any{"value1", "value2"},
+					"claimObject": map[string]any{"key1": "value1", "key2": "value2"},
+					"claimNil":    nil,
 				}, nil)
 				return mock
 			},

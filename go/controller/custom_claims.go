@@ -156,7 +156,8 @@ func (c *CustomClaims) ExtractClaims(data any) (map[string]any, error) {
 	for name, j := range c.jsonPaths {
 		v, err := j.FindResults(data)
 		if err != nil {
-			return nil, fmt.Errorf("failed to extract claim '%s': %w", name, err)
+			claims[name] = nil
+			continue
 		}
 
 		var got any

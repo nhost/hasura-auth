@@ -40,9 +40,10 @@ func TestCustomClaims(t *testing.T) {
                 "array[]": "m.l[]",
                 "array[*]": "m.l[*]",
                 "array[].ids": "m.lm[*].id",
-                "metadata.m1": "metadata.m1"
+                "metadata.m1": "metadata.m1",
+                "nonexistent": "nonexistent.nonexistent"
             }`,
-			expectedGraphql: "query GetClaims($id: uuid!) { user(id:$id) {m{k l lm{id }}metadata } }",
+			expectedGraphql: "query GetClaims($id: uuid!) { user(id:$id) {m{k l lm{id }}metadata nonexistent{nonexistent }} }",
 			expectedData: map[string]any{
 				"root":        data["m"],
 				"key":         "v",
@@ -51,6 +52,7 @@ func TestCustomClaims(t *testing.T) {
 				"array[*]":    []any{"a", "b", "c"},
 				"array[].ids": []any{1, 2, 3},
 				"metadata.m1": 1,
+				"nonexistent": nil,
 			},
 		},
 	}
