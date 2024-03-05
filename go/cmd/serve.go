@@ -87,13 +87,13 @@ func CommandServe() *cli.Command { //nolint:funlen
 				Name:     flagDebug,
 				Usage:    "enable debug logging",
 				Category: "general",
-				EnvVars:  []string{"DEBUG"},
+				EnvVars:  []string{"AUTH_DEBUG"},
 			},
 			&cli.BoolFlag{ //nolint: exhaustruct
 				Name:     flagLogFormatTEXT,
 				Usage:    "format logs in plain text",
 				Category: "general",
-				EnvVars:  []string{"LOG_FORMAT_TEXT"},
+				EnvVars:  []string{"AUTH_LOG_FORMAT_TEXT"},
 			},
 			&cli.StringFlag{ //nolint: exhaustruct
 				Name:     flagPostgresConnection,
@@ -107,7 +107,7 @@ func CommandServe() *cli.Command { //nolint:funlen
 				Usage:    "Path to the node server",
 				Value:    ".",
 				Category: "node",
-				EnvVars:  []string{"NODE_SERVER_PATH"},
+				EnvVars:  []string{"AUTH_NODE_SERVER_PATH"},
 			},
 			&cli.BoolFlag{ //nolint: exhaustruct
 				Name:     flagDisableSignup,
