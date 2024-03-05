@@ -60,6 +60,7 @@ const (
 	flagHasuraAdminSecret                = "hasura-admin-secret" //nolint:gosec
 	flagPasswordMinLength                = "password-min-length"
 	flagPasswordHIBPEnabled              = "password-hibp-enabled"
+	flagEmailTemplatesPath               = "templates-path"
 )
 
 func CommandServe() *cli.Command { //nolint:funlen
@@ -330,6 +331,13 @@ func CommandServe() *cli.Command { //nolint:funlen
 				Usage:    "Check user's password against Pwned Passwords https://haveibeenpwned.com/Passwords",
 				Category: "signup",
 				EnvVars:  []string{"AUTH_PASSWORD_HIBP_ENABLED"},
+			},
+			&cli.StringSliceFlag{ //nolint: exhaustruct
+				Name:     flagEmailTemplatesPath,
+				Usage:    "Path to the email templates. First valid path is used",
+				Value:    cli.NewStringSlice("/app/email-templates", "./email-templates"),
+				Category: "email",
+				EnvVars:  []string{"AUTH_EMAIL_TEMPLATES_PATH"},
 			},
 		},
 		Action: serve,

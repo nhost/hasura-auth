@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/smtp"
-	"path/filepath"
+	"os"
 
 	"github.com/nhost/hasura-auth/go/notifications"
 	"github.com/urfave/cli/v2"
@@ -17,8 +17,19 @@ func getEmailer(cCtx *cli.Context, logger *slog.Logger) (*notifications.Email, e
 		headers["X-SMTPAPI"] = cCtx.String(flagSMTPAPIHedaer)
 	}
 
+	var templatesPath string
+	for _, p := range cCtx.StringSlice(flagEmailTemplatesPath) {
+		if _, err := os.Stat(p); err == nil {
+			templatesPath = p
+			break
+		}
+	}
+	if templatesPath == "" {
+		return nil, errors.New("templates path not found") //nolint:goerr113
+	}
+
 	templates, err := notifications.NewTemplatesFromFilesystem(
-		filepath.Join(cCtx.String(flagNodeServerPath), "email-templates"),
+		templatesPath,
 		cCtx.String(flagDefaultLocale),
 		logger.With(slog.String("component", "mailer")),
 	)
