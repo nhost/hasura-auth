@@ -35,12 +35,14 @@ func getConfig(cCtx *cli.Context) (controller.Config, error) {
 	if !slices.Contains(allowedRoles, defaultRole) {
 		allowedRoles = append(allowedRoles, defaultRole)
 	}
+	allowedRoles = slices.DeleteFunc(allowedRoles, func(s string) bool { return s == "" })
 
 	defaultLocale := cCtx.String(flagDefaultLocale)
 	allowedLocales := cCtx.StringSlice(flagAllowedLocales)
 	if !slices.Contains(allowedLocales, defaultLocale) {
 		allowedLocales = append(allowedLocales, defaultLocale)
 	}
+	allowedLocales = slices.DeleteFunc(allowedLocales, func(s string) bool { return s == "" })
 
 	return controller.Config{
 		HasuraGraphqlURL:         cCtx.String(flagGraphqlURL),
