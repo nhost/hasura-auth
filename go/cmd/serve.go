@@ -332,10 +332,10 @@ func CommandServe() *cli.Command { //nolint:funlen
 				Category: "signup",
 				EnvVars:  []string{"AUTH_PASSWORD_HIBP_ENABLED"},
 			},
-			&cli.StringSliceFlag{ //nolint: exhaustruct
+			&cli.StringFlag{ //nolint: exhaustruct
 				Name:     flagEmailTemplatesPath,
-				Usage:    "Path to the email templates. First valid path is used",
-				Value:    cli.NewStringSlice("/app/email-templates", "./email-templates"),
+				Usage:    "Path to the email templates. Default to included ones if path isn't found",
+				Value:    "/app/email-templates",
 				Category: "email",
 				EnvVars:  []string{"AUTH_EMAIL_TEMPLATES_PATH"},
 			},

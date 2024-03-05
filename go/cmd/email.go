@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"net/smtp"
 	"os"
+	"path/filepath"
 
 	"github.com/nhost/hasura-auth/go/notifications"
 	"github.com/urfave/cli/v2"
@@ -18,7 +19,10 @@ func getEmailer(cCtx *cli.Context, logger *slog.Logger) (*notifications.Email, e
 	}
 
 	var templatesPath string
-	for _, p := range cCtx.StringSlice(flagEmailTemplatesPath) {
+	for _, p := range []string{
+		cCtx.String(flagEmailTemplatesPath),
+		filepath.Join(cCtx.String(flagNodeServerPath), "email-templates"),
+	} {
 		if _, err := os.Stat(p); err == nil {
 			templatesPath = p
 			break
