@@ -31,7 +31,7 @@ func (ctrl *Controller) getNewSession(
 
 	refreshToken := uuid.New()
 	expiresAt := time.Now().Add(time.Duration(ctrl.config.RefreshTokenExpiresIn) * time.Second)
-	if _, err := ctrl.db.InserRefreshtoken(ctx, sql.InserRefreshtokenParams{
+	if _, err := ctrl.db.InsertRefreshtoken(ctx, sql.InsertRefreshtokenParams{
 		UserID:           user.ID,
 		RefreshTokenHash: sql.Text(hashRefreshToken([]byte(refreshToken.String()))),
 		ExpiresAt:        sql.TimestampTz(expiresAt),

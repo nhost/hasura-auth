@@ -64,7 +64,7 @@ INSERT INTO auth.user_roles (user_id, role)
     FROM inserted_user, unnest(@roles::TEXT[]) AS roles(role)
 RETURNING user_id, (SELECT created_at FROM inserted_user WHERE id = user_id);
 
--- name: InserRefreshtoken :one
+-- name: InsertRefreshtoken :one
 INSERT INTO auth.refresh_tokens (user_id, refresh_token_hash, expires_at)
 VALUES ($1, $2, $3)
 RETURNING id;

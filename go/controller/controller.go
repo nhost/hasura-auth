@@ -22,7 +22,7 @@ type DBClient interface {
 	InsertUserWithRefreshToken(
 		ctx context.Context, arg sql.InsertUserWithRefreshTokenParams,
 	) (sql.InsertUserWithRefreshTokenRow, error)
-	InserRefreshtoken(ctx context.Context, arg sql.InserRefreshtokenParams) (uuid.UUID, error)
+	InsertRefreshtoken(ctx context.Context, arg sql.InsertRefreshtokenParams) (uuid.UUID, error)
 	UpdateUserLastSeen(ctx context.Context, id uuid.UUID) (pgtype.Timestamptz, error)
 	UpdateUserTicket(ctx context.Context, arg sql.UpdateUserTicketParams) (uuid.UUID, error)
 }

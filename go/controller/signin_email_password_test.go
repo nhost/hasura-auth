@@ -55,7 +55,7 @@ func getSigninUser(userID uuid.UUID) sql.AuthUser {
 }
 
 func cmpInsertRefreshToken(
-	i sql.InserRefreshtokenParams,
+	i sql.InsertRefreshtokenParams,
 ) any {
 	return testhelpers.GomockCmpOpts(
 		i,
@@ -132,9 +132,9 @@ func TestPostSigninEmailPassword(t *testing.T) { //nolint:maintidx,gocognit,cycl
 					{UserID: userID, Role: "me"},   //nolint:exhaustruct
 				}, nil)
 
-				mock.EXPECT().InserRefreshtoken(
+				mock.EXPECT().InsertRefreshtoken(
 					gomock.Any(),
-					cmpInsertRefreshToken(sql.InserRefreshtokenParams{
+					cmpInsertRefreshToken(sql.InsertRefreshtokenParams{
 						UserID:           userID,
 						RefreshTokenHash: pgtype.Text{}, //nolint:exhaustruct
 						ExpiresAt:        sql.TimestampTz(time.Now().Add(30 * 24 * time.Hour)),
@@ -341,9 +341,9 @@ func TestPostSigninEmailPassword(t *testing.T) { //nolint:maintidx,gocognit,cycl
 					{UserID: userID, Role: "me"},   //nolint:exhaustruct
 				}, nil)
 
-				mock.EXPECT().InserRefreshtoken(
+				mock.EXPECT().InsertRefreshtoken(
 					gomock.Any(),
-					cmpInsertRefreshToken(sql.InserRefreshtokenParams{
+					cmpInsertRefreshToken(sql.InsertRefreshtokenParams{
 						UserID:           userID,
 						RefreshTokenHash: pgtype.Text{}, //nolint:exhaustruct
 						ExpiresAt:        sql.TimestampTz(time.Now().Add(30 * 24 * time.Hour)),
