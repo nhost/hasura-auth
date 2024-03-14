@@ -186,10 +186,10 @@ func (mr *MockDBClientMockRecorder) UpdateUserLastSeen(ctx, id any) *gomock.Call
 }
 
 // UpdateUserTicket mocks base method.
-func (m *MockDBClient) UpdateUserTicket(ctx context.Context, arg sql.UpdateUserTicketParams) (sql.AuthUser, error) {
+func (m *MockDBClient) UpdateUserTicket(ctx context.Context, arg sql.UpdateUserTicketParams) (uuid.UUID, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateUserTicket", ctx, arg)
-	ret0, _ := ret[0].(sql.AuthUser)
+	ret0, _ := ret[0].(uuid.UUID)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

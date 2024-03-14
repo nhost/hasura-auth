@@ -30,11 +30,11 @@ func (ctrl *Controller) setTicket(
 	userID uuid.UUID,
 	ticketType TicketType,
 	logger *slog.Logger,
-) (sql.AuthUser, error) {
+) (string, error) {
 	ticket := newTicket(ticketType)
 	ticketExpiresAt := time.Now().Add(time.Hour)
 
-	user, err := ctrl.db.UpdateUserTicket(
+	_, err := ctrl.db.UpdateUserTicket(
 		ctx,
 		sql.UpdateUserTicketParams{
 			ID:              userID,
@@ -44,14 +44,12 @@ func (ctrl *Controller) setTicket(
 	)
 	if errors.Is(err, pgx.ErrNoRows) {
 		logger.Error("user not found")
-		return sql.AuthUser{}, //nolint:exhaustruct
-			&APIError{api.InvalidRequest}
+		return "", &APIError{api.InvalidRequest}
 	}
 	if err != nil {
 		logger.Error("error updating user ticket", logError(err))
-		return sql.AuthUser{}, //nolint:exhaustruct
-			&APIError{api.InternalServerError}
+		return "", &APIError{api.InternalServerError}
 	}
 
-	return user, nil
+	return ticket, nil
 }

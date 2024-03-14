@@ -4,11 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"log/slog"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/nhost/hasura-auth/go/api"
@@ -22,21 +20,22 @@ func (ctrl *Controller) postSigninPasswordlessEmailCreateUser(
 	email string,
 	options *api.SignUpOptions,
 	logger *slog.Logger,
-) (uuid.UUID, bool, error) {
+) (sql.AuthUser, error) {
 	if ctrl.config.DisableSignup {
 		logger.Warn("signup disabled")
-		return uuid.UUID{}, false, &APIError{api.SignupDisabled}
+		return sql.AuthUser{}, //nolint:exhaustruct
+			&APIError{api.SignupDisabled}
 	}
 
 	metadata, err := json.Marshal(options.Metadata)
 	if err != nil {
 		logger.Error("error marshaling metadata", logError(err))
-		return uuid.UUID{}, false, &APIError{api.InternalServerError}
+		return sql.AuthUser{}, //nolint:exhaustruct
+			&APIError{api.InternalServerError}
 	}
 
 	gravatarURL := ctrl.gravatarURL(email)
 
-	fmt.Println(6666, ctrl.config.DisableNewUsers)
 	insertedUser, err := ctrl.db.InsertUser(
 		ctx, sql.InsertUserParams{
 			Disabled:        ctrl.config.DisableNewUsers,
@@ -55,10 +54,37 @@ func (ctrl *Controller) postSigninPasswordlessEmailCreateUser(
 	)
 	if err != nil {
 		logger.Error("error inserting user", logError(err))
-		return uuid.UUID{}, false, &APIError{api.InternalServerError}
+		return sql.AuthUser{}, //nolint:exhaustruct
+			&APIError{api.InternalServerError}
 	}
 
-	return insertedUser.UserID, ctrl.config.DisableNewUsers, nil
+	return sql.AuthUser{
+		ID:                       insertedUser.UserID,
+		CreatedAt:                pgtype.Timestamptz{}, //nolint:exhaustruct
+		UpdatedAt:                pgtype.Timestamptz{}, //nolint:exhaustruct
+		LastSeen:                 pgtype.Timestamptz{}, //nolint:exhaustruct
+		Disabled:                 ctrl.config.DisableNewUsers,
+		DisplayName:              deptr(options.DisplayName),
+		AvatarUrl:                gravatarURL,
+		Locale:                   deptr(options.Locale),
+		Email:                    sql.Text(email),
+		PhoneNumber:              pgtype.Text{}, //nolint:exhaustruct
+		PasswordHash:             pgtype.Text{}, //nolint:exhaustruct
+		EmailVerified:            false,
+		PhoneNumberVerified:      false,
+		NewEmail:                 pgtype.Text{},        //nolint:exhaustruct
+		OtpMethodLastUsed:        pgtype.Text{},        //nolint:exhaustruct
+		OtpHash:                  pgtype.Text{},        //nolint:exhaustruct
+		OtpHashExpiresAt:         pgtype.Timestamptz{}, //nolint:exhaustruct
+		DefaultRole:              deptr(options.DefaultRole),
+		IsAnonymous:              false,
+		TotpSecret:               pgtype.Text{},        //nolint:exhaustruct
+		ActiveMfaType:            pgtype.Text{},        //nolint:exhaustruct
+		Ticket:                   pgtype.Text{},        //nolint:exhaustruct
+		TicketExpiresAt:          pgtype.Timestamptz{}, //nolint:exhaustruct
+		Metadata:                 metadata,
+		WebauthnCurrentChallenge: pgtype.Text{}, //nolint:exhaustruct
+	}, nil
 }
 
 func (ctrl *Controller) PostSigninPasswordlessEmail( //nolint:ireturn
@@ -85,12 +111,10 @@ func (ctrl *Controller) PostSigninPasswordlessEmail( //nolint:ireturn
 	}
 
 	user, err := ctrl.db.GetUserByEmail(ctx, sql.Text(request.Body.Email))
-	userID := user.ID
-	disabled := user.Disabled
 	if errors.Is(err, pgx.ErrNoRows) {
 		logger.Info("user does not exist, creating user")
 
-		userID, disabled, err = ctrl.postSigninPasswordlessEmailCreateUser(
+		user, err = ctrl.postSigninPasswordlessEmailCreateUser(
 			ctx, string(request.Body.Email), options, logger,
 		)
 		if err != nil {
@@ -103,12 +127,12 @@ func (ctrl *Controller) PostSigninPasswordlessEmail( //nolint:ireturn
 		return ctrl.sendError(api.InternalServerError), nil
 	}
 
-	if disabled {
+	if user.Disabled {
 		logger.Warn("user is disabled")
 		return ctrl.sendError(api.DisabledUser), nil
 	}
 
-	user, err = ctrl.setTicket(ctx, userID, TicketTypePasswordLessEmail, logger)
+	ticket, err := ctrl.setTicket(ctx, user.ID, TicketTypePasswordLessEmail, logger)
 	if err != nil {
 		return ctrl.respondWithError(err), nil
 	}
@@ -116,8 +140,8 @@ func (ctrl *Controller) PostSigninPasswordlessEmail( //nolint:ireturn
 	if err := ctrl.sendEmail(
 		string(request.Body.Email),
 		user.Locale,
-		LinkTypeEmailVerify,
-		user.Ticket.String,
+		LinkTypePasswordlessEmail,
+		ticket,
 		deptr(options.RedirectTo),
 		notifications.TemplateNameSigninPasswordless,
 		user.DisplayName,
@@ -128,5 +152,5 @@ func (ctrl *Controller) PostSigninPasswordlessEmail( //nolint:ireturn
 		return nil, err
 	}
 
-	return nil, nil
+	return api.PostSigninPasswordlessEmail200JSONResponse(api.OK), nil
 }

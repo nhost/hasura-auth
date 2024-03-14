@@ -79,7 +79,7 @@ RETURNING last_seen;
 UPDATE auth.users
 SET (ticket, ticket_expires_at) = ($2, $3)
 WHERE id = $1
-RETURNING *;
+RETURNING id;
 
 -- name: UpdateUserChangeEmail :one
 UPDATE auth.users
