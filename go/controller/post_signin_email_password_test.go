@@ -421,9 +421,7 @@ func TestPostSigninEmailPassword(t *testing.T) { //nolint:maintidx,gocognit,cycl
 						Ticket:          sql.Text("mfaTotp:xxxx"),
 						TicketExpiresAt: sql.TimestampTz(time.Now().Add(5 * time.Minute)),
 					}),
-				).Return(sql.AuthUser{ //nolint:exhaustruct
-					ID: userID,
-				}, nil)
+				).Return(userID, nil)
 
 				return mock
 			},
