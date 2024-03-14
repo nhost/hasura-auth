@@ -15,7 +15,7 @@ import (
 	"github.com/nhost/hasura-auth/go/sql"
 )
 
-func (ctrl *Controller) postSigninPasswordlessEmailCreateUser(
+func (ctrl *Controller) postSigninPasswordlessEmailCreateUser( //nolint:funlen
 	ctx context.Context,
 	email string,
 	options *api.SignUpOptions,
@@ -87,7 +87,7 @@ func (ctrl *Controller) postSigninPasswordlessEmailCreateUser(
 	}, nil
 }
 
-func (ctrl *Controller) PostSigninPasswordlessEmail( //nolint:ireturn
+func (ctrl *Controller) PostSigninPasswordlessEmail( //nolint:ireturn,funlen
 	ctx context.Context,
 	request api.PostSigninPasswordlessEmailRequestObject,
 ) (api.PostSigninPasswordlessEmailResponseObject, error) {

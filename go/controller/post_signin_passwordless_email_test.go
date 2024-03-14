@@ -42,7 +42,7 @@ func TestPostSigninPasswordlessEmail(t *testing.T) { //nolint:maintidx
 		{
 			name:   "signup required",
 			config: getConfig,
-			db: func(ctrl *gomock.Controller) controller.DBClient {
+			db: func(ctrl *gomock.Controller) controller.DBClient { //nolint:dupl
 				mock := mock.NewMockDBClient(ctrl)
 
 				mock.EXPECT().GetUserByEmail(
@@ -214,7 +214,7 @@ func TestPostSigninPasswordlessEmail(t *testing.T) { //nolint:maintidx
 		{
 			name:   "signup required - locale not allowed",
 			config: getConfig,
-			db: func(ctrl *gomock.Controller) controller.DBClient {
+			db: func(ctrl *gomock.Controller) controller.DBClient { //nolint:dupl
 				mock := mock.NewMockDBClient(ctrl)
 
 				mock.EXPECT().GetUserByEmail(
@@ -542,7 +542,60 @@ func TestPostSigninPasswordlessEmail(t *testing.T) { //nolint:maintidx
 			expectedResponse: api.PostSigninPasswordlessEmail200JSONResponse(api.OK),
 		},
 
-		// TODO signup custom redirectto
+		{
+			name:   "signup not required - user disabled",
+			config: getConfig,
+			db: func(ctrl *gomock.Controller) controller.DBClient {
+				mock := mock.NewMockDBClient(ctrl)
+
+				mock.EXPECT().GetUserByEmail(
+					gomock.Any(),
+					sql.Text("jane@acme.com"),
+				).Return(sql.AuthUser{
+					ID:                       userID,
+					CreatedAt:                pgtype.Timestamptz{}, //nolint:exhaustruct
+					UpdatedAt:                pgtype.Timestamptz{}, //nolint:exhaustruct
+					LastSeen:                 pgtype.Timestamptz{}, //nolint:exhaustruct
+					Disabled:                 true,
+					DisplayName:              "jane@acme.com",
+					AvatarUrl:                "",
+					Locale:                   "en",
+					Email:                    sql.Text("jane@acme.com"),
+					PhoneNumber:              pgtype.Text{}, //nolint:exhaustruct
+					PasswordHash:             pgtype.Text{}, //nolint:exhaustruct
+					EmailVerified:            false,
+					PhoneNumberVerified:      false,
+					NewEmail:                 pgtype.Text{},        //nolint:exhaustruct
+					OtpMethodLastUsed:        pgtype.Text{},        //nolint:exhaustruct
+					OtpHash:                  pgtype.Text{},        //nolint:exhaustruct
+					OtpHashExpiresAt:         pgtype.Timestamptz{}, //nolint:exhaustruct
+					DefaultRole:              "",
+					IsAnonymous:              false,
+					TotpSecret:               pgtype.Text{},        //nolint:exhaustruct
+					ActiveMfaType:            pgtype.Text{},        //nolint:exhaustruct
+					Ticket:                   pgtype.Text{},        //nolint:exhaustruct
+					TicketExpiresAt:          pgtype.Timestamptz{}, //nolint:exhaustruct
+					Metadata:                 []byte{},
+					WebauthnCurrentChallenge: pgtype.Text{}, //nolint:exhaustruct
+				}, nil)
+
+				return mock
+			},
+			emailer: func(ctrl *gomock.Controller) controller.Emailer {
+				mock := mock.NewMockEmailer(ctrl)
+
+				return mock
+			},
+			request: api.PostSigninPasswordlessEmailRequestObject{
+				Body: &api.SignInPasswordlessEmailRequest{
+					Email:   "jane@acme.com",
+					Options: nil,
+				},
+			},
+			expectedResponse: controller.ErrorResponse{
+				Error: "disabled-user", Message: "User is disabled", Status: 401,
+			},
+		},
 	}
 
 	for _, tc := range cases {
