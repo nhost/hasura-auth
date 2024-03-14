@@ -242,7 +242,7 @@ func TestPostSigninEmailPassword(t *testing.T) { //nolint:maintidx,gocognit,cycl
 			expectedResponse: controller.ErrorResponse{
 				Error:   "disabled-user",
 				Message: "User is disabled",
-				Status:  403,
+				Status:  401,
 			},
 			expectedJWT: nil,
 		},
@@ -421,7 +421,9 @@ func TestPostSigninEmailPassword(t *testing.T) { //nolint:maintidx,gocognit,cycl
 						Ticket:          sql.Text("mfaTotp:xxxx"),
 						TicketExpiresAt: sql.TimestampTz(time.Now().Add(5 * time.Minute)),
 					}),
-				).Return(userID, nil)
+				).Return(sql.AuthUser{ //nolint:exhaustruct
+					ID: userID,
+				}, nil)
 
 				return mock
 			},

@@ -117,7 +117,7 @@ func TestValidatorPostSignupEmailPassword(t *testing.T) { //nolint:maintidx
 				},
 			},
 			expected: api.PostSignupEmailPasswordRequestObject{}, //nolint:exhaustruct
-			expectedErr: &controller.ValidationError{
+			expectedErr: &controller.APIError{
 				api.EmailAlreadyInUse,
 			},
 		},
@@ -140,7 +140,7 @@ func TestValidatorPostSignupEmailPassword(t *testing.T) { //nolint:maintidx
 				},
 			},
 			expected:    api.PostSignupEmailPasswordRequestObject{}, //nolint:exhaustruct
-			expectedErr: &controller.ValidationError{"password-too-short"},
+			expectedErr: &controller.APIError{"password-too-short"},
 		},
 		{
 			name: "password in hibp database",
@@ -171,7 +171,7 @@ func TestValidatorPostSignupEmailPassword(t *testing.T) { //nolint:maintidx
 				},
 			},
 			expected:    api.PostSignupEmailPasswordRequestObject{}, //nolint:exhaustruct
-			expectedErr: &controller.ValidationError{"password-in-hibp-database"},
+			expectedErr: &controller.APIError{"password-in-hibp-database"},
 		},
 		{
 			name: "password not in hibp database",
@@ -290,7 +290,7 @@ func TestValidatorPostSignupEmailPassword(t *testing.T) { //nolint:maintidx
 				},
 			},
 			expected:    api.PostSignupEmailPasswordRequestObject{}, //nolint:exhaustruct
-			expectedErr: &controller.ValidationError{"default-role-must-be-in-allowed-roles"},
+			expectedErr: &controller.APIError{"default-role-must-be-in-allowed-roles"},
 		},
 		{
 			name: "allowed roles not allowed",
@@ -318,7 +318,7 @@ func TestValidatorPostSignupEmailPassword(t *testing.T) { //nolint:maintidx
 				},
 			},
 			expected:    api.PostSignupEmailPasswordRequestObject{}, //nolint:exhaustruct
-			expectedErr: &controller.ValidationError{"role-not-allowed"},
+			expectedErr: &controller.APIError{"role-not-allowed"},
 		},
 		{
 			name: "locale not allowed",
@@ -340,8 +340,21 @@ func TestValidatorPostSignupEmailPassword(t *testing.T) { //nolint:maintidx
 					},
 				},
 			},
-			expected:    api.PostSignupEmailPasswordRequestObject{}, //nolint:exhaustruct
-			expectedErr: &controller.ValidationError{"locale-not-allowed"},
+			expected: api.PostSignupEmailPasswordRequestObject{
+				Body: &api.SignUpEmailPasswordRequest{
+					Email: "user@acme.com",
+					Options: &api.SignUpOptions{
+						AllowedRoles: ptr([]string{"user", "me"}),
+						DefaultRole:  ptr("user"),
+						DisplayName:  ptr("user@acme.com"),
+						Locale:       ptr("en"),
+						Metadata:     nil,
+						RedirectTo:   ptr("http://localhost:3000"),
+					},
+					Password: "p4ssw0rd",
+				},
+			},
+			expectedErr: nil,
 		},
 	}
 

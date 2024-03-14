@@ -33,7 +33,7 @@ type DBClient interface {
 		arg sql.UpdateUserChangeEmailParams,
 	) (sql.UpdateUserChangeEmailRow, error)
 	UpdateUserLastSeen(ctx context.Context, id uuid.UUID) (pgtype.Timestamptz, error)
-	UpdateUserTicket(ctx context.Context, arg sql.UpdateUserTicketParams) (uuid.UUID, error)
+	UpdateUserTicket(ctx context.Context, arg sql.UpdateUserTicketParams) (sql.AuthUser, error)
 }
 
 type Controller struct {

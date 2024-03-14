@@ -154,12 +154,14 @@ WITH inserted_user AS (
     ) VALUES (
       $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11
     )
-    RETURNING id, created_at
+    RETURNING id, created_at, updated_at, last_seen, disabled, display_name, avatar_url, locale, email, phone_number, password_hash, email_verified, phone_number_verified, new_email, otp_method_last_used, otp_hash, otp_hash_expires_at, default_role, is_anonymous, totp_secret, active_mfa_type, ticket, ticket_expires_at, metadata, webauthn_current_challenge
 )
 INSERT INTO auth.user_roles (user_id, role)
     SELECT inserted_user.id, roles.role
     FROM inserted_user, unnest($12::TEXT[]) AS roles(role)
-RETURNING user_id, (SELECT created_at FROM inserted_user WHERE id = user_id)
+RETURNING user_id,
+    (SELECT created_at FROM inserted_user WHERE id = user_id),
+    (SELECT disabled FROM inserted_user WHERE id = user_id)
 `
 
 type InsertUserParams struct {
@@ -180,6 +182,7 @@ type InsertUserParams struct {
 type InsertUserRow struct {
 	UserID    uuid.UUID
 	CreatedAt pgtype.Timestamptz
+	Disabled  bool
 }
 
 func (q *Queries) InsertUser(ctx context.Context, arg InsertUserParams) (InsertUserRow, error) {
@@ -198,7 +201,7 @@ func (q *Queries) InsertUser(ctx context.Context, arg InsertUserParams) (InsertU
 		arg.Roles,
 	)
 	var i InsertUserRow
-	err := row.Scan(&i.UserID, &i.CreatedAt)
+	err := row.Scan(&i.UserID, &i.CreatedAt, &i.Disabled)
 	return i, err
 }
 
@@ -333,7 +336,7 @@ const updateUserTicket = `-- name: UpdateUserTicket :one
 UPDATE auth.users
 SET (ticket, ticket_expires_at) = ($2, $3)
 WHERE id = $1
-RETURNING id
+RETURNING id, created_at, updated_at, last_seen, disabled, display_name, avatar_url, locale, email, phone_number, password_hash, email_verified, phone_number_verified, new_email, otp_method_last_used, otp_hash, otp_hash_expires_at, default_role, is_anonymous, totp_secret, active_mfa_type, ticket, ticket_expires_at, metadata, webauthn_current_challenge
 `
 
 type UpdateUserTicketParams struct {
@@ -342,9 +345,35 @@ type UpdateUserTicketParams struct {
 	TicketExpiresAt pgtype.Timestamptz
 }
 
-func (q *Queries) UpdateUserTicket(ctx context.Context, arg UpdateUserTicketParams) (uuid.UUID, error) {
+func (q *Queries) UpdateUserTicket(ctx context.Context, arg UpdateUserTicketParams) (AuthUser, error) {
 	row := q.db.QueryRow(ctx, updateUserTicket, arg.ID, arg.Ticket, arg.TicketExpiresAt)
-	var id uuid.UUID
-	err := row.Scan(&id)
-	return id, err
+	var i AuthUser
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.LastSeen,
+		&i.Disabled,
+		&i.DisplayName,
+		&i.AvatarUrl,
+		&i.Locale,
+		&i.Email,
+		&i.PhoneNumber,
+		&i.PasswordHash,
+		&i.EmailVerified,
+		&i.PhoneNumberVerified,
+		&i.NewEmail,
+		&i.OtpMethodLastUsed,
+		&i.OtpHash,
+		&i.OtpHashExpiresAt,
+		&i.DefaultRole,
+		&i.IsAnonymous,
+		&i.TotpSecret,
+		&i.ActiveMfaType,
+		&i.Ticket,
+		&i.TicketExpiresAt,
+		&i.Metadata,
+		&i.WebauthnCurrentChallenge,
+	)
+	return i, err
 }
