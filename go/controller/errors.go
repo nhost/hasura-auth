@@ -67,7 +67,9 @@ func (response ErrorResponse) VisitPostUserEmailChangeResponse(w http.ResponseWr
 	return response.visit(w)
 }
 
-func (response ErrorResponse) VisitPostSigninPasswordlessEmailResponse(w http.ResponseWriter) error {
+func (response ErrorResponse) VisitPostSigninPasswordlessEmailResponse(
+	w http.ResponseWriter,
+) error {
 	return response.visit(w)
 }
 

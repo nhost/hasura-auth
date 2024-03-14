@@ -91,7 +91,8 @@ func (ctrl *Controller) PostSigninPasswordlessEmail( //nolint:ireturn,funlen
 	ctx context.Context,
 	request api.PostSigninPasswordlessEmailRequestObject,
 ) (api.PostSigninPasswordlessEmailResponseObject, error) {
-	logger := middleware.LoggerFromContext(ctx).With(slog.String("email", string(request.Body.Email)))
+	logger := middleware.LoggerFromContext(ctx).
+		With(slog.String("email", string(request.Body.Email)))
 
 	if !ctrl.config.EmailPasswordlessEnabled {
 		logger.Warn("email passwordless signin is disabled")

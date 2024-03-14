@@ -161,7 +161,10 @@ func (validator *Validator) postSignUpOptions( //nolint:cyclop
 		options.Locale = ptr(validator.cfg.DefaultLocale)
 	}
 	if !slices.Contains(validator.cfg.AllowedLocales, deptr(options.Locale)) {
-		logger.Warn("locale not allowed, using default", slog.String("locale", deptr(options.Locale)))
+		logger.Warn(
+			"locale not allowed, using default",
+			slog.String("locale", deptr(options.Locale)),
+		)
 		options.Locale = ptr(validator.cfg.DefaultLocale)
 	}
 
