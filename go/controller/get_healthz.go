@@ -6,8 +6,8 @@ import (
 	"github.com/nhost/hasura-auth/go/api"
 )
 
-func (ctrl *Controller) GetHealth( //nolint:ireturn
-	_ context.Context, _ api.GetHealthRequestObject,
-) (api.GetHealthResponseObject, error) {
-	return api.GetHealth200JSONResponse(api.OK), nil
+func (ctrl *Controller) GetHealthz( //nolint:ireturn
+	_ context.Context, _ api.GetHealthzRequestObject,
+) (api.GetHealthzResponseObject, error) {
+	return api.GetHealthz200JSONResponse(api.OK), nil
 }
