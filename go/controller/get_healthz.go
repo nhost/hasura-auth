@@ -11,3 +11,9 @@ func (ctrl *Controller) GetHealthz( //nolint:ireturn
 ) (api.GetHealthzResponseObject, error) {
 	return api.GetHealthz200JSONResponse(api.OK), nil
 }
+
+func (ctrl *Controller) HeadHealthz( //nolint:ireturn
+	_ context.Context, _ api.HeadHealthzRequestObject,
+) (api.HeadHealthzResponseObject, error) {
+	return api.HeadHealthz200Response{}, nil
+}

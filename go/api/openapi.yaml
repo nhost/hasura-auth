@@ -13,6 +13,15 @@ info:
     url: https://www.apache.org/licenses/LICENSE-2.0.html
 paths:
   /healthz:
+    head:
+      summary: Health check
+      tags:
+        - health
+      responses:
+        '200':
+          description: >-
+            Service is healthy
+
     get:
       summary: Health check
       tags:
