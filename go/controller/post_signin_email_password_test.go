@@ -93,6 +93,8 @@ func TestPostSigninEmailPassword(t *testing.T) { //nolint:maintidx,gocognit,cycl
 						UserID:           userID,
 						RefreshTokenHash: pgtype.Text{}, //nolint:exhaustruct
 						ExpiresAt:        sql.TimestampTz(time.Now().Add(30 * 24 * time.Hour)),
+						Type:             sql.RefreshTokenTypeRegular,
+						Metadata:         nil,
 					}),
 				).Return(uuid.New(), nil)
 
@@ -302,6 +304,8 @@ func TestPostSigninEmailPassword(t *testing.T) { //nolint:maintidx,gocognit,cycl
 						UserID:           userID,
 						RefreshTokenHash: pgtype.Text{}, //nolint:exhaustruct
 						ExpiresAt:        sql.TimestampTz(time.Now().Add(30 * 24 * time.Hour)),
+						Type:             sql.RefreshTokenTypeRegular,
+						Metadata:         nil,
 					}),
 				).Return(uuid.New(), nil)
 

@@ -65,8 +65,8 @@ INSERT INTO auth.user_roles (user_id, role)
 RETURNING user_id, (SELECT created_at FROM inserted_user WHERE id = user_id);
 
 -- name: InsertRefreshtoken :one
-INSERT INTO auth.refresh_tokens (user_id, refresh_token_hash, expires_at)
-VALUES ($1, $2, $3)
+INSERT INTO auth.refresh_tokens (user_id, refresh_token_hash, expires_at, type, metadata)
+VALUES ($1, $2, $3, $4, $5)
 RETURNING id;
 
 -- name: UpdateUserLastSeen :one

@@ -38,6 +38,22 @@ const (
 	OK OKResponse = "OK"
 )
 
+// CreatePATRequest defines model for CreatePATRequest.
+type CreatePATRequest struct {
+	// ExpiresAt Expiration date of the PAT
+	ExpiresAt time.Time               `json:"expiresAt"`
+	Metadata  *map[string]interface{} `json:"metadata,omitempty"`
+}
+
+// CreatePATResponse defines model for CreatePATResponse.
+type CreatePATResponse struct {
+	// Id ID of the PAT
+	Id string `json:"id"`
+
+	// PersonalAccessToken PAT
+	PersonalAccessToken string `json:"personalAccessToken"`
+}
+
 // ErrorResponse defines model for ErrorResponse.
 type ErrorResponse struct {
 	// Error Error code that identifies the application error
@@ -161,6 +177,9 @@ type UserPasswordResetRequest struct {
 	Email   openapi_types.Email `json:"email"`
 	Options *OptionsRedirectTo  `json:"options,omitempty"`
 }
+
+// PostPatJSONRequestBody defines body for PostPat for application/json ContentType.
+type PostPatJSONRequestBody = CreatePATRequest
 
 // PostSigninEmailPasswordJSONRequestBody defines body for PostSigninEmailPassword for application/json ContentType.
 type PostSigninEmailPasswordJSONRequestBody = SignInEmailPasswordRequest

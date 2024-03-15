@@ -119,8 +119,8 @@ func (q *Queries) GetUserRoles(ctx context.Context, userID uuid.UUID) ([]AuthUse
 }
 
 const insertRefreshtoken = `-- name: InsertRefreshtoken :one
-INSERT INTO auth.refresh_tokens (user_id, refresh_token_hash, expires_at)
-VALUES ($1, $2, $3)
+INSERT INTO auth.refresh_tokens (user_id, refresh_token_hash, expires_at, type, metadata)
+VALUES ($1, $2, $3, $4, $5)
 RETURNING id
 `
 
@@ -128,10 +128,18 @@ type InsertRefreshtokenParams struct {
 	UserID           uuid.UUID
 	RefreshTokenHash pgtype.Text
 	ExpiresAt        pgtype.Timestamptz
+	Type             RefreshTokenType
+	Metadata         []byte
 }
 
 func (q *Queries) InsertRefreshtoken(ctx context.Context, arg InsertRefreshtokenParams) (uuid.UUID, error) {
-	row := q.db.QueryRow(ctx, insertRefreshtoken, arg.UserID, arg.RefreshTokenHash, arg.ExpiresAt)
+	row := q.db.QueryRow(ctx, insertRefreshtoken,
+		arg.UserID,
+		arg.RefreshTokenHash,
+		arg.ExpiresAt,
+		arg.Type,
+		arg.Metadata,
+	)
 	var id uuid.UUID
 	err := row.Scan(&id)
 	return id, err

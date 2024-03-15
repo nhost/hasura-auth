@@ -78,6 +78,10 @@ func (response ErrorResponse) VisitPostUserPasswordResetResponse(w http.Response
 	return response.visit(w)
 }
 
+func (response ErrorResponse) VisitPostPatResponse(w http.ResponseWriter) error {
+	return response.visit(w)
+}
+
 func (ctrl *Controller) sendError( //nolint:funlen,cyclop
 	errType api.ErrorResponseError,
 ) ErrorResponse {
