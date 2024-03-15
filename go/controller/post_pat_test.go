@@ -223,6 +223,7 @@ func TestPostPat(t *testing.T) {
 				jwtGetter,
 				nil,
 				nil,
+				"dev",
 			)
 			if err != nil {
 				t.Fatalf("failed to create controller: %v", err)
