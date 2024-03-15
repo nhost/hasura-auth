@@ -14,7 +14,7 @@ import (
 	"github.com/nhost/hasura-auth/go/sql"
 )
 
-func (ctrl *Controller) getUserFromJWTTokenInContext(
+func (ctrl *Controller) getUserFromJWTInContext(
 	ctx context.Context,
 	logger *slog.Logger,
 ) (sql.AuthUser, *APIError) {
@@ -59,7 +59,7 @@ func (ctrl *Controller) PostPat( //nolint:ireturn
 	ctx context.Context, request api.PostPatRequestObject,
 ) (api.PostPatResponseObject, error) {
 	logger := middleware.LoggerFromContext(ctx)
-	user, apiErr := ctrl.getUserFromJWTTokenInContext(ctx, logger)
+	user, apiErr := ctrl.getUserFromJWTInContext(ctx, logger)
 	if apiErr != nil {
 		return ctrl.respondWithError(apiErr), nil
 	}

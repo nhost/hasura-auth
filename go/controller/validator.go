@@ -213,6 +213,11 @@ func (validator *Validator) ValidateUser(
 	user sql.AuthUser,
 	logger *slog.Logger,
 ) *APIError {
+	if !validator.emailValidator(user.Email.String) {
+		logger.Warn("email didn't pass access control checks")
+		return &APIError{api.InvalidEmailPassword}
+	}
+
 	if user.Disabled {
 		logger.Warn("user is disabled")
 		return &APIError{api.DisabledUser}
