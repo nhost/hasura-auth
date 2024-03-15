@@ -110,6 +110,21 @@ func (mr *MockDBClientMockRecorder) GetUserByEmail(ctx, email any) *gomock.Call 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByEmail", reflect.TypeOf((*MockDBClient)(nil).GetUserByEmail), ctx, email)
 }
 
+// GetUserByRefreshTokenHash mocks base method.
+func (m *MockDBClient) GetUserByRefreshTokenHash(ctx context.Context, arg sql.GetUserByRefreshTokenHashParams) (sql.AuthUser, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUserByRefreshTokenHash", ctx, arg)
+	ret0, _ := ret[0].(sql.AuthUser)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUserByRefreshTokenHash indicates an expected call of GetUserByRefreshTokenHash.
+func (mr *MockDBClientMockRecorder) GetUserByRefreshTokenHash(ctx, arg any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByRefreshTokenHash", reflect.TypeOf((*MockDBClient)(nil).GetUserByRefreshTokenHash), ctx, arg)
+}
+
 // GetUserRoles mocks base method.
 func (m *MockDBClient) GetUserRoles(ctx context.Context, userID uuid.UUID) ([]sql.AuthUserRole, error) {
 	m.ctrl.T.Helper()

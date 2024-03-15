@@ -209,6 +209,23 @@ func (validator *Validator) ValidateUserByEmail(
 	return user, nil
 }
 
+func (validator *Validator) ValidateUser(
+	user sql.AuthUser,
+	logger *slog.Logger,
+) *APIError {
+	if user.Disabled {
+		logger.Warn("user is disabled")
+		return &APIError{api.DisabledUser}
+	}
+
+	if !user.EmailVerified && validator.cfg.RequireEmailVerification {
+		logger.Warn("user is unverified")
+		return &APIError{api.UnverifiedUser}
+	}
+
+	return nil
+}
+
 type urlMatcher struct {
 	Scheme   string
 	Hostname *regexp.Regexp

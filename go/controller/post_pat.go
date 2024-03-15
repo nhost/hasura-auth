@@ -43,13 +43,13 @@ func (ctrl *Controller) getUserFromJWTTokenInContext(
 	if errors.Is(err, pgx.ErrNoRows) {
 		return sql.AuthUser{}, &APIError{api.UserNotFound} //nolint:exhaustruct
 	}
-
-	if user.Disabled {
-		return sql.AuthUser{}, &APIError{api.DisabledUser} //nolint:exhaustruct
+	if err != nil {
+		logger.Error("error getting user by id", logError(err))
+		return sql.AuthUser{}, &APIError{api.InternalServerError} //nolint:exhaustruct
 	}
 
-	if !user.EmailVerified && ctrl.config.RequireEmailVerification {
-		return sql.AuthUser{}, &APIError{api.UnverifiedUser} //nolint:exhaustruct
+	if apiErr := ctrl.validator.ValidateUser(user, logger); apiErr != nil {
+		return sql.AuthUser{}, apiErr //nolint:exhaustruct
 	}
 
 	return user, nil

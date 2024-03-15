@@ -22,6 +22,7 @@ const (
 	ForbiddenAnonymous              ErrorResponseError = "forbidden-anonymous"
 	InternalServerError             ErrorResponseError = "internal-server-error"
 	InvalidEmailPassword            ErrorResponseError = "invalid-email-password"
+	InvalidPat                      ErrorResponseError = "invalid-pat"
 	InvalidRequest                  ErrorResponseError = "invalid-request"
 	LocaleNotAllowed                ErrorResponseError = "locale-not-allowed"
 	PasswordInHibpDatabase          ErrorResponseError = "password-in-hibp-database"
@@ -112,6 +113,12 @@ type SignInEmailPasswordResponse struct {
 	Session *Session             `json:"session,omitempty"`
 }
 
+// SignInPATRequest defines model for SignInPATRequest.
+type SignInPATRequest struct {
+	// PersonalAccessToken PAT
+	PersonalAccessToken string `json:"personalAccessToken"`
+}
+
 // SignInPasswordlessEmailRequest defines model for SignInPasswordlessEmailRequest.
 type SignInPasswordlessEmailRequest struct {
 	// Email A valid email
@@ -186,6 +193,9 @@ type PostSigninEmailPasswordJSONRequestBody = SignInEmailPasswordRequest
 
 // PostSigninPasswordlessEmailJSONRequestBody defines body for PostSigninPasswordlessEmail for application/json ContentType.
 type PostSigninPasswordlessEmailJSONRequestBody = SignInPasswordlessEmailRequest
+
+// PostSigninPatJSONRequestBody defines body for PostSigninPat for application/json ContentType.
+type PostSigninPatJSONRequestBody = SignInPATRequest
 
 // PostSignupEmailPasswordJSONRequestBody defines body for PostSignupEmailPassword for application/json ContentType.
 type PostSignupEmailPasswordJSONRequestBody = SignUpEmailPasswordRequest
