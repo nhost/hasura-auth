@@ -2,14 +2,12 @@ package controller
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/nhost/hasura-auth/go/api"
 	"github.com/nhost/hasura-auth/go/middleware"
-	"github.com/nhost/hasura-auth/go/sql"
 )
 
 func (ctrl *Controller) postSigninEmailPasswordWithTOTP( //nolint:ireturn
@@ -20,13 +18,8 @@ func (ctrl *Controller) postSigninEmailPasswordWithTOTP( //nolint:ireturn
 	ticket := "mfaTotp:" + uuid.NewString()
 	expiresAt := time.Now().Add(5 * time.Minute) //nolint:gomnd
 
-	if _, err := ctrl.db.UpdateUserTicket(ctx, sql.UpdateUserTicketParams{
-		ID:              userID,
-		Ticket:          sql.Text(ticket),
-		TicketExpiresAt: sql.TimestampTz(expiresAt),
-	}); err != nil {
-		logger.Error("error updating user ticket", logError(err))
-		return nil, fmt.Errorf("error updating user ticket: %w", err)
+	if apiErr := ctrl.SetTicket(ctx, userID, ticket, expiresAt, logger); apiErr != nil {
+		return ctrl.respondWithError(apiErr), nil
 	}
 
 	return api.PostSigninEmailPassword200JSONResponse{

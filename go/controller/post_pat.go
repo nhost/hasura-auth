@@ -2,8 +2,6 @@ package controller
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/nhost/hasura-auth/go/api"
@@ -20,30 +18,22 @@ func (ctrl *Controller) PostPat( //nolint:ireturn
 		return ctrl.respondWithError(apiErr), nil
 	}
 
-	var metadata []byte
-	var err error
-	if request.Body.Metadata != nil {
-		metadata, err = json.Marshal(*request.Body.Metadata)
-		if err != nil {
-			logger.Error("error marshalling metadata", logError(err))
-			return ctrl.sendError(api.InternalServerError), nil
-		}
-	}
-
 	pat := uuid.New()
-	refreshToken, err := ctrl.db.InsertRefreshtoken(ctx, sql.InsertRefreshtokenParams{
-		UserID:           user.ID,
-		RefreshTokenHash: sql.Text(hashRefreshToken([]byte(pat.String()))),
-		ExpiresAt:        sql.TimestampTz(request.Body.ExpiresAt),
-		Type:             sql.RefreshTokenTypePAT,
-		Metadata:         metadata,
-	})
-	if err != nil {
-		return nil, fmt.Errorf("error inserting refresh token: %w", err)
+	refreshTokenID, apiErr := ctrl.InsertRefreshtoken(
+		ctx,
+		user.ID,
+		pat.String(),
+		request.Body.ExpiresAt,
+		sql.RefreshTokenTypePAT,
+		deptr(request.Body.Metadata),
+		logger,
+	)
+	if apiErr != nil {
+		return ctrl.respondWithError(apiErr), nil
 	}
 
 	return api.PostPat200JSONResponse{
-		Id:                  refreshToken.String(),
+		Id:                  refreshTokenID.String(),
 		PersonalAccessToken: pat.String(),
 	}, nil
 }

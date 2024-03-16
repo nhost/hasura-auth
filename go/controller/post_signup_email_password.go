@@ -2,18 +2,14 @@ package controller
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"log/slog"
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/nhost/hasura-auth/go/api"
 	"github.com/nhost/hasura-auth/go/middleware"
 	"github.com/nhost/hasura-auth/go/notifications"
-	"github.com/nhost/hasura-auth/go/sql"
-	"github.com/oapi-codegen/runtime/types"
 )
 
 func (ctrl *Controller) postSignupEmailPasswordValidateRequest(
@@ -56,20 +52,6 @@ func (ctrl *Controller) PostSignupEmailPassword( //nolint:ireturn
 		return ctrl.respondWithError(apiError), nil
 	}
 
-	hashedPassword, err := hashPassword(req.Body.Password)
-	if err != nil {
-		logger.Error("error hashing password", logError(err))
-		return ctrl.sendError(api.InternalServerError), nil
-	}
-
-	metadata, err := json.Marshal(req.Body.Options.Metadata)
-	if err != nil {
-		logger.Error("error marshaling metadata", logError(err))
-		return ctrl.sendError(api.InternalServerError), nil
-	}
-
-	gravatarURL := ctrl.gravatarURL(string(req.Body.Email))
-
 	if ctrl.config.RequireEmailVerification || ctrl.config.DisableNewUsers {
 		return ctrl.postSignupEmailPasswordWithEmailVerificationOrUserDisabled(
 			ctx,
@@ -82,11 +64,9 @@ func (ctrl *Controller) PostSignupEmailPassword( //nolint:ireturn
 
 	return ctrl.postSignupEmailPasswordWithoutEmailVerification(
 		ctx,
-		sql.Text(req.Body.Email),
-		hashedPassword,
-		gravatarURL,
+		string(req.Body.Email),
+		req.Body.Password,
 		req.Body.Options,
-		metadata,
 		logger,
 	)
 }
@@ -135,40 +115,23 @@ func (ctrl *Controller) postSignupEmailPasswordWithEmailVerificationOrUserDisabl
 
 func (ctrl *Controller) postSignupEmailPasswordWithoutEmailVerification( //nolint:ireturn,funlen
 	ctx context.Context,
-	email pgtype.Text,
-	hashedPassword string,
-	gravatarURL string,
+	email string,
+	password string,
 	options *api.SignUpOptions,
-	metadata []byte,
 	logger *slog.Logger,
 ) (api.PostSignupEmailPasswordResponseObject, error) {
 	refreshToken := uuid.New()
 	expiresAt := time.Now().Add(time.Duration(ctrl.config.RefreshTokenExpiresIn) * time.Second)
-	user, err := ctrl.db.InsertUserWithRefreshToken(
-		ctx, sql.InsertUserWithRefreshTokenParams{
-			Disabled:              ctrl.config.DisableNewUsers,
-			DisplayName:           deptr(options.DisplayName),
-			AvatarUrl:             gravatarURL,
-			Email:                 email,
-			PasswordHash:          sql.Text(hashedPassword),
-			Ticket:                pgtype.Text{}, //nolint:exhaustruct
-			TicketExpiresAt:       sql.TimestampTz(time.Now()),
-			EmailVerified:         false,
-			Locale:                deptr(options.Locale),
-			DefaultRole:           deptr(options.DefaultRole),
-			Metadata:              metadata,
-			Roles:                 deptr(options.AllowedRoles),
-			RefreshTokenHash:      sql.Text(hashRefreshToken([]byte(refreshToken.String()))),
-			RefreshTokenExpiresAt: sql.TimestampTz(expiresAt),
-		},
+
+	userSession, userID, apiErr := ctrl.SignupUserWithRefreshToken(
+		ctx, email, password, refreshToken, expiresAt, options, logger,
 	)
-	if err != nil {
-		logger.Error("error inserting user", logError(err))
-		return nil, fmt.Errorf("error inserting user: %w", err)
+	if apiErr != nil {
+		return ctrl.respondWithError(apiErr), nil
 	}
 
 	accessToken, expiresIn, err := ctrl.jwtGetter.GetToken(
-		ctx, user.UserID, deptr(options.AllowedRoles), *options.DefaultRole, logger,
+		ctx, userID, deptr(options.AllowedRoles), *options.DefaultRole, logger,
 	)
 	if err != nil {
 		logger.Error("error getting jwt", logError(err))
@@ -180,21 +143,7 @@ func (ctrl *Controller) postSignupEmailPasswordWithoutEmailVerification( //nolin
 			AccessToken:          accessToken,
 			AccessTokenExpiresIn: expiresIn,
 			RefreshToken:         refreshToken.String(),
-			User: &api.User{
-				AvatarUrl:           gravatarURL,
-				CreatedAt:           user.CreatedAt.Time,
-				DefaultRole:         *options.DefaultRole,
-				DisplayName:         deptr(options.DisplayName),
-				Email:               types.Email(email.String),
-				EmailVerified:       false,
-				Id:                  user.UserID.String(),
-				IsAnonymous:         false,
-				Locale:              deptr(options.Locale),
-				Metadata:            deptr(options.Metadata),
-				PhoneNumber:         "",
-				PhoneNumberVerified: false,
-				Roles:               deptr(options.AllowedRoles),
-			},
+			User:                 userSession,
 		},
 	}, nil
 }

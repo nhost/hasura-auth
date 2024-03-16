@@ -85,11 +85,12 @@ func TestPostUserEmailChange(t *testing.T) { //nolint:maintidx
 						TicketExpiresAt: sql.TimestampTz(time.Now().Add(time.Hour)),
 						NewEmail:        sql.Text("newEmail@acme.com"),
 					}),
-				).Return(sql.UpdateUserChangeEmailRow{
+				).Return(sql.AuthUser{ //nolint:exhaustruct
 					ID:          uuid.MustParse("db477732-48fa-4289-b694-2886a646b6eb"),
 					Locale:      "en",
 					DisplayName: "Jane Doe",
 					Email:       sql.Text("oldEmail@acme.com"),
+					Ticket:      sql.Text("emailConfirmChange:xxxxx"),
 				}, nil)
 
 				return mock
@@ -146,7 +147,9 @@ func TestPostUserEmailChange(t *testing.T) { //nolint:maintidx
 				mock.EXPECT().GetUserByEmail(
 					gomock.Any(),
 					sql.Text("newEmail@acme.com"),
-				).Return(sql.AuthUser{}, nil) //nolint:exhaustruct
+				).Return(sql.AuthUser{
+					Email: sql.Text("newEmail@acme.com"),
+				}, nil) //nolint:exhaustruct
 
 				return mock
 			},
@@ -234,11 +237,12 @@ func TestPostUserEmailChange(t *testing.T) { //nolint:maintidx
 						TicketExpiresAt: sql.TimestampTz(time.Now().Add(time.Hour)),
 						NewEmail:        sql.Text("newEmail@acme.com"),
 					}),
-				).Return(sql.UpdateUserChangeEmailRow{
+				).Return(sql.AuthUser{ //nolint:exhaustruct
 					ID:          uuid.MustParse("db477732-48fa-4289-b694-2886a646b6eb"),
 					Locale:      "en",
 					DisplayName: "Jane Doe",
 					Email:       sql.Text("oldEmail@acme.com"),
+					Ticket:      sql.Text("emailConfirmChange:xxxxx"),
 				}, nil)
 
 				return mock

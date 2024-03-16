@@ -13,6 +13,7 @@ import (
 	"github.com/nhost/hasura-auth/go/api"
 	"github.com/nhost/hasura-auth/go/notifications"
 	"github.com/nhost/hasura-auth/go/sql"
+	"github.com/oapi-codegen/runtime/types"
 )
 
 func deptr[T any](x *T) T { //nolint:ireturn
@@ -45,18 +46,17 @@ type DBClient interface {
 	InsertUser(ctx context.Context, arg sql.InsertUserParams) (sql.InsertUserRow, error)
 	InsertUserWithRefreshToken(
 		ctx context.Context, arg sql.InsertUserWithRefreshTokenParams,
-	) (sql.InsertUserWithRefreshTokenRow, error)
+	) (uuid.UUID, error)
 	InsertRefreshtoken(ctx context.Context, arg sql.InsertRefreshtokenParams) (uuid.UUID, error)
 	UpdateUserChangeEmail(
 		ctx context.Context,
 		arg sql.UpdateUserChangeEmailParams,
-	) (sql.UpdateUserChangeEmailRow, error)
+	) (sql.AuthUser, error)
 	UpdateUserLastSeen(ctx context.Context, id uuid.UUID) (pgtype.Timestamptz, error)
 	UpdateUserTicket(ctx context.Context, arg sql.UpdateUserTicketParams) (uuid.UUID, error)
 }
 
 type Controller struct {
-	db DBClient
 	// validate object helps to validate the input. It provides functionality to validate
 	// input objects and, as well, to fetch users and other data from the database
 	// validating the user in the process
@@ -82,7 +82,6 @@ func New(
 	}
 
 	return &Controller{
-		db:       db,
 		config:   config,
 		validate: validator,
 		gravatarURL: GravatarURLFunc(
@@ -159,7 +158,7 @@ func (ctrl *Controller) SignUpUser(
 		}
 	}
 
-	insertedUser, err := ctrl.db.InsertUser(ctx, input)
+	insertedUser, err := ctrl.validate.db.InsertUser(ctx, input)
 	if err != nil {
 		logger.Error("error inserting user", logError(err))
 		return sql.AuthUser{}, &APIError{api.InternalServerError} //nolint:exhaustruct
@@ -183,6 +182,112 @@ func (ctrl *Controller) SignUpUser(
 		IsAnonymous:         false,
 		Metadata:            metadata,
 	}, nil
+}
+
+func (ctrl *Controller) SignupUserWithRefreshToken(
+	ctx context.Context,
+	email string,
+	password string,
+	refreshToken uuid.UUID,
+	expiresAt time.Time,
+	options *api.SignUpOptions,
+	logger *slog.Logger,
+) (*api.User, uuid.UUID, *APIError) {
+	if ctrl.config.DisableSignup {
+		logger.Warn("signup disabled")
+		return nil, uuid.UUID{}, &APIError{api.SignupDisabled} //nolint:exhaustruct
+	}
+
+	metadata, err := json.Marshal(options.Metadata)
+	if err != nil {
+		logger.Error("error marshaling metadata", logError(err))
+		return nil, uuid.UUID{}, &APIError{api.InternalServerError} //nolint:exhaustruct
+	}
+
+	gravatarURL := ctrl.gravatarURL(email)
+
+	hashedPassword, err := hashPassword(password)
+	if err != nil {
+		logger.Error("error hashing password", logError(err))
+		return nil, uuid.UUID{}, &APIError{api.InternalServerError} //nolint:exhaustruct
+	}
+
+	userID, err := ctrl.validate.db.InsertUserWithRefreshToken(
+		ctx, sql.InsertUserWithRefreshTokenParams{
+			Disabled:              ctrl.config.DisableNewUsers,
+			DisplayName:           deptr(options.DisplayName),
+			AvatarUrl:             gravatarURL,
+			Email:                 sql.Text(email),
+			PasswordHash:          sql.Text(hashedPassword),
+			Ticket:                pgtype.Text{}, //nolint:exhaustruct
+			TicketExpiresAt:       sql.TimestampTz(time.Now()),
+			EmailVerified:         false,
+			Locale:                deptr(options.Locale),
+			DefaultRole:           deptr(options.DefaultRole),
+			Metadata:              metadata,
+			Roles:                 deptr(options.AllowedRoles),
+			RefreshTokenHash:      sql.Text(hashRefreshToken([]byte(refreshToken.String()))),
+			RefreshTokenExpiresAt: sql.TimestampTz(expiresAt),
+		},
+	)
+	if err != nil {
+		logger.Error("error inserting user", logError(err))
+		return nil, uuid.UUID{}, &APIError{api.InternalServerError} //nolint:exhaustruct
+	}
+
+	if ctrl.config.DisableNewUsers {
+		logger.Warn("new user disabled")
+		return nil, uuid.UUID{}, &APIError{api.DisabledUser} //nolint:exhaustruct
+	}
+
+	return &api.User{
+		AvatarUrl:           gravatarURL,
+		CreatedAt:           time.Now(),
+		DefaultRole:         *options.DefaultRole,
+		DisplayName:         deptr(options.DisplayName),
+		Email:               types.Email(email),
+		EmailVerified:       false,
+		Id:                  userID.String(),
+		IsAnonymous:         false,
+		Locale:              deptr(options.Locale),
+		Metadata:            deptr(options.Metadata),
+		PhoneNumber:         "",
+		PhoneNumberVerified: false,
+		Roles:               deptr(options.AllowedRoles),
+	}, userID, nil
+}
+
+func (ctrl *Controller) InsertRefreshtoken(
+	ctx context.Context,
+	userID uuid.UUID,
+	refreshToken string,
+	refreshTokenExpiresAt time.Time,
+	refreshTokenType sql.RefreshTokenType,
+	metadata map[string]any,
+	logger *slog.Logger,
+) (uuid.UUID, *APIError) {
+	var b []byte
+	var err error
+	if metadata != nil {
+		b, err = json.Marshal(metadata)
+		if err != nil {
+			logger.Error("error marshalling metadata", logError(err))
+			return uuid.UUID{}, &APIError{api.InternalServerError} //nolint:exhaustruct
+		}
+	}
+
+	refreshTokenID, err := ctrl.validate.db.InsertRefreshtoken(ctx, sql.InsertRefreshtokenParams{
+		UserID:           userID,
+		RefreshTokenHash: sql.Text(hashRefreshToken([]byte(refreshToken))),
+		ExpiresAt:        sql.TimestampTz(refreshTokenExpiresAt),
+		Type:             refreshTokenType,
+		Metadata:         b,
+	})
+	if err != nil {
+		return uuid.UUID{}, &APIError{api.InternalServerError} //nolint:exhaustruct
+	}
+
+	return refreshTokenID, nil
 }
 
 func (ctrl *Controller) SendEmail(
@@ -229,4 +334,30 @@ func (ctrl *Controller) SendEmail(
 	}
 
 	return nil
+}
+
+func (ctrl *Controller) ChangeEmail(
+	ctx context.Context,
+	userID uuid.UUID,
+	newEmail string,
+	logger *slog.Logger,
+) (sql.AuthUser, *APIError) {
+	ticket := newTicket(TicketTypeEmailConfirmChange)
+	ticketExpiresAt := time.Now().Add(time.Hour)
+
+	user, err := ctrl.validate.db.UpdateUserChangeEmail(
+		ctx,
+		sql.UpdateUserChangeEmailParams{
+			ID:              userID,
+			Ticket:          sql.Text(ticket),
+			TicketExpiresAt: sql.TimestampTz(ticketExpiresAt),
+			NewEmail:        sql.Text(newEmail),
+		},
+	)
+	if err != nil {
+		logger.Error("error updating user ticket", logError(err))
+		return sql.AuthUser{}, &APIError{api.InternalServerError} //nolint:exhaustruct
+	}
+
+	return user, nil
 }

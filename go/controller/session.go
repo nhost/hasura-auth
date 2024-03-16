@@ -18,7 +18,7 @@ func (ctrl *Controller) GetNewSession(
 	user sql.AuthUser,
 	logger *slog.Logger,
 ) (*api.Session, error) {
-	userRoles, err := ctrl.db.GetUserRoles(ctx, user.ID)
+	userRoles, err := ctrl.validate.db.GetUserRoles(ctx, user.ID)
 	if err != nil {
 		return nil, fmt.Errorf("error getting roles by user id: %w", err)
 	}
@@ -29,17 +29,19 @@ func (ctrl *Controller) GetNewSession(
 
 	refreshToken := uuid.New()
 	expiresAt := time.Now().Add(time.Duration(ctrl.config.RefreshTokenExpiresIn) * time.Second)
-	if _, err := ctrl.db.InsertRefreshtoken(ctx, sql.InsertRefreshtokenParams{
-		UserID:           user.ID,
-		RefreshTokenHash: sql.Text(hashRefreshToken([]byte(refreshToken.String()))),
-		ExpiresAt:        sql.TimestampTz(expiresAt),
-		Type:             sql.RefreshTokenTypeRegular,
-		Metadata:         nil,
-	}); err != nil {
-		return nil, fmt.Errorf("error inserting refresh token: %w", err)
+	if _, apiErr := ctrl.InsertRefreshtoken(
+		ctx,
+		user.ID,
+		refreshToken.String(),
+		expiresAt,
+		sql.RefreshTokenTypeRegular,
+		nil,
+		logger,
+	); apiErr != nil {
+		return nil, apiErr
 	}
 
-	if _, err := ctrl.db.UpdateUserLastSeen(ctx, user.ID); err != nil {
+	if _, err := ctrl.validate.db.UpdateUserLastSeen(ctx, user.ID); err != nil {
 		return nil, fmt.Errorf("error updating last seen: %w", err)
 	}
 

@@ -47,18 +47,18 @@ func (ctrl *Controller) PostSigninPasswordlessEmail( //nolint:ireturn
 	}
 
 	user, isMissing, apiErr := ctrl.validate.GetUserByEmail(ctx, string(request.Body.Email), logger)
-	var ticket string
+	ticket := newTicket(TicketTypePasswordLessEmail)
+	expireAt := time.Now().Add(time.Hour)
 	switch {
 	case isMissing:
 		logger.Info("user does not exist, creating user")
 
-		ticket = newTicket(TicketTypePasswordLessEmail)
 		user, apiErr = ctrl.SignUpUser(
 			ctx,
 			string(request.Body.Email),
 			options,
 			logger,
-			SignupUserWithTicket(ticket, time.Now().Add(time.Hour)),
+			SignupUserWithTicket(ticket, expireAt),
 		)
 		if apiErr != nil {
 			return ctrl.respondWithError(apiErr), nil
@@ -67,8 +67,7 @@ func (ctrl *Controller) PostSigninPasswordlessEmail( //nolint:ireturn
 		logger.Error("error getting user by email", logError(apiErr))
 		return ctrl.respondWithError(apiErr), nil
 	default:
-		ticket, apiErr = ctrl.SetTicket(ctx, user.ID, TicketTypePasswordLessEmail, logger)
-		if apiErr != nil {
+		if apiErr = ctrl.SetTicket(ctx, user.ID, ticket, expireAt, logger); apiErr != nil {
 			return ctrl.respondWithError(apiErr), nil
 		}
 	}

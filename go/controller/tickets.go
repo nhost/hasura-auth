@@ -29,28 +29,26 @@ func newTicket(ticketType TicketType) string {
 func (ctrl *Controller) SetTicket(
 	ctx context.Context,
 	userID uuid.UUID,
-	ticketType TicketType,
+	ticket string,
+	expiresAt time.Time,
 	logger *slog.Logger,
-) (string, *APIError) {
-	ticket := newTicket(ticketType)
-	ticketExpiresAt := time.Now().Add(time.Hour)
-
-	_, err := ctrl.db.UpdateUserTicket(
+) *APIError {
+	_, err := ctrl.validate.db.UpdateUserTicket(
 		ctx,
 		sql.UpdateUserTicketParams{
 			ID:              userID,
 			Ticket:          sql.Text(ticket),
-			TicketExpiresAt: sql.TimestampTz(ticketExpiresAt),
+			TicketExpiresAt: sql.TimestampTz(expiresAt),
 		},
 	)
 	if errors.Is(err, pgx.ErrNoRows) {
 		logger.Error("user not found")
-		return "", &APIError{api.InvalidRequest}
+		return &APIError{api.InvalidRequest}
 	}
 	if err != nil {
 		logger.Error("error updating user ticket", logError(err))
-		return "", &APIError{api.InternalServerError}
+		return &APIError{api.InternalServerError}
 	}
 
-	return ticket, nil
+	return nil
 }

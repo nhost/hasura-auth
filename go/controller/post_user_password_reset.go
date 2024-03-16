@@ -3,6 +3,7 @@ package controller
 import (
 	"context"
 	"log/slog"
+	"time"
 
 	"github.com/nhost/hasura-auth/go/api"
 	"github.com/nhost/hasura-auth/go/middleware"
@@ -32,8 +33,9 @@ func (ctrl *Controller) PostUserPasswordReset( //nolint:ireturn
 		return ctrl.respondWithError(apiErr), nil
 	}
 
-	ticket, apiErr := ctrl.SetTicket(ctx, user.ID, TicketTypePasswordReset, logger)
-	if apiErr != nil {
+	ticket := newTicket(TicketTypePasswordReset)
+	expiresAt := time.Now().Add(time.Hour)
+	if apiErr := ctrl.SetTicket(ctx, user.ID, ticket, expiresAt, logger); apiErr != nil {
 		return ctrl.respondWithError(apiErr), nil
 	}
 

@@ -2,14 +2,10 @@ package controller
 
 import (
 	"context"
-	"errors"
-	"time"
 
-	"github.com/jackc/pgx/v5"
 	"github.com/nhost/hasura-auth/go/api"
 	"github.com/nhost/hasura-auth/go/middleware"
 	"github.com/nhost/hasura-auth/go/notifications"
-	"github.com/nhost/hasura-auth/go/sql"
 )
 
 func (ctrl *Controller) PostUserEmailChange( //nolint:ireturn
@@ -28,37 +24,25 @@ func (ctrl *Controller) PostUserEmailChange( //nolint:ireturn
 		return ctrl.respondWithError(apiErr), nil
 	}
 
-	_, err := ctrl.db.GetUserByEmail(ctx, sql.Text(string(request.Body.NewEmail)))
-	if err == nil {
+	_, isMissing, apiErr := ctrl.validate.GetUserByEmail(ctx, string(request.Body.NewEmail), logger)
+	if apiErr == nil {
 		logger.Warn("email already exists")
 		return ctrl.sendError(api.EmailAlreadyInUse), nil
-	} else if !errors.Is(err, pgx.ErrNoRows) {
-		logger.Error("error getting user by email", logError(err))
-		return ctrl.respondWithError(err), nil
+	} else if !isMissing {
+		logger.Error("error getting user by email", logError(apiErr))
+		return ctrl.respondWithError(apiErr), nil
 	}
 
-	ticket := newTicket(TicketTypeEmailConfirmChange)
-	ticketExpiresAt := time.Now().Add(time.Hour)
-
-	updatedUser, err := ctrl.db.UpdateUserChangeEmail(
-		ctx,
-		sql.UpdateUserChangeEmailParams{
-			ID:              user.ID,
-			Ticket:          sql.Text(ticket),
-			TicketExpiresAt: sql.TimestampTz(ticketExpiresAt),
-			NewEmail:        sql.Text(string(request.Body.NewEmail)),
-		},
-	)
-	if err != nil {
-		logger.Error("error updating user ticket", logError(err))
-		return ctrl.respondWithError(err), nil
+	updatedUser, apiErr := ctrl.ChangeEmail(ctx, user.ID, string(request.Body.NewEmail), logger)
+	if apiErr != nil {
+		return ctrl.respondWithError(apiErr), nil
 	}
 
 	if err := ctrl.SendEmail(
 		string(request.Body.NewEmail),
 		updatedUser.Locale,
 		LinkTypeEmailConfirmChange,
-		ticket,
+		updatedUser.Ticket.String,
 		deptr(request.Body.Options.RedirectTo),
 		notifications.TemplateNameEmailConfirmChange,
 		updatedUser.DisplayName,

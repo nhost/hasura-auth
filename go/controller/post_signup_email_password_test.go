@@ -148,6 +148,8 @@ func cmpDBParams(
 func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx,gocognit,cyclop
 	t.Parallel()
 
+	userID := uuid.MustParse("DB477732-48FA-4289-B694-2886A646B6EB")
+
 	cases := []struct {
 		name             string
 		config           func() *controller.Config
@@ -187,10 +189,7 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx,gocognit,cycl
 						RefreshTokenHash:      pgtype.Text{}, //nolint:exhaustruct
 						RefreshTokenExpiresAt: sql.TimestampTz(time.Now().Add(30 * 24 * time.Hour)),
 					}),
-				).Return(sql.InsertUserWithRefreshTokenRow{
-					UserID:    uuid.MustParse("DB477732-48FA-4289-B694-2886A646B6EB"),
-					CreatedAt: sql.TimestampTz(time.Now()),
-				}, nil)
+				).Return(userID, nil)
 
 				return mock
 			},
@@ -284,10 +283,7 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx,gocognit,cycl
 						RefreshTokenHash:      pgtype.Text{}, //nolint:exhaustruct
 						RefreshTokenExpiresAt: sql.TimestampTz(time.Now().Add(30 * 24 * time.Hour)),
 					}),
-				).Return(sql.InsertUserWithRefreshTokenRow{
-					UserID:    uuid.MustParse("DB477732-48FA-4289-B694-2886A646B6EB"),
-					CreatedAt: sql.TimestampTz(time.Now()),
-				}, nil)
+				).Return(userID, nil)
 
 				return mock
 			},
@@ -712,10 +708,7 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx,gocognit,cycl
 						RefreshTokenHash:      pgtype.Text{}, //nolint:exhaustruct
 						RefreshTokenExpiresAt: sql.TimestampTz(time.Now().Add(30 * 24 * time.Hour)),
 					}),
-				).Return(sql.InsertUserWithRefreshTokenRow{
-					UserID:    uuid.MustParse("DB477732-48FA-4289-B694-2886A646B6EB"),
-					CreatedAt: sql.TimestampTz(time.Now()),
-				}, nil)
+				).Return(userID, nil)
 
 				return mock
 			},
@@ -862,10 +855,7 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx,gocognit,cycl
 						RefreshTokenHash:      pgtype.Text{}, //nolint:exhaustruct
 						RefreshTokenExpiresAt: sql.TimestampTz(time.Now().Add(30 * 24 * time.Hour)),
 					}),
-				).Return(sql.InsertUserWithRefreshTokenRow{
-					UserID:    uuid.MustParse("DB477732-48FA-4289-B694-2886A646B6EB"),
-					CreatedAt: sql.TimestampTz(time.Now()),
-				}, nil)
+				).Return(userID, nil)
 
 				return mock
 			},
@@ -963,10 +953,7 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx,gocognit,cycl
 						RefreshTokenHash:      pgtype.Text{}, //nolint:exhaustruct
 						RefreshTokenExpiresAt: sql.TimestampTz(time.Now().Add(30 * 24 * time.Hour)),
 					}),
-				).Return(sql.InsertUserWithRefreshTokenRow{
-					UserID:    uuid.MustParse("DB477732-48FA-4289-B694-2886A646B6EB"),
-					CreatedAt: sql.TimestampTz(time.Now()),
-				}, nil)
+				).Return(userID, nil)
 
 				return mock
 			},
