@@ -43,7 +43,7 @@ func (ctrl *Controller) PostSigninEmailPassword( //nolint:ireturn
 	logger := middleware.LoggerFromContext(ctx).
 		With(slog.String("email", string(request.Body.Email)))
 
-	user, apiErr := ctrl.validate.GetUserByEmail(
+	user, _, apiErr := ctrl.validate.GetUserByEmail(
 		ctx, string(request.Body.Email), logger.WithGroup("validator"),
 	)
 	if apiErr != nil {

@@ -452,8 +452,8 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx,gocognit,cycl
 					Options:  nil,
 				},
 			},
-			expectedResponse: api.PostSignupEmailPassword200JSONResponse{
-				Session: nil,
+			expectedResponse: controller.ErrorResponse{
+				Error: "disabled-user", Message: "User is disabled", Status: 401,
 			},
 			expectedJWT: nil,
 		},
@@ -512,8 +512,8 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx,gocognit,cycl
 					Options:  nil,
 				},
 			},
-			expectedResponse: api.PostSignupEmailPassword200JSONResponse{
-				Session: nil,
+			expectedResponse: controller.ErrorResponse{
+				Error: "disabled-user", Message: "User is disabled", Status: 401,
 			},
 			expectedJWT: nil,
 		},

@@ -58,8 +58,8 @@ func TestPostSigninPasswordlessEmail(t *testing.T) { //nolint:maintidx
 						AvatarUrl:       "",
 						Email:           sql.Text("jane@acme.com"),
 						PasswordHash:    pgtype.Text{}, //nolint:exhaustruct
-						Ticket:          pgtype.Text{}, //nolint:exhaustruct
-						TicketExpiresAt: sql.TimestampTz(time.Now()),
+						Ticket:          sql.Text("passwordlessEmail:xxx"),
+						TicketExpiresAt: sql.TimestampTz(time.Now().Add(time.Hour)),
 						EmailVerified:   false,
 						Locale:          "en",
 						DefaultRole:     "user",
@@ -70,15 +70,6 @@ func TestPostSigninPasswordlessEmail(t *testing.T) { //nolint:maintidx
 					UserID:    userID,
 					CreatedAt: sql.TimestampTz(time.Now()),
 				}, nil)
-
-				mock.EXPECT().UpdateUserTicket(
-					gomock.Any(),
-					cmpDBParams(sql.UpdateUserTicketParams{
-						ID:              userID,
-						Ticket:          sql.Text("passwordlessEmail:xxx"),
-						TicketExpiresAt: sql.TimestampTz(time.Now().Add(time.Hour)),
-					}),
-				).Return(userID, nil)
 
 				return mock
 			},
@@ -230,8 +221,8 @@ func TestPostSigninPasswordlessEmail(t *testing.T) { //nolint:maintidx
 						AvatarUrl:       "",
 						Email:           sql.Text("jane@acme.com"),
 						PasswordHash:    pgtype.Text{}, //nolint:exhaustruct
-						Ticket:          pgtype.Text{}, //nolint:exhaustruct
-						TicketExpiresAt: sql.TimestampTz(time.Now()),
+						Ticket:          sql.Text("passwordlessEmail:xxx"),
+						TicketExpiresAt: sql.TimestampTz(time.Now().Add(time.Hour)),
 						EmailVerified:   false,
 						Locale:          "en",
 						DefaultRole:     "user",
@@ -242,15 +233,6 @@ func TestPostSigninPasswordlessEmail(t *testing.T) { //nolint:maintidx
 					UserID:    userID,
 					CreatedAt: sql.TimestampTz(time.Now()),
 				}, nil)
-
-				mock.EXPECT().UpdateUserTicket(
-					gomock.Any(),
-					cmpDBParams(sql.UpdateUserTicketParams{
-						ID:              userID,
-						Ticket:          sql.Text("passwordlessEmail:xxx"),
-						TicketExpiresAt: sql.TimestampTz(time.Now().Add(time.Hour)),
-					}),
-				).Return(userID, nil)
 
 				return mock
 			},
@@ -354,8 +336,8 @@ func TestPostSigninPasswordlessEmail(t *testing.T) { //nolint:maintidx
 						AvatarUrl:       "",
 						Email:           sql.Text("jane@acme.com"),
 						PasswordHash:    pgtype.Text{}, //nolint:exhaustruct
-						Ticket:          pgtype.Text{}, //nolint:exhaustruct
-						TicketExpiresAt: sql.TimestampTz(time.Now()),
+						Ticket:          sql.Text("passwordlessEmail:xxx"),
+						TicketExpiresAt: sql.TimestampTz(time.Now().Add(time.Hour)),
 						EmailVerified:   false,
 						Locale:          "fr",
 						DefaultRole:     "user",
@@ -366,15 +348,6 @@ func TestPostSigninPasswordlessEmail(t *testing.T) { //nolint:maintidx
 					UserID:    userID,
 					CreatedAt: sql.TimestampTz(time.Now()),
 				}, nil)
-
-				mock.EXPECT().UpdateUserTicket(
-					gomock.Any(),
-					cmpDBParams(sql.UpdateUserTicketParams{
-						ID:              userID,
-						Ticket:          sql.Text("passwordlessEmail:xxx"),
-						TicketExpiresAt: sql.TimestampTz(time.Now().Add(time.Hour)),
-					}),
-				).Return(userID, nil)
 
 				return mock
 			},

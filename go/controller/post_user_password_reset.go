@@ -27,7 +27,7 @@ func (ctrl *Controller) PostUserPasswordReset( //nolint:ireturn
 		return ctrl.sendError(api.InvalidEmailPassword), nil
 	}
 
-	user, apiErr := ctrl.validate.GetUserByEmail(ctx, string(request.Body.Email), logger)
+	user, _, apiErr := ctrl.validate.GetUserByEmail(ctx, string(request.Body.Email), logger)
 	if apiErr != nil {
 		return ctrl.respondWithError(apiErr), nil
 	}

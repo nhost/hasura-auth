@@ -3,11 +3,14 @@ package controller
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log/slog"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/nhost/hasura-auth/go/api"
 	"github.com/nhost/hasura-auth/go/notifications"
 	"github.com/nhost/hasura-auth/go/sql"
 )
@@ -53,7 +56,10 @@ type DBClient interface {
 }
 
 type Controller struct {
-	db          DBClient
+	db DBClient
+	// validate object helps to validate the input. It provides functionality to validate
+	// input objects and, as well, to fetch users and other data from the database
+	// validating the user in the process
 	validate    *Validator
 	config      Config
 	gravatarURL func(string) string
@@ -85,6 +91,97 @@ func New(
 		jwtGetter: jwtGetter,
 		email:     emailer,
 		version:   version,
+	}, nil
+}
+
+type SignUpFn func(input *sql.InsertUserParams) error
+
+func SignupUserWithTicket(ticket string, expiresAt time.Time) SignUpFn {
+	return func(input *sql.InsertUserParams) error {
+		input.Ticket = sql.Text(ticket)
+		input.TicketExpiresAt = sql.TimestampTz(expiresAt)
+		return nil
+	}
+}
+
+func SignupUserWithPassword(password string) SignUpFn {
+	return func(input *sql.InsertUserParams) error {
+		hashedPassword, err := hashPassword(password)
+		if err != nil {
+			return fmt.Errorf("error hashing password: %w", err)
+		}
+
+		input.PasswordHash = sql.Text(hashedPassword)
+
+		return nil
+	}
+}
+
+func (ctrl *Controller) SignUpUser(
+	ctx context.Context,
+	email string,
+	options *api.SignUpOptions,
+	logger *slog.Logger,
+	withInputFn ...SignUpFn,
+) (sql.AuthUser, *APIError) {
+	if ctrl.config.DisableSignup {
+		logger.Warn("signup disabled")
+		return sql.AuthUser{}, &APIError{api.SignupDisabled} //nolint:exhaustruct
+	}
+
+	metadata, err := json.Marshal(options.Metadata)
+	if err != nil {
+		logger.Error("error marshaling metadata", logError(err))
+		return sql.AuthUser{}, &APIError{api.InternalServerError} //nolint:exhaustruct
+	}
+
+	gravatarURL := ctrl.gravatarURL(email)
+
+	input := sql.InsertUserParams{
+		Disabled:        ctrl.config.DisableNewUsers,
+		DisplayName:     deptr(options.DisplayName),
+		AvatarUrl:       gravatarURL,
+		Email:           sql.Text(email),
+		PasswordHash:    pgtype.Text{}, //nolint:exhaustruct
+		Ticket:          pgtype.Text{}, //nolint:exhaustruct
+		TicketExpiresAt: sql.TimestampTz(time.Now()),
+		EmailVerified:   false,
+		Locale:          deptr(options.Locale),
+		DefaultRole:     deptr(options.DefaultRole),
+		Metadata:        metadata,
+		Roles:           deptr(options.AllowedRoles),
+	}
+
+	for _, fn := range withInputFn {
+		if err := fn(&input); err != nil {
+			logger.Error("error applying input function to user signup", logError(err))
+			return sql.AuthUser{}, &APIError{api.InternalServerError} //nolint:exhaustruct
+		}
+	}
+
+	insertedUser, err := ctrl.db.InsertUser(ctx, input)
+	if err != nil {
+		logger.Error("error inserting user", logError(err))
+		return sql.AuthUser{}, &APIError{api.InternalServerError} //nolint:exhaustruct
+	}
+
+	if ctrl.config.DisableNewUsers {
+		logger.Warn("new user disabled")
+		return sql.AuthUser{}, &APIError{api.DisabledUser} //nolint:exhaustruct
+	}
+
+	return sql.AuthUser{ //nolint:exhaustruct
+		ID:                  insertedUser.UserID,
+		Disabled:            ctrl.config.DisableNewUsers,
+		DisplayName:         deptr(options.DisplayName),
+		AvatarUrl:           gravatarURL,
+		Locale:              deptr(options.Locale),
+		Email:               sql.Text(email),
+		EmailVerified:       false,
+		PhoneNumberVerified: false,
+		DefaultRole:         deptr(options.DefaultRole),
+		IsAnonymous:         false,
+		Metadata:            metadata,
 	}, nil
 }
 

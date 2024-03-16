@@ -178,22 +178,22 @@ func (validator *Validator) GetUserByEmail(
 	ctx context.Context,
 	email string,
 	logger *slog.Logger,
-) (sql.AuthUser, *APIError) {
+) (sql.AuthUser, bool, *APIError) {
 	user, err := validator.db.GetUserByEmail(ctx, sql.Text(email))
 	if errors.Is(err, pgx.ErrNoRows) {
 		logger.Warn("user not found")
-		return sql.AuthUser{}, &APIError{api.InvalidEmailPassword} //nolint:exhaustruct
+		return sql.AuthUser{}, true, &APIError{api.InvalidEmailPassword} //nolint:exhaustruct
 	}
 	if err != nil {
 		logger.Error("error getting user by email", logError(err))
-		return sql.AuthUser{}, &APIError{api.InternalServerError} //nolint:exhaustruct
+		return sql.AuthUser{}, false, &APIError{api.InternalServerError} //nolint:exhaustruct
 	}
 
 	if err := validator.User(user, logger); err != nil {
-		return sql.AuthUser{}, err //nolint:exhaustruct
+		return sql.AuthUser{}, false, err //nolint:exhaustruct
 	}
 
-	return user, nil
+	return user, false, nil
 }
 
 func (validator *Validator) GetUserByRefreshTokenHash(

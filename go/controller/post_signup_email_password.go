@@ -73,11 +73,9 @@ func (ctrl *Controller) PostSignupEmailPassword( //nolint:ireturn
 	if ctrl.config.RequireEmailVerification || ctrl.config.DisableNewUsers {
 		return ctrl.postSignupEmailPasswordWithEmailVerificationOrUserDisabled(
 			ctx,
-			sql.Text(req.Body.Email),
-			hashedPassword,
-			gravatarURL,
+			string(req.Body.Email),
+			req.Body.Password,
 			req.Body.Options,
-			metadata,
 			logger,
 		)
 	}
@@ -95,33 +93,22 @@ func (ctrl *Controller) PostSignupEmailPassword( //nolint:ireturn
 
 func (ctrl *Controller) postSignupEmailPasswordWithEmailVerificationOrUserDisabled( //nolint:ireturn
 	ctx context.Context,
-	email pgtype.Text,
-	hashedPassword string,
-	gravatarURL string,
+	email string,
+	password string,
 	options *api.SignUpOptions,
-	metadata []byte,
 	logger *slog.Logger,
 ) (api.PostSignupEmailPasswordResponseObject, error) {
 	ticket := newTicket(TicketTypeVerifyEmail)
-	_, err := ctrl.db.InsertUser(
-		ctx, sql.InsertUserParams{
-			Disabled:        ctrl.config.DisableNewUsers,
-			DisplayName:     deptr(options.DisplayName),
-			AvatarUrl:       gravatarURL,
-			Email:           email,
-			PasswordHash:    sql.Text(hashedPassword),
-			Ticket:          sql.Text(ticket),
-			TicketExpiresAt: sql.TimestampTz(time.Now().Add(30 * 24 * time.Hour)),
-			EmailVerified:   false,
-			Locale:          deptr(options.Locale),
-			DefaultRole:     deptr(options.DefaultRole),
-			Metadata:        metadata,
-			Roles:           deptr(options.AllowedRoles),
-		},
-	)
-	if err != nil {
-		logger.Error("error inserting user", logError(err))
-		return nil, fmt.Errorf("error inserting user: %w", err)
+
+	if _, err := ctrl.SignUpUser(
+		ctx,
+		email,
+		options,
+		logger,
+		SignupUserWithTicket(ticket, time.Now().Add(30*24*time.Hour)),
+		SignupUserWithPassword(password),
+	); err != nil {
+		return ctrl.respondWithError(err), nil
 	}
 
 	if ctrl.config.DisableNewUsers {
@@ -129,14 +116,14 @@ func (ctrl *Controller) postSignupEmailPasswordWithEmailVerificationOrUserDisabl
 	}
 
 	if err := ctrl.SendEmail(
-		email.String,
+		email,
 		deptr(options.Locale),
 		LinkTypeEmailVerify,
 		ticket,
 		deptr(options.RedirectTo),
 		notifications.TemplateNameEmailVerify,
 		deptr(options.DisplayName),
-		email.String,
+		email,
 		"",
 		logger,
 	); err != nil {
