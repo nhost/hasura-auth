@@ -206,7 +206,7 @@ func (validator *Validator) GetUserByRefreshTokenHash(
 		ctx,
 		sql.GetUserByRefreshTokenHashParams{
 			RefreshTokenHash: sql.Text(hashRefreshToken([]byte(refreshToken))),
-			Type:             sql.RefreshTokenTypePAT,
+			Type:             refreshTokenType,
 		},
 	)
 	if errors.Is(err, pgx.ErrNoRows) {

@@ -177,8 +177,8 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx,gocognit,cycl
 						AvatarUrl:             "",
 						Email:                 sql.Text("jane@acme.com"),
 						PasswordHash:          pgtype.Text{}, //nolint:exhaustruct
-						Ticket:                sql.Text("verifyEmail:xxxx"),
-						TicketExpiresAt:       sql.TimestampTz(time.Now().Add(30 * 24 * time.Hour)),
+						Ticket:                pgtype.Text{}, //nolint:exhaustruct
+						TicketExpiresAt:       sql.TimestampTz(time.Now()),
 						EmailVerified:         false,
 						Locale:                "en",
 						DefaultRole:           "user",
@@ -274,8 +274,8 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx,gocognit,cycl
 						AvatarUrl:             "",
 						Email:                 sql.Text("jane@acme.com"),
 						PasswordHash:          pgtype.Text{}, //nolint:exhaustruct
-						Ticket:                sql.Text("verifyEmail:xxxx"),
-						TicketExpiresAt:       sql.TimestampTz(time.Now().Add(30 * 24 * time.Hour)),
+						Ticket:                pgtype.Text{}, //nolint:exhaustruct
+						TicketExpiresAt:       sql.TimestampTz(time.Now()),
 						EmailVerified:         false,
 						Locale:                "se",
 						DefaultRole:           "me",
@@ -702,8 +702,8 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx,gocognit,cycl
 						AvatarUrl:             "",
 						Email:                 sql.Text("jane@acme.com"),
 						PasswordHash:          pgtype.Text{}, //nolint:exhaustruct
-						Ticket:                sql.Text("verifyEmail:xxxx"),
-						TicketExpiresAt:       sql.TimestampTz(time.Now().Add(30 * 24 * time.Hour)),
+						Ticket:                pgtype.Text{}, //nolint:exhaustruct
+						TicketExpiresAt:       sql.TimestampTz(time.Now()),
 						EmailVerified:         false,
 						Locale:                "en",
 						DefaultRole:           "user",
@@ -852,8 +852,8 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx,gocognit,cycl
 						AvatarUrl:             "https://www.gravatar.com/avatar/a6b55dc639dd4151e97efbc42ee1a28b?d=blank&r=g", //nolint:lll
 						Email:                 sql.Text("jane@acme.com"),
 						PasswordHash:          pgtype.Text{}, //nolint:exhaustruct
-						Ticket:                sql.Text("verifyEmail:xxxx"),
-						TicketExpiresAt:       sql.TimestampTz(time.Now().Add(30 * 24 * time.Hour)),
+						Ticket:                pgtype.Text{}, //nolint:exhaustruct
+						TicketExpiresAt:       sql.TimestampTz(time.Now()),
 						EmailVerified:         false,
 						Locale:                "en",
 						DefaultRole:           "user",
@@ -953,8 +953,8 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx,gocognit,cycl
 						AvatarUrl:             "",
 						Email:                 sql.Text("jane@acme.com"),
 						PasswordHash:          pgtype.Text{}, //nolint:exhaustruct
-						Ticket:                sql.Text("verifyEmail:xxxx"),
-						TicketExpiresAt:       sql.TimestampTz(time.Now().Add(30 * 24 * time.Hour)),
+						Ticket:                pgtype.Text{}, //nolint:exhaustruct
+						TicketExpiresAt:       sql.TimestampTz(time.Now()),
 						EmailVerified:         false,
 						Locale:                "en",
 						DefaultRole:           "user",

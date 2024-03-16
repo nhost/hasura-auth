@@ -164,8 +164,8 @@ func (ctrl *Controller) postSignupEmailPasswordWithoutEmailVerification( //nolin
 			AvatarUrl:             gravatarURL,
 			Email:                 email,
 			PasswordHash:          sql.Text(hashedPassword),
-			Ticket:                sql.Text("verifyEmail:" + uuid.NewString()),
-			TicketExpiresAt:       sql.TimestampTz(time.Now().Add(30 * 24 * time.Hour)),
+			Ticket:                pgtype.Text{}, //nolint:exhaustruct
+			TicketExpiresAt:       sql.TimestampTz(time.Now()),
 			EmailVerified:         false,
 			Locale:                deptr(options.Locale),
 			DefaultRole:           deptr(options.DefaultRole),

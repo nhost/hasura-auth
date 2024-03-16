@@ -26,6 +26,12 @@ func (ctrl *Controller) PostChangeEnv(fn gin.HandlerFunc) gin.HandlerFunc {
 			return
 		}
 
+		if err := json.Unmarshal(b, &ctrl.validate.cfg); err != nil {
+			_ = c.Error(err)
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
 		if ctrl.config.CustomClaims == "" {
 			ctrl.jwtGetter.customClaimer = nil
 		} else {
@@ -43,8 +49,6 @@ func (ctrl *Controller) PostChangeEnv(fn gin.HandlerFunc) gin.HandlerFunc {
 			ctrl.jwtGetter.customClaimer = cc
 		}
 
-		ctrl.validate.cfg.PasswordHIBPEnabled = ctrl.config.PasswordHIBPEnabled
-
 		if ctrl.config.BlockedEmailDomains != nil ||
 			ctrl.config.BlockedEmails != nil ||
 			ctrl.config.AllowedEmailDomains != nil ||
@@ -55,10 +59,6 @@ func (ctrl *Controller) PostChangeEnv(fn gin.HandlerFunc) gin.HandlerFunc {
 				ctrl.config.AllowedEmailDomains,
 				ctrl.config.AllowedEmails,
 			)
-		}
-
-		if ctrl.config.AllowedLocales != nil {
-			ctrl.validate.cfg.AllowedLocales = ctrl.config.AllowedLocales
 		}
 
 		fn(c)
