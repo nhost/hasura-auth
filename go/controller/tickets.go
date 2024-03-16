@@ -33,7 +33,7 @@ func (ctrl *Controller) SetTicket(
 	expiresAt time.Time,
 	logger *slog.Logger,
 ) *APIError {
-	_, err := ctrl.validate.db.UpdateUserTicket(
+	_, err := ctrl.wf.db.UpdateUserTicket(
 		ctx,
 		sql.UpdateUserTicketParams{
 			ID:              userID,

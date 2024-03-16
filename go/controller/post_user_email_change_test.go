@@ -147,9 +147,9 @@ func TestPostUserEmailChange(t *testing.T) { //nolint:maintidx
 				mock.EXPECT().GetUserByEmail(
 					gomock.Any(),
 					sql.Text("newEmail@acme.com"),
-				).Return(sql.AuthUser{
+				).Return(sql.AuthUser{ //nolint:exhaustruct
 					Email: sql.Text("newEmail@acme.com"),
-				}, nil) //nolint:exhaustruct
+				}, nil)
 
 				return mock
 			},

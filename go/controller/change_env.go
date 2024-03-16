@@ -26,14 +26,14 @@ func (ctrl *Controller) PostChangeEnv(fn gin.HandlerFunc) gin.HandlerFunc {
 			return
 		}
 
-		if err := json.Unmarshal(b, &ctrl.validate.cfg); err != nil {
+		if err := json.Unmarshal(b, &ctrl.wf.cfg); err != nil {
 			_ = c.Error(err)
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
 		if ctrl.config.CustomClaims == "" {
-			ctrl.jwtGetter.customClaimer = nil
+			ctrl.wf.jwtGetter.customClaimer = nil
 		} else {
 			cc, err := NewCustomClaims(
 				ctrl.config.CustomClaims,
@@ -46,14 +46,14 @@ func (ctrl *Controller) PostChangeEnv(fn gin.HandlerFunc) gin.HandlerFunc {
 				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 				return
 			}
-			ctrl.jwtGetter.customClaimer = cc
+			ctrl.wf.jwtGetter.customClaimer = cc
 		}
 
 		if ctrl.config.BlockedEmailDomains != nil ||
 			ctrl.config.BlockedEmails != nil ||
 			ctrl.config.AllowedEmailDomains != nil ||
 			ctrl.config.AllowedEmails != nil {
-			ctrl.validate.ValidateEmail = ValidateEmail(
+			ctrl.wf.ValidateEmail = ValidateEmail(
 				ctrl.config.BlockedEmailDomains,
 				ctrl.config.BlockedEmails,
 				ctrl.config.AllowedEmailDomains,

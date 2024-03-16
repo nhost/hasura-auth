@@ -17,18 +17,18 @@ func (ctrl *Controller) PostUserPasswordReset( //nolint:ireturn
 	logger := middleware.LoggerFromContext(ctx).
 		With(slog.String("email", string(request.Body.Email)))
 
-	options, err := ctrl.validate.OptionsRedirectTo(request.Body.Options, logger)
+	options, err := ctrl.wf.ValidateOptionsRedirectTo(request.Body.Options, logger)
 	if err != nil {
 		return ctrl.respondWithError(err), nil
 	}
 	request.Body.Options = options
 
-	if !ctrl.validate.ValidateEmail(string(request.Body.Email)) {
+	if !ctrl.wf.ValidateEmail(string(request.Body.Email)) {
 		logger.Warn("email didn't pass access control checks")
 		return ctrl.sendError(api.InvalidEmailPassword), nil
 	}
 
-	user, _, apiErr := ctrl.validate.GetUserByEmail(ctx, string(request.Body.Email), logger)
+	user, _, apiErr := ctrl.wf.GetUserByEmail(ctx, string(request.Body.Email), logger)
 	if apiErr != nil {
 		return ctrl.respondWithError(apiErr), nil
 	}

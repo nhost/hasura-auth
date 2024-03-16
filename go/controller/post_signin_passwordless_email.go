@@ -19,12 +19,12 @@ func (ctrl *Controller) postSigninPasswordlessEmailValidateRequest(
 		return nil, &APIError{api.DisabledEndpoint}
 	}
 
-	if !ctrl.validate.ValidateEmail(string(request.Body.Email)) {
+	if !ctrl.wf.ValidateEmail(string(request.Body.Email)) {
 		logger.Warn("email didn't pass access control checks")
 		return nil, &APIError{api.InvalidEmailPassword}
 	}
 
-	options, apiErr := ctrl.validate.SignUpOptions(
+	options, apiErr := ctrl.wf.ValidateSignUpOptions(
 		request.Body.Options, string(request.Body.Email), logger,
 	)
 	if apiErr != nil {
@@ -46,7 +46,7 @@ func (ctrl *Controller) PostSigninPasswordlessEmail( //nolint:ireturn
 		return ctrl.respondWithError(apiErr), nil
 	}
 
-	user, isMissing, apiErr := ctrl.validate.GetUserByEmail(ctx, string(request.Body.Email), logger)
+	user, isMissing, apiErr := ctrl.wf.GetUserByEmail(ctx, string(request.Body.Email), logger)
 	ticket := newTicket(TicketTypePasswordLessEmail)
 	expireAt := time.Now().Add(time.Hour)
 	switch {

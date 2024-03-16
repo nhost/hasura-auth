@@ -13,13 +13,13 @@ func (ctrl *Controller) PostPat( //nolint:ireturn
 	ctx context.Context, request api.PostPatRequestObject,
 ) (api.PostPatResponseObject, error) {
 	logger := middleware.LoggerFromContext(ctx)
-	user, apiErr := ctrl.GetUserFromJWTInContext(ctx, logger)
+	user, apiErr := ctrl.wf.GetUserFromJWTInContext(ctx, logger)
 	if apiErr != nil {
 		return ctrl.respondWithError(apiErr), nil
 	}
 
 	pat := uuid.New()
-	refreshTokenID, apiErr := ctrl.InsertRefreshtoken(
+	refreshTokenID, apiErr := ctrl.wf.InsertRefreshtoken(
 		ctx,
 		user.ID,
 		pat.String(),

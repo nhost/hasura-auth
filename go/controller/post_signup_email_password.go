@@ -21,15 +21,15 @@ func (ctrl *Controller) postSignupEmailPasswordValidateRequest(
 			&APIError{api.SignupDisabled}
 	}
 
-	if err := ctrl.validate.SignupEmail(ctx, req.Body.Email, logger); err != nil {
+	if err := ctrl.wf.ValidateSignupEmail(ctx, req.Body.Email, logger); err != nil {
 		return api.PostSignupEmailPasswordRequestObject{}, err //nolint:exhaustruct
 	}
 
-	if err := ctrl.validate.Password(ctx, req.Body.Password, logger); err != nil {
+	if err := ctrl.wf.ValidatePassword(ctx, req.Body.Password, logger); err != nil {
 		return api.PostSignupEmailPasswordRequestObject{}, err //nolint:exhaustruct
 	}
 
-	options, err := ctrl.validate.SignUpOptions(
+	options, err := ctrl.wf.ValidateSignUpOptions(
 		req.Body.Options, string(req.Body.Email), logger,
 	)
 	if err != nil {
@@ -113,7 +113,7 @@ func (ctrl *Controller) postSignupEmailPasswordWithEmailVerificationOrUserDisabl
 	return api.PostSignupEmailPassword200JSONResponse{Session: nil}, nil
 }
 
-func (ctrl *Controller) postSignupEmailPasswordWithoutEmailVerification( //nolint:ireturn,funlen
+func (ctrl *Controller) postSignupEmailPasswordWithoutEmailVerification( //nolint:ireturn
 	ctx context.Context,
 	email string,
 	password string,
@@ -130,7 +130,7 @@ func (ctrl *Controller) postSignupEmailPasswordWithoutEmailVerification( //nolin
 		return ctrl.respondWithError(apiErr), nil
 	}
 
-	accessToken, expiresIn, err := ctrl.jwtGetter.GetToken(
+	accessToken, expiresIn, err := ctrl.wf.jwtGetter.GetToken(
 		ctx, userID, deptr(options.AllowedRoles), *options.DefaultRole, logger,
 	)
 	if err != nil {

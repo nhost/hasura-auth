@@ -13,18 +13,18 @@ func (ctrl *Controller) PostUserEmailChange( //nolint:ireturn
 ) (api.PostUserEmailChangeResponseObject, error) {
 	logger := middleware.LoggerFromContext(ctx)
 
-	options, apiErr := ctrl.validate.OptionsRedirectTo(request.Body.Options, logger)
+	options, apiErr := ctrl.wf.ValidateOptionsRedirectTo(request.Body.Options, logger)
 	if apiErr != nil {
 		return ctrl.respondWithError(apiErr), nil
 	}
 	request.Body.Options = options
 
-	user, apiErr := ctrl.GetUserFromJWTInContext(ctx, logger)
+	user, apiErr := ctrl.wf.GetUserFromJWTInContext(ctx, logger)
 	if apiErr != nil {
 		return ctrl.respondWithError(apiErr), nil
 	}
 
-	_, isMissing, apiErr := ctrl.validate.GetUserByEmail(ctx, string(request.Body.NewEmail), logger)
+	_, isMissing, apiErr := ctrl.wf.GetUserByEmail(ctx, string(request.Body.NewEmail), logger)
 	if apiErr == nil {
 		logger.Warn("email already exists")
 		return ctrl.sendError(api.EmailAlreadyInUse), nil

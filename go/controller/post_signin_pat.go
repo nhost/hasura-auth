@@ -14,7 +14,7 @@ func (ctrl *Controller) PostSigninPat( //nolint:ireturn
 ) (api.PostSigninPatResponseObject, error) {
 	logger := middleware.LoggerFromContext(ctx)
 
-	user, apiErr := ctrl.validate.GetUserByRefreshTokenHash(
+	user, apiErr := ctrl.wf.GetUserByRefreshTokenHash(
 		ctx,
 		request.Body.PersonalAccessToken,
 		sql.RefreshTokenTypePAT,
@@ -24,7 +24,7 @@ func (ctrl *Controller) PostSigninPat( //nolint:ireturn
 		return ctrl.respondWithError(apiErr), nil
 	}
 
-	session, err := ctrl.GetNewSession(ctx, user, logger)
+	session, err := ctrl.wf.NewSession(ctx, user, logger)
 	if err != nil {
 		logger.Error("error getting new session", logError(err))
 		return ctrl.sendError(api.InternalServerError), nil

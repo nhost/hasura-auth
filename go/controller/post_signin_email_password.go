@@ -36,7 +36,7 @@ func (ctrl *Controller) PostSigninEmailPassword( //nolint:ireturn
 	logger := middleware.LoggerFromContext(ctx).
 		With(slog.String("email", string(request.Body.Email)))
 
-	user, _, apiErr := ctrl.validate.GetUserByEmail(
+	user, _, apiErr := ctrl.wf.GetUserByEmail(
 		ctx, string(request.Body.Email), logger.WithGroup("validator"),
 	)
 	if apiErr != nil {
@@ -52,7 +52,7 @@ func (ctrl *Controller) PostSigninEmailPassword( //nolint:ireturn
 		return ctrl.postSigninEmailPasswordWithTOTP(ctx, user.ID, logger)
 	}
 
-	session, err := ctrl.GetNewSession(ctx, user, logger)
+	session, err := ctrl.wf.NewSession(ctx, user, logger)
 	if err != nil {
 		logger.Error("error getting new session", logError(err))
 		return ctrl.sendError(api.InternalServerError), nil

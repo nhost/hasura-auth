@@ -57,13 +57,12 @@ type DBClient interface {
 }
 
 type Controller struct {
-	// validate object helps to validate the input. It provides functionality to validate
+	// wf object helps to wf the input. It provides functionality to wf
 	// input objects and, as well, to fetch users and other data from the database
 	// validating the user in the process
-	validate    *Validator
+	wf          *Workflows
 	config      Config
 	gravatarURL func(string) string
-	jwtGetter   *JWTGetter
 	email       Emailer
 	version     string
 }
@@ -76,20 +75,19 @@ func New(
 	hibp HIBPClient,
 	version string,
 ) (*Controller, error) {
-	validator, err := NewValidator(&config, db, hibp)
+	validator, err := NewWorkflows(&config, *jwtGetter, db, hibp)
 	if err != nil {
 		return nil, fmt.Errorf("error creating validator: %w", err)
 	}
 
 	return &Controller{
-		config:   config,
-		validate: validator,
+		config: config,
+		wf:     validator,
 		gravatarURL: GravatarURLFunc(
 			config.GravatarEnabled, config.GravatarDefault, config.GravatarRating,
 		),
-		jwtGetter: jwtGetter,
-		email:     emailer,
-		version:   version,
+		email:   emailer,
+		version: version,
 	}, nil
 }
 
@@ -158,7 +156,7 @@ func (ctrl *Controller) SignUpUser(
 		}
 	}
 
-	insertedUser, err := ctrl.validate.db.InsertUser(ctx, input)
+	insertedUser, err := ctrl.wf.db.InsertUser(ctx, input)
 	if err != nil {
 		logger.Error("error inserting user", logError(err))
 		return sql.AuthUser{}, &APIError{api.InternalServerError} //nolint:exhaustruct
@@ -212,7 +210,7 @@ func (ctrl *Controller) SignupUserWithRefreshToken(
 		return nil, uuid.UUID{}, &APIError{api.InternalServerError} //nolint:exhaustruct
 	}
 
-	userID, err := ctrl.validate.db.InsertUserWithRefreshToken(
+	userID, err := ctrl.wf.db.InsertUserWithRefreshToken(
 		ctx, sql.InsertUserWithRefreshTokenParams{
 			Disabled:              ctrl.config.DisableNewUsers,
 			DisplayName:           deptr(options.DisplayName),
@@ -255,39 +253,6 @@ func (ctrl *Controller) SignupUserWithRefreshToken(
 		PhoneNumberVerified: false,
 		Roles:               deptr(options.AllowedRoles),
 	}, userID, nil
-}
-
-func (ctrl *Controller) InsertRefreshtoken(
-	ctx context.Context,
-	userID uuid.UUID,
-	refreshToken string,
-	refreshTokenExpiresAt time.Time,
-	refreshTokenType sql.RefreshTokenType,
-	metadata map[string]any,
-	logger *slog.Logger,
-) (uuid.UUID, *APIError) {
-	var b []byte
-	var err error
-	if metadata != nil {
-		b, err = json.Marshal(metadata)
-		if err != nil {
-			logger.Error("error marshalling metadata", logError(err))
-			return uuid.UUID{}, &APIError{api.InternalServerError} //nolint:exhaustruct
-		}
-	}
-
-	refreshTokenID, err := ctrl.validate.db.InsertRefreshtoken(ctx, sql.InsertRefreshtokenParams{
-		UserID:           userID,
-		RefreshTokenHash: sql.Text(hashRefreshToken([]byte(refreshToken))),
-		ExpiresAt:        sql.TimestampTz(refreshTokenExpiresAt),
-		Type:             refreshTokenType,
-		Metadata:         b,
-	})
-	if err != nil {
-		return uuid.UUID{}, &APIError{api.InternalServerError} //nolint:exhaustruct
-	}
-
-	return refreshTokenID, nil
 }
 
 func (ctrl *Controller) SendEmail(
@@ -345,7 +310,7 @@ func (ctrl *Controller) ChangeEmail(
 	ticket := newTicket(TicketTypeEmailConfirmChange)
 	ticketExpiresAt := time.Now().Add(time.Hour)
 
-	user, err := ctrl.validate.db.UpdateUserChangeEmail(
+	user, err := ctrl.wf.db.UpdateUserChangeEmail(
 		ctx,
 		sql.UpdateUserChangeEmailParams{
 			ID:              userID,
