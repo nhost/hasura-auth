@@ -13,8 +13,6 @@ import (
 	context "context"
 	reflect "reflect"
 
-	pgtype "github.com/jackc/pgx/v5/pgtype"
-	sql "github.com/nhost/hasura-auth/go/sql"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -54,42 +52,4 @@ func (m *MockHIBPClient) IsPasswordPwned(ctx context.Context, password string) (
 func (mr *MockHIBPClientMockRecorder) IsPasswordPwned(ctx, password any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IsPasswordPwned", reflect.TypeOf((*MockHIBPClient)(nil).IsPasswordPwned), ctx, password)
-}
-
-// MockSQLQueries is a mock of SQLQueries interface.
-type MockSQLQueries struct {
-	ctrl     *gomock.Controller
-	recorder *MockSQLQueriesMockRecorder
-}
-
-// MockSQLQueriesMockRecorder is the mock recorder for MockSQLQueries.
-type MockSQLQueriesMockRecorder struct {
-	mock *MockSQLQueries
-}
-
-// NewMockSQLQueries creates a new mock instance.
-func NewMockSQLQueries(ctrl *gomock.Controller) *MockSQLQueries {
-	mock := &MockSQLQueries{ctrl: ctrl}
-	mock.recorder = &MockSQLQueriesMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockSQLQueries) EXPECT() *MockSQLQueriesMockRecorder {
-	return m.recorder
-}
-
-// GetUserByEmail mocks base method.
-func (m *MockSQLQueries) GetUserByEmail(ctx context.Context, email pgtype.Text) (sql.AuthUser, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetUserByEmail", ctx, email)
-	ret0, _ := ret[0].(sql.AuthUser)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetUserByEmail indicates an expected call of GetUserByEmail.
-func (mr *MockSQLQueriesMockRecorder) GetUserByEmail(ctx, email any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByEmail", reflect.TypeOf((*MockSQLQueries)(nil).GetUserByEmail), ctx, email)
 }

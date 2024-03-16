@@ -11,8 +11,8 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/nhost/hasura-auth/go/api"
 	"github.com/nhost/hasura-auth/go/sql"
 	"github.com/oapi-codegen/runtime/types"
@@ -22,19 +22,15 @@ type HIBPClient interface {
 	IsPasswordPwned(ctx context.Context, password string) (bool, error)
 }
 
-type SQLQueries interface {
-	GetUserByEmail(ctx context.Context, email pgtype.Text) (sql.AuthUser, error)
-}
-
 type Validator struct {
 	cfg                  *Config
-	db                   SQLQueries
+	db                   DBClient
 	hibp                 HIBPClient
 	redirectURLValidator func(redirectTo string) bool
-	emailValidator       func(email string) bool
+	ValidateEmail        func(email string) bool
 }
 
-func NewValidator(cfg *Config, db SQLQueries, hibp HIBPClient) (*Validator, error) {
+func NewValidator(cfg *Config, db DBClient, hibp HIBPClient) (*Validator, error) {
 	allowedURLs := make([]*url.URL, len(cfg.AllowedRedirectURLs)+1)
 	allowedURLs[0] = cfg.ClientURL
 	for i, u := range cfg.AllowedRedirectURLs {
@@ -58,35 +54,13 @@ func NewValidator(cfg *Config, db SQLQueries, hibp HIBPClient) (*Validator, erro
 		db:                   db,
 		hibp:                 hibp,
 		redirectURLValidator: redirectURLValidator,
-		emailValidator:       emailValidator,
+		ValidateEmail:        emailValidator,
 	}, nil
 }
 
-func (validator *Validator) PostSignupEmailPassword(
-	ctx context.Context, req api.PostSignupEmailPasswordRequestObject, logger *slog.Logger,
-) (api.PostSignupEmailPasswordRequestObject, error) {
-	if err := validator.postSignupEmailPasswordEmail(ctx, req.Body.Email, logger); err != nil {
-		return api.PostSignupEmailPasswordRequestObject{}, err
-	}
-
-	if err := validator.postSignupEmailPasswordPassword(ctx, req.Body.Password, logger); err != nil {
-		return api.PostSignupEmailPasswordRequestObject{}, err
-	}
-
-	options, err := validator.postSignUpOptions(
-		req.Body.Options, string(req.Body.Email), logger,
-	)
-	if err != nil {
-		return api.PostSignupEmailPasswordRequestObject{}, err
-	}
-
-	req.Body.Options = options
-	return req, nil
-}
-
-func (validator *Validator) postSignupEmailPasswordEmail(
+func (validator *Validator) SignupEmail(
 	ctx context.Context, email types.Email, logger *slog.Logger,
-) error {
+) *APIError {
 	_, err := validator.db.GetUserByEmail(ctx, sql.Text(email))
 	if err == nil {
 		logger.Warn("email already in use")
@@ -94,10 +68,10 @@ func (validator *Validator) postSignupEmailPasswordEmail(
 	}
 	if !errors.Is(err, pgx.ErrNoRows) {
 		logger.Error("error getting user by email", logError(err))
-		return fmt.Errorf("error getting user: %w", err)
+		return &APIError{api.InternalServerError}
 	}
 
-	if !validator.emailValidator(string(email)) {
+	if !validator.ValidateEmail(string(email)) {
 		logger.Warn("email didn't pass access control checks")
 		return &APIError{api.InvalidEmailPassword}
 	}
@@ -105,9 +79,9 @@ func (validator *Validator) postSignupEmailPasswordEmail(
 	return nil
 }
 
-func (validator *Validator) postSignupEmailPasswordPassword(
+func (validator *Validator) Password(
 	ctx context.Context, password string, logger *slog.Logger,
-) error {
+) *APIError {
 	if len(password) < validator.cfg.PasswordMinLength {
 		logger.Warn("password too short")
 		return &APIError{api.PasswordTooShort}
@@ -116,7 +90,7 @@ func (validator *Validator) postSignupEmailPasswordPassword(
 	if validator.cfg.PasswordHIBPEnabled {
 		if pwned, err := validator.hibp.IsPasswordPwned(ctx, password); err != nil {
 			logger.Error("error checking password with HIBP", logError(err))
-			return fmt.Errorf("error checking password with HIBP: %w", err)
+			return &APIError{api.InternalServerError}
 		} else if pwned {
 			logger.Warn("password is in HIBP database")
 			return &APIError{api.PasswordInHibpDatabase}
@@ -126,11 +100,11 @@ func (validator *Validator) postSignupEmailPasswordPassword(
 	return nil
 }
 
-func (validator *Validator) postSignUpOptions( //nolint:cyclop
+func (validator *Validator) SignUpOptions( //nolint:cyclop
 	options *api.SignUpOptions, defaultName string, logger *slog.Logger,
-) (*api.SignUpOptions, error) {
+) (*api.SignUpOptions, *APIError) {
 	if options == nil {
-		options = new(api.SignUpOptions)
+		options = &api.SignUpOptions{} //nolint:exhaustruct
 	}
 
 	if options.DefaultRole == nil {
@@ -178,42 +152,84 @@ func (validator *Validator) postSignUpOptions( //nolint:cyclop
 	return options, nil
 }
 
-func (validator *Validator) ValidateUserByEmail(
+func (validator *Validator) GetUser(
 	ctx context.Context,
-	email string,
+	id uuid.UUID,
 	logger *slog.Logger,
-) (sql.AuthUser, error) {
-	if !validator.emailValidator(email) {
-		logger.Warn("email didn't pass access control checks")
-		//nolint:exhaustruct
-		return sql.AuthUser{}, &APIError{api.InvalidEmailPassword}
-	}
-
-	user, err := validator.db.GetUserByEmail(ctx, sql.Text(email))
+) (sql.AuthUser, *APIError) {
+	user, err := validator.db.GetUser(ctx, id)
 	if errors.Is(err, pgx.ErrNoRows) {
 		logger.Warn("user not found")
-		//nolint:exhaustruct
-		return sql.AuthUser{}, &APIError{api.InvalidEmailPassword}
+		return sql.AuthUser{}, &APIError{api.InvalidEmailPassword} //nolint:exhaustruct
 	}
 	if err != nil {
 		logger.Error("error getting user by email", logError(err))
-		return sql.AuthUser{}, fmt.Errorf("error getting user by email: %w", err)
+		return sql.AuthUser{}, &APIError{api.InternalServerError} //nolint:exhaustruct
 	}
 
-	if user.Disabled {
-		logger.Warn("user is disabled")
-		//nolint:exhaustruct
-		return sql.AuthUser{}, &APIError{api.DisabledUser}
+	if err := validator.User(user, logger); err != nil {
+		return sql.AuthUser{}, err //nolint:exhaustruct
 	}
 
 	return user, nil
 }
 
-func (validator *Validator) ValidateUser(
+func (validator *Validator) GetUserByEmail(
+	ctx context.Context,
+	email string,
+	logger *slog.Logger,
+) (sql.AuthUser, *APIError) {
+	user, err := validator.db.GetUserByEmail(ctx, sql.Text(email))
+	if errors.Is(err, pgx.ErrNoRows) {
+		logger.Warn("user not found")
+		return sql.AuthUser{}, &APIError{api.InvalidEmailPassword} //nolint:exhaustruct
+	}
+	if err != nil {
+		logger.Error("error getting user by email", logError(err))
+		return sql.AuthUser{}, &APIError{api.InternalServerError} //nolint:exhaustruct
+	}
+
+	if err := validator.User(user, logger); err != nil {
+		return sql.AuthUser{}, err //nolint:exhaustruct
+	}
+
+	return user, nil
+}
+
+func (validator *Validator) GetUserByRefreshTokenHash(
+	ctx context.Context,
+	refreshToken string,
+	refreshTokenType sql.RefreshTokenType,
+	logger *slog.Logger,
+) (sql.AuthUser, *APIError) {
+	user, err := validator.db.GetUserByRefreshTokenHash(
+		ctx,
+		sql.GetUserByRefreshTokenHashParams{
+			RefreshTokenHash: sql.Text(hashRefreshToken([]byte(refreshToken))),
+			Type:             sql.RefreshTokenTypePAT,
+		},
+	)
+	if errors.Is(err, pgx.ErrNoRows) {
+		logger.Error("could not find user by refresh token")
+		return sql.AuthUser{}, &APIError{api.InvalidPat} //nolint:exhaustruct
+	}
+	if err != nil {
+		logger.Error("could not get user by refresh token", logError(err))
+		return sql.AuthUser{}, &APIError{api.InternalServerError} //nolint:exhaustruct
+	}
+
+	if apiErr := validator.User(user, logger); apiErr != nil {
+		return sql.AuthUser{}, apiErr //nolint:exhaustruct
+	}
+
+	return user, nil
+}
+
+func (validator *Validator) User(
 	user sql.AuthUser,
 	logger *slog.Logger,
 ) *APIError {
-	if !validator.emailValidator(user.Email.String) {
+	if !validator.ValidateEmail(user.Email.String) {
 		logger.Warn("email didn't pass access control checks")
 		return &APIError{api.InvalidEmailPassword}
 	}
@@ -229,6 +245,24 @@ func (validator *Validator) ValidateUser(
 	}
 
 	return nil
+}
+
+func (validator *Validator) OptionsRedirectTo(
+	options *api.OptionsRedirectTo,
+	logger *slog.Logger,
+) (*api.OptionsRedirectTo, *APIError) {
+	if options == nil {
+		options = &api.OptionsRedirectTo{} //nolint:exhaustruct
+	}
+
+	if options.RedirectTo == nil {
+		options.RedirectTo = ptr(validator.cfg.ClientURL.String())
+	} else if !validator.redirectURLValidator(deptr(options.RedirectTo)) {
+		logger.Warn("redirect URL not allowed", slog.String("redirectTo", deptr(options.RedirectTo)))
+		return nil, &APIError{api.RedirecToNotAllowed}
+	}
+
+	return options, nil
 }
 
 type urlMatcher struct {

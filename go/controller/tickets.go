@@ -26,12 +26,12 @@ func newTicket(ticketType TicketType) string {
 	return fmt.Sprintf("%s:%s", ticketType, uuid.NewString())
 }
 
-func (ctrl *Controller) setTicket(
+func (ctrl *Controller) SetTicket(
 	ctx context.Context,
 	userID uuid.UUID,
 	ticketType TicketType,
 	logger *slog.Logger,
-) (string, error) {
+) (string, *APIError) {
 	ticket := newTicket(ticketType)
 	ticketExpiresAt := time.Now().Add(time.Hour)
 

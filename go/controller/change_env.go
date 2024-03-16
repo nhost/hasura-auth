@@ -43,13 +43,13 @@ func (ctrl *Controller) PostChangeEnv(fn gin.HandlerFunc) gin.HandlerFunc {
 			ctrl.jwtGetter.customClaimer = cc
 		}
 
-		ctrl.validator.cfg.PasswordHIBPEnabled = ctrl.config.PasswordHIBPEnabled
+		ctrl.validate.cfg.PasswordHIBPEnabled = ctrl.config.PasswordHIBPEnabled
 
 		if ctrl.config.BlockedEmailDomains != nil ||
 			ctrl.config.BlockedEmails != nil ||
 			ctrl.config.AllowedEmailDomains != nil ||
 			ctrl.config.AllowedEmails != nil {
-			ctrl.validator.emailValidator = ValidateEmail(
+			ctrl.validate.ValidateEmail = ValidateEmail(
 				ctrl.config.BlockedEmailDomains,
 				ctrl.config.BlockedEmails,
 				ctrl.config.AllowedEmailDomains,
@@ -58,7 +58,7 @@ func (ctrl *Controller) PostChangeEnv(fn gin.HandlerFunc) gin.HandlerFunc {
 		}
 
 		if ctrl.config.AllowedLocales != nil {
-			ctrl.validator.cfg.AllowedLocales = ctrl.config.AllowedLocales
+			ctrl.validate.cfg.AllowedLocales = ctrl.config.AllowedLocales
 		}
 
 		fn(c)

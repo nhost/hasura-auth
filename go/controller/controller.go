@@ -4,12 +4,24 @@ package controller
 import (
 	"context"
 	"fmt"
+	"log/slog"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/nhost/hasura-auth/go/notifications"
 	"github.com/nhost/hasura-auth/go/sql"
 )
+
+func deptr[T any](x *T) T { //nolint:ireturn
+	if x == nil {
+		return *new(T)
+	}
+	return *x
+}
+
+func ptr[T any](x T) *T {
+	return &x
+}
 
 type Emailer interface {
 	SendEmail(
@@ -42,7 +54,7 @@ type DBClient interface {
 
 type Controller struct {
 	db          DBClient
-	validator   *Validator
+	validate    *Validator
 	config      Config
 	gravatarURL func(string) string
 	jwtGetter   *JWTGetter
@@ -64,9 +76,9 @@ func New(
 	}
 
 	return &Controller{
-		db:        db,
-		config:    config,
-		validator: validator,
+		db:       db,
+		config:   config,
+		validate: validator,
 		gravatarURL: GravatarURLFunc(
 			config.GravatarEnabled, config.GravatarDefault, config.GravatarRating,
 		),
@@ -74,4 +86,50 @@ func New(
 		email:     emailer,
 		version:   version,
 	}, nil
+}
+
+func (ctrl *Controller) SendEmail(
+	to string,
+	locale string,
+	linkType LinkType,
+	ticket string,
+	redirectTo string,
+	templateName notifications.TemplateName,
+	displayName string,
+	email string,
+	newEmail string,
+	logger *slog.Logger,
+) error {
+	link, err := GenLink(
+		*ctrl.config.ServerURL,
+		linkType,
+		ticket,
+		redirectTo,
+	)
+	if err != nil {
+		logger.Error("problem generating email verification link", logError(err))
+		return fmt.Errorf("problem generating email verification link: %w", err)
+	}
+
+	if err := ctrl.email.SendEmail(
+		to,
+		locale,
+		templateName,
+		notifications.TemplateData{
+			Link:        link,
+			DisplayName: displayName,
+			Email:       email,
+			NewEmail:    newEmail,
+			Ticket:      ticket,
+			RedirectTo:  redirectTo,
+			Locale:      locale,
+			ServerURL:   ctrl.config.ServerURL.String(),
+			ClientURL:   ctrl.config.ClientURL.String(),
+		},
+	); err != nil {
+		logger.Error("problem sending email", logError(err))
+		return fmt.Errorf("problem sending email: %w", err)
+	}
+
+	return nil
 }

@@ -24,8 +24,7 @@ func isSensitive(err api.ErrorResponseError) bool {
 		api.InvalidPat,
 		api.RoleNotAllowed,
 		api.SignupDisabled,
-		api.UnverifiedUser,
-		api.UserNotFound:
+		api.UnverifiedUser:
 		return true
 	case
 		api.DefaultRoleMustBeInAllowedRoles,
@@ -191,12 +190,6 @@ func (ctrl *Controller) sendError( //nolint:funlen,cyclop
 			Status:  http.StatusUnauthorized,
 			Error:   errType,
 			Message: "User is not verified.",
-		}
-	case api.UserNotFound:
-		return ErrorResponse{
-			Status:  http.StatusBadRequest,
-			Error:   errType,
-			Message: "No user found",
 		}
 	}
 

@@ -251,9 +251,9 @@ func TestPostUserPasswordReset(t *testing.T) { //nolint:maintidx
 				},
 			},
 			expectedResponse: controller.ErrorResponse{
-				Error:   "user-not-found",
-				Message: "No user found",
-				Status:  400,
+				Error:   "invalid-email-password",
+				Message: "Incorrect email or password",
+				Status:  401,
 			},
 		},
 

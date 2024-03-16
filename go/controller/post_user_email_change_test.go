@@ -2,6 +2,7 @@ package controller_test
 
 import (
 	"context"
+	"errors"
 	"net/url"
 	"testing"
 	"time"
@@ -20,8 +21,11 @@ import (
 	"go.uber.org/mock/gomock"
 )
 
+//nolint:dupl
 func TestPostUserEmailChange(t *testing.T) { //nolint:maintidx
 	t.Parallel()
+
+	userID := uuid.MustParse("db477732-48fa-4289-b694-2886a646b6eb")
 
 	jwtTokenFn := func() *jwt.Token {
 		return &jwt.Token{
@@ -62,6 +66,11 @@ func TestPostUserEmailChange(t *testing.T) { //nolint:maintidx
 			config: getConfig,
 			db: func(ctrl *gomock.Controller) controller.DBClient {
 				mock := mock.NewMockDBClient(ctrl)
+
+				mock.EXPECT().GetUser(
+					gomock.Any(),
+					userID,
+				).Return(getSigninUser(userID), nil)
 
 				mock.EXPECT().GetUserByEmail(
 					gomock.Any(),
@@ -124,132 +133,15 @@ func TestPostUserEmailChange(t *testing.T) { //nolint:maintidx
 		},
 
 		{
-			name:   "wrong subject",
-			config: getConfig,
-			db: func(ctrl *gomock.Controller) controller.DBClient {
-				mock := mock.NewMockDBClient(ctrl)
-				return mock
-			},
-			emailer: func(ctrl *gomock.Controller) controller.Emailer {
-				mock := mock.NewMockEmailer(ctrl)
-				return mock
-			},
-			jwtTokenFn: func() *jwt.Token {
-				jwtToken := jwtTokenFn()
-				jwtToken.Claims.(jwt.MapClaims)["sub"] = "garbage" //nolint:forcetypeassert
-				return jwtToken
-			},
-			request: api.PostUserEmailChangeRequestObject{
-				Body: &api.UserEmailChangeRequest{
-					NewEmail: "newEmail@acme.com",
-					Options:  nil,
-				},
-			},
-			expectedResponse: controller.ErrorResponse{
-				Error:   "invalid-request",
-				Message: "The request payload is incorrect",
-				Status:  400,
-			},
-		},
-
-		{
-			name:   "missing anonymous claim",
-			config: getConfig,
-			db: func(ctrl *gomock.Controller) controller.DBClient {
-				mock := mock.NewMockDBClient(ctrl)
-				return mock
-			},
-			emailer: func(ctrl *gomock.Controller) controller.Emailer {
-				mock := mock.NewMockEmailer(ctrl)
-				return mock
-			},
-			jwtTokenFn: func() *jwt.Token {
-				jwtToken := jwtTokenFn()
-				//nolint:forcetypeassert
-				cc := jwtToken.Claims.(jwt.MapClaims)["https://hasura.io/jwt/claims"].(map[string]any)
-				delete(cc, "x-hasura-user-isAnonymous")
-				return jwtToken
-			},
-			request: api.PostUserEmailChangeRequestObject{
-				Body: &api.UserEmailChangeRequest{
-					NewEmail: "newEmail@acme.com",
-					Options:  nil,
-				},
-			},
-			expectedResponse: controller.ErrorResponse{
-				Error:   "forbidden-anonymous",
-				Message: "Forbidden, user is anonymous.",
-				Status:  403,
-			},
-		},
-
-		{
-			name:   "anonymous claim is garbage",
-			config: getConfig,
-			db: func(ctrl *gomock.Controller) controller.DBClient {
-				mock := mock.NewMockDBClient(ctrl)
-				return mock
-			},
-			emailer: func(ctrl *gomock.Controller) controller.Emailer {
-				mock := mock.NewMockEmailer(ctrl)
-				return mock
-			},
-			jwtTokenFn: func() *jwt.Token {
-				jwtToken := jwtTokenFn()
-				//nolint:forcetypeassert
-				cc := jwtToken.Claims.(jwt.MapClaims)["https://hasura.io/jwt/claims"].(map[string]any)
-				cc["x-hasura-user-isAnonymous"] = "garbage"
-				return jwtToken
-			},
-			request: api.PostUserEmailChangeRequestObject{
-				Body: &api.UserEmailChangeRequest{
-					NewEmail: "newEmail@acme.com",
-					Options:  nil,
-				},
-			},
-			expectedResponse: controller.ErrorResponse{
-				Error:   "forbidden-anonymous",
-				Message: "Forbidden, user is anonymous.",
-				Status:  403,
-			},
-		},
-
-		{
-			name:   "anonymous claim is true",
-			config: getConfig,
-			db: func(ctrl *gomock.Controller) controller.DBClient {
-				mock := mock.NewMockDBClient(ctrl)
-				return mock
-			},
-			emailer: func(ctrl *gomock.Controller) controller.Emailer {
-				mock := mock.NewMockEmailer(ctrl)
-				return mock
-			},
-			jwtTokenFn: func() *jwt.Token {
-				jwtToken := jwtTokenFn()
-				//nolint:forcetypeassert
-				cc := jwtToken.Claims.(jwt.MapClaims)["https://hasura.io/jwt/claims"].(map[string]any)
-				cc["x-hasura-user-isAnonymous"] = "true"
-				return jwtToken
-			},
-			request: api.PostUserEmailChangeRequestObject{
-				Body: &api.UserEmailChangeRequest{
-					NewEmail: "newEmail@acme.com",
-					Options:  nil,
-				},
-			},
-			expectedResponse: controller.ErrorResponse{
-				Error:   "forbidden-anonymous",
-				Message: "Forbidden, user is anonymous.",
-				Status:  403,
-			},
-		},
-
-		{
 			name:   "user with newEmail already exists",
 			config: getConfig,
 			db: func(ctrl *gomock.Controller) controller.DBClient {
 				mock := mock.NewMockDBClient(ctrl)
+
+				mock.EXPECT().GetUser(
+					gomock.Any(),
+					userID,
+				).Return(getSigninUser(userID), nil)
 
 				mock.EXPECT().GetUserByEmail(
 					gomock.Any(),
@@ -277,6 +169,42 @@ func TestPostUserEmailChange(t *testing.T) { //nolint:maintidx
 		},
 
 		{
+			name:   "failed to get user with newEmail",
+			config: getConfig,
+			db: func(ctrl *gomock.Controller) controller.DBClient {
+				mock := mock.NewMockDBClient(ctrl)
+
+				mock.EXPECT().GetUser(
+					gomock.Any(),
+					userID,
+				).Return(getSigninUser(userID), nil)
+
+				mock.EXPECT().GetUserByEmail(
+					gomock.Any(),
+					sql.Text("newEmail@acme.com"),
+				).Return(sql.AuthUser{}, errors.New("some error")) //nolint:exhaustruct,goerr113
+
+				return mock
+			},
+			emailer: func(ctrl *gomock.Controller) controller.Emailer {
+				mock := mock.NewMockEmailer(ctrl)
+				return mock
+			},
+			jwtTokenFn: jwtTokenFn,
+			request: api.PostUserEmailChangeRequestObject{
+				Body: &api.UserEmailChangeRequest{
+					NewEmail: "newEmail@acme.com",
+					Options:  nil,
+				},
+			},
+			expectedResponse: controller.ErrorResponse{
+				Error:   "internal-server-error",
+				Message: "Internal server error",
+				Status:  500,
+			},
+		},
+
+		{
 			name: "simple with redirect",
 			config: func() *controller.Config {
 				r, _ := url.Parse("https://myapp/redirect")
@@ -287,6 +215,11 @@ func TestPostUserEmailChange(t *testing.T) { //nolint:maintidx
 			},
 			db: func(ctrl *gomock.Controller) controller.DBClient {
 				mock := mock.NewMockDBClient(ctrl)
+
+				mock.EXPECT().GetUser(
+					gomock.Any(),
+					userID,
+				).Return(getSigninUser(userID), nil)
 
 				mock.EXPECT().GetUserByEmail(
 					gomock.Any(),
@@ -373,47 +306,6 @@ func TestPostUserEmailChange(t *testing.T) { //nolint:maintidx
 			expectedResponse: controller.ErrorResponse{
 				Error:   "redirecTo-not-allowed",
 				Message: `The value of "options.redirectTo" is not allowed.`,
-				Status:  400,
-			},
-		},
-
-		{
-			name:   "user not found",
-			config: getConfig,
-			db: func(ctrl *gomock.Controller) controller.DBClient {
-				mock := mock.NewMockDBClient(ctrl)
-
-				mock.EXPECT().GetUserByEmail(
-					gomock.Any(),
-					sql.Text("newEmail@acme.com"),
-				).Return(sql.AuthUser{}, pgx.ErrNoRows) //nolint:exhaustruct
-
-				mock.EXPECT().UpdateUserChangeEmail(
-					gomock.Any(),
-					cmpDBParams(sql.UpdateUserChangeEmailParams{
-						ID:              uuid.MustParse("db477732-48fa-4289-b694-2886a646b6eb"),
-						Ticket:          sql.Text("emailConfirmChange:xxxxx"),
-						TicketExpiresAt: sql.TimestampTz(time.Now().Add(time.Hour)),
-						NewEmail:        sql.Text("newEmail@acme.com"),
-					}),
-				).Return(sql.UpdateUserChangeEmailRow{}, pgx.ErrNoRows) //nolint:exhaustruct
-
-				return mock
-			},
-			emailer: func(ctrl *gomock.Controller) controller.Emailer {
-				mock := mock.NewMockEmailer(ctrl)
-				return mock
-			},
-			jwtTokenFn: jwtTokenFn,
-			request: api.PostUserEmailChangeRequestObject{
-				Body: &api.UserEmailChangeRequest{
-					NewEmail: "newEmail@acme.com",
-					Options:  nil,
-				},
-			},
-			expectedResponse: controller.ErrorResponse{
-				Error:   "invalid-request",
-				Message: "The request payload is incorrect",
 				Status:  400,
 			},
 		},

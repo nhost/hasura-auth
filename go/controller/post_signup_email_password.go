@@ -2,8 +2,6 @@ package controller
 
 import (
 	"context"
-	"crypto/sha256"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"log/slog"
@@ -15,37 +13,36 @@ import (
 	"github.com/nhost/hasura-auth/go/middleware"
 	"github.com/nhost/hasura-auth/go/notifications"
 	"github.com/nhost/hasura-auth/go/sql"
-	openapi_types "github.com/oapi-codegen/runtime/types"
-	"golang.org/x/crypto/bcrypt"
+	"github.com/oapi-codegen/runtime/types"
 )
 
-func verifyHashPassword(password, hash string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-	return err == nil
-}
+func (ctrl *Controller) postSignupEmailPasswordValidateRequest(
+	ctx context.Context, req api.PostSignupEmailPasswordRequestObject, logger *slog.Logger,
+) (api.PostSignupEmailPasswordRequestObject, *APIError) {
+	if ctrl.config.DisableSignup {
+		logger.Warn("signup disabled")
+		return api.PostSignupEmailPasswordRequestObject{}, //nolint:exhaustruct
+			&APIError{api.SignupDisabled}
+	}
 
-func hashPassword(password string) (string, error) {
-	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err := ctrl.validate.SignupEmail(ctx, req.Body.Email, logger); err != nil {
+		return api.PostSignupEmailPasswordRequestObject{}, err //nolint:exhaustruct
+	}
+
+	if err := ctrl.validate.Password(ctx, req.Body.Password, logger); err != nil {
+		return api.PostSignupEmailPasswordRequestObject{}, err //nolint:exhaustruct
+	}
+
+	options, err := ctrl.validate.SignUpOptions(
+		req.Body.Options, string(req.Body.Email), logger,
+	)
 	if err != nil {
-		return "", fmt.Errorf("error hashing password: %w", err)
+		return api.PostSignupEmailPasswordRequestObject{}, err //nolint:exhaustruct
 	}
-	return string(hash), nil
-}
 
-func hashRefreshToken(token []byte) string {
-	hash := sha256.Sum256(token)
-	return "\\x" + hex.EncodeToString(hash[:])
-}
+	req.Body.Options = options
 
-func deptr[T any](x *T) T { //nolint:ireturn
-	if x == nil {
-		return *new(T)
-	}
-	return *x
-}
-
-func ptr[T any](x T) *T {
-	return &x
+	return req, nil
 }
 
 func (ctrl *Controller) PostSignupEmailPassword( //nolint:ireturn
@@ -54,26 +51,21 @@ func (ctrl *Controller) PostSignupEmailPassword( //nolint:ireturn
 ) (api.PostSignupEmailPasswordResponseObject, error) {
 	logger := middleware.LoggerFromContext(ctx).With(slog.String("email", string(req.Body.Email)))
 
-	if ctrl.config.DisableSignup {
-		logger.Warn("signup disabled")
-		return ctrl.sendError(api.SignupDisabled), nil
-	}
-
-	req, err := ctrl.validator.PostSignupEmailPassword(ctx, req, logger.WithGroup("validator"))
-	if err != nil {
-		return ctrl.respondWithError(err), nil
+	req, apiError := ctrl.postSignupEmailPasswordValidateRequest(ctx, req, logger)
+	if apiError != nil {
+		return ctrl.respondWithError(apiError), nil
 	}
 
 	hashedPassword, err := hashPassword(req.Body.Password)
 	if err != nil {
 		logger.Error("error hashing password", logError(err))
-		return nil, fmt.Errorf("error hashing password: %w", err)
+		return ctrl.sendError(api.InternalServerError), nil
 	}
 
 	metadata, err := json.Marshal(req.Body.Options.Metadata)
 	if err != nil {
 		logger.Error("error marshaling metadata", logError(err))
-		return nil, fmt.Errorf("error marshaling metadata: %w", err)
+		return ctrl.sendError(api.InternalServerError), nil
 	}
 
 	gravatarURL := ctrl.gravatarURL(string(req.Body.Email))
@@ -136,7 +128,7 @@ func (ctrl *Controller) postSignupEmailPasswordWithEmailVerificationOrUserDisabl
 		return api.PostSignupEmailPassword200JSONResponse{Session: nil}, nil
 	}
 
-	if err := ctrl.sendEmail(
+	if err := ctrl.SendEmail(
 		email.String,
 		deptr(options.Locale),
 		LinkTypeEmailVerify,
@@ -206,7 +198,7 @@ func (ctrl *Controller) postSignupEmailPasswordWithoutEmailVerification( //nolin
 				CreatedAt:           user.CreatedAt.Time,
 				DefaultRole:         *options.DefaultRole,
 				DisplayName:         deptr(options.DisplayName),
-				Email:               openapi_types.Email(email.String),
+				Email:               types.Email(email.String),
 				EmailVerified:       false,
 				Id:                  user.UserID.String(),
 				IsAnonymous:         false,

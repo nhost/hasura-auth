@@ -278,6 +278,9 @@ func TestPostSigninEmailPassword(t *testing.T) { //nolint:maintidx,gocognit,cycl
 			},
 			db: func(ctrl *gomock.Controller) controller.DBClient {
 				mock := mock.NewMockDBClient(ctrl)
+				mock.EXPECT().GetUserByEmail(
+					gomock.Any(), sql.Text("jane@acme.com"),
+				).Return(getSigninUser(userID), nil)
 				return mock
 			},
 			customClaimer: nil,
@@ -508,8 +511,8 @@ func TestPostSigninEmailPassword(t *testing.T) { //nolint:maintidx,gocognit,cycl
 				},
 			},
 			expectedResponse: controller.ErrorResponse{
-				Error:   "invalid-email-password",
-				Message: "Incorrect email or password",
+				Error:   "unverified-user",
+				Message: "User is not verified.",
 				Status:  401,
 			},
 			expectedJWT: nil,
