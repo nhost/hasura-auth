@@ -25,10 +25,10 @@ func (ctrl *Controller) PostUserPasswordReset( //nolint:ireturn
 
 	if !ctrl.wf.ValidateEmail(string(request.Body.Email)) {
 		logger.Warn("email didn't pass access control checks")
-		return ctrl.sendError(api.InvalidEmailPassword), nil
+		return ctrl.sendError(ErrInvalidEmailPassword), nil
 	}
 
-	user, _, apiErr := ctrl.wf.GetUserByEmail(ctx, string(request.Body.Email), logger)
+	user, apiErr := ctrl.wf.GetUserByEmail(ctx, string(request.Body.Email), logger)
 	if apiErr != nil {
 		return ctrl.respondWithError(apiErr), nil
 	}

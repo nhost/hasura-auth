@@ -17,8 +17,7 @@ func (ctrl *Controller) postSignupEmailPasswordValidateRequest(
 ) (api.PostSignupEmailPasswordRequestObject, *APIError) {
 	if ctrl.config.DisableSignup {
 		logger.Warn("signup disabled")
-		return api.PostSignupEmailPasswordRequestObject{}, //nolint:exhaustruct
-			&APIError{api.SignupDisabled}
+		return api.PostSignupEmailPasswordRequestObject{}, ErrSignupDisabled //nolint:exhaustruct
 	}
 
 	if err := ctrl.wf.ValidateSignupEmail(ctx, req.Body.Email, logger); err != nil {

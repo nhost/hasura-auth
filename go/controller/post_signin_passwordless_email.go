@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+	"errors"
 	"log/slog"
 	"time"
 
@@ -16,12 +17,12 @@ func (ctrl *Controller) postSigninPasswordlessEmailValidateRequest(
 ) (*api.SignUpOptions, *APIError) {
 	if !ctrl.config.EmailPasswordlessEnabled {
 		logger.Warn("email passwordless signin is disabled")
-		return nil, &APIError{api.DisabledEndpoint}
+		return nil, ErrDisabledEndpoint
 	}
 
 	if !ctrl.wf.ValidateEmail(string(request.Body.Email)) {
 		logger.Warn("email didn't pass access control checks")
-		return nil, &APIError{api.InvalidEmailPassword}
+		return nil, ErrInvalidEmailPassword
 	}
 
 	options, apiErr := ctrl.wf.ValidateSignUpOptions(
@@ -46,11 +47,11 @@ func (ctrl *Controller) PostSigninPasswordlessEmail( //nolint:ireturn
 		return ctrl.respondWithError(apiErr), nil
 	}
 
-	user, isMissing, apiErr := ctrl.wf.GetUserByEmail(ctx, string(request.Body.Email), logger)
+	user, apiErr := ctrl.wf.GetUserByEmail(ctx, string(request.Body.Email), logger)
 	ticket := newTicket(TicketTypePasswordLessEmail)
 	expireAt := time.Now().Add(time.Hour)
-	switch {
-	case isMissing:
+
+	if errors.Is(apiErr, ErrUserEmailNotFound) {
 		logger.Info("user does not exist, creating user")
 
 		user, apiErr = ctrl.wf.SignUpUser(
@@ -63,10 +64,10 @@ func (ctrl *Controller) PostSigninPasswordlessEmail( //nolint:ireturn
 		if apiErr != nil {
 			return ctrl.respondWithError(apiErr), nil
 		}
-	case apiErr != nil:
+	} else if apiErr != nil {
 		logger.Error("error getting user by email", logError(apiErr))
 		return ctrl.respondWithError(apiErr), nil
-	default:
+	} else {
 		if apiErr = ctrl.SetTicket(ctx, user.ID, ticket, expireAt, logger); apiErr != nil {
 			return ctrl.respondWithError(apiErr), nil
 		}

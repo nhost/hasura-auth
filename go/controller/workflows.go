@@ -78,16 +78,16 @@ func (wf *Workflows) ValidateSignupEmail(
 	_, err := wf.db.GetUserByEmail(ctx, sql.Text(email))
 	if err == nil {
 		logger.Warn("email already in use")
-		return &APIError{api.EmailAlreadyInUse}
+		return ErrEmailAlreadyInUse
 	}
 	if !errors.Is(err, pgx.ErrNoRows) {
 		logger.Error("error getting user by email", logError(err))
-		return &APIError{api.InternalServerError}
+		return ErrInternalServerError
 	}
 
 	if !wf.ValidateEmail(string(email)) {
 		logger.Warn("email didn't pass access control checks")
-		return &APIError{api.InvalidEmailPassword}
+		return ErrInvalidEmailPassword
 	}
 
 	return nil
@@ -98,16 +98,16 @@ func (wf *Workflows) ValidatePassword(
 ) *APIError {
 	if len(password) < wf.config.PasswordMinLength {
 		logger.Warn("password too short")
-		return &APIError{api.PasswordTooShort}
+		return ErrPasswordTooShort
 	}
 
 	if wf.config.PasswordHIBPEnabled {
 		if pwned, err := wf.hibp.IsPasswordPwned(ctx, password); err != nil {
 			logger.Error("error checking password with HIBP", logError(err))
-			return &APIError{api.InternalServerError}
+			return ErrInternalServerError
 		} else if pwned {
 			logger.Warn("password is in HIBP database")
-			return &APIError{api.PasswordInHibpDatabase}
+			return ErrPasswordInHibpDatabase
 		}
 	}
 
@@ -131,14 +131,14 @@ func (wf *Workflows) ValidateSignUpOptions( //nolint:cyclop
 		for _, role := range deptr(options.AllowedRoles) {
 			if !slices.Contains(wf.config.DefaultAllowedRoles, role) {
 				logger.Warn("role not allowed", slog.String("role", role))
-				return nil, &APIError{api.RoleNotAllowed}
+				return nil, ErrRoleNotAllowed
 			}
 		}
 	}
 
 	if !slices.Contains(deptr(options.AllowedRoles), deptr(options.DefaultRole)) {
 		logger.Warn("default role not in allowed roles")
-		return nil, &APIError{api.DefaultRoleMustBeInAllowedRoles}
+		return nil, ErrDefaultRoleMustBeInAllowedRoles
 	}
 
 	if options.DisplayName == nil {
@@ -160,7 +160,7 @@ func (wf *Workflows) ValidateSignUpOptions( //nolint:cyclop
 		options.RedirectTo = ptr(wf.config.ClientURL.String())
 	} else if !wf.redirectURLValidator(deptr(options.RedirectTo)) {
 		logger.Warn("redirect URL not allowed", slog.String("redirectTo", deptr(options.RedirectTo)))
-		return nil, &APIError{api.RedirecToNotAllowed}
+		return nil, ErrRedirecToNotAllowed
 	}
 
 	return options, nil
@@ -172,17 +172,17 @@ func (wf *Workflows) ValidateUser(
 ) *APIError {
 	if !wf.ValidateEmail(user.Email.String) {
 		logger.Warn("email didn't pass access control checks")
-		return &APIError{api.InvalidEmailPassword}
+		return ErrInvalidEmailPassword
 	}
 
 	if user.Disabled {
 		logger.Warn("user is disabled")
-		return &APIError{api.DisabledUser}
+		return ErrDisabledUser
 	}
 
 	if !user.EmailVerified && wf.config.RequireEmailVerification {
 		logger.Warn("user is unverified")
-		return &APIError{api.UnverifiedUser}
+		return ErrUnverifiedUser
 	}
 
 	return nil
@@ -200,7 +200,7 @@ func (wf *Workflows) ValidateOptionsRedirectTo(
 		options.RedirectTo = ptr(wf.config.ClientURL.String())
 	} else if !wf.redirectURLValidator(deptr(options.RedirectTo)) {
 		logger.Warn("redirect URL not allowed", slog.String("redirectTo", deptr(options.RedirectTo)))
-		return nil, &APIError{api.RedirecToNotAllowed}
+		return nil, ErrRedirecToNotAllowed
 	}
 
 	return options, nil
@@ -214,11 +214,11 @@ func (wf *Workflows) GetUser(
 	user, err := wf.db.GetUser(ctx, id)
 	if errors.Is(err, pgx.ErrNoRows) {
 		logger.Warn("user not found")
-		return sql.AuthUser{}, &APIError{api.InvalidEmailPassword} //nolint:exhaustruct
+		return sql.AuthUser{}, ErrInvalidEmailPassword //nolint:exhaustruct
 	}
 	if err != nil {
 		logger.Error("error getting user by email", logError(err))
-		return sql.AuthUser{}, &APIError{api.InternalServerError} //nolint:exhaustruct
+		return sql.AuthUser{}, ErrInternalServerError //nolint:exhaustruct
 	}
 
 	if err := wf.ValidateUser(user, logger); err != nil {
@@ -232,22 +232,22 @@ func (wf *Workflows) GetUserByEmail(
 	ctx context.Context,
 	email string,
 	logger *slog.Logger,
-) (sql.AuthUser, bool, *APIError) {
+) (sql.AuthUser, *APIError) {
 	user, err := wf.db.GetUserByEmail(ctx, sql.Text(email))
 	if errors.Is(err, pgx.ErrNoRows) {
 		logger.Warn("user not found")
-		return sql.AuthUser{}, true, &APIError{api.InvalidEmailPassword} //nolint:exhaustruct
+		return sql.AuthUser{}, ErrUserEmailNotFound //nolint:exhaustruct
 	}
 	if err != nil {
 		logger.Error("error getting user by email", logError(err))
-		return sql.AuthUser{}, false, &APIError{api.InternalServerError} //nolint:exhaustruct
+		return sql.AuthUser{}, ErrInternalServerError //nolint:exhaustruct
 	}
 
 	if err := wf.ValidateUser(user, logger); err != nil {
-		return sql.AuthUser{}, false, err //nolint:exhaustruct
+		return sql.AuthUser{}, err //nolint:exhaustruct
 	}
 
-	return user, false, nil
+	return user, nil
 }
 
 func (wf *Workflows) GetUserByRefreshTokenHash(
@@ -265,11 +265,11 @@ func (wf *Workflows) GetUserByRefreshTokenHash(
 	)
 	if errors.Is(err, pgx.ErrNoRows) {
 		logger.Error("could not find user by refresh token")
-		return sql.AuthUser{}, &APIError{api.InvalidPat} //nolint:exhaustruct
+		return sql.AuthUser{}, ErrInvalidPat //nolint:exhaustruct
 	}
 	if err != nil {
 		logger.Error("could not get user by refresh token", logError(err))
-		return sql.AuthUser{}, &APIError{api.InternalServerError} //nolint:exhaustruct
+		return sql.AuthUser{}, ErrInternalServerError //nolint:exhaustruct
 	}
 
 	if apiErr := wf.ValidateUser(user, logger); apiErr != nil {
@@ -347,20 +347,20 @@ func (wf *Workflows) GetUserFromJWTInContext(
 		logger.Error(
 			"jwt token not found in context, this should not be possilble due to middleware",
 		)
-		return sql.AuthUser{}, &APIError{api.InternalServerError} //nolint:exhaustruct
+		return sql.AuthUser{}, ErrInternalServerError //nolint:exhaustruct
 	}
 
 	sub, err := jwtToken.Claims.GetSubject()
 	if err != nil {
 		logger.Error("error getting user id from jwt token", logError(err))
-		return sql.AuthUser{}, &APIError{api.InvalidRequest} //nolint:exhaustruct
+		return sql.AuthUser{}, ErrInvalidRequest //nolint:exhaustruct
 	}
 	logger = logger.With(slog.String("user_id", sub))
 
 	userID, err := uuid.Parse(sub)
 	if err != nil {
 		logger.Error("error parsing user id from jwt token's subject", logError(err))
-		return sql.AuthUser{}, &APIError{api.InvalidRequest} //nolint:exhaustruct
+		return sql.AuthUser{}, ErrInvalidRequest //nolint:exhaustruct
 	}
 
 	user, apiErr := wf.GetUser(ctx, userID, logger)
@@ -390,7 +390,7 @@ func (wf *Workflows) InsertRefreshtoken(
 		b, err = json.Marshal(metadata)
 		if err != nil {
 			logger.Error("error marshalling metadata", logError(err))
-			return uuid.UUID{}, &APIError{api.InternalServerError}
+			return uuid.UUID{}, ErrInternalServerError
 		}
 	}
 
@@ -402,7 +402,7 @@ func (wf *Workflows) InsertRefreshtoken(
 		Metadata:         b,
 	})
 	if err != nil {
-		return uuid.UUID{}, &APIError{api.InternalServerError}
+		return uuid.UUID{}, ErrInternalServerError
 	}
 
 	return refreshTokenID, nil
@@ -428,7 +428,7 @@ func (wf *Workflows) ChangeEmail(
 	)
 	if err != nil {
 		logger.Error("error updating user ticket", logError(err))
-		return sql.AuthUser{}, &APIError{api.InternalServerError} //nolint:exhaustruct
+		return sql.AuthUser{}, ErrInternalServerError //nolint:exhaustruct
 	}
 
 	return user, nil
@@ -512,13 +512,13 @@ func (wf *Workflows) SignUpUser( //nolint:funlen
 ) (sql.AuthUser, *APIError) {
 	if wf.config.DisableSignup {
 		logger.Warn("signup disabled")
-		return sql.AuthUser{}, &APIError{api.SignupDisabled} //nolint:exhaustruct
+		return sql.AuthUser{}, ErrSignupDisabled //nolint:exhaustruct
 	}
 
 	metadata, err := json.Marshal(options.Metadata)
 	if err != nil {
 		logger.Error("error marshaling metadata", logError(err))
-		return sql.AuthUser{}, &APIError{api.InternalServerError} //nolint:exhaustruct
+		return sql.AuthUser{}, ErrInternalServerError //nolint:exhaustruct
 	}
 
 	gravatarURL := wf.gravatarURL(email)
@@ -541,19 +541,19 @@ func (wf *Workflows) SignUpUser( //nolint:funlen
 	for _, fn := range withInputFn {
 		if err := fn(&input); err != nil {
 			logger.Error("error applying input function to user signup", logError(err))
-			return sql.AuthUser{}, &APIError{api.InternalServerError} //nolint:exhaustruct
+			return sql.AuthUser{}, ErrInternalServerError //nolint:exhaustruct
 		}
 	}
 
 	insertedUser, err := wf.db.InsertUser(ctx, input)
 	if err != nil {
 		logger.Error("error inserting user", logError(err))
-		return sql.AuthUser{}, &APIError{api.InternalServerError} //nolint:exhaustruct
+		return sql.AuthUser{}, ErrInternalServerError //nolint:exhaustruct
 	}
 
 	if wf.config.DisableNewUsers {
 		logger.Warn("new user disabled")
-		return sql.AuthUser{}, &APIError{api.DisabledUser} //nolint:exhaustruct
+		return sql.AuthUser{}, ErrDisabledUser //nolint:exhaustruct
 	}
 
 	return sql.AuthUser{ //nolint:exhaustruct
@@ -582,13 +582,13 @@ func (wf *Workflows) SignupUserWithRefreshToken( //nolint:funlen
 ) (*api.User, uuid.UUID, *APIError) {
 	if wf.config.DisableSignup {
 		logger.Warn("signup disabled")
-		return nil, uuid.UUID{}, &APIError{api.SignupDisabled}
+		return nil, uuid.UUID{}, ErrSignupDisabled
 	}
 
 	metadata, err := json.Marshal(options.Metadata)
 	if err != nil {
 		logger.Error("error marshaling metadata", logError(err))
-		return nil, uuid.UUID{}, &APIError{api.InternalServerError}
+		return nil, uuid.UUID{}, ErrInternalServerError
 	}
 
 	gravatarURL := wf.gravatarURL(email)
@@ -596,7 +596,7 @@ func (wf *Workflows) SignupUserWithRefreshToken( //nolint:funlen
 	hashedPassword, err := hashPassword(password)
 	if err != nil {
 		logger.Error("error hashing password", logError(err))
-		return nil, uuid.UUID{}, &APIError{api.InternalServerError}
+		return nil, uuid.UUID{}, ErrInternalServerError
 	}
 
 	userID, err := wf.db.InsertUserWithRefreshToken(
@@ -619,12 +619,12 @@ func (wf *Workflows) SignupUserWithRefreshToken( //nolint:funlen
 	)
 	if err != nil {
 		logger.Error("error inserting user", logError(err))
-		return nil, uuid.UUID{}, &APIError{api.InternalServerError}
+		return nil, uuid.UUID{}, ErrInternalServerError
 	}
 
 	if wf.config.DisableNewUsers {
 		logger.Warn("new user disabled")
-		return nil, uuid.UUID{}, &APIError{api.DisabledUser}
+		return nil, uuid.UUID{}, ErrDisabledUser
 	}
 
 	return &api.User{

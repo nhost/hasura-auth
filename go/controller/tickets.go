@@ -9,7 +9,6 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
-	"github.com/nhost/hasura-auth/go/api"
 	"github.com/nhost/hasura-auth/go/sql"
 )
 
@@ -43,11 +42,11 @@ func (ctrl *Controller) SetTicket(
 	)
 	if errors.Is(err, pgx.ErrNoRows) {
 		logger.Error("user not found")
-		return &APIError{api.InvalidRequest}
+		return ErrInvalidRequest
 	}
 	if err != nil {
 		logger.Error("error updating user ticket", logError(err))
-		return &APIError{api.InternalServerError}
+		return ErrInternalServerError
 	}
 
 	return nil

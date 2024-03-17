@@ -36,7 +36,7 @@ func (ctrl *Controller) PostSigninEmailPassword( //nolint:ireturn
 	logger := middleware.LoggerFromContext(ctx).
 		With(slog.String("email", string(request.Body.Email)))
 
-	user, _, apiErr := ctrl.wf.GetUserByEmail(
+	user, apiErr := ctrl.wf.GetUserByEmail(
 		ctx, string(request.Body.Email), logger.WithGroup("validator"),
 	)
 	if apiErr != nil {
@@ -45,7 +45,7 @@ func (ctrl *Controller) PostSigninEmailPassword( //nolint:ireturn
 
 	if !verifyHashPassword(request.Body.Password, user.PasswordHash.String) {
 		logger.Warn("password doesn't match")
-		return ctrl.sendError(api.InvalidEmailPassword), nil
+		return ctrl.sendError(ErrInvalidEmailPassword), nil
 	}
 
 	if user.ActiveMfaType.String == "totp" {
@@ -55,7 +55,7 @@ func (ctrl *Controller) PostSigninEmailPassword( //nolint:ireturn
 	session, err := ctrl.wf.NewSession(ctx, user, logger)
 	if err != nil {
 		logger.Error("error getting new session", logError(err))
-		return ctrl.sendError(api.InternalServerError), nil
+		return ctrl.sendError(ErrInternalServerError), nil
 	}
 
 	return api.PostSigninEmailPassword200JSONResponse{

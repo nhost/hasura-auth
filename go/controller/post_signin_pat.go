@@ -27,7 +27,7 @@ func (ctrl *Controller) PostSigninPat( //nolint:ireturn
 	session, err := ctrl.wf.NewSession(ctx, user, logger)
 	if err != nil {
 		logger.Error("error getting new session", logError(err))
-		return ctrl.sendError(api.InternalServerError), nil
+		return ctrl.sendError(ErrInternalServerError), nil
 	}
 
 	return api.PostSigninPat200JSONResponse{
