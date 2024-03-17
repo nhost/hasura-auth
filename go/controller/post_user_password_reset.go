@@ -39,7 +39,7 @@ func (ctrl *Controller) PostUserPasswordReset( //nolint:ireturn
 		return ctrl.respondWithError(apiErr), nil
 	}
 
-	if err := ctrl.SendEmail(
+	if err := ctrl.wf.SendEmail(
 		string(request.Body.Email),
 		user.Locale,
 		LinkTypePasswordReset,

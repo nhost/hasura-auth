@@ -80,7 +80,7 @@ func (ctrl *Controller) postSignupEmailPasswordWithEmailVerificationOrUserDisabl
 ) (api.PostSignupEmailPasswordResponseObject, error) {
 	ticket := newTicket(TicketTypeVerifyEmail)
 
-	if _, err := ctrl.SignUpUser(
+	if _, err := ctrl.wf.SignUpUser(
 		ctx,
 		email,
 		options,
@@ -95,7 +95,7 @@ func (ctrl *Controller) postSignupEmailPasswordWithEmailVerificationOrUserDisabl
 		return api.PostSignupEmailPassword200JSONResponse{Session: nil}, nil
 	}
 
-	if err := ctrl.SendEmail(
+	if err := ctrl.wf.SendEmail(
 		email,
 		deptr(options.Locale),
 		LinkTypeEmailVerify,
@@ -123,7 +123,7 @@ func (ctrl *Controller) postSignupEmailPasswordWithoutEmailVerification( //nolin
 	refreshToken := uuid.New()
 	expiresAt := time.Now().Add(time.Duration(ctrl.config.RefreshTokenExpiresIn) * time.Second)
 
-	userSession, userID, apiErr := ctrl.SignupUserWithRefreshToken(
+	userSession, userID, apiErr := ctrl.wf.SignupUserWithRefreshToken(
 		ctx, email, password, refreshToken, expiresAt, options, logger,
 	)
 	if apiErr != nil {

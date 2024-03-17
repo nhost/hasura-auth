@@ -53,7 +53,7 @@ func (ctrl *Controller) PostSigninPasswordlessEmail( //nolint:ireturn
 	case isMissing:
 		logger.Info("user does not exist, creating user")
 
-		user, apiErr = ctrl.SignUpUser(
+		user, apiErr = ctrl.wf.SignUpUser(
 			ctx,
 			string(request.Body.Email),
 			options,
@@ -72,7 +72,7 @@ func (ctrl *Controller) PostSigninPasswordlessEmail( //nolint:ireturn
 		}
 	}
 
-	if err := ctrl.SendEmail(
+	if err := ctrl.wf.SendEmail(
 		string(request.Body.Email),
 		user.Locale,
 		LinkTypePasswordlessEmail,

@@ -33,12 +33,12 @@ func (ctrl *Controller) PostUserEmailChange( //nolint:ireturn
 		return ctrl.respondWithError(apiErr), nil
 	}
 
-	updatedUser, apiErr := ctrl.ChangeEmail(ctx, user.ID, string(request.Body.NewEmail), logger)
+	updatedUser, apiErr := ctrl.wf.ChangeEmail(ctx, user.ID, string(request.Body.NewEmail), logger)
 	if apiErr != nil {
 		return ctrl.respondWithError(apiErr), nil
 	}
 
-	if err := ctrl.SendEmail(
+	if err := ctrl.wf.SendEmail(
 		string(request.Body.NewEmail),
 		updatedUser.Locale,
 		LinkTypeEmailConfirmChange,

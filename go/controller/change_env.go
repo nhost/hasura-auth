@@ -26,7 +26,7 @@ func (ctrl *Controller) PostChangeEnv(fn gin.HandlerFunc) gin.HandlerFunc {
 			return
 		}
 
-		if err := json.Unmarshal(b, &ctrl.wf.cfg); err != nil {
+		if err := json.Unmarshal(b, &ctrl.wf.config); err != nil {
 			_ = c.Error(err)
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
