@@ -1,3 +1,4 @@
+//go:generate mockgen -package mock -destination mock/workflows.go --source=workflows.go
 package controller
 
 import (
