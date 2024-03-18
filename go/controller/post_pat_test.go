@@ -216,7 +216,10 @@ func TestPostPat(t *testing.T) {
 			ctx := jwtGetter.ToContext(context.Background(), tc.jwtTokenFn())
 
 			cmpopts := []cmp.Option{
-				cmpopts.IgnoreFields(api.PostPat200JSONResponse{}, "PersonalAccessToken"), //nolint:exhaustruct
+				cmpopts.IgnoreFields(
+					api.PostPat200JSONResponse{}, //nolint:exhaustruct
+					"PersonalAccessToken",
+				),
 			}
 
 			assertRequest(ctx, t, c.PostPat, tc.request, tc.expectedResponse, cmpopts...)

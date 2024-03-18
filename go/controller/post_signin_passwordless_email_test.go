@@ -618,7 +618,11 @@ func TestPostSigninPasswordlessEmail(t *testing.T) { //nolint:maintidx
 			})
 
 			assertRequest(
-				context.Background(), t, c.PostSigninPasswordlessEmail, tc.request, tc.expectedResponse,
+				context.Background(),
+				t,
+				c.PostSigninPasswordlessEmail,
+				tc.request,
+				tc.expectedResponse,
 			)
 		})
 	}
