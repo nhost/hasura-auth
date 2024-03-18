@@ -18,7 +18,7 @@ func (ctrl *Controller) postSigninEmailPasswordWithTOTP( //nolint:ireturn
 	ticket := "mfaTotp:" + uuid.NewString()
 	expiresAt := time.Now().Add(5 * time.Minute) //nolint:gomnd
 
-	if apiErr := ctrl.SetTicket(ctx, userID, ticket, expiresAt, logger); apiErr != nil {
+	if apiErr := ctrl.wf.SetTicket(ctx, userID, ticket, expiresAt, logger); apiErr != nil {
 		return ctrl.respondWithError(apiErr), nil
 	}
 
@@ -36,9 +36,7 @@ func (ctrl *Controller) PostSigninEmailPassword( //nolint:ireturn
 	logger := middleware.LoggerFromContext(ctx).
 		With(slog.String("email", string(request.Body.Email)))
 
-	user, apiErr := ctrl.wf.GetUserByEmail(
-		ctx, string(request.Body.Email), logger.WithGroup("validator"),
-	)
+	user, apiErr := ctrl.wf.GetUserByEmail(ctx, string(request.Body.Email), logger)
 	if apiErr != nil {
 		return ctrl.respondWithError(apiErr), nil
 	}

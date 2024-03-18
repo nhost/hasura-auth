@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"net/url"
 	"time"
 
 	"github.com/google/uuid"
@@ -21,18 +22,18 @@ const (
 	TicketTypePasswordReset      TicketType = "passwordReset"
 )
 
-func newTicket(ticketType TicketType) string {
+func generateTicket(ticketType TicketType) string {
 	return fmt.Sprintf("%s:%s", ticketType, uuid.NewString())
 }
 
-func (ctrl *Controller) SetTicket(
+func (wf *Workflows) SetTicket(
 	ctx context.Context,
 	userID uuid.UUID,
 	ticket string,
 	expiresAt time.Time,
 	logger *slog.Logger,
 ) *APIError {
-	_, err := ctrl.wf.db.UpdateUserTicket(
+	_, err := wf.db.UpdateUserTicket(
 		ctx,
 		sql.UpdateUserTicketParams{
 			ID:              userID,
@@ -50,4 +51,29 @@ func (ctrl *Controller) SetTicket(
 	}
 
 	return nil
+}
+
+type LinkType string
+
+const (
+	LinkTypeEmailVerify        LinkType = "emailVerify"
+	LinkTypeEmailConfirmChange LinkType = "emailConfirmChange"
+	LinkTypePasswordlessEmail  LinkType = "passwordlessEmail"
+	LinkTypePasswordReset      LinkType = "passwordReset"
+)
+
+func GenLink(serverURL url.URL, typ LinkType, ticket, redirectTo string) (string, error) {
+	path, err := url.JoinPath(serverURL.Path, "verify")
+	if err != nil {
+		return "", fmt.Errorf("problem appending /verify to server url: %w", err)
+	}
+	serverURL.Path = path
+
+	query := serverURL.Query()
+	query.Add("type", string(typ))
+	query.Add("ticket", ticket)
+	query.Add("redirectTo", redirectTo)
+	serverURL.RawQuery = query.Encode()
+
+	return serverURL.String(), nil
 }

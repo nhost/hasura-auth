@@ -77,7 +77,7 @@ func (ctrl *Controller) postSignupEmailPasswordWithEmailVerificationOrUserDisabl
 	options *api.SignUpOptions,
 	logger *slog.Logger,
 ) (api.PostSignupEmailPasswordResponseObject, error) {
-	ticket := newTicket(TicketTypeVerifyEmail)
+	ticket := generateTicket(TicketTypeVerifyEmail)
 
 	if _, err := ctrl.wf.SignUpUser(
 		ctx,

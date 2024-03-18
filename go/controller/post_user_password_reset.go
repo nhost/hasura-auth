@@ -33,9 +33,9 @@ func (ctrl *Controller) PostUserPasswordReset( //nolint:ireturn
 		return ctrl.respondWithError(apiErr), nil
 	}
 
-	ticket := newTicket(TicketTypePasswordReset)
+	ticket := generateTicket(TicketTypePasswordReset)
 	expiresAt := time.Now().Add(time.Hour)
-	if apiErr := ctrl.SetTicket(ctx, user.ID, ticket, expiresAt, logger); apiErr != nil {
+	if apiErr := ctrl.wf.SetTicket(ctx, user.ID, ticket, expiresAt, logger); apiErr != nil {
 		return ctrl.respondWithError(apiErr), nil
 	}
 

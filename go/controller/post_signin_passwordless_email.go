@@ -48,7 +48,7 @@ func (ctrl *Controller) PostSigninPasswordlessEmail( //nolint:ireturn
 	}
 
 	user, apiErr := ctrl.wf.GetUserByEmail(ctx, string(request.Body.Email), logger)
-	ticket := newTicket(TicketTypePasswordLessEmail)
+	ticket := generateTicket(TicketTypePasswordLessEmail)
 	expireAt := time.Now().Add(time.Hour)
 
 	if errors.Is(apiErr, ErrUserEmailNotFound) {
@@ -68,7 +68,7 @@ func (ctrl *Controller) PostSigninPasswordlessEmail( //nolint:ireturn
 		logger.Error("error getting user by email", logError(apiErr))
 		return ctrl.respondWithError(apiErr), nil
 	} else {
-		if apiErr = ctrl.SetTicket(ctx, user.ID, ticket, expireAt, logger); apiErr != nil {
+		if apiErr = ctrl.wf.SetTicket(ctx, user.ID, ticket, expireAt, logger); apiErr != nil {
 			return ctrl.respondWithError(apiErr), nil
 		}
 	}

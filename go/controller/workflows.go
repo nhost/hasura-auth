@@ -414,7 +414,7 @@ func (wf *Workflows) ChangeEmail(
 	newEmail string,
 	logger *slog.Logger,
 ) (sql.AuthUser, *APIError) {
-	ticket := newTicket(TicketTypeEmailConfirmChange)
+	ticket := generateTicket(TicketTypeEmailConfirmChange)
 	ticketExpiresAt := time.Now().Add(time.Hour)
 
 	user, err := wf.db.UpdateUserChangeEmail(
