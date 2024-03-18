@@ -9,7 +9,6 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/go-cmp/cmp"
-	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/nhost/hasura-auth/go/api"
@@ -323,46 +322,16 @@ func TestPostUserEmailChange(t *testing.T) { //nolint:maintidx
 
 			ctrl := gomock.NewController(t)
 
-			jwtGetter, err := controller.NewJWTGetter(
-				jwtSecret,
-				time.Second*time.Duration(tc.config().AccessTokenExpiresIn),
-				nil,
-			)
-			if err != nil {
-				t.Fatalf("failed to create jwt getter: %v", err)
-			}
-
-			c, err := controller.New(
-				tc.db(ctrl),
-				*tc.config(),
-				jwtGetter,
-				tc.emailer(ctrl),
-				nil,
-				"dev",
-			)
-			if err != nil {
-				t.Fatalf("failed to create controller: %v", err)
-			}
+			c, jwtGetter := getController(t, ctrl, tc.config, tc.db, getControllerOpts{
+				customClaimer: nil,
+				emailer:       tc.emailer,
+				hibp:          nil,
+			})
 
 			ctx := jwtGetter.ToContext(context.Background(), tc.jwtTokenFn())
-			resp, err := c.PostUserEmailChange(ctx, tc.request)
-			if err != nil {
-				t.Fatalf("failed to post signup email password: %v", err)
-			}
-
-			if diff := cmp.Diff(
-				resp, tc.expectedResponse,
-				testhelpers.FilterPathLast(
-					[]string{".CreatedAt"}, cmpopts.EquateApproxTime(time.Minute),
-				),
-				cmp.Transformer("floatify", func(x int64) float64 {
-					return float64(x)
-				}),
-				cmpopts.EquateApprox(0, 10),
-				cmpopts.IgnoreFields(api.Session{}, "RefreshToken", "AccessToken"), //nolint:exhaustruct
-			); diff != "" {
-				t.Fatalf("unexpected response: %s", diff)
-			}
+			assertRequest(
+				ctx, t, c.PostUserEmailChange, tc.request, tc.expectedResponse,
+			)
 		})
 	}
 }

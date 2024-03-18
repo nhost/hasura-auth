@@ -6,8 +6,6 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/google/go-cmp/cmp"
-	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
@@ -15,12 +13,11 @@ import (
 	"github.com/nhost/hasura-auth/go/controller"
 	"github.com/nhost/hasura-auth/go/controller/mock"
 	"github.com/nhost/hasura-auth/go/sql"
-	"github.com/nhost/hasura-auth/go/testhelpers"
 	"go.uber.org/mock/gomock"
 )
 
 //nolint:dupl
-func TestPostSigninPat(t *testing.T) { //nolint:maintidx,gocognit,cyclop
+func TestPostSigninPat(t *testing.T) { //nolint:maintidx
 	t.Parallel()
 
 	userID := uuid.MustParse("db477732-48fa-4289-b694-2886a646b6eb")
@@ -31,8 +28,6 @@ func TestPostSigninPat(t *testing.T) { //nolint:maintidx,gocognit,cyclop
 		name             string
 		config           func() *controller.Config
 		db               func(ctrl *gomock.Controller) controller.DBClient
-		emailer          func(ctrl *gomock.Controller) *mock.MockEmailer
-		hibp             func(ctrl *gomock.Controller) *mock.MockHIBPClient
 		customClaimer    func(ctrl *gomock.Controller) controller.CustomClaimer
 		request          api.PostSigninPatRequestObject
 		expectedResponse api.PostSigninPatResponseObject
@@ -77,8 +72,6 @@ func TestPostSigninPat(t *testing.T) { //nolint:maintidx,gocognit,cyclop
 				return mock
 			},
 			customClaimer: nil,
-			hibp:          mock.NewMockHIBPClient,
-			emailer:       mock.NewMockEmailer,
 			request: api.PostSigninPatRequestObject{
 				Body: &api.SignInPATRequest{
 					PersonalAccessToken: pat.String(),
@@ -182,8 +175,6 @@ func TestPostSigninPat(t *testing.T) { //nolint:maintidx,gocognit,cyclop
 				}, nil)
 				return mock
 			},
-			hibp:    mock.NewMockHIBPClient,
-			emailer: mock.NewMockEmailer,
 			request: api.PostSigninPatRequestObject{
 				Body: &api.SignInPATRequest{
 					PersonalAccessToken: pat.String(),
@@ -261,8 +252,6 @@ func TestPostSigninPat(t *testing.T) { //nolint:maintidx,gocognit,cyclop
 				return mock
 			},
 			customClaimer: nil,
-			hibp:          mock.NewMockHIBPClient,
-			emailer:       mock.NewMockEmailer,
 			request: api.PostSigninPatRequestObject{
 				Body: &api.SignInPATRequest{
 					PersonalAccessToken: pat.String(),
@@ -297,8 +286,6 @@ func TestPostSigninPat(t *testing.T) { //nolint:maintidx,gocognit,cyclop
 				return mock
 			},
 			customClaimer: nil,
-			hibp:          mock.NewMockHIBPClient,
-			emailer:       mock.NewMockEmailer,
 			request: api.PostSigninPatRequestObject{
 				Body: &api.SignInPATRequest{
 					PersonalAccessToken: pat.String(),
@@ -332,8 +319,6 @@ func TestPostSigninPat(t *testing.T) { //nolint:maintidx,gocognit,cyclop
 				return mock
 			},
 			customClaimer: nil,
-			hibp:          mock.NewMockHIBPClient,
-			emailer:       mock.NewMockEmailer,
 			request: api.PostSigninPatRequestObject{
 				Body: &api.SignInPATRequest{
 					PersonalAccessToken: pat.String(),
@@ -371,8 +356,6 @@ func TestPostSigninPat(t *testing.T) { //nolint:maintidx,gocognit,cyclop
 				return mock
 			},
 			customClaimer: nil,
-			hibp:          mock.NewMockHIBPClient,
-			emailer:       mock.NewMockEmailer,
 			request: api.PostSigninPatRequestObject{
 				Body: &api.SignInPATRequest{
 					PersonalAccessToken: pat.String(),
@@ -395,70 +378,19 @@ func TestPostSigninPat(t *testing.T) { //nolint:maintidx,gocognit,cyclop
 
 			ctrl := gomock.NewController(t)
 
-			var cc controller.CustomClaimer
-			if tc.customClaimer != nil {
-				cc = tc.customClaimer(ctrl)
-			}
+			c, jwtGetter := getController(t, ctrl, tc.config, tc.db, getControllerOpts{
+				customClaimer: tc.customClaimer,
+				emailer:       nil,
+				hibp:          nil,
+			})
 
-			jwtGetter, err := controller.NewJWTGetter(
-				jwtSecret,
-				time.Second*time.Duration(tc.config().AccessTokenExpiresIn),
-				cc,
+			resp := assertRequest(
+				context.Background(), t, c.PostSigninPat, tc.request, tc.expectedResponse,
 			)
-			if err != nil {
-				t.Fatalf("failed to create jwt getter: %v", err)
-			}
-
-			c, err := controller.New(
-				tc.db(ctrl),
-				*tc.config(),
-				jwtGetter,
-				tc.emailer(ctrl),
-				tc.hibp(ctrl),
-				"dev",
-			)
-			if err != nil {
-				t.Fatalf("failed to create controller: %v", err)
-			}
-
-			resp, err := c.PostSigninPat(context.Background(), tc.request)
-			if err != nil {
-				t.Fatalf("failed to post signin email password: %v", err)
-			}
-
-			if diff := cmp.Diff(
-				resp, tc.expectedResponse,
-				testhelpers.FilterPathLast(
-					[]string{".CreatedAt"}, cmpopts.EquateApproxTime(time.Minute),
-				),
-				testhelpers.FilterPathLast(
-					[]string{".Ticket"},
-					cmp.Comparer(cmpTicket),
-				),
-				cmpopts.IgnoreFields(api.Session{}, "RefreshToken", "AccessToken"), //nolint:exhaustruct
-			); diff != "" {
-				t.Fatalf("unexpected response: %s", diff)
-			}
 
 			resp200, ok := resp.(api.PostSigninPat200JSONResponse)
-			if ok { //nolint:nestif
-				var token *jwt.Token
-				if resp200.Session == nil {
-					token = nil
-				} else {
-					token, err = jwtGetter.Validate(resp200.Session.AccessToken)
-					if err != nil {
-						t.Fatalf("failed to get claims: %v", err)
-					}
-				}
-				if diff := cmp.Diff(
-					token,
-					tc.expectedJWT,
-					cmpopts.IgnoreFields(jwt.Token{}, "Raw", "Signature"), //nolint:exhaustruct
-					cmpopts.EquateApprox(0, 10),
-				); diff != "" {
-					t.Fatalf("unexpected jwt: %s", diff)
-				}
+			if ok {
+				assertSession(t, jwtGetter, resp200.Session, tc.expectedJWT)
 			}
 		})
 	}
