@@ -69,7 +69,10 @@ func getSMTPEmailer(cCtx *cli.Context, logger *slog.Logger) (*notifications.Emai
 	), nil
 }
 
-func getEmailer(cCtx *cli.Context, logger *slog.Logger) (controller.Emailer, error) { //nolint:ireturn
+func getEmailer( //nolint:ireturn
+	cCtx *cli.Context,
+	logger *slog.Logger,
+) (controller.Emailer, error) {
 	if cCtx.String(flagSMTPHost) == "postmark" {
 		return postmark.New(cCtx.String(flagSMTPSender), cCtx.String(flagSMTPPassword)), nil
 	}
