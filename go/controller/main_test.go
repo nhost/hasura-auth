@@ -13,6 +13,7 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/nhost/hasura-auth/go/api"
 	"github.com/nhost/hasura-auth/go/controller"
+	"github.com/nhost/hasura-auth/go/controller/mock"
 	"github.com/nhost/hasura-auth/go/testhelpers"
 	"go.uber.org/mock/gomock"
 	"golang.org/x/crypto/bcrypt"
@@ -140,10 +141,23 @@ func cmpDBParams(
 	)
 }
 
+type testRequest[T, U any] struct {
+	name             string
+	config           func() *controller.Config
+	db               func(ctrl *gomock.Controller) controller.DBClient
+	emailer          func(ctrl *gomock.Controller) *mock.MockEmailer
+	hibp             func(ctrl *gomock.Controller) *mock.MockHIBPClient
+	customClaimer    func(ctrl *gomock.Controller) controller.CustomClaimer
+	jwtTokenFn       func() *jwt.Token
+	request          T
+	expectedResponse U
+	expectedJWT      *jwt.Token
+}
+
 type getControllerOpts struct {
 	customClaimer func(*gomock.Controller) controller.CustomClaimer
-	emailer       func(*gomock.Controller) controller.Emailer
-	hibp          func(*gomock.Controller) controller.HIBPClient
+	emailer       func(*gomock.Controller) *mock.MockEmailer
+	hibp          func(*gomock.Controller) *mock.MockHIBPClient
 }
 
 func getController(

@@ -30,14 +30,7 @@ func TestPostSigninPasswordlessEmail(t *testing.T) { //nolint:maintidx
 
 	userID := uuid.MustParse("DB477732-48FA-4289-B694-2886A646B6EB")
 
-	cases := []struct {
-		name             string
-		config           func() *controller.Config
-		db               func(ctrl *gomock.Controller) controller.DBClient
-		emailer          func(ctrl *gomock.Controller) controller.Emailer
-		request          api.PostSigninPasswordlessEmailRequestObject
-		expectedResponse api.PostSigninPasswordlessEmailResponseObject
-	}{
+	cases := []testRequest[api.PostSigninPasswordlessEmailRequestObject, api.PostSigninPasswordlessEmailResponseObject]{
 		{
 			name:   "signup required",
 			config: getConfig,
@@ -72,7 +65,7 @@ func TestPostSigninPasswordlessEmail(t *testing.T) { //nolint:maintidx
 
 				return mock
 			},
-			emailer: func(ctrl *gomock.Controller) controller.Emailer {
+			emailer: func(ctrl *gomock.Controller) *mock.MockEmailer {
 				mock := mock.NewMockEmailer(ctrl)
 
 				mock.EXPECT().SendEmail(
@@ -107,6 +100,10 @@ func TestPostSigninPasswordlessEmail(t *testing.T) { //nolint:maintidx
 				},
 			},
 			expectedResponse: api.PostSigninPasswordlessEmail200JSONResponse(api.OK),
+			customClaimer:    nil,
+			hibp:             nil,
+			jwtTokenFn:       nil,
+			expectedJWT:      nil,
 		},
 
 		{
@@ -120,7 +117,7 @@ func TestPostSigninPasswordlessEmail(t *testing.T) { //nolint:maintidx
 				mock := mock.NewMockDBClient(ctrl)
 				return mock
 			},
-			emailer: func(ctrl *gomock.Controller) controller.Emailer {
+			emailer: func(ctrl *gomock.Controller) *mock.MockEmailer {
 				mock := mock.NewMockEmailer(ctrl)
 				return mock
 			},
@@ -135,6 +132,10 @@ func TestPostSigninPasswordlessEmail(t *testing.T) { //nolint:maintidx
 				Message: "This endpoint is disabled",
 				Status:  409,
 			},
+			customClaimer: nil,
+			hibp:          nil,
+			jwtTokenFn:    nil,
+			expectedJWT:   nil,
 		},
 
 		{
@@ -148,7 +149,7 @@ func TestPostSigninPasswordlessEmail(t *testing.T) { //nolint:maintidx
 				mock := mock.NewMockDBClient(ctrl)
 				return mock
 			},
-			emailer: func(ctrl *gomock.Controller) controller.Emailer {
+			emailer: func(ctrl *gomock.Controller) *mock.MockEmailer {
 				mock := mock.NewMockEmailer(ctrl)
 
 				return mock
@@ -164,6 +165,10 @@ func TestPostSigninPasswordlessEmail(t *testing.T) { //nolint:maintidx
 				Message: "Incorrect email or password",
 				Status:  401,
 			},
+			customClaimer: nil,
+			hibp:          nil,
+			jwtTokenFn:    nil,
+			expectedJWT:   nil,
 		},
 
 		{
@@ -177,7 +182,7 @@ func TestPostSigninPasswordlessEmail(t *testing.T) { //nolint:maintidx
 				mock := mock.NewMockDBClient(ctrl)
 				return mock
 			},
-			emailer: func(ctrl *gomock.Controller) controller.Emailer {
+			emailer: func(ctrl *gomock.Controller) *mock.MockEmailer {
 				mock := mock.NewMockEmailer(ctrl)
 				return mock
 			},
@@ -199,6 +204,10 @@ func TestPostSigninPasswordlessEmail(t *testing.T) { //nolint:maintidx
 				Message: "Role not allowed",
 				Status:  400,
 			},
+			customClaimer: nil,
+			hibp:          nil,
+			jwtTokenFn:    nil,
+			expectedJWT:   nil,
 		},
 
 		{
@@ -235,7 +244,7 @@ func TestPostSigninPasswordlessEmail(t *testing.T) { //nolint:maintidx
 
 				return mock
 			},
-			emailer: func(ctrl *gomock.Controller) controller.Emailer {
+			emailer: func(ctrl *gomock.Controller) *mock.MockEmailer {
 				mock := mock.NewMockEmailer(ctrl)
 
 				mock.EXPECT().SendEmail(
@@ -277,6 +286,10 @@ func TestPostSigninPasswordlessEmail(t *testing.T) { //nolint:maintidx
 				},
 			},
 			expectedResponse: api.PostSigninPasswordlessEmail200JSONResponse(api.OK),
+			customClaimer:    nil,
+			hibp:             nil,
+			jwtTokenFn:       nil,
+			expectedJWT:      nil,
 		},
 
 		{
@@ -286,7 +299,7 @@ func TestPostSigninPasswordlessEmail(t *testing.T) { //nolint:maintidx
 				mock := mock.NewMockDBClient(ctrl)
 				return mock
 			},
-			emailer: func(ctrl *gomock.Controller) controller.Emailer {
+			emailer: func(ctrl *gomock.Controller) *mock.MockEmailer {
 				mock := mock.NewMockEmailer(ctrl)
 				return mock
 			},
@@ -308,6 +321,10 @@ func TestPostSigninPasswordlessEmail(t *testing.T) { //nolint:maintidx
 				Message: `The value of "options.redirectTo" is not allowed.`,
 				Status:  400,
 			},
+			customClaimer: nil,
+			hibp:          nil,
+			jwtTokenFn:    nil,
+			expectedJWT:   nil,
 		},
 
 		{
@@ -350,7 +367,7 @@ func TestPostSigninPasswordlessEmail(t *testing.T) { //nolint:maintidx
 
 				return mock
 			},
-			emailer: func(ctrl *gomock.Controller) controller.Emailer {
+			emailer: func(ctrl *gomock.Controller) *mock.MockEmailer {
 				mock := mock.NewMockEmailer(ctrl)
 
 				mock.EXPECT().SendEmail(
@@ -392,6 +409,10 @@ func TestPostSigninPasswordlessEmail(t *testing.T) { //nolint:maintidx
 				},
 			},
 			expectedResponse: api.PostSigninPasswordlessEmail200JSONResponse(api.OK),
+			customClaimer:    nil,
+			hibp:             nil,
+			jwtTokenFn:       nil,
+			expectedJWT:      nil,
 		},
 
 		{
@@ -411,7 +432,7 @@ func TestPostSigninPasswordlessEmail(t *testing.T) { //nolint:maintidx
 
 				return mock
 			},
-			emailer: func(ctrl *gomock.Controller) controller.Emailer {
+			emailer: func(ctrl *gomock.Controller) *mock.MockEmailer {
 				mock := mock.NewMockEmailer(ctrl)
 
 				return mock
@@ -427,6 +448,10 @@ func TestPostSigninPasswordlessEmail(t *testing.T) { //nolint:maintidx
 				Message: "Sign up is disabled.",
 				Status:  403,
 			},
+			customClaimer: nil,
+			hibp:          nil,
+			jwtTokenFn:    nil,
+			expectedJWT:   nil,
 		},
 
 		{
@@ -477,7 +502,7 @@ func TestPostSigninPasswordlessEmail(t *testing.T) { //nolint:maintidx
 
 				return mock
 			},
-			emailer: func(ctrl *gomock.Controller) controller.Emailer {
+			emailer: func(ctrl *gomock.Controller) *mock.MockEmailer {
 				mock := mock.NewMockEmailer(ctrl)
 
 				mock.EXPECT().SendEmail(
@@ -512,6 +537,10 @@ func TestPostSigninPasswordlessEmail(t *testing.T) { //nolint:maintidx
 				},
 			},
 			expectedResponse: api.PostSigninPasswordlessEmail200JSONResponse(api.OK),
+			customClaimer:    nil,
+			hibp:             nil,
+			jwtTokenFn:       nil,
+			expectedJWT:      nil,
 		},
 
 		{
@@ -553,7 +582,7 @@ func TestPostSigninPasswordlessEmail(t *testing.T) { //nolint:maintidx
 
 				return mock
 			},
-			emailer: func(ctrl *gomock.Controller) controller.Emailer {
+			emailer: func(ctrl *gomock.Controller) *mock.MockEmailer {
 				mock := mock.NewMockEmailer(ctrl)
 
 				return mock
@@ -567,6 +596,10 @@ func TestPostSigninPasswordlessEmail(t *testing.T) { //nolint:maintidx
 			expectedResponse: controller.ErrorResponse{
 				Error: "disabled-user", Message: "User is disabled", Status: 401,
 			},
+			customClaimer: nil,
+			hibp:          nil,
+			jwtTokenFn:    nil,
+			expectedJWT:   nil,
 		},
 	}
 

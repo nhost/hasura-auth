@@ -51,15 +51,7 @@ func TestPostUserEmailChange(t *testing.T) { //nolint:maintidx
 		}
 	}
 
-	cases := []struct {
-		name             string
-		config           func() *controller.Config
-		db               func(ctrl *gomock.Controller) controller.DBClient
-		emailer          func(ctrl *gomock.Controller) controller.Emailer
-		jwtTokenFn       func() *jwt.Token
-		request          api.PostUserEmailChangeRequestObject
-		expectedResponse api.PostUserEmailChangeResponseObject
-	}{
+	cases := []testRequest[api.PostUserEmailChangeRequestObject, api.PostUserEmailChangeResponseObject]{
 		{
 			name:   "simple",
 			config: getConfig,
@@ -94,7 +86,7 @@ func TestPostUserEmailChange(t *testing.T) { //nolint:maintidx
 
 				return mock
 			},
-			emailer: func(ctrl *gomock.Controller) controller.Emailer {
+			emailer: func(ctrl *gomock.Controller) *mock.MockEmailer {
 				mock := mock.NewMockEmailer(ctrl)
 
 				mock.EXPECT().SendEmail(
@@ -130,6 +122,9 @@ func TestPostUserEmailChange(t *testing.T) { //nolint:maintidx
 				},
 			},
 			expectedResponse: api.PostUserEmailChange200JSONResponse(api.OK),
+			customClaimer:    nil,
+			expectedJWT:      nil,
+			hibp:             nil,
 		},
 
 		{
@@ -152,7 +147,8 @@ func TestPostUserEmailChange(t *testing.T) { //nolint:maintidx
 
 				return mock
 			},
-			emailer: func(ctrl *gomock.Controller) controller.Emailer {
+
+			emailer: func(ctrl *gomock.Controller) *mock.MockEmailer {
 				mock := mock.NewMockEmailer(ctrl)
 				return mock
 			},
@@ -168,6 +164,9 @@ func TestPostUserEmailChange(t *testing.T) { //nolint:maintidx
 				Message: "Email already in use",
 				Status:  409,
 			},
+			customClaimer: nil,
+			expectedJWT:   nil,
+			hibp:          nil,
 		},
 
 		{
@@ -188,7 +187,7 @@ func TestPostUserEmailChange(t *testing.T) { //nolint:maintidx
 
 				return mock
 			},
-			emailer: func(ctrl *gomock.Controller) controller.Emailer {
+			emailer: func(ctrl *gomock.Controller) *mock.MockEmailer {
 				mock := mock.NewMockEmailer(ctrl)
 				return mock
 			},
@@ -204,6 +203,9 @@ func TestPostUserEmailChange(t *testing.T) { //nolint:maintidx
 				Message: "Internal server error",
 				Status:  500,
 			},
+			customClaimer: nil,
+			expectedJWT:   nil,
+			hibp:          nil,
 		},
 
 		{
@@ -246,7 +248,7 @@ func TestPostUserEmailChange(t *testing.T) { //nolint:maintidx
 
 				return mock
 			},
-			emailer: func(ctrl *gomock.Controller) controller.Emailer {
+			emailer: func(ctrl *gomock.Controller) *mock.MockEmailer {
 				mock := mock.NewMockEmailer(ctrl)
 
 				mock.EXPECT().SendEmail(
@@ -284,6 +286,9 @@ func TestPostUserEmailChange(t *testing.T) { //nolint:maintidx
 				},
 			},
 			expectedResponse: api.PostUserEmailChange200JSONResponse(api.OK),
+			customClaimer:    nil,
+			expectedJWT:      nil,
+			hibp:             nil,
 		},
 
 		{
@@ -293,7 +298,7 @@ func TestPostUserEmailChange(t *testing.T) { //nolint:maintidx
 				mock := mock.NewMockDBClient(ctrl)
 				return mock
 			},
-			emailer: func(ctrl *gomock.Controller) controller.Emailer {
+			emailer: func(ctrl *gomock.Controller) *mock.MockEmailer {
 				mock := mock.NewMockEmailer(ctrl)
 				return mock
 			},
@@ -311,6 +316,9 @@ func TestPostUserEmailChange(t *testing.T) { //nolint:maintidx
 				Message: `The value of "options.redirectTo" is not allowed.`,
 				Status:  400,
 			},
+			customClaimer: nil,
+			expectedJWT:   nil,
+			hibp:          nil,
 		},
 	}
 

@@ -57,17 +57,7 @@ func TestPostSigninEmailPassword(t *testing.T) { //nolint:maintidx
 
 	userID := uuid.MustParse("db477732-48fa-4289-b694-2886a646b6eb")
 
-	cases := []struct {
-		name             string
-		config           func() *controller.Config
-		db               func(ctrl *gomock.Controller) controller.DBClient
-		emailer          func(ctrl *gomock.Controller) *mock.MockEmailer
-		hibp             func(ctrl *gomock.Controller) *mock.MockHIBPClient
-		customClaimer    func(ctrl *gomock.Controller) controller.CustomClaimer
-		request          api.PostSigninEmailPasswordRequestObject
-		expectedResponse api.PostSigninEmailPasswordResponseObject
-		expectedJWT      *jwt.Token
-	}{
+	cases := []testRequest[api.PostSigninEmailPasswordRequestObject, api.PostSigninEmailPasswordResponseObject]{
 		{
 			name:   "simple",
 			config: getConfig,
@@ -156,6 +146,7 @@ func TestPostSigninEmailPassword(t *testing.T) { //nolint:maintidx
 				Signature: []byte{},
 				Valid:     true,
 			},
+			jwtTokenFn: nil,
 		},
 
 		{
@@ -264,6 +255,7 @@ func TestPostSigninEmailPassword(t *testing.T) { //nolint:maintidx
 				Signature: []byte{},
 				Valid:     true,
 			},
+			jwtTokenFn: nil,
 		},
 
 		{
@@ -295,6 +287,7 @@ func TestPostSigninEmailPassword(t *testing.T) { //nolint:maintidx
 				Status:  401,
 			},
 			expectedJWT: nil,
+			jwtTokenFn:  nil,
 		},
 
 		{
@@ -324,6 +317,7 @@ func TestPostSigninEmailPassword(t *testing.T) { //nolint:maintidx
 				Status:  401,
 			},
 			expectedJWT: nil,
+			jwtTokenFn:  nil,
 		},
 
 		{
@@ -356,6 +350,7 @@ func TestPostSigninEmailPassword(t *testing.T) { //nolint:maintidx
 				Status:  401,
 			},
 			expectedJWT: nil,
+			jwtTokenFn:  nil,
 		},
 
 		{
@@ -386,6 +381,7 @@ func TestPostSigninEmailPassword(t *testing.T) { //nolint:maintidx
 				Status:  401,
 			},
 			expectedJWT: nil,
+			jwtTokenFn:  nil,
 		},
 
 		{
@@ -478,6 +474,7 @@ func TestPostSigninEmailPassword(t *testing.T) { //nolint:maintidx
 				Signature: []byte{},
 				Valid:     true,
 			},
+			jwtTokenFn: nil,
 		},
 
 		{
@@ -513,6 +510,7 @@ func TestPostSigninEmailPassword(t *testing.T) { //nolint:maintidx
 				Status:  401,
 			},
 			expectedJWT: nil,
+			jwtTokenFn:  nil,
 		},
 
 		{
@@ -554,6 +552,7 @@ func TestPostSigninEmailPassword(t *testing.T) { //nolint:maintidx
 				Session: nil,
 			},
 			expectedJWT: nil,
+			jwtTokenFn:  nil,
 		},
 	}
 

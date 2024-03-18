@@ -24,17 +24,7 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx
 
 	userID := uuid.MustParse("DB477732-48FA-4289-B694-2886A646B6EB")
 
-	cases := []struct {
-		name             string
-		config           func() *controller.Config
-		db               func(ctrl *gomock.Controller) controller.DBClient
-		emailer          func(ctrl *gomock.Controller) controller.Emailer
-		hibp             func(ctrl *gomock.Controller) controller.HIBPClient
-		customClaimer    func(ctrl *gomock.Controller) controller.CustomClaimer
-		request          api.PostSignupEmailPasswordRequestObject
-		expectedResponse api.PostSignupEmailPasswordResponseObject
-		expectedJWT      *jwt.Token
-	}{
+	cases := []testRequest[api.PostSignupEmailPasswordRequestObject, api.PostSignupEmailPasswordResponseObject]{
 		{
 			name:   "simple",
 			config: getConfig,
@@ -67,11 +57,11 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx
 
 				return mock
 			},
-			emailer: func(ctrl *gomock.Controller) controller.Emailer {
+			emailer: func(ctrl *gomock.Controller) *mock.MockEmailer {
 				mock := mock.NewMockEmailer(ctrl)
 				return mock
 			},
-			hibp: func(ctrl *gomock.Controller) controller.HIBPClient {
+			hibp: func(ctrl *gomock.Controller) *mock.MockHIBPClient {
 				mock := mock.NewMockHIBPClient(ctrl)
 				return mock
 			},
@@ -127,6 +117,7 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx
 				Signature: []byte{},
 				Valid:     true,
 			},
+			jwtTokenFn: nil,
 		},
 
 		{
@@ -161,11 +152,11 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx
 
 				return mock
 			},
-			emailer: func(ctrl *gomock.Controller) controller.Emailer {
+			emailer: func(ctrl *gomock.Controller) *mock.MockEmailer {
 				mock := mock.NewMockEmailer(ctrl)
 				return mock
 			},
-			hibp: func(ctrl *gomock.Controller) controller.HIBPClient {
+			hibp: func(ctrl *gomock.Controller) *mock.MockHIBPClient {
 				mock := mock.NewMockHIBPClient(ctrl)
 				return mock
 			},
@@ -231,6 +222,7 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx
 				Signature: []byte{},
 				Valid:     true,
 			},
+			jwtTokenFn: nil,
 		},
 
 		{
@@ -245,11 +237,11 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx
 
 				return mock
 			},
-			emailer: func(ctrl *gomock.Controller) controller.Emailer {
+			emailer: func(ctrl *gomock.Controller) *mock.MockEmailer {
 				mock := mock.NewMockEmailer(ctrl)
 				return mock
 			},
-			hibp: func(ctrl *gomock.Controller) controller.HIBPClient {
+			hibp: func(ctrl *gomock.Controller) *mock.MockHIBPClient {
 				mock := mock.NewMockHIBPClient(ctrl)
 				return mock
 			},
@@ -267,6 +259,7 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx
 				Status:  403,
 			},
 			expectedJWT: nil,
+			jwtTokenFn:  nil,
 		},
 
 		{
@@ -306,11 +299,11 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx
 
 				return mock
 			},
-			emailer: func(ctrl *gomock.Controller) controller.Emailer {
+			emailer: func(ctrl *gomock.Controller) *mock.MockEmailer {
 				mock := mock.NewMockEmailer(ctrl)
 				return mock
 			},
-			hibp: func(ctrl *gomock.Controller) controller.HIBPClient {
+			hibp: func(ctrl *gomock.Controller) *mock.MockHIBPClient {
 				mock := mock.NewMockHIBPClient(ctrl)
 				return mock
 			},
@@ -326,6 +319,7 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx
 				Error: "disabled-user", Message: "User is disabled", Status: 401,
 			},
 			expectedJWT: nil,
+			jwtTokenFn:  nil,
 		},
 
 		{
@@ -366,11 +360,11 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx
 
 				return mock
 			},
-			emailer: func(ctrl *gomock.Controller) controller.Emailer {
+			emailer: func(ctrl *gomock.Controller) *mock.MockEmailer {
 				mock := mock.NewMockEmailer(ctrl)
 				return mock
 			},
-			hibp: func(ctrl *gomock.Controller) controller.HIBPClient {
+			hibp: func(ctrl *gomock.Controller) *mock.MockHIBPClient {
 				mock := mock.NewMockHIBPClient(ctrl)
 				return mock
 			},
@@ -386,6 +380,7 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx
 				Error: "disabled-user", Message: "User is disabled", Status: 401,
 			},
 			expectedJWT: nil,
+			jwtTokenFn:  nil,
 		},
 
 		{
@@ -400,11 +395,11 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx
 
 				return mock
 			},
-			emailer: func(ctrl *gomock.Controller) controller.Emailer {
+			emailer: func(ctrl *gomock.Controller) *mock.MockEmailer {
 				mock := mock.NewMockEmailer(ctrl)
 				return mock
 			},
-			hibp: func(ctrl *gomock.Controller) controller.HIBPClient {
+			hibp: func(ctrl *gomock.Controller) *mock.MockHIBPClient {
 				mock := mock.NewMockHIBPClient(ctrl)
 				return mock
 			},
@@ -422,6 +417,7 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx
 				Status:  409,
 			},
 			expectedJWT: nil,
+			jwtTokenFn:  nil,
 		},
 
 		{
@@ -440,11 +436,11 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx
 
 				return mock
 			},
-			emailer: func(ctrl *gomock.Controller) controller.Emailer {
+			emailer: func(ctrl *gomock.Controller) *mock.MockEmailer {
 				mock := mock.NewMockEmailer(ctrl)
 				return mock
 			},
-			hibp: func(ctrl *gomock.Controller) controller.HIBPClient {
+			hibp: func(ctrl *gomock.Controller) *mock.MockHIBPClient {
 				mock := mock.NewMockHIBPClient(ctrl)
 				return mock
 			},
@@ -462,6 +458,7 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx
 				Status:  400,
 			},
 			expectedJWT: nil,
+			jwtTokenFn:  nil,
 		},
 
 		{
@@ -480,11 +477,11 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx
 
 				return mock
 			},
-			emailer: func(ctrl *gomock.Controller) controller.Emailer {
+			emailer: func(ctrl *gomock.Controller) *mock.MockEmailer {
 				mock := mock.NewMockEmailer(ctrl)
 				return mock
 			},
-			hibp: func(ctrl *gomock.Controller) controller.HIBPClient {
+			hibp: func(ctrl *gomock.Controller) *mock.MockHIBPClient {
 				mock := mock.NewMockHIBPClient(ctrl)
 				return mock
 			},
@@ -502,6 +499,7 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx
 				Status:  400,
 			},
 			expectedJWT: nil,
+			jwtTokenFn:  nil,
 		},
 
 		{
@@ -520,11 +518,11 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx
 
 				return mock
 			},
-			emailer: func(ctrl *gomock.Controller) controller.Emailer {
+			emailer: func(ctrl *gomock.Controller) *mock.MockEmailer {
 				mock := mock.NewMockEmailer(ctrl)
 				return mock
 			},
-			hibp: func(ctrl *gomock.Controller) controller.HIBPClient {
+			hibp: func(ctrl *gomock.Controller) *mock.MockHIBPClient {
 				mock := mock.NewMockHIBPClient(ctrl)
 
 				mock.EXPECT().IsPasswordPwned(
@@ -548,6 +546,7 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx
 				Status:  400,
 			},
 			expectedJWT: nil,
+			jwtTokenFn:  nil,
 		},
 
 		{
@@ -586,11 +585,11 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx
 
 				return mock
 			},
-			emailer: func(ctrl *gomock.Controller) controller.Emailer {
+			emailer: func(ctrl *gomock.Controller) *mock.MockEmailer {
 				mock := mock.NewMockEmailer(ctrl)
 				return mock
 			},
-			hibp: func(ctrl *gomock.Controller) controller.HIBPClient {
+			hibp: func(ctrl *gomock.Controller) *mock.MockHIBPClient {
 				mock := mock.NewMockHIBPClient(ctrl)
 
 				mock.EXPECT().IsPasswordPwned(
@@ -652,6 +651,7 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx
 				Signature: []byte{},
 				Valid:     true,
 			},
+			jwtTokenFn: nil,
 		},
 
 		{
@@ -666,11 +666,11 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx
 
 				return mock
 			},
-			emailer: func(ctrl *gomock.Controller) controller.Emailer {
+			emailer: func(ctrl *gomock.Controller) *mock.MockEmailer {
 				mock := mock.NewMockEmailer(ctrl)
 				return mock
 			},
-			hibp: func(ctrl *gomock.Controller) controller.HIBPClient {
+			hibp: func(ctrl *gomock.Controller) *mock.MockHIBPClient {
 				mock := mock.NewMockHIBPClient(ctrl)
 				return mock
 			},
@@ -695,6 +695,7 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx
 				Status:  400,
 			},
 			expectedJWT: nil,
+			jwtTokenFn:  nil,
 		},
 
 		{
@@ -733,11 +734,11 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx
 
 				return mock
 			},
-			emailer: func(ctrl *gomock.Controller) controller.Emailer {
+			emailer: func(ctrl *gomock.Controller) *mock.MockEmailer {
 				mock := mock.NewMockEmailer(ctrl)
 				return mock
 			},
-			hibp: func(ctrl *gomock.Controller) controller.HIBPClient {
+			hibp: func(ctrl *gomock.Controller) *mock.MockHIBPClient {
 				mock := mock.NewMockHIBPClient(ctrl)
 				return mock
 			},
@@ -793,6 +794,7 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx
 				Signature: []byte{},
 				Valid:     true,
 			},
+			jwtTokenFn: nil,
 		},
 
 		{
@@ -831,11 +833,11 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx
 
 				return mock
 			},
-			emailer: func(ctrl *gomock.Controller) controller.Emailer {
+			emailer: func(ctrl *gomock.Controller) *mock.MockEmailer {
 				mock := mock.NewMockEmailer(ctrl)
 				return mock
 			},
-			hibp: func(ctrl *gomock.Controller) controller.HIBPClient {
+			hibp: func(ctrl *gomock.Controller) *mock.MockHIBPClient {
 				mock := mock.NewMockHIBPClient(ctrl)
 				return mock
 			},
@@ -909,6 +911,7 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx
 				}, nil)
 				return mock
 			},
+			jwtTokenFn: nil,
 		},
 
 		{
@@ -948,7 +951,7 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx
 
 				return mock
 			},
-			emailer: func(ctrl *gomock.Controller) controller.Emailer {
+			emailer: func(ctrl *gomock.Controller) *mock.MockEmailer {
 				mock := mock.NewMockEmailer(ctrl)
 				mock.EXPECT().SendEmail(
 					"jane@acme.com",
@@ -975,7 +978,7 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx
 
 				return mock
 			},
-			hibp: func(ctrl *gomock.Controller) controller.HIBPClient {
+			hibp: func(ctrl *gomock.Controller) *mock.MockHIBPClient {
 				mock := mock.NewMockHIBPClient(ctrl)
 				return mock
 			},
@@ -991,6 +994,7 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx
 				Session: nil,
 			},
 			expectedJWT: nil,
+			jwtTokenFn:  nil,
 		},
 
 		{
@@ -1009,11 +1013,11 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx
 
 				return mock
 			},
-			emailer: func(ctrl *gomock.Controller) controller.Emailer {
+			emailer: func(ctrl *gomock.Controller) *mock.MockEmailer {
 				mock := mock.NewMockEmailer(ctrl)
 				return mock
 			},
-			hibp: func(ctrl *gomock.Controller) controller.HIBPClient {
+			hibp: func(ctrl *gomock.Controller) *mock.MockHIBPClient {
 				mock := mock.NewMockHIBPClient(ctrl)
 				return mock
 			},
@@ -1031,6 +1035,7 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx
 				Status:  401,
 			},
 			expectedJWT: nil,
+			jwtTokenFn:  nil,
 		},
 	}
 

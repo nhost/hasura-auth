@@ -23,14 +23,7 @@ func TestPostUserPasswordReset(t *testing.T) { //nolint:maintidx
 
 	userID := uuid.MustParse("DB477732-48FA-4289-B694-2886A646B6EB")
 
-	cases := []struct {
-		name             string
-		config           func() *controller.Config
-		db               func(ctrl *gomock.Controller) controller.DBClient
-		emailer          func(ctrl *gomock.Controller) controller.Emailer
-		request          api.PostUserPasswordResetRequestObject
-		expectedResponse api.PostUserPasswordResetResponseObject
-	}{
+	cases := []testRequest[api.PostUserPasswordResetRequestObject, api.PostUserPasswordResetResponseObject]{
 		{
 			name:   "simple",
 			config: getConfig,
@@ -61,7 +54,7 @@ func TestPostUserPasswordReset(t *testing.T) { //nolint:maintidx
 
 				return mock
 			},
-			emailer: func(ctrl *gomock.Controller) controller.Emailer {
+			emailer: func(ctrl *gomock.Controller) *mock.MockEmailer {
 				mock := mock.NewMockEmailer(ctrl)
 
 				mock.EXPECT().SendEmail(
@@ -96,6 +89,10 @@ func TestPostUserPasswordReset(t *testing.T) { //nolint:maintidx
 				},
 			},
 			expectedResponse: api.PostUserPasswordReset200JSONResponse(api.OK),
+			customClaimer:    nil,
+			expectedJWT:      nil,
+			hibp:             nil,
+			jwtTokenFn:       nil,
 		},
 
 		{
@@ -133,7 +130,7 @@ func TestPostUserPasswordReset(t *testing.T) { //nolint:maintidx
 
 				return mock
 			},
-			emailer: func(ctrl *gomock.Controller) controller.Emailer {
+			emailer: func(ctrl *gomock.Controller) *mock.MockEmailer {
 				mock := mock.NewMockEmailer(ctrl)
 
 				mock.EXPECT().SendEmail(
@@ -170,6 +167,10 @@ func TestPostUserPasswordReset(t *testing.T) { //nolint:maintidx
 				},
 			},
 			expectedResponse: api.PostUserPasswordReset200JSONResponse(api.OK),
+			customClaimer:    nil,
+			expectedJWT:      nil,
+			hibp:             nil,
+			jwtTokenFn:       nil,
 		},
 
 		{
@@ -179,7 +180,7 @@ func TestPostUserPasswordReset(t *testing.T) { //nolint:maintidx
 				mock := mock.NewMockDBClient(ctrl)
 				return mock
 			},
-			emailer: func(ctrl *gomock.Controller) controller.Emailer {
+			emailer: func(ctrl *gomock.Controller) *mock.MockEmailer {
 				mock := mock.NewMockEmailer(ctrl)
 				return mock
 			},
@@ -196,6 +197,10 @@ func TestPostUserPasswordReset(t *testing.T) { //nolint:maintidx
 				Message: `The value of "options.redirectTo" is not allowed.`,
 				Status:  400,
 			},
+			customClaimer: nil,
+			expectedJWT:   nil,
+			hibp:          nil,
+			jwtTokenFn:    nil,
 		},
 
 		{
@@ -209,7 +214,7 @@ func TestPostUserPasswordReset(t *testing.T) { //nolint:maintidx
 				mock := mock.NewMockDBClient(ctrl)
 				return mock
 			},
-			emailer: func(ctrl *gomock.Controller) controller.Emailer {
+			emailer: func(ctrl *gomock.Controller) *mock.MockEmailer {
 				mock := mock.NewMockEmailer(ctrl)
 				return mock
 			},
@@ -224,6 +229,10 @@ func TestPostUserPasswordReset(t *testing.T) { //nolint:maintidx
 				Message: `Incorrect email or password`,
 				Status:  401,
 			},
+			customClaimer: nil,
+			expectedJWT:   nil,
+			hibp:          nil,
+			jwtTokenFn:    nil,
 		},
 
 		{
@@ -239,7 +248,7 @@ func TestPostUserPasswordReset(t *testing.T) { //nolint:maintidx
 
 				return mock
 			},
-			emailer: func(ctrl *gomock.Controller) controller.Emailer {
+			emailer: func(ctrl *gomock.Controller) *mock.MockEmailer {
 				mock := mock.NewMockEmailer(ctrl)
 				return mock
 			},
@@ -254,6 +263,10 @@ func TestPostUserPasswordReset(t *testing.T) { //nolint:maintidx
 				Message: "Incorrect email or password",
 				Status:  401,
 			},
+			customClaimer: nil,
+			expectedJWT:   nil,
+			hibp:          nil,
+			jwtTokenFn:    nil,
 		},
 
 		{
@@ -277,7 +290,7 @@ func TestPostUserPasswordReset(t *testing.T) { //nolint:maintidx
 
 				return mock
 			},
-			emailer: func(ctrl *gomock.Controller) controller.Emailer {
+			emailer: func(ctrl *gomock.Controller) *mock.MockEmailer {
 				mock := mock.NewMockEmailer(ctrl)
 				return mock
 			},
@@ -292,6 +305,10 @@ func TestPostUserPasswordReset(t *testing.T) { //nolint:maintidx
 				Message: "User is disabled",
 				Status:  401,
 			},
+			customClaimer: nil,
+			expectedJWT:   nil,
+			hibp:          nil,
+			jwtTokenFn:    nil,
 		},
 
 		{
@@ -319,7 +336,7 @@ func TestPostUserPasswordReset(t *testing.T) { //nolint:maintidx
 
 				return mock
 			},
-			emailer: func(ctrl *gomock.Controller) controller.Emailer {
+			emailer: func(ctrl *gomock.Controller) *mock.MockEmailer {
 				mock := mock.NewMockEmailer(ctrl)
 				return mock
 			},
@@ -334,6 +351,10 @@ func TestPostUserPasswordReset(t *testing.T) { //nolint:maintidx
 				Message: "User is not verified.",
 				Status:  401,
 			},
+			customClaimer: nil,
+			expectedJWT:   nil,
+			hibp:          nil,
+			jwtTokenFn:    nil,
 		},
 	}
 

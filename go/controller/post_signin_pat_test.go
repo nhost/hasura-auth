@@ -24,15 +24,7 @@ func TestPostSigninPat(t *testing.T) { //nolint:maintidx
 	pat := uuid.MustParse("1fb17604-86c7-444e-b337-09a644465f2d")
 	hashedPat := `\x9698157153010b858587119503cbeef0cf288f11775e51cdb6bfd65e930d9310`
 
-	cases := []struct {
-		name             string
-		config           func() *controller.Config
-		db               func(ctrl *gomock.Controller) controller.DBClient
-		customClaimer    func(ctrl *gomock.Controller) controller.CustomClaimer
-		request          api.PostSigninPatRequestObject
-		expectedResponse api.PostSigninPatResponseObject
-		expectedJWT      *jwt.Token
-	}{
+	cases := []testRequest[api.PostSigninPatRequestObject, api.PostSigninPatResponseObject]{
 		{
 			name:   "simple",
 			config: getConfig,
@@ -121,6 +113,9 @@ func TestPostSigninPat(t *testing.T) { //nolint:maintidx
 				Signature: []byte{},
 				Valid:     true,
 			},
+			emailer:    nil,
+			hibp:       nil,
+			jwtTokenFn: nil,
 		},
 
 		{
@@ -229,6 +224,9 @@ func TestPostSigninPat(t *testing.T) { //nolint:maintidx
 				Signature: []byte{},
 				Valid:     true,
 			},
+			emailer:    nil,
+			hibp:       nil,
+			jwtTokenFn: nil,
 		},
 
 		{
@@ -263,6 +261,9 @@ func TestPostSigninPat(t *testing.T) { //nolint:maintidx
 				Status:  401,
 			},
 			expectedJWT: nil,
+			emailer:     nil,
+			hibp:        nil,
+			jwtTokenFn:  nil,
 		},
 
 		{
@@ -297,6 +298,9 @@ func TestPostSigninPat(t *testing.T) { //nolint:maintidx
 				Status:  401,
 			},
 			expectedJWT: nil,
+			emailer:     nil,
+			hibp:        nil,
+			jwtTokenFn:  nil,
 		},
 
 		{
@@ -330,6 +334,9 @@ func TestPostSigninPat(t *testing.T) { //nolint:maintidx
 				Status:  401,
 			},
 			expectedJWT: nil,
+			emailer:     nil,
+			hibp:        nil,
+			jwtTokenFn:  nil,
 		},
 
 		{
@@ -367,6 +374,9 @@ func TestPostSigninPat(t *testing.T) { //nolint:maintidx
 				Status:  401,
 			},
 			expectedJWT: nil,
+			emailer:     nil,
+			hibp:        nil,
+			jwtTokenFn:  nil,
 		},
 	}
 
