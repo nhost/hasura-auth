@@ -48,9 +48,11 @@ const generateHasuraClaims = async (
   const customClaims = await generateCustomClaims(user.id);
   return {
     ...customClaims,
+    // specifying default-role first means allows
+    // extraClaims to include a different defaultRole
+    [`x-hasura-default-role`]: user.defaultRole,
     ...extraClaims,
     [`x-hasura-allowed-roles`]: allowedRoles,
-    [`x-hasura-default-role`]: user.defaultRole,
     [`x-hasura-user-id`]: user.id,
     [`x-hasura-user-is-anonymous`]: user.isAnonymous.toString(),
   };
