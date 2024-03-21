@@ -30,7 +30,7 @@ var (
 	ErrPasswordInHibpDatabase          = &APIError{api.PasswordInHibpDatabase}
 	ErrRoleNotAllowed                  = &APIError{api.RoleNotAllowed}
 	ErrDefaultRoleMustBeInAllowedRoles = &APIError{api.DefaultRoleMustBeInAllowedRoles}
-	ErrRedirecToNotAllowed             = &APIError{api.RedirecToNotAllowed}
+	ErrRedirecToNotAllowed             = &APIError{api.RedirectToNotAllowed}
 	ErrDisabledUser                    = &APIError{api.DisabledUser}
 	ErrUnverifiedUser                  = &APIError{api.UnverifiedUser}
 	ErrUserNotAnonymous                = &APIError{api.UserNotAnonymous}
@@ -93,6 +93,14 @@ func (response ErrorResponse) VisitPostUserDeanonymizeResponse(w http.ResponseWr
 	return response.visit(w)
 }
 
+func (response ErrorResponse) VisitPostSignupWebauthnResponse(w http.ResponseWriter) error {
+	return response.visit(w)
+}
+
+func (response ErrorResponse) VisitPostSignupWebauthnVerifyResponse(w http.ResponseWriter) error {
+	return response.visit(w)
+}
+
 func isSensitive(err api.ErrorResponseError) bool {
 	switch err {
 	case
@@ -115,7 +123,8 @@ func isSensitive(err api.ErrorResponseError) bool {
 		api.PasswordTooShort,
 		api.PasswordInHibpDatabase,
 		api.RedirecToNotAllowed,
-		api.UserNotAnonymous:
+		api.UserNotAnonymous,
+		api.RedirectToNotAllowed:
 		return false
 	}
 	return false
@@ -208,7 +217,7 @@ func (ctrl *Controller) sendError( //nolint:funlen,cyclop
 			Error:   err.t,
 			Message: "Password is too short",
 		}
-	case api.RedirecToNotAllowed:
+	case api.RedirectToNotAllowed:
 		return ErrorResponse{
 			Status:  http.StatusBadRequest,
 			Error:   err.t,

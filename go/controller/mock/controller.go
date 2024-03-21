@@ -80,21 +80,6 @@ func (m *MockDBClientInsertUser) EXPECT() *MockDBClientInsertUserMockRecorder {
 	return m.recorder
 }
 
-// InsertRefreshtoken mocks base method.
-func (m *MockDBClientInsertUser) InsertRefreshtoken(ctx context.Context, arg sql.InsertRefreshtokenParams) (uuid.UUID, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "InsertRefreshtoken", ctx, arg)
-	ret0, _ := ret[0].(uuid.UUID)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// InsertRefreshtoken indicates an expected call of InsertRefreshtoken.
-func (mr *MockDBClientInsertUserMockRecorder) InsertRefreshtoken(ctx, arg any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InsertRefreshtoken", reflect.TypeOf((*MockDBClientInsertUser)(nil).InsertRefreshtoken), ctx, arg)
-}
-
 // InsertUser mocks base method.
 func (m *MockDBClientInsertUser) InsertUser(ctx context.Context, arg sql.InsertUserParams) (sql.InsertUserRow, error) {
 	m.ctrl.T.Helper()
@@ -125,6 +110,21 @@ func (mr *MockDBClientInsertUserMockRecorder) InsertUserWithRefreshToken(ctx, ar
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InsertUserWithRefreshToken", reflect.TypeOf((*MockDBClientInsertUser)(nil).InsertUserWithRefreshToken), ctx, arg)
 }
 
+// InsertUserWithSecurityKeyAndRefreshToken mocks base method.
+func (m *MockDBClientInsertUser) InsertUserWithSecurityKeyAndRefreshToken(ctx context.Context, arg sql.InsertUserWithSecurityKeyAndRefreshTokenParams) (uuid.UUID, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "InsertUserWithSecurityKeyAndRefreshToken", ctx, arg)
+	ret0, _ := ret[0].(uuid.UUID)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// InsertUserWithSecurityKeyAndRefreshToken indicates an expected call of InsertUserWithSecurityKeyAndRefreshToken.
+func (mr *MockDBClientInsertUserMockRecorder) InsertUserWithSecurityKeyAndRefreshToken(ctx, arg any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InsertUserWithSecurityKeyAndRefreshToken", reflect.TypeOf((*MockDBClientInsertUser)(nil).InsertUserWithSecurityKeyAndRefreshToken), ctx, arg)
+}
+
 // MockDBClientUpdateUser is a mock of DBClientUpdateUser interface.
 type MockDBClientUpdateUser struct {
 	ctrl     *gomock.Controller
@@ -146,6 +146,21 @@ func NewMockDBClientUpdateUser(ctrl *gomock.Controller) *MockDBClientUpdateUser 
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockDBClientUpdateUser) EXPECT() *MockDBClientUpdateUserMockRecorder {
 	return m.recorder
+}
+
+// InsertUserWithSecurityKey mocks base method.
+func (m *MockDBClientUpdateUser) InsertUserWithSecurityKey(ctx context.Context, arg sql.InsertUserWithSecurityKeyParams) (uuid.UUID, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "InsertUserWithSecurityKey", ctx, arg)
+	ret0, _ := ret[0].(uuid.UUID)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// InsertUserWithSecurityKey indicates an expected call of InsertUserWithSecurityKey.
+func (mr *MockDBClientUpdateUserMockRecorder) InsertUserWithSecurityKey(ctx, arg any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InsertUserWithSecurityKey", reflect.TypeOf((*MockDBClientUpdateUser)(nil).InsertUserWithSecurityKey), ctx, arg)
 }
 
 // UpdateUserChangeEmail mocks base method.
@@ -376,6 +391,36 @@ func (m *MockDBClient) InsertUserWithRefreshToken(ctx context.Context, arg sql.I
 func (mr *MockDBClientMockRecorder) InsertUserWithRefreshToken(ctx, arg any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InsertUserWithRefreshToken", reflect.TypeOf((*MockDBClient)(nil).InsertUserWithRefreshToken), ctx, arg)
+}
+
+// InsertUserWithSecurityKey mocks base method.
+func (m *MockDBClient) InsertUserWithSecurityKey(ctx context.Context, arg sql.InsertUserWithSecurityKeyParams) (uuid.UUID, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "InsertUserWithSecurityKey", ctx, arg)
+	ret0, _ := ret[0].(uuid.UUID)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// InsertUserWithSecurityKey indicates an expected call of InsertUserWithSecurityKey.
+func (mr *MockDBClientMockRecorder) InsertUserWithSecurityKey(ctx, arg any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InsertUserWithSecurityKey", reflect.TypeOf((*MockDBClient)(nil).InsertUserWithSecurityKey), ctx, arg)
+}
+
+// InsertUserWithSecurityKeyAndRefreshToken mocks base method.
+func (m *MockDBClient) InsertUserWithSecurityKeyAndRefreshToken(ctx context.Context, arg sql.InsertUserWithSecurityKeyAndRefreshTokenParams) (uuid.UUID, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "InsertUserWithSecurityKeyAndRefreshToken", ctx, arg)
+	ret0, _ := ret[0].(uuid.UUID)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// InsertUserWithSecurityKeyAndRefreshToken indicates an expected call of InsertUserWithSecurityKeyAndRefreshToken.
+func (mr *MockDBClientMockRecorder) InsertUserWithSecurityKeyAndRefreshToken(ctx, arg any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InsertUserWithSecurityKeyAndRefreshToken", reflect.TypeOf((*MockDBClient)(nil).InsertUserWithSecurityKeyAndRefreshToken), ctx, arg)
 }
 
 // UpdateUserChangeEmail mocks base method.
