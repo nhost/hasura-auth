@@ -122,9 +122,8 @@ func isSensitive(err api.ErrorResponseError) bool {
 		api.LocaleNotAllowed,
 		api.PasswordTooShort,
 		api.PasswordInHibpDatabase,
-		api.RedirecToNotAllowed,
-		api.UserNotAnonymous,
-		api.RedirectToNotAllowed:
+		api.RedirectToNotAllowed,
+		api.UserNotAnonymous:
 		return false
 	}
 	return false

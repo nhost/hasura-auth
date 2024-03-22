@@ -57,6 +57,74 @@ func (mr *MockEmailerMockRecorder) SendEmail(to, locale, templateName, data any)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendEmail", reflect.TypeOf((*MockEmailer)(nil).SendEmail), to, locale, templateName, data)
 }
 
+// MockDBClientGetUser is a mock of DBClientGetUser interface.
+type MockDBClientGetUser struct {
+	ctrl     *gomock.Controller
+	recorder *MockDBClientGetUserMockRecorder
+}
+
+// MockDBClientGetUserMockRecorder is the mock recorder for MockDBClientGetUser.
+type MockDBClientGetUserMockRecorder struct {
+	mock *MockDBClientGetUser
+}
+
+// NewMockDBClientGetUser creates a new mock instance.
+func NewMockDBClientGetUser(ctrl *gomock.Controller) *MockDBClientGetUser {
+	mock := &MockDBClientGetUser{ctrl: ctrl}
+	mock.recorder = &MockDBClientGetUserMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockDBClientGetUser) EXPECT() *MockDBClientGetUserMockRecorder {
+	return m.recorder
+}
+
+// GetUser mocks base method.
+func (m *MockDBClientGetUser) GetUser(ctx context.Context, id uuid.UUID) (sql.AuthUser, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUser", ctx, id)
+	ret0, _ := ret[0].(sql.AuthUser)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUser indicates an expected call of GetUser.
+func (mr *MockDBClientGetUserMockRecorder) GetUser(ctx, id any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUser", reflect.TypeOf((*MockDBClientGetUser)(nil).GetUser), ctx, id)
+}
+
+// GetUserByEmail mocks base method.
+func (m *MockDBClientGetUser) GetUserByEmail(ctx context.Context, email pgtype.Text) (sql.AuthUser, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUserByEmail", ctx, email)
+	ret0, _ := ret[0].(sql.AuthUser)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUserByEmail indicates an expected call of GetUserByEmail.
+func (mr *MockDBClientGetUserMockRecorder) GetUserByEmail(ctx, email any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByEmail", reflect.TypeOf((*MockDBClientGetUser)(nil).GetUserByEmail), ctx, email)
+}
+
+// GetUserByRefreshTokenHash mocks base method.
+func (m *MockDBClientGetUser) GetUserByRefreshTokenHash(ctx context.Context, arg sql.GetUserByRefreshTokenHashParams) (sql.AuthUser, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUserByRefreshTokenHash", ctx, arg)
+	ret0, _ := ret[0].(sql.AuthUser)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUserByRefreshTokenHash indicates an expected call of GetUserByRefreshTokenHash.
+func (mr *MockDBClientGetUserMockRecorder) GetUserByRefreshTokenHash(ctx, arg any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByRefreshTokenHash", reflect.TypeOf((*MockDBClientGetUser)(nil).GetUserByRefreshTokenHash), ctx, arg)
+}
+
 // MockDBClientInsertUser is a mock of DBClientInsertUser interface.
 type MockDBClientInsertUser struct {
 	ctrl     *gomock.Controller

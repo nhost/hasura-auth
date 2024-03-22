@@ -235,10 +235,10 @@ func TestPostSignupWebauthnVerify(t *testing.T) { //nolint:maintidx
 				Claims: jwt.MapClaims{
 					"exp": float64(time.Now().Add(900 * time.Second).Unix()),
 					"https://hasura.io/jwt/claims": map[string]any{
-						"x-hasura-allowed-roles":    []any{"user", "me"},
-						"x-hasura-default-role":     string("user"),
-						"x-hasura-user-id":          string("cf91d1bc-875e-49bc-897f-fbccf32ede11"),
-						"x-hasura-user-isAnonymous": string("false"),
+						"x-hasura-allowed-roles":     []any{"user", "me"},
+						"x-hasura-default-role":      string("user"),
+						"x-hasura-user-id":           string("cf91d1bc-875e-49bc-897f-fbccf32ede11"),
+						"x-hasura-user-is-anonymous": string("false"),
 					},
 					"iat": float64(time.Now().Unix()),
 					"iss": string("hasura-auth"),
@@ -328,10 +328,10 @@ func TestPostSignupWebauthnVerify(t *testing.T) { //nolint:maintidx
 				Claims: jwt.MapClaims{
 					"exp": float64(time.Now().Add(900 * time.Second).Unix()),
 					"https://hasura.io/jwt/claims": map[string]any{
-						"x-hasura-allowed-roles":    []any{"user", "me"},
-						"x-hasura-default-role":     string("user"),
-						"x-hasura-user-id":          string("cf91d1bc-875e-49bc-897f-fbccf32ede11"),
-						"x-hasura-user-isAnonymous": string("false"),
+						"x-hasura-allowed-roles":     []any{"user", "me"},
+						"x-hasura-default-role":      string("user"),
+						"x-hasura-user-id":           string("cf91d1bc-875e-49bc-897f-fbccf32ede11"),
+						"x-hasura-user-is-anonymous": string("false"),
 					},
 					"iat": float64(time.Now().Unix()),
 					"iss": string("hasura-auth"),
