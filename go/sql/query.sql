@@ -19,6 +19,14 @@ WITH refresh_token AS (
 SELECT * FROM auth.users
 WHERE id = (SELECT user_id FROM refresh_token) LIMIT 1;
 
+-- name: GetRefreshTokenByRefreshTokenHash :one
+SELECT * FROM auth.refresh_tokens rt
+WHERE rt.refresh_token_hash = $1 AND rt.expires_at >= now()
+AND rt.user_id IN (
+    SELECT id FROM auth.users WHERE id = rt.user_id AND disabled = false
+)
+LIMIT 1;
+
 -- name: InsertUser :one
 WITH inserted_user AS (
     INSERT INTO auth.users (
@@ -144,6 +152,12 @@ RETURNING user_id;
 INSERT INTO auth.refresh_tokens (user_id, refresh_token_hash, expires_at, type, metadata)
 VALUES ($1, $2, $3, $4, $5)
 RETURNING id;
+
+-- name: UpdateRefreshTokenExpiresAt :one
+UPDATE auth.refresh_tokens
+SET expires_at = $2
+WHERE id = $1
+RETURNING expires_at;
 
 -- name: UpdateUserLastSeen :one
 UPDATE auth.users

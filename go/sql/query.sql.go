@@ -44,6 +44,30 @@ func (q *Queries) DeleteUserRoles(ctx context.Context, userID uuid.UUID) error {
 	return err
 }
 
+const getRefreshTokenByRefreshTokenHash = `-- name: GetRefreshTokenByRefreshTokenHash :one
+SELECT id, created_at, expires_at, user_id, metadata, type, refresh_token_hash FROM auth.refresh_tokens rt
+WHERE rt.refresh_token_hash = $1 AND rt.expires_at >= now()
+AND rt.user_id IN (
+    SELECT id FROM auth.users WHERE id = rt.user_id AND disabled = false
+)
+LIMIT 1
+`
+
+func (q *Queries) GetRefreshTokenByRefreshTokenHash(ctx context.Context, refreshTokenHash pgtype.Text) (AuthRefreshToken, error) {
+	row := q.db.QueryRow(ctx, getRefreshTokenByRefreshTokenHash, refreshTokenHash)
+	var i AuthRefreshToken
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.ExpiresAt,
+		&i.UserID,
+		&i.Metadata,
+		&i.Type,
+		&i.RefreshTokenHash,
+	)
+	return i, err
+}
+
 const getUser = `-- name: GetUser :one
 SELECT id, created_at, updated_at, last_seen, disabled, display_name, avatar_url, locale, email, phone_number, password_hash, email_verified, phone_number_verified, new_email, otp_method_last_used, otp_hash, otp_hash_expires_at, default_role, is_anonymous, totp_secret, active_mfa_type, ticket, ticket_expires_at, metadata, webauthn_current_challenge FROM auth.users
 WHERE id = $1 LIMIT 1
@@ -515,6 +539,25 @@ func (q *Queries) InsertUserWithSecurityKeyAndRefreshToken(ctx context.Context, 
 	var user_id uuid.UUID
 	err := row.Scan(&user_id)
 	return user_id, err
+}
+
+const updateRefreshTokenExpiresAt = `-- name: UpdateRefreshTokenExpiresAt :one
+UPDATE auth.refresh_tokens
+SET expires_at = $2
+WHERE id = $1
+RETURNING expires_at
+`
+
+type UpdateRefreshTokenExpiresAtParams struct {
+	ID        uuid.UUID
+	ExpiresAt pgtype.Timestamptz
+}
+
+func (q *Queries) UpdateRefreshTokenExpiresAt(ctx context.Context, arg UpdateRefreshTokenExpiresAtParams) (pgtype.Timestamptz, error) {
+	row := q.db.QueryRow(ctx, updateRefreshTokenExpiresAt, arg.ID, arg.ExpiresAt)
+	var expires_at pgtype.Timestamptz
+	err := row.Scan(&expires_at)
+	return expires_at, err
 }
 
 const updateUserChangeEmail = `-- name: UpdateUserChangeEmail :one
