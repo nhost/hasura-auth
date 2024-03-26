@@ -207,7 +207,7 @@ func TestPostSignupWebauthnVerify(t *testing.T) { //nolint:maintidx
 				},
 			},
 			expectedResponse: api.PostSignupWebauthnVerify200JSONResponse{
-				Session: &api.Session{
+				Session: &api.Session{ //nolint: exhaustruct
 					AccessToken:          "xxxxx",
 					AccessTokenExpiresIn: time.Now().Add(15 * time.Minute).Unix(),
 					RefreshToken:         "ff0499a1-7935-4052-baea-6c3a573b1b6a",
@@ -302,7 +302,7 @@ func TestPostSignupWebauthnVerify(t *testing.T) { //nolint:maintidx
 				},
 			},
 			expectedResponse: api.PostSignupWebauthnVerify200JSONResponse{
-				Session: &api.Session{
+				Session: &api.Session{ //nolint:exhaustruct
 					AccessToken:          "xxxxx",
 					AccessTokenExpiresIn: time.Now().Add(15 * time.Minute).Unix(),
 					RefreshToken:         "ff0499a1-7935-4052-baea-6c3a573b1b6a",

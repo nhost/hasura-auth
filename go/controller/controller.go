@@ -83,6 +83,14 @@ type DBClient interface {
 	GetUserRoles(ctx context.Context, userID uuid.UUID) ([]sql.AuthUserRole, error)
 
 	InsertRefreshtoken(ctx context.Context, arg sql.InsertRefreshtokenParams) (uuid.UUID, error)
+	UpdateRefreshTokenExpiresAt(
+		ctx context.Context,
+		arg sql.UpdateRefreshTokenExpiresAtParams,
+	) (pgtype.Timestamptz, error)
+	GetRefreshTokenByRefreshTokenHash(
+		ctx context.Context,
+		refreshTokenHash pgtype.Text,
+	) (sql.AuthRefreshToken, error)
 }
 
 type Controller struct {

@@ -103,7 +103,7 @@ func TestPostSigninEmailPassword(t *testing.T) { //nolint:maintidx
 			},
 			expectedResponse: api.PostSigninEmailPassword200JSONResponse{
 				Mfa: nil,
-				Session: &api.Session{
+				Session: &api.Session{ //nolint:exhaustruct
 					AccessToken:          "",
 					AccessTokenExpiresIn: time.Now().Add(900 * time.Second).Unix(),
 					RefreshToken:         "1fb17604-86c7-444e-b337-09a644465f2d",
@@ -207,7 +207,7 @@ func TestPostSigninEmailPassword(t *testing.T) { //nolint:maintidx
 			},
 			expectedResponse: api.PostSigninEmailPassword200JSONResponse{
 				Mfa: nil,
-				Session: &api.Session{
+				Session: &api.Session{ //nolint: exhaustruct
 					AccessToken:          "",
 					AccessTokenExpiresIn: time.Now().Add(900 * time.Second).Unix(),
 					RefreshToken:         "1fb17604-86c7-444e-b337-09a644465f2d",
@@ -431,7 +431,7 @@ func TestPostSigninEmailPassword(t *testing.T) { //nolint:maintidx
 			},
 			expectedResponse: api.PostSigninEmailPassword200JSONResponse{
 				Mfa: nil,
-				Session: &api.Session{
+				Session: &api.Session{ //nolint:exhaustruct
 					AccessToken:          "",
 					AccessTokenExpiresIn: time.Now().Add(900 * time.Second).Unix(),
 					RefreshToken:         "1fb17604-86c7-444e-b337-09a644465f2d",

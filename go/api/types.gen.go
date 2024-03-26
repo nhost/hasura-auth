@@ -28,6 +28,7 @@ const (
 	InternalServerError             ErrorResponseError = "internal-server-error"
 	InvalidEmailPassword            ErrorResponseError = "invalid-email-password"
 	InvalidPat                      ErrorResponseError = "invalid-pat"
+	InvalidRefreshToken             ErrorResponseError = "invalid-refresh-token"
 	InvalidRequest                  ErrorResponseError = "invalid-request"
 	LocaleNotAllowed                ErrorResponseError = "locale-not-allowed"
 	PasswordInHibpDatabase          ErrorResponseError = "password-in-hibp-database"
@@ -94,6 +95,17 @@ type OptionsRedirectTo struct {
 	RedirectTo *string `json:"redirectTo,omitempty"`
 }
 
+// RefreshTokenRequest defines model for RefreshTokenRequest.
+type RefreshTokenRequest struct {
+	// RefreshToken Refresh Token
+	RefreshToken string `json:"refreshToken"`
+}
+
+// RefreshTokenResponse defines model for RefreshTokenResponse.
+type RefreshTokenResponse struct {
+	Session *Session `json:"session,omitempty"`
+}
+
 // Session defines model for Session.
 type Session struct {
 	AccessToken          string `json:"accessToken"`
@@ -101,7 +113,10 @@ type Session struct {
 
 	// RefreshToken Refresh token during authentication or when refreshing the JWT
 	RefreshToken string `json:"refreshToken"`
-	User         *User  `json:"user,omitempty"`
+
+	// RefreshTokenId The refresh token ID
+	RefreshTokenId string `json:"refreshTokenId"`
+	User           *User  `json:"user,omitempty"`
 }
 
 // SessionPayload defines model for SessionPayload.
@@ -270,6 +285,9 @@ type PostSignupWebauthnJSONRequestBody = SignUpWebauthnRequest
 
 // PostSignupWebauthnVerifyJSONRequestBody defines body for PostSignupWebauthnVerify for application/json ContentType.
 type PostSignupWebauthnVerifyJSONRequestBody = SignUpWebauthnVerifyRequest
+
+// PostTokenJSONRequestBody defines body for PostToken for application/json ContentType.
+type PostTokenJSONRequestBody = RefreshTokenRequest
 
 // PostUserDeanonymizeJSONRequestBody defines body for PostUserDeanonymize for application/json ContentType.
 type PostUserDeanonymizeJSONRequestBody = UserDeanonymizeRequest

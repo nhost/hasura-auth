@@ -199,6 +199,7 @@ func (ctrl *Controller) postSignupWebauthnVerifyWithoutEmailVerificationOrUserDi
 			AccessToken:          accessToken,
 			AccessTokenExpiresIn: expiresIn,
 			RefreshToken:         refreshToken.String(),
+			RefreshTokenId:       refreshToken.String(),
 			User:                 user,
 		},
 	}, nil

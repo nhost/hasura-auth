@@ -139,7 +139,7 @@ func (ctrl *Controller) postSignupEmailPasswordWithoutEmailVerification( //nolin
 	}
 
 	return api.PostSignupEmailPassword200JSONResponse{
-		Session: &api.Session{
+		Session: &api.Session{ //nolint: exhaustruct
 			AccessToken:          accessToken,
 			AccessTokenExpiresIn: expiresIn,
 			RefreshToken:         refreshToken.String(),
