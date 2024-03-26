@@ -40,7 +40,7 @@
     "dotenv": "8.6.0",
     "email-templates": "11.1.1",
     "email-validator": "^2.0.4",
-    "express": "4.17.1",
+    "express": "4.19.2",
     "express-jsdoc-swagger": "^1.6.7",
     "express-pino-logger": "^6.0.0",
     "graphql": "16.2.0",
