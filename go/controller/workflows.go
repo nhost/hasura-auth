@@ -275,30 +275,6 @@ func (wf *Workflows) GetUserByEmail(
 	return user, nil
 }
 
-func (wf *Workflows) GetRefreshTokenByRefreshTokenHash(
-	ctx context.Context,
-	refreshToken string,
-	logger *slog.Logger,
-) (sql.AuthRefreshToken, error) {
-	rt, err := wf.db.GetRefreshTokenByRefreshTokenHash(
-		ctx,
-		sql.Text(hashRefreshToken([]byte(refreshToken))),
-	)
-	if errors.Is(err, pgx.ErrNoRows) {
-		logger.Error("could not find refresh token by refresh token")
-		return sql.AuthRefreshToken{}, fmt.Errorf(
-			"error checking for refresh token existence: %w",
-			err,
-		)
-	}
-	if err != nil {
-		logger.Error("could not get refresh token by refresh token", logError(err))
-		return sql.AuthRefreshToken{}, ErrInternalServerError //nolint:exhaustruct
-	}
-
-	return rt, nil
-}
-
 func (wf *Workflows) GetUserByRefreshTokenHash(
 	ctx context.Context,
 	refreshToken string,
@@ -314,7 +290,11 @@ func (wf *Workflows) GetUserByRefreshTokenHash(
 	)
 	if errors.Is(err, pgx.ErrNoRows) {
 		logger.Error("could not find user by refresh token")
-		return sql.AuthUser{}, ErrInvalidPat //nolint:exhaustruct
+		e := ErrInvalidRefreshToken
+		if refreshTokenType == sql.RefreshTokenTypePAT {
+			e = ErrInvalidPat
+		}
+		return sql.AuthUser{}, e //nolint:exhaustruct
 	}
 	if err != nil {
 		logger.Error("could not get user by refresh token", logError(err))
@@ -328,23 +308,25 @@ func (wf *Workflows) GetUserByRefreshTokenHash(
 	return user, nil
 }
 
-func (wf *Workflows) UpdateSession( //nolint:funlen
+func (wf *Workflows) UpdateSession(
 	ctx context.Context,
 	user sql.AuthUser,
 	refreshToken string,
 	logger *slog.Logger,
 ) (*api.Session, error) {
-	userRoles, err := wf.db.GetUserRoles(ctx, user.ID)
-	if err != nil {
-		return nil, fmt.Errorf("error getting roles by user id: %w", err)
-	}
-	allowedRoles := make([]string, len(userRoles))
-	for i, role := range userRoles {
-		allowedRoles[i] = role.Role
+	roles, err := wf.db.RefreshTokenAndGetUserRoles(ctx, sql.RefreshTokenAndGetUserRolesParams{
+		RefreshTokenHash: sql.Text(hashRefreshToken([]byte(refreshToken))),
+		ExpiresAt: sql.TimestampTz(
+			time.Now().Add(time.Duration(wf.config.RefreshTokenExpiresIn) * time.Second),
+		),
+	})
+	if errors.Is(err, pgx.ErrNoRows) {
+		logger.Warn("invalid refresh token")
+		return &api.Session{}, ErrInvalidRefreshToken //nolint:exhaustruct
 	}
 
 	accessToken, expiresIn, err := wf.jwtGetter.GetToken(
-		ctx, user.ID, allowedRoles, user.DefaultRole, logger,
+		ctx, user.ID, roles, user.DefaultRole, logger,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("error getting jwt: %w", err)
@@ -357,32 +339,10 @@ func (wf *Workflows) UpdateSession( //nolint:funlen
 		}
 	}
 
-	if _, err := wf.db.UpdateUserLastSeen(ctx, user.ID); err != nil {
-		return nil, fmt.Errorf("error updating user last seen: %w", err)
-	}
-
-	rt, err := wf.GetRefreshTokenByRefreshTokenHash(
-		ctx,
-		refreshToken,
-		logger,
-	)
-	if err != nil {
-		return nil, fmt.Errorf("error getting refresh token by refresh token hash: %w", err)
-	}
-
-	expiresAt := time.Now().Add(time.Duration(wf.config.RefreshTokenExpiresIn) * time.Second)
-	if _, err = wf.db.UpdateRefreshTokenExpiresAt(ctx, sql.UpdateRefreshTokenExpiresAtParams{
-		ID:        rt.ID,
-		ExpiresAt: sql.TimestampTz(expiresAt),
-	}); err != nil {
-		return nil, fmt.Errorf("error updating refresh token expires at: %w", err)
-	}
-
 	return &api.Session{
 		AccessToken:          accessToken,
 		AccessTokenExpiresIn: expiresIn,
 		RefreshToken:         refreshToken,
-		RefreshTokenId:       rt.ID.String(),
 		User: &api.User{
 			AvatarUrl:           user.AvatarUrl,
 			CreatedAt:           user.CreatedAt.Time,
@@ -396,7 +356,7 @@ func (wf *Workflows) UpdateSession( //nolint:funlen
 			Metadata:            metadata,
 			PhoneNumber:         user.PhoneNumber.String,
 			PhoneNumberVerified: user.PhoneNumberVerified,
-			Roles:               allowedRoles,
+			Roles:               roles,
 		},
 	}, nil
 }
@@ -417,7 +377,7 @@ func (wf *Workflows) NewSession(
 
 	refreshToken := uuid.New()
 	expiresAt := time.Now().Add(time.Duration(wf.config.RefreshTokenExpiresIn) * time.Second)
-	refreshTokenID, apiErr := wf.InsertRefreshtoken(
+	_, apiErr := wf.InsertRefreshtoken(
 		ctx, user.ID, refreshToken.String(), expiresAt, sql.RefreshTokenTypeRegular, nil, logger,
 	)
 	if apiErr != nil {
@@ -445,7 +405,6 @@ func (wf *Workflows) NewSession(
 		AccessToken:          accessToken,
 		AccessTokenExpiresIn: expiresIn,
 		RefreshToken:         refreshToken.String(),
-		RefreshTokenId:       refreshTokenID.String(),
 		User: &api.User{
 			AvatarUrl:           user.AvatarUrl,
 			CreatedAt:           user.CreatedAt.Time,

@@ -79,18 +79,12 @@ type DBClient interface {
 	CountSecurityKeysUser(ctx context.Context, userID uuid.UUID) (int64, error)
 	DeleteRefreshTokens(ctx context.Context, userID uuid.UUID) error
 	DeleteUserRoles(ctx context.Context, userID uuid.UUID) error
-
 	GetUserRoles(ctx context.Context, userID uuid.UUID) ([]sql.AuthUserRole, error)
-
 	InsertRefreshtoken(ctx context.Context, arg sql.InsertRefreshtokenParams) (uuid.UUID, error)
-	UpdateRefreshTokenExpiresAt(
+	RefreshTokenAndGetUserRoles(
 		ctx context.Context,
-		arg sql.UpdateRefreshTokenExpiresAtParams,
-	) (pgtype.Timestamptz, error)
-	GetRefreshTokenByRefreshTokenHash(
-		ctx context.Context,
-		refreshTokenHash pgtype.Text,
-	) (sql.AuthRefreshToken, error)
+		arg sql.RefreshTokenAndGetUserRolesParams,
+	) ([]string, error)
 }
 
 type Controller struct {

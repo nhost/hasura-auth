@@ -75,7 +75,7 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx
 				},
 			},
 			expectedResponse: api.PostSignupEmailPassword200JSONResponse{
-				Session: &api.Session{ //nolint:exhaustruct
+				Session: &api.Session{
 					AccessToken:          "",
 					AccessTokenExpiresIn: time.Now().Add(900 * time.Second).Unix(),
 					RefreshToken:         "1fb17604-86c7-444e-b337-09a644465f2d",
@@ -180,7 +180,7 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx
 				},
 			},
 			expectedResponse: api.PostSignupEmailPassword200JSONResponse{
-				Session: &api.Session{ //nolint:exhaustruct
+				Session: &api.Session{
 					AccessToken:          "",
 					AccessTokenExpiresIn: time.Now().Add(900 * time.Second).Unix(),
 					RefreshToken:         "1fb17604-86c7-444e-b337-09a644465f2d",
@@ -616,7 +616,7 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx
 				},
 			},
 			expectedResponse: api.PostSignupEmailPassword200JSONResponse{
-				Session: &api.Session{ //nolint:exhaustruct
+				Session: &api.Session{
 					AccessToken:          "",
 					AccessTokenExpiresIn: time.Now().Add(900 * time.Second).Unix(),
 					RefreshToken:         "1fb17604-86c7-444e-b337-09a644465f2d",
@@ -759,7 +759,7 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx
 				},
 			},
 			expectedResponse: api.PostSignupEmailPassword200JSONResponse{
-				Session: &api.Session{ //nolint:exhaustruct
+				Session: &api.Session{
 					AccessToken:          "",
 					AccessTokenExpiresIn: time.Now().Add(900 * time.Second).Unix(),
 					RefreshToken:         "1fb17604-86c7-444e-b337-09a644465f2d",
@@ -857,7 +857,7 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx
 				},
 			},
 			expectedResponse: api.PostSignupEmailPassword200JSONResponse{
-				Session: &api.Session{ //nolint:exhaustruct
+				Session: &api.Session{
 					AccessToken:          "",
 					AccessTokenExpiresIn: time.Now().Add(900 * time.Second).Unix(),
 					RefreshToken:         "1fb17604-86c7-444e-b337-09a644465f2d",

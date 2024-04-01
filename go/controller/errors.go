@@ -254,9 +254,9 @@ func (ctrl *Controller) sendError( //nolint:funlen,cyclop
 		}
 	case api.InvalidRefreshToken:
 		return ErrorResponse{
-			Status:  http.StatusBadRequest,
+			Status:  http.StatusUnauthorized,
 			Error:   err.t,
-			Message: "Refresh Token is invalid or expired",
+			Message: "Invalid or expired refresh token",
 		}
 	}
 

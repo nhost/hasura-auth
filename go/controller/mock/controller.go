@@ -356,21 +356,6 @@ func (mr *MockDBClientMockRecorder) DeleteUserRoles(ctx, userID any) *gomock.Cal
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteUserRoles", reflect.TypeOf((*MockDBClient)(nil).DeleteUserRoles), ctx, userID)
 }
 
-// GetRefreshTokenByRefreshTokenHash mocks base method.
-func (m *MockDBClient) GetRefreshTokenByRefreshTokenHash(ctx context.Context, refreshTokenHash pgtype.Text) (sql.AuthRefreshToken, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetRefreshTokenByRefreshTokenHash", ctx, refreshTokenHash)
-	ret0, _ := ret[0].(sql.AuthRefreshToken)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetRefreshTokenByRefreshTokenHash indicates an expected call of GetRefreshTokenByRefreshTokenHash.
-func (mr *MockDBClientMockRecorder) GetRefreshTokenByRefreshTokenHash(ctx, refreshTokenHash any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRefreshTokenByRefreshTokenHash", reflect.TypeOf((*MockDBClient)(nil).GetRefreshTokenByRefreshTokenHash), ctx, refreshTokenHash)
-}
-
 // GetUser mocks base method.
 func (m *MockDBClient) GetUser(ctx context.Context, id uuid.UUID) (sql.AuthUser, error) {
 	m.ctrl.T.Helper()
@@ -506,19 +491,19 @@ func (mr *MockDBClientMockRecorder) InsertUserWithSecurityKeyAndRefreshToken(ctx
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InsertUserWithSecurityKeyAndRefreshToken", reflect.TypeOf((*MockDBClient)(nil).InsertUserWithSecurityKeyAndRefreshToken), ctx, arg)
 }
 
-// UpdateRefreshTokenExpiresAt mocks base method.
-func (m *MockDBClient) UpdateRefreshTokenExpiresAt(ctx context.Context, arg sql.UpdateRefreshTokenExpiresAtParams) (pgtype.Timestamptz, error) {
+// RefreshTokenAndGetUserRoles mocks base method.
+func (m *MockDBClient) RefreshTokenAndGetUserRoles(ctx context.Context, arg sql.RefreshTokenAndGetUserRolesParams) ([]string, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateRefreshTokenExpiresAt", ctx, arg)
-	ret0, _ := ret[0].(pgtype.Timestamptz)
+	ret := m.ctrl.Call(m, "RefreshTokenAndGetUserRoles", ctx, arg)
+	ret0, _ := ret[0].([]string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// UpdateRefreshTokenExpiresAt indicates an expected call of UpdateRefreshTokenExpiresAt.
-func (mr *MockDBClientMockRecorder) UpdateRefreshTokenExpiresAt(ctx, arg any) *gomock.Call {
+// RefreshTokenAndGetUserRoles indicates an expected call of RefreshTokenAndGetUserRoles.
+func (mr *MockDBClientMockRecorder) RefreshTokenAndGetUserRoles(ctx, arg any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateRefreshTokenExpiresAt", reflect.TypeOf((*MockDBClient)(nil).UpdateRefreshTokenExpiresAt), ctx, arg)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RefreshTokenAndGetUserRoles", reflect.TypeOf((*MockDBClient)(nil).RefreshTokenAndGetUserRoles), ctx, arg)
 }
 
 // UpdateUserChangeEmail mocks base method.
