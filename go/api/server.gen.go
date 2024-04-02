@@ -200,8 +200,6 @@ func (siw *ServerInterfaceWrapper) PostSignupWebauthnVerify(c *gin.Context) {
 // PostToken operation middleware
 func (siw *ServerInterfaceWrapper) PostToken(c *gin.Context) {
 
-	c.Set(BearerAuthScopes, []string{})
-
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
 		if c.IsAborted() {
@@ -1173,13 +1171,13 @@ var swaggerSpec = []string{
 	"4Bec5bhuJdlG5XzWYkLgk/HxnZHevdg8RLnFE+UQp4QzlRta6huzlpjnD0eMSbOdSCfsGnjlDjuWZ0AR",
 	"yuJA72mN007vWRZ11+gQPaiaaveqAps92EeIkAaanwPw1TeUrJPbAdSyYVsPnvrdICiR1ZvVTbBxDc8H",
 	"QajbW316Vso4jbJoRS0bGDn6a3hQDcp2lGwSb/jr4NLV/a/t6DTXKO8ejqGr1A8Mw+DF5P0uwy4y4Zq7",
-	"aovcVVR3UXdX5tjPGOs7vkM7NVDqzp3XsPr5flkFBybqi2jTmdmN6kYb557w3dIsWnuMHyVHsE6rxSc6",
-	"kBUcil3rbIhwVP9TigvBGUeE2tqmrUTyxHs8Id3D3yqHtlEGNZIQp0IB37zr7doxI/SG2TCFU0RQLPiC",
-	"ydz/a5L9gM8DfDmVKTcnKaXLL6hASrREq/lfmpYk2Z2i2LZd9otSq0dzj6I00Al6VFGy9CDHI+QPbaLI",
-	"aQWE9Z6kGzzarDIlCs3B5HU+vTR4mbSOUCpNFna74pOjxApf3WvwILf/v6yPs5GlsE1meEAdYncX6r7l",
-	"YGfr60lVJU77GYQvRxjwd9UkjIbDltUHYFvZl0iCAr0fzE7L7B7xG2zNPaomVxQhy6lGlzcA8bQi0vTp",
-	"7YJDVL4qDLU13ld4KqXvIbqR8dT9l+0Nld/9lP+QkzdokraIahqh49F4NA4pXO+9wF8tH+hZ9lDyh6su",
-	"XSnfyOpi9CNodF1zoWJo/RkjZv8OAAD//5+18W+FPwAA",
+	"aovcVVR3UXcDpfoS79DUBivdudQaVj/fLyvvb8K6iDatl92wbfRp7gnALd2gtQfxUZIA65VafKIDYf9w",
+	"Wt9P51tnQ4Sj+r9OXIzNOCLUFi9tqZEn3qUJ6R7+VnmsjTqnkYQ4FQr45mVu128ZoTfMxiGcIoJiwRdM",
+	"5v5/j+wHfKDv66VMuTlJKV0CQQVSoiVazT/LtCTJ7hTFtq+yX5RaTZh7FKWBVs+jipKlBzkeIX9oEyZO",
+	"KyCseyTd6NCmjSlRaA4mcfP5o8HL5G2EUmnSrNtVlxwlVvjqZoIHuf0PZH2cjSyFbTLDAwoNu9tM9y0H",
+	"O3tbT6rscNpPEXy9wYC/q+hgNBy2rD4A28q+RBIU6P1gdnpi94jfYO/tUTW5oghZTjW63PPVdhyRphFv",
+	"Fxyi8lXlp63xvoRTKX0P0Y2Upm6wbO+Y/O6n/IecvEEXtEVU0+kcj8ajcUjheu8N/Wr5QFOyh5I/XHWr",
+	"SvlOVRejH0Gj65oLFUPrzxgx+3cAAAD//6Cxoh5mPwAA",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file
