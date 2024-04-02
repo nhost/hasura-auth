@@ -282,7 +282,7 @@ golang.org/x/text/transform
 golang.org/x/text/unicode/bidi
 golang.org/x/text/unicode/norm
 golang.org/x/text/width
-# google.golang.org/protobuf v1.32.0
+# google.golang.org/protobuf v1.32.0 => google.golang.org/protobuf v1.33.0
 ## explicit; go 1.17
 google.golang.org/protobuf/encoding/protowire
 google.golang.org/protobuf/internal/detrand
@@ -304,3 +304,4 @@ gopkg.in/yaml.v3
 ## explicit; go 1.21
 k8s.io/client-go/third_party/forked/golang/template
 k8s.io/client-go/util/jsonpath
+# google.golang.org/protobuf => google.golang.org/protobuf v1.33.0
