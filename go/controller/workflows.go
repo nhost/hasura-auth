@@ -313,7 +313,7 @@ func (wf *Workflows) UpdateSession(
 	user sql.AuthUser,
 	refreshToken string,
 	logger *slog.Logger,
-) (*api.Session, error) {
+) (*api.Session, *APIError) {
 	roles, err := wf.db.RefreshTokenAndGetUserRoles(ctx, sql.RefreshTokenAndGetUserRolesParams{
 		RefreshTokenHash: sql.Text(hashRefreshToken([]byte(refreshToken))),
 		ExpiresAt: sql.TimestampTz(
