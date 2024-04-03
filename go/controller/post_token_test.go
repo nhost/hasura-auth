@@ -139,6 +139,76 @@ func TestPostToken(t *testing.T) {
 			hibp:        nil,
 			jwtTokenFn:  nil,
 		},
+		{
+			name:   "user disabled",
+			config: getConfig,
+			db: func(ctrl *gomock.Controller) controller.DBClient {
+				mock := mock.NewMockDBClient(ctrl)
+
+				user := getSigninUser(userID)
+				user.Disabled = true
+
+				mock.EXPECT().GetUserByRefreshTokenHash(
+					gomock.Any(),
+					sql.GetUserByRefreshTokenHashParams{
+						RefreshTokenHash: sql.Text(hashedToken),
+						Type:             "regular",
+					},
+				).Return(user, nil)
+
+				return mock
+			},
+			customClaimer: nil,
+			request: api.PostTokenRequestObject{
+				Body: &api.RefreshTokenRequest{
+					RefreshToken: token.String(),
+				},
+			},
+			expectedResponse: controller.ErrorResponse{
+				Error:   "disabled-user",
+				Message: "User is disabled",
+				Status:  401,
+			},
+			expectedJWT: nil,
+			emailer:     nil,
+			hibp:        nil,
+			jwtTokenFn:  nil,
+		},
+		{
+			name:   "user anonymous",
+			config: getConfig,
+			db: func(ctrl *gomock.Controller) controller.DBClient {
+				mock := mock.NewMockDBClient(ctrl)
+
+				user := getSigninUser(userID)
+				user.IsAnonymous = true
+
+				mock.EXPECT().GetUserByRefreshTokenHash(
+					gomock.Any(),
+					sql.GetUserByRefreshTokenHashParams{
+						RefreshTokenHash: sql.Text(hashedToken),
+						Type:             "regular",
+					},
+				).Return(user, nil)
+
+				return mock
+			},
+			customClaimer: nil,
+			request: api.PostTokenRequestObject{
+				Body: &api.RefreshTokenRequest{
+					RefreshToken: token.String(),
+				},
+			},
+			expectedResponse: controller.ErrorResponse{
+				Error:   "forbidden-anonymous",
+				Message: "Forbidden, user is anonymous.",
+				Status:  403,
+			},
+			expectedJWT: nil,
+			emailer:     nil,
+			hibp:        nil,
+			jwtTokenFn:  nil,
+		},
 	}
 
 	for _, tc := range cases {

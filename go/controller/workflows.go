@@ -329,13 +329,15 @@ func (wf *Workflows) UpdateSession(
 		ctx, user.ID, roles, user.DefaultRole, logger,
 	)
 	if err != nil {
-		return nil, fmt.Errorf("error getting jwt: %w", err)
+		logger.Error("error getting jwt", logError(err))
+		return nil, ErrInternalServerError
 	}
 
 	var metadata map[string]any
 	if len(user.Metadata) > 0 {
 		if err := json.Unmarshal(user.Metadata, &metadata); err != nil {
-			return nil, fmt.Errorf("error unmarshalling user metadata: %w", err)
+			logger.Error("error unmarshalling user metadata", logError(err))
+			return nil, ErrInternalServerError
 		}
 	}
 
