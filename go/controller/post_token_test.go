@@ -41,7 +41,9 @@ func TestPostToken(t *testing.T) {
 					gomock.Any(),
 					cmpDBParams(sql.RefreshTokenAndGetUserRolesParams{
 						RefreshTokenHash: sql.Text(hashedToken),
-						ExpiresAt:        sql.TimestampTz(time.Now().Add(time.Duration(2592000) * time.Second)),
+						ExpiresAt: sql.TimestampTz(
+							time.Now().Add(time.Duration(2592000) * time.Second),
+						),
 					}),
 				).Return([]string{"user", "me"}, nil)
 
