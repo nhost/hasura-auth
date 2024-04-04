@@ -540,7 +540,7 @@ updated_user AS (
     FROM refreshed_token
     WHERE auth.users.id = refreshed_token.user_id
 )
-SELECT role FROM auth.user_roles
+SELECT refreshed_token.refresh_token_id, role FROM auth.user_roles
 JOIN refreshed_token ON auth.user_roles.user_id = refreshed_token.user_id
 `
 
@@ -549,19 +549,24 @@ type RefreshTokenAndGetUserRolesParams struct {
 	ExpiresAt        pgtype.Timestamptz
 }
 
-func (q *Queries) RefreshTokenAndGetUserRoles(ctx context.Context, arg RefreshTokenAndGetUserRolesParams) ([]string, error) {
+type RefreshTokenAndGetUserRolesRow struct {
+	RefreshTokenID uuid.UUID
+	Role           string
+}
+
+func (q *Queries) RefreshTokenAndGetUserRoles(ctx context.Context, arg RefreshTokenAndGetUserRolesParams) ([]RefreshTokenAndGetUserRolesRow, error) {
 	rows, err := q.db.Query(ctx, refreshTokenAndGetUserRoles, arg.RefreshTokenHash, arg.ExpiresAt)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []string
+	var items []RefreshTokenAndGetUserRolesRow
 	for rows.Next() {
-		var role string
-		if err := rows.Scan(&role); err != nil {
+		var i RefreshTokenAndGetUserRolesRow
+		if err := rows.Scan(&i.RefreshTokenID, &i.Role); err != nil {
 			return nil, err
 		}
-		items = append(items, role)
+		items = append(items, i)
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err

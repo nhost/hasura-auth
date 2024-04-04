@@ -84,7 +84,7 @@ type DBClient interface {
 	RefreshTokenAndGetUserRoles(
 		ctx context.Context,
 		arg sql.RefreshTokenAndGetUserRolesParams,
-	) ([]string, error)
+	) ([]sql.RefreshTokenAndGetUserRolesRow, error)
 }
 
 type Controller struct {

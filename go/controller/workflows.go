@@ -182,14 +182,14 @@ func (wf *Workflows) ValidateUser(
 		return ErrDisabledUser
 	}
 
-	if user.IsAnonymous {
-		logger.Warn("user is anonymous")
-		return ErrForbiddenAnonymous
-	}
-
 	if !user.EmailVerified && wf.config.RequireEmailVerification {
 		logger.Warn("user is unverified")
 		return ErrUnverifiedUser
+	}
+
+	if user.IsAnonymous {
+		logger.Warn("user is anonymous")
+		return ErrForbiddenAnonymous
 	}
 
 	return nil
@@ -290,11 +290,10 @@ func (wf *Workflows) GetUserByRefreshTokenHash(
 	)
 	if errors.Is(err, pgx.ErrNoRows) {
 		logger.Error("could not find user by refresh token")
-		e := ErrInvalidRefreshToken
 		if refreshTokenType == sql.RefreshTokenTypePAT {
-			e = ErrInvalidPat
+			return sql.AuthUser{}, ErrInvalidPat //nolint:exhaustruct
 		}
-		return sql.AuthUser{}, e //nolint:exhaustruct
+		return sql.AuthUser{}, ErrInvalidRefreshToken //nolint:exhaustruct
 	}
 	if err != nil {
 		logger.Error("could not get user by refresh token", logError(err))
@@ -314,7 +313,7 @@ func (wf *Workflows) UpdateSession(
 	refreshToken string,
 	logger *slog.Logger,
 ) (*api.Session, *APIError) {
-	roles, err := wf.db.RefreshTokenAndGetUserRoles(ctx, sql.RefreshTokenAndGetUserRolesParams{
+	userRoles, err := wf.db.RefreshTokenAndGetUserRoles(ctx, sql.RefreshTokenAndGetUserRolesParams{
 		RefreshTokenHash: sql.Text(hashRefreshToken([]byte(refreshToken))),
 		ExpiresAt: sql.TimestampTz(
 			time.Now().Add(time.Duration(wf.config.RefreshTokenExpiresIn) * time.Second),
@@ -325,8 +324,13 @@ func (wf *Workflows) UpdateSession(
 		return &api.Session{}, ErrInvalidRefreshToken //nolint:exhaustruct
 	}
 
+	allowedRoles := make([]string, len(userRoles))
+	for i, role := range userRoles {
+		allowedRoles[i] = role.Role
+	}
+
 	accessToken, expiresIn, err := wf.jwtGetter.GetToken(
-		ctx, user.ID, roles, user.DefaultRole, logger,
+		ctx, user.ID, allowedRoles, user.DefaultRole, logger,
 	)
 	if err != nil {
 		logger.Error("error getting jwt", logError(err))
@@ -345,6 +349,7 @@ func (wf *Workflows) UpdateSession(
 		AccessToken:          accessToken,
 		AccessTokenExpiresIn: expiresIn,
 		RefreshToken:         refreshToken,
+		RefreshTokenId:       userRoles[0].RefreshTokenID.String(),
 		User: &api.User{
 			AvatarUrl:           user.AvatarUrl,
 			CreatedAt:           user.CreatedAt.Time,
@@ -353,12 +358,12 @@ func (wf *Workflows) UpdateSession(
 			Email:               types.Email(user.Email.String),
 			EmailVerified:       user.EmailVerified,
 			Id:                  user.ID.String(),
-			IsAnonymous:         false,
+			IsAnonymous:         user.IsAnonymous,
 			Locale:              user.Locale,
 			Metadata:            metadata,
 			PhoneNumber:         user.PhoneNumber.String,
 			PhoneNumberVerified: user.PhoneNumberVerified,
-			Roles:               roles,
+			Roles:               allowedRoles,
 		},
 	}, nil
 }

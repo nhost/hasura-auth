@@ -492,10 +492,10 @@ func (mr *MockDBClientMockRecorder) InsertUserWithSecurityKeyAndRefreshToken(ctx
 }
 
 // RefreshTokenAndGetUserRoles mocks base method.
-func (m *MockDBClient) RefreshTokenAndGetUserRoles(ctx context.Context, arg sql.RefreshTokenAndGetUserRolesParams) ([]string, error) {
+func (m *MockDBClient) RefreshTokenAndGetUserRoles(ctx context.Context, arg sql.RefreshTokenAndGetUserRolesParams) ([]sql.RefreshTokenAndGetUserRolesRow, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "RefreshTokenAndGetUserRoles", ctx, arg)
-	ret0, _ := ret[0].([]string)
+	ret0, _ := ret[0].([]sql.RefreshTokenAndGetUserRolesRow)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

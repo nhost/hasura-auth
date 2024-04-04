@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+	"errors"
 
 	"github.com/nhost/hasura-auth/go/api"
 	"github.com/nhost/hasura-auth/go/middleware"
@@ -19,8 +20,14 @@ func (ctrl *Controller) PostToken( //nolint:ireturn
 		sql.RefreshTokenTypeRegular,
 		logger,
 	)
-	if apiErr != nil {
-		return ctrl.respondWithError(apiErr), nil
+
+	switch {
+	case errors.Is(apiErr, ErrForbiddenAnonymous):
+	case errors.Is(apiErr, ErrInvalidEmailPassword):
+	default:
+		if apiErr != nil {
+			return ctrl.respondWithError(apiErr), nil
+		}
 	}
 
 	session, err := ctrl.wf.UpdateSession(ctx, user, request.Body.RefreshToken, logger)
