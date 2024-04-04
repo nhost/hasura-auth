@@ -379,7 +379,7 @@ func (wf *Workflows) NewSession(
 
 	refreshToken := uuid.New()
 	expiresAt := time.Now().Add(time.Duration(wf.config.RefreshTokenExpiresIn) * time.Second)
-	_, apiErr := wf.InsertRefreshtoken(
+	refreshTokenID, apiErr := wf.InsertRefreshtoken(
 		ctx, user.ID, refreshToken.String(), expiresAt, sql.RefreshTokenTypeRegular, nil, logger,
 	)
 	if apiErr != nil {
@@ -406,6 +406,7 @@ func (wf *Workflows) NewSession(
 	return &api.Session{
 		AccessToken:          accessToken,
 		AccessTokenExpiresIn: expiresIn,
+		RefreshTokenId:       refreshTokenID.String(),
 		RefreshToken:         refreshToken.String(),
 		User: &api.User{
 			AvatarUrl:           user.AvatarUrl,
@@ -676,16 +677,16 @@ func (wf *Workflows) SignupUserWithRefreshToken( //nolint:funlen
 	expiresAt time.Time,
 	options *api.SignUpOptions,
 	logger *slog.Logger,
-) (*api.User, uuid.UUID, *APIError) {
+) (*api.User, sql.InsertUserWithRefreshTokenRow, *APIError) {
 	if wf.config.DisableSignup {
 		logger.Warn("signup disabled")
-		return nil, uuid.UUID{}, ErrSignupDisabled
+		return nil, sql.InsertUserWithRefreshTokenRow{}, ErrSignupDisabled //nolint:exhaustruct
 	}
 
 	metadata, err := json.Marshal(options.Metadata)
 	if err != nil {
 		logger.Error("error marshaling metadata", logError(err))
-		return nil, uuid.UUID{}, ErrInternalServerError
+		return nil, sql.InsertUserWithRefreshTokenRow{}, ErrInternalServerError //nolint:exhaustruct
 	}
 
 	gravatarURL := wf.gravatarURL(email)
@@ -693,10 +694,10 @@ func (wf *Workflows) SignupUserWithRefreshToken( //nolint:funlen
 	hashedPassword, err := hashPassword(password)
 	if err != nil {
 		logger.Error("error hashing password", logError(err))
-		return nil, uuid.UUID{}, ErrInternalServerError
+		return nil, sql.InsertUserWithRefreshTokenRow{}, ErrInternalServerError //nolint:exhaustruct
 	}
 
-	userID, err := wf.db.InsertUserWithRefreshToken(
+	resp, err := wf.db.InsertUserWithRefreshToken(
 		ctx, sql.InsertUserWithRefreshTokenParams{
 			Disabled:              wf.config.DisableNewUsers,
 			DisplayName:           deptr(options.DisplayName),
@@ -716,12 +717,12 @@ func (wf *Workflows) SignupUserWithRefreshToken( //nolint:funlen
 	)
 	if err != nil {
 		logger.Error("error inserting user", logError(err))
-		return nil, uuid.UUID{}, ErrInternalServerError
+		return nil, sql.InsertUserWithRefreshTokenRow{}, ErrInternalServerError //nolint:exhaustruct
 	}
 
 	if wf.config.DisableNewUsers {
 		logger.Warn("new user disabled")
-		return nil, uuid.UUID{}, ErrDisabledUser
+		return nil, sql.InsertUserWithRefreshTokenRow{}, ErrDisabledUser //nolint:exhaustruct
 	}
 
 	return &api.User{
@@ -731,14 +732,14 @@ func (wf *Workflows) SignupUserWithRefreshToken( //nolint:funlen
 		DisplayName:         deptr(options.DisplayName),
 		Email:               types.Email(email),
 		EmailVerified:       false,
-		Id:                  userID.String(),
+		Id:                  resp.UserID.String(),
 		IsAnonymous:         false,
 		Locale:              deptr(options.Locale),
 		Metadata:            deptr(options.Metadata),
 		PhoneNumber:         "",
 		PhoneNumberVerified: false,
 		Roles:               deptr(options.AllowedRoles),
-	}, userID, nil
+	}, resp, nil
 }
 
 func (wf *Workflows) DeanonymizeUser(
@@ -813,21 +814,21 @@ func (wf *Workflows) SignupUserWithSecurityKeyAndRefreshToken( //nolint:funlen
 	credentialPublicKey []byte,
 	nickname string,
 	logger *slog.Logger,
-) (*api.User, *APIError) {
+) (*api.User, uuid.UUID, *APIError) {
 	if wf.config.DisableSignup {
 		logger.Warn("signup disabled")
-		return nil, ErrSignupDisabled
+		return nil, uuid.UUID{}, ErrSignupDisabled
 	}
 
 	metadata, err := json.Marshal(options.Metadata)
 	if err != nil {
 		logger.Error("error marshaling metadata", logError(err))
-		return nil, ErrInternalServerError
+		return nil, uuid.UUID{}, ErrInternalServerError
 	}
 
 	gravatarURL := wf.gravatarURL(email)
 
-	if _, err := wf.db.InsertUserWithSecurityKeyAndRefreshToken(
+	resp, err := wf.db.InsertUserWithSecurityKeyAndRefreshToken(
 		ctx, sql.InsertUserWithSecurityKeyAndRefreshTokenParams{
 			ID:                    userID,
 			Disabled:              wf.config.DisableNewUsers,
@@ -847,14 +848,15 @@ func (wf *Workflows) SignupUserWithSecurityKeyAndRefreshToken( //nolint:funlen
 			CredentialPublicKey:   credentialPublicKey,
 			Nickname:              sql.Text(nickname),
 		},
-	); err != nil {
+	)
+	if err != nil {
 		logger.Error("error inserting user", logError(err))
-		return nil, ErrInternalServerError
+		return nil, uuid.UUID{}, ErrInternalServerError
 	}
 
 	if wf.config.DisableNewUsers {
 		logger.Warn("new user disabled")
-		return nil, ErrDisabledUser
+		return nil, uuid.UUID{}, ErrDisabledUser
 	}
 
 	return &api.User{
@@ -871,7 +873,7 @@ func (wf *Workflows) SignupUserWithSecurityKeyAndRefreshToken( //nolint:funlen
 		PhoneNumber:         "",
 		PhoneNumberVerified: false,
 		Roles:               deptr(options.AllowedRoles),
-	}, nil
+	}, resp.RefreshTokenID, nil
 }
 
 func (wf *Workflows) SignupUserWithSecurityKey( //nolint:funlen
