@@ -4,6 +4,8 @@ import (
 	"context"
 	"log/slog"
 	"net/smtp"
+	"os"
+	"strconv"
 	"testing"
 
 	"github.com/nhost/hasura-auth/go/notifications"
@@ -26,11 +28,27 @@ func TestEmailSend(t *testing.T) {
 			t.Parallel()
 			// tc := tc
 
+			portStr := os.Getenv("AUTH_SMTP_PORT")
+			port, err := strconv.Atoi(portStr)
+			if err != nil {
+				t.Fatalf("error parsing port: %v", err)
+			}
+
+			auth := notifications.PlainAuth(
+				"",
+				os.Getenv("AUTH_SMTP_USER"),
+				os.Getenv("AUTH_SMTP_PASS"),
+				os.Getenv("AUTH_SMTP_HOST"),
+			)
+
+			useTLSConnection := os.Getenv("AUTH_SMTP_SECURE") == "true"
+
 			mail := notifications.NewEmail(
-				"localhost",
-				1025,
-				smtp.PlainAuth("", "user", "password", "localhost"),
-				"admin@localhost",
+				os.Getenv("AUTH_SMTP_HOST"),
+				uint16(port),
+				useTLSConnection,
+				auth,
+				os.Getenv("AUTH_SMTP_SENDER"),
 				map[string]string{
 					"x-something": "asd",
 				},
@@ -59,6 +77,7 @@ func TestEmailSendEmailVerify(t *testing.T) {
 	mail := notifications.NewEmail(
 		"localhost",
 		1025,
+		false,
 		smtp.PlainAuth("", "user", "password", "localhost"),
 		"admin@localhost",
 		map[string]string{
