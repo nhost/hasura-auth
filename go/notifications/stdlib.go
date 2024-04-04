@@ -23,7 +23,13 @@ func validateLine(line string) error {
 }
 
 func sendMail( //nolint:funlen,cyclop
-	host string, port uint16, useTLSConnection bool, a smtp.Auth, from string, to []string, msg []byte,
+	host string,
+	port uint16,
+	useTLSConnection bool,
+	a smtp.Auth,
+	from string,
+	to []string,
+	msg []byte,
 ) error {
 	if err := validateLine(from); err != nil {
 		return err
