@@ -172,7 +172,7 @@ func (wf *Workflows) ValidateUser(
 	user sql.AuthUser,
 	logger *slog.Logger,
 ) *APIError {
-	if !wf.ValidateEmail(user.Email.String) {
+	if !user.IsAnonymous && !wf.ValidateEmail(user.Email.String) {
 		logger.Warn("email didn't pass access control checks")
 		return ErrInvalidEmailPassword
 	}
@@ -301,7 +301,7 @@ func (wf *Workflows) GetUserByRefreshTokenHash(
 	}
 
 	if apiErr := wf.ValidateUser(user, logger); apiErr != nil {
-		return sql.AuthUser{}, apiErr //nolint:exhaustruct
+		return user, apiErr
 	}
 
 	return user, nil
@@ -330,7 +330,7 @@ func (wf *Workflows) UpdateSession(
 	}
 
 	accessToken, expiresIn, err := wf.jwtGetter.GetToken(
-		ctx, user.ID, allowedRoles, user.DefaultRole, logger,
+		ctx, user.ID, user.IsAnonymous, allowedRoles, user.DefaultRole, logger,
 	)
 	if err != nil {
 		logger.Error("error getting jwt", logError(err))
@@ -396,7 +396,7 @@ func (wf *Workflows) NewSession(
 	}
 
 	accessToken, expiresIn, err := wf.jwtGetter.GetToken(
-		ctx, user.ID, allowedRoles, user.DefaultRole, logger,
+		ctx, user.ID, user.IsAnonymous, allowedRoles, user.DefaultRole, logger,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("error getting jwt: %w", err)
