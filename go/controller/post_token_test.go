@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
@@ -93,8 +94,8 @@ func TestPostToken(t *testing.T) { //nolint:maintidx
 					RefreshToken: token.String(),
 				},
 			},
-			expectedResponse: api.PostToken200JSONResponse{
-				Session: &api.Session{
+			expectedResponse: api.PostToken200JSONResponse(
+				api.Session{
 					AccessToken:          "",
 					AccessTokenExpiresIn: 900,
 					RefreshToken:         "1fb17604-86c7-444e-b337-09a644465f2d",
@@ -115,7 +116,7 @@ func TestPostToken(t *testing.T) { //nolint:maintidx
 						Roles:               []string{"user", "me"},
 					},
 				},
-			},
+			),
 			expectedJWT: &jwt.Token{
 				Raw:    "",
 				Method: jwt.SigningMethodHS256,
@@ -176,8 +177,8 @@ func TestPostToken(t *testing.T) { //nolint:maintidx
 					RefreshToken: token.String(),
 				},
 			},
-			expectedResponse: api.PostToken200JSONResponse{
-				Session: &api.Session{
+			expectedResponse: api.PostToken200JSONResponse(
+				api.Session{
 					AccessToken:          "",
 					AccessTokenExpiresIn: 900,
 					RefreshToken:         "1fb17604-86c7-444e-b337-09a644465f2d",
@@ -198,7 +199,7 @@ func TestPostToken(t *testing.T) { //nolint:maintidx
 						Roles:               []string{"anonymous"},
 					},
 				},
-			},
+			),
 			expectedJWT: &jwt.Token{
 				Raw:    "",
 				Method: jwt.SigningMethodHS256,
@@ -315,11 +316,13 @@ func TestPostToken(t *testing.T) { //nolint:maintidx
 
 			resp := assertRequest(
 				context.Background(), t, c.PostToken, tc.request, tc.expectedResponse,
+				cmpopts.IgnoreFields(api.PostToken200JSONResponse{}, "RefreshToken", "AccessToken"),
 			)
 
 			resp200, ok := resp.(api.PostToken200JSONResponse)
 			if ok {
-				assertSession(t, jwtGetter, resp200.Session, tc.expectedJWT)
+				session := api.Session(resp200)
+				assertSession(t, jwtGetter, &session, tc.expectedJWT)
 			}
 		})
 	}
