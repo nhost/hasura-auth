@@ -16,6 +16,7 @@ import (
 	"go.uber.org/mock/gomock"
 )
 
+//nolint:dupl
 func getAnonymousUser(userID uuid.UUID) sql.AuthUser {
 	//nolint:exhaustruct
 	return sql.AuthUser{
@@ -49,7 +50,7 @@ func getAnonymousUser(userID uuid.UUID) sql.AuthUser {
 	}
 }
 
-func TestPostToken(t *testing.T) {
+func TestPostToken(t *testing.T) { //nolint:maintidx
 	t.Parallel()
 
 	userID := uuid.MustParse("db477732-48fa-4289-b694-2886a646b6eb")
@@ -93,7 +94,7 @@ func TestPostToken(t *testing.T) {
 				},
 			},
 			expectedResponse: api.PostToken200JSONResponse{
-				Session: &api.Session{ //nolint: exhaustruct
+				Session: &api.Session{
 					AccessToken:          "",
 					AccessTokenExpiresIn: time.Now().Add(900 * time.Second).Unix(),
 					RefreshToken:         "1fb17604-86c7-444e-b337-09a644465f2d",
