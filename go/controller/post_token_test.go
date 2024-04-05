@@ -314,6 +314,7 @@ func TestPostToken(t *testing.T) { //nolint:maintidx
 				hibp:          nil,
 			})
 
+			//nolint:exhaustruct
 			resp := assertRequest(
 				context.Background(), t, c.PostToken, tc.request, tc.expectedResponse,
 				cmpopts.IgnoreFields(api.PostToken200JSONResponse{}, "RefreshToken", "AccessToken"),
