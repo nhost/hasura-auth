@@ -96,7 +96,7 @@ func TestPostToken(t *testing.T) { //nolint:maintidx
 			expectedResponse: api.PostToken200JSONResponse{
 				Session: &api.Session{
 					AccessToken:          "",
-					AccessTokenExpiresIn: time.Now().Add(900 * time.Second).Unix(),
+					AccessTokenExpiresIn: 900,
 					RefreshToken:         "1fb17604-86c7-444e-b337-09a644465f2d",
 					RefreshTokenId:       "1fb13604-86c7-4444-a337-09a644465f2d",
 					User: &api.User{
@@ -179,7 +179,7 @@ func TestPostToken(t *testing.T) { //nolint:maintidx
 			expectedResponse: api.PostToken200JSONResponse{
 				Session: &api.Session{
 					AccessToken:          "",
-					AccessTokenExpiresIn: time.Now().Add(900 * time.Second).Unix(),
+					AccessTokenExpiresIn: 900,
 					RefreshToken:         "1fb17604-86c7-444e-b337-09a644465f2d",
 					RefreshTokenId:       "1fb13604-86c7-4444-a337-09a644465f2d",
 					User: &api.User{
