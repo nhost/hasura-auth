@@ -151,7 +151,7 @@ export const oauthProviders = Router()
    */
   .use((req, res, next) => {
     if (!res.locals.grant) {
-        res.locals.gran = {};
+        res.locals.grant = {};
     }
 
     if (!res.locals.grant.dynamic) {
