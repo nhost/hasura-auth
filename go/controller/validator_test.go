@@ -258,6 +258,24 @@ func TestValidateEmail(t *testing.T) {
 			email:          "test@acme.se",
 			expected:       false,
 		},
+		{
+			name:           "allowed email or domain match",
+			blockedDomains: []string{},
+			blockedEmails:  []string{},
+			allowedDomains: []string{"example.com"},
+			allowedEmails:  []string{"test@acme.com"},
+			email:          "test@acme.com",
+			expected:       true,
+		},
+		{
+			name:           "allowed email or domain not match",
+			blockedDomains: []string{},
+			blockedEmails:  []string{},
+			allowedDomains: []string{"example.com"},
+			allowedEmails:  []string{"test@acme.com"},
+			email:          "test@example.in",
+			expected:       false,
+		},
 	}
 
 	for _, tc := range cases {

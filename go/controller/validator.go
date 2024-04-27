@@ -121,11 +121,8 @@ func ValidateEmail(
 			return false
 		}
 
-		if len(allowedEmailDomains) > 0 && !slices.Contains(allowedEmailDomains, domain) {
-			return false
-		}
-
-		if len(allowedEmails) > 0 && !slices.Contains(allowedEmails, email) {
+		if (len(allowedEmailDomains) > 0 && !slices.Contains(allowedEmailDomains, domain)) &&
+			(len(allowedEmails) > 0 && !slices.Contains(allowedEmails, email)) {
 			return false
 		}
 
