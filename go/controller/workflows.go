@@ -314,9 +314,15 @@ func (wf *Workflows) UpdateSession(
 		return &api.Session{}, ErrInvalidRefreshToken //nolint:exhaustruct
 	}
 
-	allowedRoles := make([]string, len(userRoles))
-	for i, role := range userRoles {
-		allowedRoles[i] = role.Role
+	allowedRoles := make([]string, 0, len(userRoles))
+	for _, role := range userRoles {
+		if role.Role.Valid {
+			allowedRoles = append(allowedRoles, role.Role.String)
+		}
+	}
+
+	if !slices.Contains(allowedRoles, user.DefaultRole) {
+		allowedRoles = append(allowedRoles, user.DefaultRole)
 	}
 
 	accessToken, expiresIn, err := wf.jwtGetter.GetToken(
