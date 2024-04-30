@@ -297,7 +297,7 @@ func (wf *Workflows) GetUserByRefreshTokenHash(
 	return user, nil
 }
 
-func (wf *Workflows) UpdateSession(
+func (wf *Workflows) UpdateSession( //nolint:funlen
 	ctx context.Context,
 	user sql.AuthUser,
 	refreshToken string,
