@@ -87,6 +87,11 @@ export const redirectTo = Joi.string()
       }
     }
 
+    // Allow deeplinks with the format *://
+    if (/^.+:\/\//.test(value)) {
+      return value;
+    }
+
     // * We allow any sub-path of the client url
     // * With optional hash and query params
     if (
@@ -186,7 +191,9 @@ export const registrationOptions =
     .custom((value, helper) => {
       const { allowedRoles, defaultRole } = value;
       if (!allowedRoles.includes(defaultRole)) {
-        return helper.message({custom:'Default role must be part of allowed roles'});
+        return helper.message({
+          custom: 'Default role must be part of allowed roles',
+        });
       }
       // check if allowedRoles is a subset of allowed user roles
       if (
@@ -194,7 +201,9 @@ export const registrationOptions =
           ENV.AUTH_USER_DEFAULT_ALLOWED_ROLES.includes(role)
         )
       ) {
-        return helper.message({custom:'Allowed roles must be a subset of allowedRoles'});
+        return helper.message({
+          custom: 'Allowed roles must be a subset of allowedRoles',
+        });
       }
       return value;
     });
