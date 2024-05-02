@@ -5,20 +5,6 @@ import path from 'path';
 import { logger } from './logger';
 import { ENV } from './utils/env';
 
-// function to fix hash
-export async function fixMigrationHash(
-    client: Client,
-    id: string,
-    oldHash: string,
-    newHash: string
-): Promise<void> {
-    await client.query(
-        `UPDATE "auth"."migrations" SET hash=$1 WHERE id=$2 AND hash=$3;`,
-        [newHash, id, oldHash],
-    );
-}
-
-
 export async function applyMigrations(): Promise<void> {
   logger.info('Applying SQL migrations...');
 
