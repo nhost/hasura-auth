@@ -101,11 +101,11 @@ export const redirectTo = Joi.string()
     if (/^(?!https?:\/\/).+:\/\/.*/.test(value)) {
       // check if the deep link scheme is included in the allowed redirect URLs
       try {
+        // we only check against the beginning of the deeplink to allow deeplinks that redirect to a specific
+        // screen of the app like myapp://home/profile
         const scheme = new URL(value).protocol;
         const schemeWithDelimeter = `${scheme}//`;
 
-        // we only check against the beginning of the deeplink to allow deeplinks that redirect a specific
-        // screen of the app like://
         if (
           ENV.AUTH_ACCESS_CONTROL_ALLOWED_REDIRECT_URLS.includes(
             schemeWithDelimeter
