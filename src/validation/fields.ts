@@ -97,13 +97,12 @@ export const redirectTo = Joi.string()
 
     // * Check if the redirectTo is a deep link: start with any sequence of characters
     // * followed by "://", and then followed by any sequence of characters
-    if (/.+:\/\/.*/.test(value)) {
+    // * we skip values that start with http: or https://
+    if (/^(?!https?:\/\/).+:\/\/.*/.test(value)) {
       // check if the deep link scheme is included in the allowed redirect URLs
       try {
         const scheme = new URL(value).protocol;
         const schemeWithDelimeter = `${scheme}//`;
-
-        console.log(schemeWithDelimeter);
 
         // we only check against the beginning of the deeplink to allow deeplinks that redirect a specific
         // screen of the app like://
