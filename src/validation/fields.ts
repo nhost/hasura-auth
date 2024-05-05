@@ -87,17 +87,39 @@ export const redirectTo = Joi.string()
       }
     }
 
-    // Allow deeplinks with the format *://
-    if (/^.+:\/\//.test(value)) {
-      return value;
-    }
-
     // * We allow any sub-path of the client url
     // * With optional hash and query params
     if (
       new RegExp(`^${ENV.AUTH_CLIENT_URL}(/.*)?([?].*)?([#].*)?$`).test(value)
     ) {
       return value;
+    }
+
+    // * Check if the redirectTo is a deep link: start with any sequence of characters
+    // * followed by "://", and then followed by any sequence of characters
+    if (/.+:\/\/.*/.test(value)) {
+      // check if the deep link scheme is included in the allowed redirect URLs
+      try {
+        const scheme = new URL(value).protocol;
+        const schemeWithDelimeter = `${scheme}//`;
+
+        console.log(schemeWithDelimeter);
+
+        // we only check against the beginning of the deeplink to allow deeplinks that redirect a specific
+        // screen of the app like://
+        if (
+          ENV.AUTH_ACCESS_CONTROL_ALLOWED_REDIRECT_URLS.includes(
+            schemeWithDelimeter
+          )
+        ) {
+          return value;
+        }
+
+        // if the deeplink is not present in the allowed redirect urls then we return an error
+        return helper.error('redirectTo');
+      } catch (error) {
+        return helper.error('redirectTo');
+      }
     }
 
     // * Check if the value's hostname matches any allowed hostname
