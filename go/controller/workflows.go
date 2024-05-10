@@ -8,7 +8,6 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
-	"net/url"
 	"slices"
 	"time"
 
@@ -44,13 +43,13 @@ func NewWorkflows(
 	email Emailer,
 	gravatarURL func(string) string,
 ) (*Workflows, error) {
-	allowedURLs := make([]*url.URL, len(cfg.AllowedRedirectURLs)+1)
-	allowedURLs[0] = cfg.ClientURL
+	allowedURLs := make([]string, len(cfg.AllowedRedirectURLs)+1)
+	allowedURLs[0] = cfg.ClientURL.String()
 	for i, u := range cfg.AllowedRedirectURLs {
 		allowedURLs[i+1] = u
 	}
 
-	redirectURLValidator, err := ValidateRedirectTo(nil)
+	redirectURLValidator, err := ValidateRedirectTo(allowedURLs)
 	if err != nil {
 		return nil, fmt.Errorf("error creating redirect URL wf: %w", err)
 	}

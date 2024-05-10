@@ -21,7 +21,7 @@ func getConfig() *controller.Config {
 		HasuraAdminSecret:        "nhost-admin-secret",
 		AllowedEmailDomains:      []string{},
 		AllowedEmails:            []string{},
-		AllowedRedirectURLs:      []*url.URL{},
+		AllowedRedirectURLs:      []string{},
 		BlockedEmailDomains:      []string{},
 		BlockedEmails:            []string{},
 		ClientURL:                clientURL,
@@ -148,15 +148,6 @@ func TestValidateRedirectTo(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			tc := tc
-
-			// allowedURLs := make([]*url.URL, len(tc.allowedURLs))
-			// for i, u := range tc.allowedURLs {
-			// 	url, err := url.Parse(u)
-			// 	if err != nil {
-			// 		t.Fatalf("unexpected error: %v", err)
-			// 	}
-			// 	allowedURLs[i] = url
-			// }
 
 			fn, err := controller.ValidateRedirectTo(tc.allowedURLs)
 			if err != nil {
