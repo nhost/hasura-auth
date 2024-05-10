@@ -106,9 +106,10 @@ export const redirectTo = Joi.string()
         const scheme = new URL(value).protocol;
         const schemeWithDelimeter = `${scheme}//`;
 
+        // Check if any of the allowedUrls matched the deeplink scheme
         if (
-          ENV.AUTH_ACCESS_CONTROL_ALLOWED_REDIRECT_URLS.includes(
-            schemeWithDelimeter
+          ENV.AUTH_ACCESS_CONTROL_ALLOWED_REDIRECT_URLS.some((url) =>
+            url.startsWith(schemeWithDelimeter)
           )
         ) {
           return value;
