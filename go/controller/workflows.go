@@ -50,7 +50,7 @@ func NewWorkflows(
 		allowedURLs[i+1] = u
 	}
 
-	redirectURLValidator, err := ValidateRedirectTo(allowedURLs)
+	redirectURLValidator, err := ValidateRedirectTo(nil)
 	if err != nil {
 		return nil, fmt.Errorf("error creating redirect URL wf: %w", err)
 	}
