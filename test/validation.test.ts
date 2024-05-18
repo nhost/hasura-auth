@@ -59,7 +59,7 @@ describe('Unit tests on field validation', () => {
     const clientUrl = 'https://nhost.io';
     const diffDomainUrl = 'https://myotherdomain.com';
     const host = 'host.com';
-    const allowedRedirectUrls = `https://*-nhost.vercel.app,${diffDomainUrl},https://*.${host},https://no-wildcard.io,myapp://redirect`;
+    const allowedRedirectUrls = `https://*-nhost.vercel.app,${diffDomainUrl},https://*.${host},https://no-wildcard.io,myapp://`;
 
     beforeAll(async () => {
       process.env.AUTH_CLIENT_URL = clientUrl;
