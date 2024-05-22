@@ -119,7 +119,6 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 			&cli.StringFlag{ //nolint: exhaustruct
 				Name:     flagPostgresMigrationsConnection,
 				Usage:    "PostgreSQL connection URI for running migrations: https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING. Required to inject the `auth` schema into the database. If not specied, the `postgres connection will be used",
-				Value:    "postgres://postgres:postgres@localhost:5432/local?sslmode=disable",
 				Category: "postgres",
 				EnvVars:  []string{"POSTGRES_MIGRATIONS_CONNECTION"},
 			},
