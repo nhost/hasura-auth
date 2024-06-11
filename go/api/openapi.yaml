@@ -18,7 +18,7 @@ paths:
       tags:
         - health
       responses:
-        '200':
+        "200":
           description: >-
             Service is healthy
 
@@ -27,13 +27,13 @@ paths:
       tags:
         - health
       responses:
-        '200':
+        "200":
           description: >-
             Service is healthy
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OKResponse'
+                $ref: "#/components/schemas/OKResponse"
 
   /pat:
     post:
@@ -46,14 +46,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreatePATRequest'
+              $ref: "#/components/schemas/CreatePATRequest"
         required: true
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CreatePATResponse'
+                $ref: "#/components/schemas/CreatePATResponse"
           description: >-
             Successfully created a Personal Access Token
 
@@ -68,14 +68,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RefreshTokenRequest'
+              $ref: "#/components/schemas/RefreshTokenRequest"
         required: true
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Session'
+                $ref: "#/components/schemas/Session"
           description: >-
             Successfully refreshed the JWT access token
 
@@ -90,14 +90,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SignInEmailPasswordRequest'
+              $ref: "#/components/schemas/SignInEmailPasswordRequest"
         required: true
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SignInEmailPasswordResponse'
+                $ref: "#/components/schemas/SignInEmailPasswordResponse"
           description: >-
             Successfully signed in. Null session means TOTP challenge is needed
 
@@ -115,16 +115,16 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SignInPasswordlessEmailRequest'
+              $ref: "#/components/schemas/SignInPasswordlessEmailRequest"
         required: true
       responses:
-        '200':
+        "200":
           description: >-
             Magic link sent to user's email successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OKResponse'
+                $ref: "#/components/schemas/OKResponse"
 
   /signin/pat:
     post:
@@ -137,16 +137,16 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SignInPATRequest'
+              $ref: "#/components/schemas/SignInPATRequest"
         required: true
       responses:
-        '200':
+        "200":
           description: >-
             Successfully signed in
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SessionPayload'
+                $ref: "#/components/schemas/SessionPayload"
 
   /signup/email-password:
     post:
@@ -154,29 +154,29 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SignUpEmailPasswordRequest'
+              $ref: "#/components/schemas/SignUpEmailPasswordRequest"
         required: true
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SessionPayload'
+                $ref: "#/components/schemas/SessionPayload"
           description: >-
             Successfully registered. Null session means email verification is
             pending
-        '403':
+        "403":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
           description: >-
             Signup mechanism is disabled
-        '409':
+        "409":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
           description: >-
             User with given email already exists
 
@@ -191,14 +191,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SignUpWebauthnRequest'
+              $ref: "#/components/schemas/SignUpWebauthnRequest"
         required: true
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SignUpWebauthnResponse'
+                $ref: "#/components/schemas/SignUpWebauthnResponse"
           description: >-
             Challenge sent
 
@@ -213,14 +213,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SignUpWebauthnVerifyRequest'
+              $ref: "#/components/schemas/SignUpWebauthnVerifyRequest"
         required: true
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SessionPayload'
+                $ref: "#/components/schemas/SessionPayload"
           description: >-
             Sign up successful
 
@@ -242,15 +242,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserDeanonymizeRequest'
+              $ref: "#/components/schemas/UserDeanonymizeRequest"
       responses:
-        '200':
+        "200":
           description: >-
             User deanonymized successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OKResponse'
+                $ref: "#/components/schemas/OKResponse"
 
   /user/email/change:
     post:
@@ -264,15 +264,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserEmailChangeRequest'
+              $ref: "#/components/schemas/UserEmailChangeRequest"
       responses:
-        '200':
+        "200":
           description: >-
             Email change requested. An email with a verification link has been sent to the new address
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OKResponse'
+                $ref: "#/components/schemas/OKResponse"
 
   /user/email/send-verification-email:
     post:
@@ -284,14 +284,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserEmailSendVerificationEmailRequest'
+              $ref: "#/components/schemas/UserEmailSendVerificationEmailRequest"
         required: true
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OKResponse'
+                $ref: "#/components/schemas/OKResponse"
           description: >-
             Email verification email sent successfully
 
@@ -306,15 +306,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserPasswordResetRequest'
+              $ref: "#/components/schemas/UserPasswordResetRequest"
       responses:
-        '200':
+        "200":
           description: >-
             Password reset requested
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OKResponse'
+                $ref: "#/components/schemas/OKResponse"
 
   /version:
     get:
@@ -322,7 +322,7 @@ paths:
       tags:
         - version
       responses:
-        '200':
+        "200":
           description: >-
             Version of the service
           content:
@@ -482,7 +482,7 @@ components:
           pattern: \b[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b
           type: string
         user:
-          $ref: '#/components/schemas/User'
+          $ref: "#/components/schemas/User"
       required:
         - accessToken
         - accessTokenExpiresIn
@@ -519,7 +519,6 @@ components:
         email:
           description: A valid email
           example: john.smith@nhost.io
-          format: email
           type: string
         emailVerified:
           type: boolean

@@ -161,7 +161,7 @@ func (wf *Workflows) ValidateUser(
 	user sql.AuthUser,
 	logger *slog.Logger,
 ) *APIError {
-	if !user.IsAnonymous && (user.Email.Valid && !wf.ValidateEmail(user.Email.String)) {
+	if !user.IsAnonymous && !wf.ValidateEmail(user.Email.String) {
 		logger.Warn("email didn't pass access control checks")
 		return ErrInvalidEmailPassword
 	}
@@ -350,7 +350,7 @@ func (wf *Workflows) UpdateSession( //nolint:funlen
 			CreatedAt:           user.CreatedAt.Time,
 			DefaultRole:         user.DefaultRole,
 			DisplayName:         user.DisplayName,
-			Email:               types.Email(user.Email.String),
+			Email:               user.Email.String,
 			EmailVerified:       user.EmailVerified,
 			Id:                  user.ID.String(),
 			IsAnonymous:         user.IsAnonymous,
@@ -413,7 +413,7 @@ func (wf *Workflows) NewSession(
 			CreatedAt:           user.CreatedAt.Time,
 			DefaultRole:         user.DefaultRole,
 			DisplayName:         user.DisplayName,
-			Email:               types.Email(user.Email.String),
+			Email:               user.Email.String,
 			EmailVerified:       user.EmailVerified,
 			Id:                  user.ID.String(),
 			IsAnonymous:         false,
@@ -729,7 +729,7 @@ func (wf *Workflows) SignupUserWithRefreshToken( //nolint:funlen
 		CreatedAt:           time.Now(),
 		DefaultRole:         *options.DefaultRole,
 		DisplayName:         deptr(options.DisplayName),
-		Email:               types.Email(email),
+		Email:               email,
 		EmailVerified:       false,
 		Id:                  resp.UserID.String(),
 		IsAnonymous:         false,
@@ -862,7 +862,7 @@ func (wf *Workflows) SignupUserWithSecurityKeyAndRefreshToken( //nolint:funlen
 		CreatedAt:           time.Now(),
 		DefaultRole:         *options.DefaultRole,
 		DisplayName:         deptr(options.DisplayName),
-		Email:               types.Email(email),
+		Email:               email,
 		EmailVerified:       false,
 		Id:                  userID.String(),
 		IsAnonymous:         false,
@@ -931,7 +931,7 @@ func (wf *Workflows) SignupUserWithSecurityKey( //nolint:funlen
 		CreatedAt:           time.Now(),
 		DefaultRole:         *options.DefaultRole,
 		DisplayName:         deptr(options.DisplayName),
-		Email:               types.Email(email),
+		Email:               email,
 		EmailVerified:       false,
 		Id:                  userID.String(),
 		IsAnonymous:         false,
