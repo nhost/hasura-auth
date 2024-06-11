@@ -161,7 +161,7 @@ func (wf *Workflows) ValidateUser(
 	user sql.AuthUser,
 	logger *slog.Logger,
 ) *APIError {
-	if !user.IsAnonymous && (user.EmailValid && !wf.ValidateEmail(user.Email.String)) {
+	if !user.IsAnonymous && (user.Email.Valid && !wf.ValidateEmail(user.Email.String)) {
 		logger.Warn("email didn't pass access control checks")
 		return ErrInvalidEmailPassword
 	}
