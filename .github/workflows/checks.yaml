@@ -32,3 +32,12 @@ jobs:
       NIX_CACHE_PUB_KEY: ${{ secrets.NIX_CACHE_PUB_KEY }}
       NIX_CACHE_PRIV_KEY: ${{ secrets.NIX_CACHE_PRIV_KEY }}
     if: contains(github.event.pull_request.labels.*.name, 'safe_to_test') || pull_request.author_association in ['OWNER', 'MEMBER', 'COLLABORATOR']
+
+  remove_label:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-ecosystem/action-remove-labels@v1
+        with:
+          labels: |
+            safe_to_test
