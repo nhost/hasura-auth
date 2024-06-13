@@ -41,3 +41,4 @@ jobs:
         with:
           labels: |
             safe_to_test
+    if: contains(github.event.pull_request.labels.*.name, 'safe_to_test')
