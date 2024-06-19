@@ -17,7 +17,7 @@ func main() {
 	app := &cli.App{ //nolint:exhaustruct
 		Name:     "auth",
 		Version:  Version,
-		Usage:    "Nhost Auth API server",
+		Usage:    "Nhostt Auth API server",
 		Flags:    serveCmd.Flags,
 		Commands: []*cli.Command{},
 		Action:   serveCmd.Action,
