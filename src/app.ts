@@ -18,6 +18,7 @@ if (process.env.NODE_ENV === 'production') {
 
 addOpenApiRoute(app);
 
+app.use(express.json())
 app.use(httpLogger);
 app.use(authMiddleware);
 app.use(ENV.AUTH_API_PREFIX, router);
