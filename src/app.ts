@@ -11,6 +11,7 @@ import { ENV } from './utils/env';
 const app = express();
 app.disable('x-powered-by');
 app.set("etag", false);
+app.use(express.json())
 
 if (process.env.NODE_ENV === 'production') {
   app.set('trust proxy', 1);
@@ -18,7 +19,6 @@ if (process.env.NODE_ENV === 'production') {
 
 addOpenApiRoute(app);
 
-app.use(express.json())
 app.use(httpLogger);
 app.use(authMiddleware);
 app.use(ENV.AUTH_API_PREFIX, router);
