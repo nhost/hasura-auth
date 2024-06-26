@@ -19,7 +19,7 @@ if (process.env.NODE_ENV === 'production') {
 addOpenApiRoute(app);
 
 app.use(httpLogger);
-app.use(helmet(), json());
+app.use(helmet({ xFrameOptions: false }), json());
 app.use(authMiddleware);
 app.use(ENV.AUTH_API_PREFIX, router);
 app.use(uncaughtErrorLogger, serverErrors);
