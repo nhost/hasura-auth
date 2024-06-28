@@ -4,12 +4,14 @@ package controller
 import (
 	"context"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/nhost/hasura-auth/go/notifications"
 	"github.com/nhost/hasura-auth/go/sql"
+	"golang.org/x/oauth2"
 )
 
 const (
@@ -87,10 +89,15 @@ type DBClient interface {
 	) ([]sql.RefreshTokenAndGetUserRolesRow, error)
 }
 
+type Oauth struct {
+	Twitter *oauth2.Config
+}
+
 type Controller struct {
 	wf       *Workflows
 	config   Config
 	Webauthn *Webauthn
+	Oauth    Oauth
 	version  string
 }
 
@@ -128,6 +135,20 @@ func New(
 		config:   config,
 		wf:       validator,
 		Webauthn: wa,
-		version:  version,
+		Oauth: Oauth{
+			Twitter: &oauth2.Config{
+				ClientID:     os.Getenv("AUTH_PROVIDER_TWITTER_CLIENT_ID"),
+				ClientSecret: os.Getenv("AUTH_PROVIDER_TWITTER_CLIENT_SECRET"),
+				Scopes:       []string{"tweet.read", "users.read", "offline.access"},
+				RedirectURL:  "http://localhost:4000/oauth/twitter/callback",
+				Endpoint: oauth2.Endpoint{
+					AuthURL:       "https://twitter.com/i/oauth2/authorize",
+					DeviceAuthURL: "",
+					TokenURL:      "https://api.twitter.com/2/oauth2/token",
+					AuthStyle:     oauth2.AuthStyleInParams,
+				},
+			},
+		},
+		version: version,
 	}, nil
 }

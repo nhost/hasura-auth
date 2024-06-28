@@ -316,6 +316,60 @@ paths:
               schema:
                 $ref: '#/components/schemas/OKResponse'
 
+  # /oauth/twitter:
+  #   get:
+  #     # TODO missing parameters for signup options
+  #     responses:
+  #       '302':
+  #         description: Redirect to Twitter or back to the app with an error message
+  #         headers:
+  #           Location:
+  #             schema:
+  #               type: string
+  #               format: uri  # Optional - use if the Location header is an absolute URI, starting with http(s)://
+  #           Set-Cookie:
+  #             schema:
+  #               type: string
+  #               format: cookie
+  #               example: "session=eyJ"
+
+  #     summary: Signin/Signup with Twitter
+  #     tags:
+  #       - signup
+  #       - signin
+  #       - oauth
+
+  # /oauth/twitter/callback:
+  #   get:
+  #     parameters:
+  #       - in: query
+  #         name: state
+  #         schema:
+  #           type: string
+  #         required: true
+  #         description: State
+  #       - in: query
+  #         name: code
+  #         schema:
+  #           type: string
+  #         required: true
+  #         description: Code
+  #       - in: cookie
+  #         name: verifier
+  #         schema:
+  #           type: string
+  #         required: true
+  #         description: Session
+
+  #     responses:
+  #       '302':
+  #         description: Redirect to Twitter or back to the app with an error message
+  #         headers:
+  #           Location:
+  #             schema:
+  #               type: string
+  #               format: uri  # Optional - use if the Location header is an absolute URI, starting with http(s)://
+
   /version:
     get:
       summary: Get version
