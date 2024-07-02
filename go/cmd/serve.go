@@ -75,6 +75,7 @@ const (
 	flagWebauthnRPID                     = "webauthn-rp-id"
 	flagWebauthnRPOrigins                = "webauthn-rp-origins"
 	flagWebauthnAttestationTimeout       = "webauthn-attestation-timeout"
+	flagOIDCProvider                     = "oidc-provider"
 )
 
 func CommandServe() *cli.Command { //nolint:funlen,maintidx
@@ -442,6 +443,12 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 				Category: "webauthn",
 				EnvVars:  []string{"AUTH_WEBAUTHN_ATTESTATION_TIMEOUT"},
 			},
+			&cli.StringSliceFlag{ //nolint: exhaustruct
+				Name:     flagOIDCProvider,
+				Usage:    "OIDC provider configuration. Format: `name,client_id,client_secret,issuer,scopes`",
+				Category: "oidc",
+				EnvVars:  []string{"AUTH_OIDC_PROVIDER"},
+			},
 		},
 		Action: serve,
 	}
@@ -522,7 +529,20 @@ func getGoServer( //nolint:funlen
 		return nil, fmt.Errorf("problem creating jwt getter: %w", err)
 	}
 
-	ctrl, err := controller.New(db, config, jwtGetter, emailer, hibp.NewClient(), cCtx.App.Version)
+	oidcProviders, err := getOIDCProviders(cCtx.Context)
+	if err != nil {
+		return nil, fmt.Errorf("problem creating oidc providers: %w", err)
+	}
+
+	ctrl, err := controller.New(
+		db,
+		config,
+		jwtGetter,
+		emailer,
+		hibp.NewClient(),
+		oidcProviders,
+		cCtx.App.Version,
+	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create controller: %w", err)
 	}

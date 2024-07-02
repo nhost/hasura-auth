@@ -260,6 +260,18 @@ type UserPasswordResetRequest struct {
 	Options *OptionsRedirectTo  `json:"options,omitempty"`
 }
 
+// GetSigninSsoProviderParams defines parameters for GetSigninSsoProvider.
+type GetSigninSsoProviderParams struct {
+	RedirectTo *string `form:"redirectTo,omitempty" json:"redirectTo,omitempty"`
+}
+
+// GetSigninSsoProviderCallbackParams defines parameters for GetSigninSsoProviderCallback.
+type GetSigninSsoProviderCallbackParams struct {
+	State                string `form:"state" json:"state"`
+	Code                 string `form:"code" json:"code"`
+	NhostAuthSsoFlowData string `form:"nhost_auth_sso_flow_data" json:"nhost_auth_sso_flow_data"`
+}
+
 // PostPatJSONRequestBody defines body for PostPat for application/json ContentType.
 type PostPatJSONRequestBody = CreatePATRequest
 

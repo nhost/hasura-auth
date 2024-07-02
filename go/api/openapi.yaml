@@ -79,6 +79,84 @@ paths:
           description: >-
             Successfully refreshed the JWT access token
 
+  /signin/sso/{provider}:
+    get:
+      summary: Sign in with SSO
+      parameters:
+        - in: path
+          name: provider
+          schema:
+            type: string
+          required: true
+          description: The idP to sign in with
+        - in: query
+          name: redirectTo
+          schema:
+            type: string
+      responses:
+        '302':
+          description: Redirect to idPs login page
+          headers:
+            Location:
+              schema:
+                type: string
+                format: uri
+            Set-Cookie:
+              schema:
+                type: string
+                format: cookie
+                example: "session=eyJ"
+      tags:
+        - signin
+        - signup
+        - oidc
+        - sso
+
+  /signin/sso/{provider}/callback:
+    get:
+      summary: Sign in with SSO (callback)
+      parameters:
+        - in: path
+          name: provider
+          schema:
+            type: string
+          required: true
+          description: The OIDC provider to sign in with
+        - name: state
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: code
+          in: query
+          required: true
+          schema:
+            type: string
+        - in: cookie
+          name: nhost_auth_sso_flow_data
+          schema:
+            type: string
+          required: true
+
+      responses:
+        '302':
+          description: Redirect to idPs login page
+          headers:
+            Location:
+              schema:
+                type: string
+                format: uri
+            Set-Cookie:
+              schema:
+                type: string
+                format: cookie
+                example: "session=eyJ"
+      tags:
+        - signin
+        - signup
+        - oidc
+        - sso
+
   /signin/email-password:
     post:
       summary: Sign in with email and password

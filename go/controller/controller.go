@@ -4,12 +4,16 @@ package controller
 import (
 	"context"
 	"fmt"
+	"log/slog"
+	"net/http"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/nhost/hasura-auth/go/notifications"
 	"github.com/nhost/hasura-auth/go/sql"
+	"github.com/zitadel/oidc/v3/pkg/client/rp"
+	httphelper "github.com/zitadel/oidc/v3/pkg/http"
 )
 
 const (
@@ -87,11 +91,47 @@ type DBClient interface {
 	) ([]sql.RefreshTokenAndGetUserRolesRow, error)
 }
 
+type SSO struct {
+	rp rp.RelyingParty
+}
+
+func NewSSO(ctx context.Context, logger *slog.Logger) (*SSO, error) {
+	const clientID = "hxIfXvta0LnGQwSQEXNqsueZ0Fenf5pMtsoCkcMy"
+	const clientSecret = "8a5GcUzf3j54JwcfIt1BW5Xwd5vIytcSaa030XLszaRSnDYhtzE6lZjR9bUJcmMTkVcCZxG96vYmY68KV7x879y2YGxOZAc3UiuqWXuOgLW6Za0I51YCRSNOcpSAz6Nw"
+	const issuer = "http://localhost:9000/application/o/test/"
+	key := []byte("test1234test1234")
+	scopes := []string{"email openid profile"}
+	redirectURI := "http://localhost:4000/signin/sso/callback"
+
+	cookieHandler := httphelper.NewCookieHandler(key, key, httphelper.WithUnsecure())
+	client := &http.Client{}
+
+	options := []rp.Option{
+		rp.WithCookieHandler(cookieHandler),
+		rp.WithVerifierOpts(rp.WithIssuedAtOffset(5 * time.Second)),
+		rp.WithHTTPClient(client),
+		rp.WithLogger(logger),
+	}
+	if clientSecret == "" {
+		options = append(options, rp.WithPKCE(cookieHandler))
+	}
+
+	provider, err := rp.NewRelyingPartyOIDC(ctx, issuer, clientID, clientSecret, redirectURI, scopes, options...)
+	if err != nil {
+		return &SSO{}, fmt.Errorf("error creating provider %s", err.Error())
+	}
+
+	return &SSO{
+		rp: provider,
+	}, nil
+}
+
 type Controller struct {
-	wf       *Workflows
-	config   Config
-	Webauthn *Webauthn
-	version  string
+	wf            *Workflows
+	config        Config
+	Webauthn      *Webauthn
+	version       string
+	oidcProviders map[string]rp.RelyingParty
 }
 
 func New(
@@ -100,6 +140,7 @@ func New(
 	jwtGetter *JWTGetter,
 	emailer Emailer,
 	hibp HIBPClient,
+	oidcProviders map[string]rp.RelyingParty,
 	version string,
 ) (*Controller, error) {
 	validator, err := NewWorkflows(
@@ -125,9 +166,10 @@ func New(
 	}
 
 	return &Controller{
-		config:   config,
-		wf:       validator,
-		Webauthn: wa,
-		version:  version,
+		config:        config,
+		wf:            validator,
+		Webauthn:      wa,
+		version:       version,
+		oidcProviders: oidcProviders,
 	}, nil
 }

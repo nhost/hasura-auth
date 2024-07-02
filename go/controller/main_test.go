@@ -208,6 +208,7 @@ func getController(
 		jwtGetter,
 		emailer,
 		hibp,
+		nil,
 		"dev",
 	)
 	if err != nil {

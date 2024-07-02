@@ -1,8 +1,8 @@
 module github.com/nhost/hasura-auth
 
-go 1.22
+go 1.22.0
 
-toolchain go1.22.3
+toolchain go1.22.4
 
 require (
 	github.com/getkin/kin-openapi v0.124.0
@@ -16,14 +16,18 @@ require (
 	github.com/lmittmann/tint v1.0.4
 	github.com/oapi-codegen/gin-middleware v1.0.1
 	github.com/oapi-codegen/runtime v1.1.1
+	github.com/sirupsen/logrus v1.9.3
 	github.com/urfave/cli/v2 v2.27.2
 	github.com/valyala/fasttemplate v1.2.2
+	github.com/zitadel/logging v0.6.0
+	github.com/zitadel/oidc/v3 v3.25.1
 	go.uber.org/mock v0.4.0
 	golang.org/x/crypto v0.23.0
 	k8s.io/client-go v0.30.1
 )
 
 require (
+	github.com/apapsch/go-jsonmerge/v2 v2.0.0 // indirect
 	github.com/bytedance/sonic v1.11.8 // indirect
 	github.com/bytedance/sonic/loader v0.1.1 // indirect
 	github.com/cloudwego/base64x v0.1.4 // indirect
@@ -32,6 +36,9 @@ require (
 	github.com/fxamacker/cbor/v2 v2.6.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.4 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
+	github.com/go-jose/go-jose/v4 v4.0.2 // indirect
+	github.com/go-logr/logr v1.4.1 // indirect
+	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-openapi/jsonpointer v0.21.0 // indirect
 	github.com/go-openapi/swag v0.23.0 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
@@ -41,6 +48,7 @@ require (
 	github.com/goccy/go-json v0.10.3 // indirect
 	github.com/google/go-tpm v0.9.0 // indirect
 	github.com/gorilla/mux v1.8.1 // indirect
+	github.com/gorilla/securecookie v1.1.2 // indirect
 	github.com/invopop/yaml v0.3.1 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20231201235250-de7065d80cb9 // indirect
@@ -55,6 +63,7 @@ require (
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
+	github.com/muhlemmer/gu v0.3.1 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.2 // indirect
 	github.com/perimeterx/marshmallow v1.1.5 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
@@ -63,11 +72,16 @@ require (
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
 	github.com/xrash/smetrics v0.0.0-20240521201337-686a1a2994c1 // indirect
+	github.com/zitadel/schema v1.3.0 // indirect
+	go.opentelemetry.io/otel v1.27.0 // indirect
+	go.opentelemetry.io/otel/metric v1.27.0 // indirect
+	go.opentelemetry.io/otel/trace v1.27.0 // indirect
 	golang.org/x/arch v0.8.0 // indirect
 	golang.org/x/net v0.25.0 // indirect
+	golang.org/x/oauth2 v0.21.0 // indirect
 	golang.org/x/sync v0.7.0 // indirect
 	golang.org/x/sys v0.20.0 // indirect
-	golang.org/x/text v0.15.0 // indirect
+	golang.org/x/text v0.16.0 // indirect
 	google.golang.org/protobuf v1.34.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

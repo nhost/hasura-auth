@@ -17,6 +17,7 @@ import (
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/gin-gonic/gin"
+	"github.com/oapi-codegen/runtime"
 	strictgin "github.com/oapi-codegen/runtime/strictmiddleware/gin"
 )
 
@@ -40,6 +41,12 @@ type ServerInterface interface {
 	// Sign in with Personal Access Token (PAT)
 	// (POST /signin/pat)
 	PostSigninPat(c *gin.Context)
+	// Sign in with SSO
+	// (GET /signin/sso/{provider})
+	GetSigninSsoProvider(c *gin.Context, provider string, params GetSigninSsoProviderParams)
+	// Sign in with SSO (callback)
+	// (GET /signin/sso/{provider}/callback)
+	GetSigninSsoProviderCallback(c *gin.Context, provider string, params GetSigninSsoProviderCallbackParams)
 	// Signup with email and password
 	// (POST /signup/email-password)
 	PostSignupEmailPassword(c *gin.Context)
@@ -156,6 +163,116 @@ func (siw *ServerInterfaceWrapper) PostSigninPat(c *gin.Context) {
 	}
 
 	siw.Handler.PostSigninPat(c)
+}
+
+// GetSigninSsoProvider operation middleware
+func (siw *ServerInterfaceWrapper) GetSigninSsoProvider(c *gin.Context) {
+
+	var err error
+
+	// ------------- Path parameter "provider" -------------
+	var provider string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "provider", c.Param("provider"), &provider, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter provider: %w", err), http.StatusBadRequest)
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetSigninSsoProviderParams
+
+	// ------------- Optional query parameter "redirectTo" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "redirectTo", c.Request.URL.Query(), &params.RedirectTo)
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter redirectTo: %w", err), http.StatusBadRequest)
+		return
+	}
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		middleware(c)
+		if c.IsAborted() {
+			return
+		}
+	}
+
+	siw.Handler.GetSigninSsoProvider(c, provider, params)
+}
+
+// GetSigninSsoProviderCallback operation middleware
+func (siw *ServerInterfaceWrapper) GetSigninSsoProviderCallback(c *gin.Context) {
+
+	var err error
+
+	// ------------- Path parameter "provider" -------------
+	var provider string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "provider", c.Param("provider"), &provider, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter provider: %w", err), http.StatusBadRequest)
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetSigninSsoProviderCallbackParams
+
+	// ------------- Required query parameter "state" -------------
+
+	if paramValue := c.Query("state"); paramValue != "" {
+
+	} else {
+		siw.ErrorHandler(c, fmt.Errorf("Query argument state is required, but not found"), http.StatusBadRequest)
+		return
+	}
+
+	err = runtime.BindQueryParameter("form", true, true, "state", c.Request.URL.Query(), &params.State)
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter state: %w", err), http.StatusBadRequest)
+		return
+	}
+
+	// ------------- Required query parameter "code" -------------
+
+	if paramValue := c.Query("code"); paramValue != "" {
+
+	} else {
+		siw.ErrorHandler(c, fmt.Errorf("Query argument code is required, but not found"), http.StatusBadRequest)
+		return
+	}
+
+	err = runtime.BindQueryParameter("form", true, true, "code", c.Request.URL.Query(), &params.Code)
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter code: %w", err), http.StatusBadRequest)
+		return
+	}
+
+	{
+		var cookie string
+
+		if cookie, err = c.Cookie("nhost_auth_sso_flow_data"); err == nil {
+			var value string
+			err = runtime.BindStyledParameterWithOptions("simple", "nhost_auth_sso_flow_data", cookie, &value, runtime.BindStyledParameterOptions{Explode: true, Required: true})
+			if err != nil {
+				siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter nhost_auth_sso_flow_data: %w", err), http.StatusBadRequest)
+				return
+			}
+			params.NhostAuthSsoFlowData = value
+
+		} else {
+			siw.ErrorHandler(c, fmt.Errorf("Query argument nhost_auth_sso_flow_data is required, but not found"), http.StatusBadRequest)
+			return
+		}
+	}
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		middleware(c)
+		if c.IsAborted() {
+			return
+		}
+	}
+
+	siw.Handler.GetSigninSsoProviderCallback(c, provider, params)
 }
 
 // PostSignupEmailPassword operation middleware
@@ -312,6 +429,8 @@ func RegisterHandlersWithOptions(router gin.IRouter, si ServerInterface, options
 	router.POST(options.BaseURL+"/signin/email-password", wrapper.PostSigninEmailPassword)
 	router.POST(options.BaseURL+"/signin/passwordless/email", wrapper.PostSigninPasswordlessEmail)
 	router.POST(options.BaseURL+"/signin/pat", wrapper.PostSigninPat)
+	router.GET(options.BaseURL+"/signin/sso/:provider", wrapper.GetSigninSsoProvider)
+	router.GET(options.BaseURL+"/signin/sso/:provider/callback", wrapper.GetSigninSsoProviderCallback)
 	router.POST(options.BaseURL+"/signup/email-password", wrapper.PostSignupEmailPassword)
 	router.POST(options.BaseURL+"/signup/webauthn", wrapper.PostSignupWebauthn)
 	router.POST(options.BaseURL+"/signup/webauthn/verify", wrapper.PostSignupWebauthnVerify)
@@ -420,6 +539,56 @@ func (response PostSigninPat200JSONResponse) VisitPostSigninPatResponse(w http.R
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
+}
+
+type GetSigninSsoProviderRequestObject struct {
+	Provider string `json:"provider"`
+	Params   GetSigninSsoProviderParams
+}
+
+type GetSigninSsoProviderResponseObject interface {
+	VisitGetSigninSsoProviderResponse(w http.ResponseWriter) error
+}
+
+type GetSigninSsoProvider302ResponseHeaders struct {
+	Location  string
+	SetCookie string
+}
+
+type GetSigninSsoProvider302Response struct {
+	Headers GetSigninSsoProvider302ResponseHeaders
+}
+
+func (response GetSigninSsoProvider302Response) VisitGetSigninSsoProviderResponse(w http.ResponseWriter) error {
+	w.Header().Set("Location", fmt.Sprint(response.Headers.Location))
+	w.Header().Set("Set-Cookie", fmt.Sprint(response.Headers.SetCookie))
+	w.WriteHeader(302)
+	return nil
+}
+
+type GetSigninSsoProviderCallbackRequestObject struct {
+	Provider string `json:"provider"`
+	Params   GetSigninSsoProviderCallbackParams
+}
+
+type GetSigninSsoProviderCallbackResponseObject interface {
+	VisitGetSigninSsoProviderCallbackResponse(w http.ResponseWriter) error
+}
+
+type GetSigninSsoProviderCallback302ResponseHeaders struct {
+	Location  string
+	SetCookie string
+}
+
+type GetSigninSsoProviderCallback302Response struct {
+	Headers GetSigninSsoProviderCallback302ResponseHeaders
+}
+
+func (response GetSigninSsoProviderCallback302Response) VisitGetSigninSsoProviderCallbackResponse(w http.ResponseWriter) error {
+	w.Header().Set("Location", fmt.Sprint(response.Headers.Location))
+	w.Header().Set("Set-Cookie", fmt.Sprint(response.Headers.SetCookie))
+	w.WriteHeader(302)
+	return nil
 }
 
 type PostSignupEmailPasswordRequestObject struct {
@@ -614,6 +783,12 @@ type StrictServerInterface interface {
 	// Sign in with Personal Access Token (PAT)
 	// (POST /signin/pat)
 	PostSigninPat(ctx context.Context, request PostSigninPatRequestObject) (PostSigninPatResponseObject, error)
+	// Sign in with SSO
+	// (GET /signin/sso/{provider})
+	GetSigninSsoProvider(ctx context.Context, request GetSigninSsoProviderRequestObject) (GetSigninSsoProviderResponseObject, error)
+	// Sign in with SSO (callback)
+	// (GET /signin/sso/{provider}/callback)
+	GetSigninSsoProviderCallback(ctx context.Context, request GetSigninSsoProviderCallbackRequestObject) (GetSigninSsoProviderCallbackResponseObject, error)
 	// Signup with email and password
 	// (POST /signup/email-password)
 	PostSignupEmailPassword(ctx context.Context, request PostSignupEmailPasswordRequestObject) (PostSignupEmailPasswordResponseObject, error)
@@ -830,6 +1005,62 @@ func (sh *strictHandler) PostSigninPat(ctx *gin.Context) {
 		ctx.Status(http.StatusInternalServerError)
 	} else if validResponse, ok := response.(PostSigninPatResponseObject); ok {
 		if err := validResponse.VisitPostSigninPatResponse(ctx.Writer); err != nil {
+			ctx.Error(err)
+		}
+	} else if response != nil {
+		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetSigninSsoProvider operation middleware
+func (sh *strictHandler) GetSigninSsoProvider(ctx *gin.Context, provider string, params GetSigninSsoProviderParams) {
+	var request GetSigninSsoProviderRequestObject
+
+	request.Provider = provider
+	request.Params = params
+
+	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.GetSigninSsoProvider(ctx, request.(GetSigninSsoProviderRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetSigninSsoProvider")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		ctx.Error(err)
+		ctx.Status(http.StatusInternalServerError)
+	} else if validResponse, ok := response.(GetSigninSsoProviderResponseObject); ok {
+		if err := validResponse.VisitGetSigninSsoProviderResponse(ctx.Writer); err != nil {
+			ctx.Error(err)
+		}
+	} else if response != nil {
+		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetSigninSsoProviderCallback operation middleware
+func (sh *strictHandler) GetSigninSsoProviderCallback(ctx *gin.Context, provider string, params GetSigninSsoProviderCallbackParams) {
+	var request GetSigninSsoProviderCallbackRequestObject
+
+	request.Provider = provider
+	request.Params = params
+
+	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.GetSigninSsoProviderCallback(ctx, request.(GetSigninSsoProviderCallbackRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetSigninSsoProviderCallback")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		ctx.Error(err)
+		ctx.Status(http.StatusInternalServerError)
+	} else if validResponse, ok := response.(GetSigninSsoProviderCallbackResponseObject); ok {
+		if err := validResponse.VisitGetSigninSsoProviderCallbackResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {
@@ -1129,55 +1360,59 @@ func (sh *strictHandler) GetVersion(ctx *gin.Context) {
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
+	"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",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file
