@@ -45,6 +45,8 @@ func TestGetJWTFunc(t *testing.T) {
 		userID        uuid.UUID
 		allowedRoles  []string
 		defaultRole   string
+		orgID         *uuid.UUID
+		orgRole       string
 		expiresIn     time.Duration
 		expectedToken *jwt.Token
 		customClaimer func(ctrl *gomock.Controller) *mock.MockCustomClaimer
@@ -244,6 +246,8 @@ func TestGetJWTFunc(t *testing.T) {
 				false,
 				tc.allowedRoles,
 				tc.defaultRole,
+				tc.orgID,
+				tc.orgRole,
 				slog.Default(),
 			)
 			if err != nil {

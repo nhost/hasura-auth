@@ -118,6 +118,8 @@ func (j *JWTGetter) GetToken(
 	isAnonymous bool,
 	allowedRoles []string,
 	defaultRole string,
+	organization *uuid.UUID,
+	organizationRole string,
 	logger *slog.Logger,
 ) (string, int64, error) {
 	now := time.Now()
@@ -139,6 +141,11 @@ func (j *JWTGetter) GetToken(
 		"x-hasura-default-role":      defaultRole,
 		"x-hasura-user-id":           userID.String(),
 		"x-hasura-user-is-anonymous": strconv.FormatBool(isAnonymous),
+	}
+
+	if organization != nil {
+		c["x-hasura-nhost-organization-id"] = organization.String()
+		c["x-hasura-nhost-organization-role"] = organizationRole
 	}
 
 	for k, v := range customClaims {
@@ -305,4 +312,16 @@ func (j *JWTGetter) GetUserID(token *jwt.Token) (uuid.UUID, error) {
 		return uuid.UUID{}, fmt.Errorf("error parsing user id: %w", err)
 	}
 	return userID, nil
+}
+
+func (j *JWTGetter) GetOrganizationID(token *jwt.Token) (uuid.UUID, error) {
+	organizationID, err := uuid.Parse(j.GetCustomClaim(token, "x-hasura-nhost-organization-id"))
+	if err != nil {
+		return uuid.UUID{}, fmt.Errorf("error parsing organization id: %w", err)
+	}
+	return organizationID, nil
+}
+
+func (j *JWTGetter) GetOrganizationRole(token *jwt.Token) string {
+	return j.GetCustomClaim(token, "x-hasura-nhost-organization-role")
 }

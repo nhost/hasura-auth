@@ -321,6 +321,17 @@ func (wf *Workflows) UpdateSession( //nolint:funlen
 		return &api.Session{}, ErrInvalidRefreshToken //nolint:exhaustruct
 	}
 
+	var orgID *uuid.UUID
+	var orgRole string
+	for _, role := range userRoles {
+		if role.OrganizationID.Valid {
+			u, _ := uuid.FromBytes(role.OrganizationID.Bytes[:])
+			orgID = &u
+			orgRole = role.OrganizationRole.String
+			break
+		}
+	}
+
 	allowedRoles := make([]string, 0, len(userRoles))
 	for _, role := range userRoles {
 		if role.Role.Valid {
@@ -333,7 +344,7 @@ func (wf *Workflows) UpdateSession( //nolint:funlen
 	}
 
 	accessToken, expiresIn, err := wf.jwtGetter.GetToken(
-		ctx, user.ID, user.IsAnonymous, allowedRoles, user.DefaultRole, logger,
+		ctx, user.ID, user.IsAnonymous, allowedRoles, user.DefaultRole, orgID, orgRole, logger,
 	)
 	if err != nil {
 		logger.Error("error getting jwt", logError(err))
@@ -376,7 +387,7 @@ func (wf *Workflows) NewSession(
 	user sql.AuthUser,
 	logger *slog.Logger,
 ) (*api.Session, error) {
-	userRoles, err := wf.db.GetUserRoles(ctx, user.ID)
+	userRoles, err := wf.db.GetUserRolesAndOrgs(ctx, user.ID)
 	if err != nil {
 		return nil, fmt.Errorf("error getting roles by user id: %w", err)
 	}
@@ -398,8 +409,19 @@ func (wf *Workflows) NewSession(
 		return nil, fmt.Errorf("error updating user last seen: %w", err)
 	}
 
+	var orgID *uuid.UUID
+	var orgRole string
+	for _, role := range userRoles {
+		if role.OrganizationID.Valid {
+			u, _ := uuid.FromBytes(role.OrganizationID.Bytes[:])
+			orgID = &u
+			orgRole = role.OrganizationRole.String
+			break
+		}
+	}
+
 	accessToken, expiresIn, err := wf.jwtGetter.GetToken(
-		ctx, user.ID, user.IsAnonymous, allowedRoles, user.DefaultRole, logger,
+		ctx, user.ID, user.IsAnonymous, allowedRoles, user.DefaultRole, orgID, orgRole, logger,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("error getting jwt: %w", err)

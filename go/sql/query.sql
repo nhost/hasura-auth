@@ -6,9 +6,10 @@ WHERE id = $1 LIMIT 1;
 SELECT * FROM auth.users
 WHERE email = $1 LIMIT 1;
 
--- name: GetUserRoles :many
-SELECT * FROM auth.user_roles
-WHERE user_id = $1;
+-- name: GetUserRolesAndOrgs :many
+SELECT ur.role, om.organization_id, om.role as organization_role FROM auth.user_roles as ur
+LEFT JOIN auth.organizations_members om ON om.user_id = ur.user_id
+WHERE ur.user_id = $1;
 
 -- name: GetUserByRefreshTokenHash :one
 WITH refresh_token AS (
@@ -146,6 +147,7 @@ VALUES ($1, $2, $3, $4, $5)
 RETURNING id;
 
 -- name: RefreshTokenAndGetUserRoles :many
+
 WITH refreshed_token AS (
     UPDATE auth.refresh_tokens
     SET expires_at = $2
@@ -157,9 +159,16 @@ updated_user AS (
     SET last_seen = now()
     FROM refreshed_token
     WHERE auth.users.id = refreshed_token.user_id
+),
+organizations_members AS (
+    SELECT organization_id, user_id, role
+    FROM auth.organizations_members
+    WHERE user_id IN (SELECT user_id FROM refreshed_token)
 )
-SELECT refreshed_token.refresh_token_id, role FROM auth.user_roles
-RIGHT JOIN refreshed_token ON auth.user_roles.user_id = refreshed_token.user_id;
+SELECT r.refresh_token_id, ur.role, om.organization_id, om.role as organization_role
+FROM refreshed_token r
+LEFT JOIN auth.user_roles ur ON ur.user_id = r.user_id
+LEFT JOIN organizations_members om ON ur.user_id = om.user_id;
 
 -- name: UpdateUserLastSeen :one
 UPDATE auth.users
@@ -210,3 +219,27 @@ WHERE user_id = $1;
 -- name: DeleteUserRoles :exec
 DELETE FROM auth.user_roles
 WHERE user_id = $1;
+
+-- name: GetOrganizations :many
+SELECT * FROM auth.organizations
+WHERE id IN (
+    SELECT organization_id FROM auth.organizations_members
+    WHERE user_id = $1 AND role = 'admin'
+);
+
+-- name: InsertOrganization :one
+WITH new_organization AS (
+    INSERT INTO auth.organizations (name)
+    VALUES ($1)
+    RETURNING id, name
+)
+INSERT INTO auth.organizations_members (organization_id, user_id, role)
+VALUES ((SELECT id FROM new_organization), $2, 'admin')
+RETURNING (SELECT name FROM new_organization), organization_id;
+
+-- name: DeleteOrganization :one
+DELETE FROM auth.organizations
+WHERE id IN (
+    SELECT organization_id FROM auth.organizations_members
+    WHERE organization_id = $1 AND user_id = $2 AND role = 'admin'
+) RETURNING *;

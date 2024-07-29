@@ -24,6 +24,33 @@ func (q *Queries) CountSecurityKeysUser(ctx context.Context, userID uuid.UUID) (
 	return count, err
 }
 
+const deleteOrganization = `-- name: DeleteOrganization :one
+DELETE FROM auth.organizations
+WHERE id IN (
+    SELECT organization_id FROM auth.organizations_members
+    WHERE organization_id = $1 AND user_id = $2 AND role = 'admin'
+) RETURNING id, created_at, updated_at, name, sso_enabled, sso_configuration
+`
+
+type DeleteOrganizationParams struct {
+	OrganizationID uuid.UUID
+	UserID         uuid.UUID
+}
+
+func (q *Queries) DeleteOrganization(ctx context.Context, arg DeleteOrganizationParams) (AuthOrganization, error) {
+	row := q.db.QueryRow(ctx, deleteOrganization, arg.OrganizationID, arg.UserID)
+	var i AuthOrganization
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Name,
+		&i.SsoEnabled,
+		&i.SsoConfiguration,
+	)
+	return i, err
+}
+
 const deleteRefreshTokens = `-- name: DeleteRefreshTokens :exec
 DELETE FROM auth.refresh_tokens
 WHERE user_id = $1
@@ -42,6 +69,41 @@ WHERE user_id = $1
 func (q *Queries) DeleteUserRoles(ctx context.Context, userID uuid.UUID) error {
 	_, err := q.db.Exec(ctx, deleteUserRoles, userID)
 	return err
+}
+
+const getOrganizations = `-- name: GetOrganizations :many
+SELECT id, created_at, updated_at, name, sso_enabled, sso_configuration FROM auth.organizations
+WHERE id IN (
+    SELECT organization_id FROM auth.organizations_members
+    WHERE user_id = $1 AND role = 'admin'
+)
+`
+
+func (q *Queries) GetOrganizations(ctx context.Context, userID uuid.UUID) ([]AuthOrganization, error) {
+	rows, err := q.db.Query(ctx, getOrganizations, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []AuthOrganization
+	for rows.Next() {
+		var i AuthOrganization
+		if err := rows.Scan(
+			&i.ID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Name,
+			&i.SsoEnabled,
+			&i.SsoConfiguration,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getUser = `-- name: GetUser :one
@@ -168,26 +230,28 @@ func (q *Queries) GetUserByRefreshTokenHash(ctx context.Context, arg GetUserByRe
 	return i, err
 }
 
-const getUserRoles = `-- name: GetUserRoles :many
-SELECT id, created_at, user_id, role FROM auth.user_roles
-WHERE user_id = $1
+const getUserRolesAndOrgs = `-- name: GetUserRolesAndOrgs :many
+SELECT ur.role, om.organization_id, om.role as organization_role FROM auth.user_roles as ur
+LEFT JOIN auth.organizations_members om ON om.user_id = ur.user_id
+WHERE ur.user_id = $1
 `
 
-func (q *Queries) GetUserRoles(ctx context.Context, userID uuid.UUID) ([]AuthUserRole, error) {
-	rows, err := q.db.Query(ctx, getUserRoles, userID)
+type GetUserRolesAndOrgsRow struct {
+	Role             string
+	OrganizationID   pgtype.UUID
+	OrganizationRole pgtype.Text
+}
+
+func (q *Queries) GetUserRolesAndOrgs(ctx context.Context, userID uuid.UUID) ([]GetUserRolesAndOrgsRow, error) {
+	rows, err := q.db.Query(ctx, getUserRolesAndOrgs, userID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []AuthUserRole
+	var items []GetUserRolesAndOrgsRow
 	for rows.Next() {
-		var i AuthUserRole
-		if err := rows.Scan(
-			&i.ID,
-			&i.CreatedAt,
-			&i.UserID,
-			&i.Role,
-		); err != nil {
+		var i GetUserRolesAndOrgsRow
+		if err := rows.Scan(&i.Role, &i.OrganizationID, &i.OrganizationRole); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -196,6 +260,34 @@ func (q *Queries) GetUserRoles(ctx context.Context, userID uuid.UUID) ([]AuthUse
 		return nil, err
 	}
 	return items, nil
+}
+
+const insertOrganization = `-- name: InsertOrganization :one
+WITH new_organization AS (
+    INSERT INTO auth.organizations (name)
+    VALUES ($1)
+    RETURNING id, name
+)
+INSERT INTO auth.organizations_members (organization_id, user_id, role)
+VALUES ((SELECT id FROM new_organization), $2, 'admin')
+RETURNING (SELECT name FROM new_organization), organization_id
+`
+
+type InsertOrganizationParams struct {
+	Name   string
+	UserID uuid.UUID
+}
+
+type InsertOrganizationRow struct {
+	Name           string
+	OrganizationID uuid.UUID
+}
+
+func (q *Queries) InsertOrganization(ctx context.Context, arg InsertOrganizationParams) (InsertOrganizationRow, error) {
+	row := q.db.QueryRow(ctx, insertOrganization, arg.Name, arg.UserID)
+	var i InsertOrganizationRow
+	err := row.Scan(&i.Name, &i.OrganizationID)
+	return i, err
 }
 
 const insertRefreshtoken = `-- name: InsertRefreshtoken :one
@@ -528,6 +620,7 @@ func (q *Queries) InsertUserWithSecurityKeyAndRefreshToken(ctx context.Context, 
 }
 
 const refreshTokenAndGetUserRoles = `-- name: RefreshTokenAndGetUserRoles :many
+
 WITH refreshed_token AS (
     UPDATE auth.refresh_tokens
     SET expires_at = $2
@@ -539,9 +632,16 @@ updated_user AS (
     SET last_seen = now()
     FROM refreshed_token
     WHERE auth.users.id = refreshed_token.user_id
+),
+organizations_members AS (
+    SELECT organization_id, user_id, role
+    FROM auth.organizations_members
+    WHERE user_id IN (SELECT user_id FROM refreshed_token)
 )
-SELECT refreshed_token.refresh_token_id, role FROM auth.user_roles
-RIGHT JOIN refreshed_token ON auth.user_roles.user_id = refreshed_token.user_id
+SELECT r.refresh_token_id, ur.role, om.organization_id, om.role as organization_role
+FROM refreshed_token r
+LEFT JOIN auth.user_roles ur ON ur.user_id = r.user_id
+LEFT JOIN organizations_members om ON ur.user_id = om.user_id
 `
 
 type RefreshTokenAndGetUserRolesParams struct {
@@ -550,8 +650,10 @@ type RefreshTokenAndGetUserRolesParams struct {
 }
 
 type RefreshTokenAndGetUserRolesRow struct {
-	RefreshTokenID uuid.UUID
-	Role           pgtype.Text
+	RefreshTokenID   uuid.UUID
+	Role             pgtype.Text
+	OrganizationID   pgtype.UUID
+	OrganizationRole pgtype.Text
 }
 
 func (q *Queries) RefreshTokenAndGetUserRoles(ctx context.Context, arg RefreshTokenAndGetUserRolesParams) ([]RefreshTokenAndGetUserRolesRow, error) {
@@ -563,7 +665,12 @@ func (q *Queries) RefreshTokenAndGetUserRoles(ctx context.Context, arg RefreshTo
 	var items []RefreshTokenAndGetUserRolesRow
 	for rows.Next() {
 		var i RefreshTokenAndGetUserRolesRow
-		if err := rows.Scan(&i.RefreshTokenID, &i.Role); err != nil {
+		if err := rows.Scan(
+			&i.RefreshTokenID,
+			&i.Role,
+			&i.OrganizationID,
+			&i.OrganizationRole,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)

@@ -19,25 +19,27 @@ const (
 
 // Defines values for ErrorResponseError.
 const (
-	DefaultRoleMustBeInAllowedRoles ErrorResponseError = "default-role-must-be-in-allowed-roles"
-	DisabledEndpoint                ErrorResponseError = "disabled-endpoint"
-	DisabledUser                    ErrorResponseError = "disabled-user"
-	EmailAlreadyInUse               ErrorResponseError = "email-already-in-use"
-	EmailAlreadyVerified            ErrorResponseError = "email-already-verified"
-	ForbiddenAnonymous              ErrorResponseError = "forbidden-anonymous"
-	InternalServerError             ErrorResponseError = "internal-server-error"
-	InvalidEmailPassword            ErrorResponseError = "invalid-email-password"
-	InvalidPat                      ErrorResponseError = "invalid-pat"
-	InvalidRefreshToken             ErrorResponseError = "invalid-refresh-token"
-	InvalidRequest                  ErrorResponseError = "invalid-request"
-	LocaleNotAllowed                ErrorResponseError = "locale-not-allowed"
-	PasswordInHibpDatabase          ErrorResponseError = "password-in-hibp-database"
-	PasswordTooShort                ErrorResponseError = "password-too-short"
-	RedirectToNotAllowed            ErrorResponseError = "redirectTo-not-allowed"
-	RoleNotAllowed                  ErrorResponseError = "role-not-allowed"
-	SignupDisabled                  ErrorResponseError = "signup-disabled"
-	UnverifiedUser                  ErrorResponseError = "unverified-user"
-	UserNotAnonymous                ErrorResponseError = "user-not-anonymous"
+	DefaultRoleMustBeInAllowedRoles    ErrorResponseError = "default-role-must-be-in-allowed-roles"
+	DisabledEndpoint                   ErrorResponseError = "disabled-endpoint"
+	DisabledUser                       ErrorResponseError = "disabled-user"
+	EmailAlreadyInUse                  ErrorResponseError = "email-already-in-use"
+	EmailAlreadyVerified               ErrorResponseError = "email-already-verified"
+	ForbiddenAnonymous                 ErrorResponseError = "forbidden-anonymous"
+	InternalServerError                ErrorResponseError = "internal-server-error"
+	InvalidEmailPassword               ErrorResponseError = "invalid-email-password"
+	InvalidPat                         ErrorResponseError = "invalid-pat"
+	InvalidRefreshToken                ErrorResponseError = "invalid-refresh-token"
+	InvalidRequest                     ErrorResponseError = "invalid-request"
+	LocaleNotAllowed                   ErrorResponseError = "locale-not-allowed"
+	OnlyOneOrganizationPerUserAllowed  ErrorResponseError = "only-one-organization-per-user-allowed"
+	OrganizationNotFoundOrUserNotAdmin ErrorResponseError = "organization-not-found-or-user-not-admin"
+	PasswordInHibpDatabase             ErrorResponseError = "password-in-hibp-database"
+	PasswordTooShort                   ErrorResponseError = "password-too-short"
+	RedirectToNotAllowed               ErrorResponseError = "redirectTo-not-allowed"
+	RoleNotAllowed                     ErrorResponseError = "role-not-allowed"
+	SignupDisabled                     ErrorResponseError = "signup-disabled"
+	UnverifiedUser                     ErrorResponseError = "unverified-user"
+	UserNotAnonymous                   ErrorResponseError = "user-not-anonymous"
 )
 
 // Defines values for OKResponse.
@@ -93,6 +95,15 @@ type OKResponse string
 // OptionsRedirectTo defines model for OptionsRedirectTo.
 type OptionsRedirectTo struct {
 	RedirectTo *string `json:"redirectTo,omitempty"`
+}
+
+// Organization defines model for Organization.
+type Organization struct {
+	// Id Organization's id
+	Id string `json:"id"`
+
+	// Name Organization's name
+	Name string `json:"name"`
 }
 
 // RefreshTokenRequest defines model for RefreshTokenRequest.
@@ -259,6 +270,15 @@ type UserPasswordResetRequest struct {
 	Email   openapi_types.Email `json:"email"`
 	Options *OptionsRedirectTo  `json:"options,omitempty"`
 }
+
+// PostOrganizationsJSONBody defines parameters for PostOrganizations.
+type PostOrganizationsJSONBody struct {
+	// Name Organization's name
+	Name string `json:"name"`
+}
+
+// PostOrganizationsJSONRequestBody defines body for PostOrganizations for application/json ContentType.
+type PostOrganizationsJSONRequestBody PostOrganizationsJSONBody
 
 // PostPatJSONRequestBody defines body for PostPat for application/json ContentType.
 type PostPatJSONRequestBody = CreatePATRequest

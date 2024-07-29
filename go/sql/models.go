@@ -17,6 +17,35 @@ type AuthMigration struct {
 	ExecutedAt pgtype.Timestamp
 }
 
+type AuthOrganization struct {
+	ID               uuid.UUID
+	CreatedAt        pgtype.Timestamptz
+	UpdatedAt        pgtype.Timestamptz
+	Name             string
+	SsoEnabled       bool
+	SsoConfiguration []byte
+}
+
+type AuthOrganizationsInvite struct {
+	ID             uuid.UUID
+	CreatedAt      pgtype.Timestamptz
+	UpdatedAt      pgtype.Timestamptz
+	OrganizationID uuid.UUID
+	Email          string
+	Role           string
+}
+
+type AuthOrganizationsMember struct {
+	OrganizationID uuid.UUID
+	UserID         uuid.UUID
+	Role           string
+}
+
+type AuthOrganizationsRole struct {
+	Value   string
+	Comment pgtype.Text
+}
+
 // List of available Oauth providers. Don't modify its structure as Hasura Auth relies on it to function properly.
 type AuthProvider struct {
 	ID string

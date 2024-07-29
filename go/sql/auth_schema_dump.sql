@@ -80,6 +80,63 @@ COMMENT ON TABLE auth.migrations IS 'Internal table for tracking migrations. Don
 
 
 --
+-- Name: organizations; Type: TABLE; Schema: auth; Owner: postgres
+--
+
+CREATE TABLE auth.organizations (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    name text NOT NULL,
+    sso_enabled boolean DEFAULT false NOT NULL,
+    sso_configuration jsonb
+);
+
+
+ALTER TABLE auth.organizations OWNER TO postgres;
+
+--
+-- Name: organizations_invites; Type: TABLE; Schema: auth; Owner: postgres
+--
+
+CREATE TABLE auth.organizations_invites (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    organization_id uuid NOT NULL,
+    email text NOT NULL,
+    role text NOT NULL
+);
+
+
+ALTER TABLE auth.organizations_invites OWNER TO postgres;
+
+--
+-- Name: organizations_members; Type: TABLE; Schema: auth; Owner: postgres
+--
+
+CREATE TABLE auth.organizations_members (
+    organization_id uuid NOT NULL,
+    user_id uuid NOT NULL,
+    role text NOT NULL
+);
+
+
+ALTER TABLE auth.organizations_members OWNER TO postgres;
+
+--
+-- Name: organizations_roles; Type: TABLE; Schema: auth; Owner: postgres
+--
+
+CREATE TABLE auth.organizations_roles (
+    value text NOT NULL,
+    comment text
+);
+
+
+ALTER TABLE auth.organizations_roles OWNER TO postgres;
+
+--
 -- Name: provider_requests; Type: TABLE; Schema: auth; Owner: postgres
 --
 
@@ -300,6 +357,54 @@ ALTER TABLE ONLY auth.migrations
 
 
 --
+-- Name: organizations_invites organizations_invites_pkey; Type: CONSTRAINT; Schema: auth; Owner: postgres
+--
+
+ALTER TABLE ONLY auth.organizations_invites
+    ADD CONSTRAINT organizations_invites_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: organizations_members organizations_members_pkey; Type: CONSTRAINT; Schema: auth; Owner: postgres
+--
+
+ALTER TABLE ONLY auth.organizations_members
+    ADD CONSTRAINT organizations_members_pkey PRIMARY KEY (organization_id, user_id);
+
+
+--
+-- Name: organizations_members organizations_members_user_id_key; Type: CONSTRAINT; Schema: auth; Owner: postgres
+--
+
+ALTER TABLE ONLY auth.organizations_members
+    ADD CONSTRAINT organizations_members_user_id_key UNIQUE (user_id);
+
+
+--
+-- Name: organizations organizations_name_key; Type: CONSTRAINT; Schema: auth; Owner: postgres
+--
+
+ALTER TABLE ONLY auth.organizations
+    ADD CONSTRAINT organizations_name_key UNIQUE (name);
+
+
+--
+-- Name: organizations organizations_pkey; Type: CONSTRAINT; Schema: auth; Owner: postgres
+--
+
+ALTER TABLE ONLY auth.organizations
+    ADD CONSTRAINT organizations_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: organizations_roles organizations_roles_pkey; Type: CONSTRAINT; Schema: auth; Owner: postgres
+--
+
+ALTER TABLE ONLY auth.organizations_roles
+    ADD CONSTRAINT organizations_roles_pkey PRIMARY KEY (value);
+
+
+--
 -- Name: provider_requests provider_requests_pkey; Type: CONSTRAINT; Schema: auth; Owner: postgres
 --
 
@@ -494,6 +599,46 @@ ALTER TABLE ONLY auth.refresh_tokens
 
 ALTER TABLE ONLY auth.user_security_keys
     ADD CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES auth.users(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: organizations_invites organizations_invites_organization_id_fkey; Type: FK CONSTRAINT; Schema: auth; Owner: postgres
+--
+
+ALTER TABLE ONLY auth.organizations_invites
+    ADD CONSTRAINT organizations_invites_organization_id_fkey FOREIGN KEY (organization_id) REFERENCES auth.organizations(id);
+
+
+--
+-- Name: organizations_invites organizations_invites_role_fkey; Type: FK CONSTRAINT; Schema: auth; Owner: postgres
+--
+
+ALTER TABLE ONLY auth.organizations_invites
+    ADD CONSTRAINT organizations_invites_role_fkey FOREIGN KEY (role) REFERENCES auth.organizations_roles(value);
+
+
+--
+-- Name: organizations_members organizations_members_organization_id_fkey; Type: FK CONSTRAINT; Schema: auth; Owner: postgres
+--
+
+ALTER TABLE ONLY auth.organizations_members
+    ADD CONSTRAINT organizations_members_organization_id_fkey FOREIGN KEY (organization_id) REFERENCES auth.organizations(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: organizations_members organizations_members_role_fkey; Type: FK CONSTRAINT; Schema: auth; Owner: postgres
+--
+
+ALTER TABLE ONLY auth.organizations_members
+    ADD CONSTRAINT organizations_members_role_fkey FOREIGN KEY (role) REFERENCES auth.organizations_roles(value);
+
+
+--
+-- Name: organizations_members organizations_members_user_id_fkey; Type: FK CONSTRAINT; Schema: auth; Owner: postgres
+--
+
+ALTER TABLE ONLY auth.organizations_members
+    ADD CONSTRAINT organizations_members_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --

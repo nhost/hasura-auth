@@ -22,25 +22,27 @@ func (e *APIError) Error() string {
 var ErrElevatedClaimRequired = errors.New("elevated-claim-required")
 
 var (
-	ErrUserEmailNotFound               = &APIError{api.InvalidEmailPassword}
-	ErrEmailAlreadyInUse               = &APIError{api.EmailAlreadyInUse}
-	ErrForbiddenAnonymous              = &APIError{api.ForbiddenAnonymous}
-	ErrInternalServerError             = &APIError{api.InternalServerError}
-	ErrInvalidEmailPassword            = &APIError{api.InvalidEmailPassword}
-	ErrPasswordTooShort                = &APIError{api.PasswordTooShort}
-	ErrPasswordInHibpDatabase          = &APIError{api.PasswordInHibpDatabase}
-	ErrRoleNotAllowed                  = &APIError{api.RoleNotAllowed}
-	ErrDefaultRoleMustBeInAllowedRoles = &APIError{api.DefaultRoleMustBeInAllowedRoles}
-	ErrRedirecToNotAllowed             = &APIError{api.RedirectToNotAllowed}
-	ErrDisabledUser                    = &APIError{api.DisabledUser}
-	ErrUnverifiedUser                  = &APIError{api.UnverifiedUser}
-	ErrUserNotAnonymous                = &APIError{api.UserNotAnonymous}
-	ErrInvalidPat                      = &APIError{api.InvalidPat}
-	ErrInvalidRequest                  = &APIError{api.InvalidRequest}
-	ErrSignupDisabled                  = &APIError{api.SignupDisabled}
-	ErrDisabledEndpoint                = &APIError{api.DisabledEndpoint}
-	ErrEmailAlreadyVerified            = &APIError{api.EmailAlreadyVerified}
-	ErrInvalidRefreshToken             = &APIError{api.InvalidRefreshToken}
+	ErrUserEmailNotFound                  = &APIError{api.InvalidEmailPassword}
+	ErrEmailAlreadyInUse                  = &APIError{api.EmailAlreadyInUse}
+	ErrForbiddenAnonymous                 = &APIError{api.ForbiddenAnonymous}
+	ErrInternalServerError                = &APIError{api.InternalServerError}
+	ErrInvalidEmailPassword               = &APIError{api.InvalidEmailPassword}
+	ErrPasswordTooShort                   = &APIError{api.PasswordTooShort}
+	ErrPasswordInHibpDatabase             = &APIError{api.PasswordInHibpDatabase}
+	ErrRoleNotAllowed                     = &APIError{api.RoleNotAllowed}
+	ErrDefaultRoleMustBeInAllowedRoles    = &APIError{api.DefaultRoleMustBeInAllowedRoles}
+	ErrRedirecToNotAllowed                = &APIError{api.RedirectToNotAllowed}
+	ErrDisabledUser                       = &APIError{api.DisabledUser}
+	ErrUnverifiedUser                     = &APIError{api.UnverifiedUser}
+	ErrUserNotAnonymous                   = &APIError{api.UserNotAnonymous}
+	ErrInvalidPat                         = &APIError{api.InvalidPat}
+	ErrInvalidRequest                     = &APIError{api.InvalidRequest}
+	ErrSignupDisabled                     = &APIError{api.SignupDisabled}
+	ErrDisabledEndpoint                   = &APIError{api.DisabledEndpoint}
+	ErrEmailAlreadyVerified               = &APIError{api.EmailAlreadyVerified}
+	ErrInvalidRefreshToken                = &APIError{api.InvalidRefreshToken}
+	ErrOnlyOneOrganizationPerUserAllowed  = &APIError{api.OnlyOneOrganizationPerUserAllowed}
+	ErrOrganizationNotFoundOrUserNotAdmin = &APIError{api.OrganizationNotFoundOrUserNotAdmin}
 )
 
 func logError(err error) slog.Attr {
@@ -107,6 +109,20 @@ func (response ErrorResponse) VisitPostTokenResponse(w http.ResponseWriter) erro
 	return response.visit(w)
 }
 
+func (response ErrorResponse) VisitGetOrganizationsResponse(w http.ResponseWriter) error {
+	return response.visit(w)
+}
+
+func (response ErrorResponse) VisitPostOrganizationsResponse(w http.ResponseWriter) error {
+	return response.visit(w)
+}
+
+func (response ErrorResponse) VisitDeleteOrganizationsIdResponse( //nolint:revive,stylecheck
+	w http.ResponseWriter,
+) error {
+	return response.visit(w)
+}
+
 func isSensitive(err api.ErrorResponseError) bool {
 	switch err {
 	case
@@ -127,6 +143,8 @@ func isSensitive(err api.ErrorResponseError) bool {
 		api.InternalServerError,
 		api.InvalidRequest,
 		api.LocaleNotAllowed,
+		api.OnlyOneOrganizationPerUserAllowed,
+		api.OrganizationNotFoundOrUserNotAdmin,
 		api.PasswordTooShort,
 		api.PasswordInHibpDatabase,
 		api.RedirectToNotAllowed,
@@ -258,6 +276,18 @@ func (ctrl *Controller) sendError( //nolint:funlen,cyclop
 			Status:  http.StatusUnauthorized,
 			Error:   err.t,
 			Message: "Invalid or expired refresh token",
+		}
+	case api.OnlyOneOrganizationPerUserAllowed:
+		return ErrorResponse{
+			Status:  http.StatusConflict,
+			Error:   err.t,
+			Message: "Only one organization per user is allowed",
+		}
+	case api.OrganizationNotFoundOrUserNotAdmin:
+		return ErrorResponse{
+			Status:  http.StatusConflict,
+			Error:   err.t,
+			Message: "Organization not found or user is not an admin",
 		}
 	}
 

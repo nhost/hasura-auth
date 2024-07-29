@@ -70,11 +70,11 @@ func TestPostSigninEmailPassword(t *testing.T) { //nolint:maintidx
 					gomock.Any(), sql.Text("jane@acme.com"),
 				).Return(getSigninUser(userID), nil)
 
-				mock.EXPECT().GetUserRoles(
+				mock.EXPECT().GetUserRolesAndOrgs(
 					gomock.Any(), userID,
-				).Return([]sql.AuthUserRole{
-					{UserID: userID, Role: "user"}, //nolint:exhaustruct
-					{UserID: userID, Role: "me"},   //nolint:exhaustruct
+				).Return([]sql.GetUserRolesAndOrgsRow{
+					{Role: "user"}, //nolint:exhaustruct
+					{Role: "me"},   //nolint:exhaustruct
 				}, nil)
 
 				mock.EXPECT().InsertRefreshtoken(
@@ -162,11 +162,11 @@ func TestPostSigninEmailPassword(t *testing.T) { //nolint:maintidx
 					gomock.Any(), sql.Text("jane@acme.com"),
 				).Return(getSigninUser(userID), nil)
 
-				mock.EXPECT().GetUserRoles(
+				mock.EXPECT().GetUserRolesAndOrgs(
 					gomock.Any(), userID,
-				).Return([]sql.AuthUserRole{
-					{UserID: userID, Role: "user"}, //nolint:exhaustruct
-					{UserID: userID, Role: "me"},   //nolint:exhaustruct
+				).Return([]sql.GetUserRolesAndOrgsRow{
+					{Role: "user"}, //nolint:exhaustruct
+					{Role: "me"},   //nolint:exhaustruct
 				}, nil)
 
 				mock.EXPECT().InsertRefreshtoken(
@@ -400,11 +400,11 @@ func TestPostSigninEmailPassword(t *testing.T) { //nolint:maintidx
 					gomock.Any(), sql.Text("jane@acme.com"),
 				).Return(user, nil)
 
-				mock.EXPECT().GetUserRoles(
+				mock.EXPECT().GetUserRolesAndOrgs(
 					gomock.Any(), userID,
-				).Return([]sql.AuthUserRole{
-					{UserID: userID, Role: "user"}, //nolint:exhaustruct
-					{UserID: userID, Role: "me"},   //nolint:exhaustruct
+				).Return([]sql.GetUserRolesAndOrgsRow{
+					{Role: "user"}, //nolint:exhaustruct
+					{Role: "me"},   //nolint:exhaustruct
 				}, nil)
 
 				mock.EXPECT().InsertRefreshtoken(

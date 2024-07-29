@@ -185,6 +185,109 @@ paths:
         - signup
         - email-and-password
 
+  /organizations:
+    get:
+      summary: List organizations
+      tags:
+        - organizations
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: >-
+            List of organizations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Organization'
+
+    post:
+      summary: Create a new organization
+      tags:
+        - organizations
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                name:
+                  description: Organization's name
+                  example: My Organization
+                  type: string
+              required:
+                - name
+        required: true
+      responses:
+        '201':
+          description: >-
+            Organization created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: >-
+            User already belongs to an organization
+
+  /organizations/{id}:
+    delete:
+      summary: Delete an organization
+      tags:
+        - organizations
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Organization's id
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: >-
+            Organization deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OKResponse'
+
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: >-
+            Organization doesn't exist or user is not an admin
+
+# - GET    /organizations/:id/configuration 	- get org's config	ADMIN
+# - POST   /organizations/:id/configuration 	- update org's config	ADMIN
+
+# - GET    /organizations/:id/members 		- list members		ADMIN
+# - DELETE /organizations/:id/members 		- remove member		ADMIN
+
+# - GET    /organizations/:id/invitations		- create invitation	ADMIN
+# - GET    /organizations/:id/invitations		- list invitations	ADMIN
+# - DELETE /organizations/:id/invitations/:id	- remove member		ADMIN
+
+# - GET 	 /organizations/invitations 		- see invite		LOGGED IN USER
+# - POST 	 /organizations/invitations/:id		- accept invite		LOGGED IN USER
+# - DELETE /organizations/invitations/:id		- reject invite		LOGGED IN USER
+
+
+
   /signup/webauthn:
     post:
       requestBody:
@@ -432,6 +535,8 @@ components:
             - user-not-anonymous
             - invalid-pat
             - invalid-refresh-token
+            - only-one-organization-per-user-allowed
+            - organization-not-found-or-user-not-admin
       required:
         - status
         - message
@@ -783,3 +888,20 @@ components:
                 nickname:
                   example: https://my-app.com/catch-redirection
                   type: string
+
+    Organization:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          description: Organization's id
+          example: 2c35b6f3-c4b9-48e3-978a-d4d0f1d42e24
+          pattern: \b[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b
+          type: string
+        name:
+          description: Organization's name
+          example: My Organization
+          type: string
+      required:
+        - id
+        - name

@@ -71,15 +71,26 @@ type DBClientUpdateUser interface {
 	) (uuid.UUID, error)
 }
 
+type DBClientOrganizations interface {
+	GetOrganizations(ctx context.Context, userID uuid.UUID) ([]sql.AuthOrganization, error)
+	DeleteOrganization(
+		ctx context.Context, arg sql.DeleteOrganizationParams,
+	) (sql.AuthOrganization, error)
+	InsertOrganization(
+		ctx context.Context, arg sql.InsertOrganizationParams,
+	) (sql.InsertOrganizationRow, error)
+}
+
 type DBClient interface {
 	DBClientGetUser
 	DBClientInsertUser
 	DBClientUpdateUser
+	DBClientOrganizations
 
 	CountSecurityKeysUser(ctx context.Context, userID uuid.UUID) (int64, error)
 	DeleteRefreshTokens(ctx context.Context, userID uuid.UUID) error
 	DeleteUserRoles(ctx context.Context, userID uuid.UUID) error
-	GetUserRoles(ctx context.Context, userID uuid.UUID) ([]sql.AuthUserRole, error)
+	GetUserRolesAndOrgs(ctx context.Context, userID uuid.UUID) ([]sql.GetUserRolesAndOrgsRow, error)
 	InsertRefreshtoken(ctx context.Context, arg sql.InsertRefreshtokenParams) (uuid.UUID, error)
 	RefreshTokenAndGetUserRoles(
 		ctx context.Context,

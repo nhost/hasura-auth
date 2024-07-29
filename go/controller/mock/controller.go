@@ -290,6 +290,74 @@ func (mr *MockDBClientUpdateUserMockRecorder) UpdateUserTicket(ctx, arg any) *go
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateUserTicket", reflect.TypeOf((*MockDBClientUpdateUser)(nil).UpdateUserTicket), ctx, arg)
 }
 
+// MockDBClientOrganizations is a mock of DBClientOrganizations interface.
+type MockDBClientOrganizations struct {
+	ctrl     *gomock.Controller
+	recorder *MockDBClientOrganizationsMockRecorder
+}
+
+// MockDBClientOrganizationsMockRecorder is the mock recorder for MockDBClientOrganizations.
+type MockDBClientOrganizationsMockRecorder struct {
+	mock *MockDBClientOrganizations
+}
+
+// NewMockDBClientOrganizations creates a new mock instance.
+func NewMockDBClientOrganizations(ctrl *gomock.Controller) *MockDBClientOrganizations {
+	mock := &MockDBClientOrganizations{ctrl: ctrl}
+	mock.recorder = &MockDBClientOrganizationsMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockDBClientOrganizations) EXPECT() *MockDBClientOrganizationsMockRecorder {
+	return m.recorder
+}
+
+// DeleteOrganization mocks base method.
+func (m *MockDBClientOrganizations) DeleteOrganization(ctx context.Context, arg sql.DeleteOrganizationParams) (sql.AuthOrganization, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteOrganization", ctx, arg)
+	ret0, _ := ret[0].(sql.AuthOrganization)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// DeleteOrganization indicates an expected call of DeleteOrganization.
+func (mr *MockDBClientOrganizationsMockRecorder) DeleteOrganization(ctx, arg any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteOrganization", reflect.TypeOf((*MockDBClientOrganizations)(nil).DeleteOrganization), ctx, arg)
+}
+
+// GetOrganizations mocks base method.
+func (m *MockDBClientOrganizations) GetOrganizations(ctx context.Context, userID uuid.UUID) ([]sql.AuthOrganization, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetOrganizations", ctx, userID)
+	ret0, _ := ret[0].([]sql.AuthOrganization)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetOrganizations indicates an expected call of GetOrganizations.
+func (mr *MockDBClientOrganizationsMockRecorder) GetOrganizations(ctx, userID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetOrganizations", reflect.TypeOf((*MockDBClientOrganizations)(nil).GetOrganizations), ctx, userID)
+}
+
+// InsertOrganization mocks base method.
+func (m *MockDBClientOrganizations) InsertOrganization(ctx context.Context, arg sql.InsertOrganizationParams) (sql.InsertOrganizationRow, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "InsertOrganization", ctx, arg)
+	ret0, _ := ret[0].(sql.InsertOrganizationRow)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// InsertOrganization indicates an expected call of InsertOrganization.
+func (mr *MockDBClientOrganizationsMockRecorder) InsertOrganization(ctx, arg any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InsertOrganization", reflect.TypeOf((*MockDBClientOrganizations)(nil).InsertOrganization), ctx, arg)
+}
+
 // MockDBClient is a mock of DBClient interface.
 type MockDBClient struct {
 	ctrl     *gomock.Controller
@@ -328,6 +396,21 @@ func (mr *MockDBClientMockRecorder) CountSecurityKeysUser(ctx, userID any) *gomo
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CountSecurityKeysUser", reflect.TypeOf((*MockDBClient)(nil).CountSecurityKeysUser), ctx, userID)
 }
 
+// DeleteOrganization mocks base method.
+func (m *MockDBClient) DeleteOrganization(ctx context.Context, arg sql.DeleteOrganizationParams) (sql.AuthOrganization, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteOrganization", ctx, arg)
+	ret0, _ := ret[0].(sql.AuthOrganization)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// DeleteOrganization indicates an expected call of DeleteOrganization.
+func (mr *MockDBClientMockRecorder) DeleteOrganization(ctx, arg any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteOrganization", reflect.TypeOf((*MockDBClient)(nil).DeleteOrganization), ctx, arg)
+}
+
 // DeleteRefreshTokens mocks base method.
 func (m *MockDBClient) DeleteRefreshTokens(ctx context.Context, userID uuid.UUID) error {
 	m.ctrl.T.Helper()
@@ -354,6 +437,21 @@ func (m *MockDBClient) DeleteUserRoles(ctx context.Context, userID uuid.UUID) er
 func (mr *MockDBClientMockRecorder) DeleteUserRoles(ctx, userID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteUserRoles", reflect.TypeOf((*MockDBClient)(nil).DeleteUserRoles), ctx, userID)
+}
+
+// GetOrganizations mocks base method.
+func (m *MockDBClient) GetOrganizations(ctx context.Context, userID uuid.UUID) ([]sql.AuthOrganization, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetOrganizations", ctx, userID)
+	ret0, _ := ret[0].([]sql.AuthOrganization)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetOrganizations indicates an expected call of GetOrganizations.
+func (mr *MockDBClientMockRecorder) GetOrganizations(ctx, userID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetOrganizations", reflect.TypeOf((*MockDBClient)(nil).GetOrganizations), ctx, userID)
 }
 
 // GetUser mocks base method.
@@ -401,19 +499,34 @@ func (mr *MockDBClientMockRecorder) GetUserByRefreshTokenHash(ctx, arg any) *gom
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByRefreshTokenHash", reflect.TypeOf((*MockDBClient)(nil).GetUserByRefreshTokenHash), ctx, arg)
 }
 
-// GetUserRoles mocks base method.
-func (m *MockDBClient) GetUserRoles(ctx context.Context, userID uuid.UUID) ([]sql.AuthUserRole, error) {
+// GetUserRolesAndOrgs mocks base method.
+func (m *MockDBClient) GetUserRolesAndOrgs(ctx context.Context, userID uuid.UUID) ([]sql.GetUserRolesAndOrgsRow, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetUserRoles", ctx, userID)
-	ret0, _ := ret[0].([]sql.AuthUserRole)
+	ret := m.ctrl.Call(m, "GetUserRolesAndOrgs", ctx, userID)
+	ret0, _ := ret[0].([]sql.GetUserRolesAndOrgsRow)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetUserRoles indicates an expected call of GetUserRoles.
-func (mr *MockDBClientMockRecorder) GetUserRoles(ctx, userID any) *gomock.Call {
+// GetUserRolesAndOrgs indicates an expected call of GetUserRolesAndOrgs.
+func (mr *MockDBClientMockRecorder) GetUserRolesAndOrgs(ctx, userID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserRoles", reflect.TypeOf((*MockDBClient)(nil).GetUserRoles), ctx, userID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserRolesAndOrgs", reflect.TypeOf((*MockDBClient)(nil).GetUserRolesAndOrgs), ctx, userID)
+}
+
+// InsertOrganization mocks base method.
+func (m *MockDBClient) InsertOrganization(ctx context.Context, arg sql.InsertOrganizationParams) (sql.InsertOrganizationRow, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "InsertOrganization", ctx, arg)
+	ret0, _ := ret[0].(sql.InsertOrganizationRow)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// InsertOrganization indicates an expected call of InsertOrganization.
+func (mr *MockDBClientMockRecorder) InsertOrganization(ctx, arg any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InsertOrganization", reflect.TypeOf((*MockDBClient)(nil).InsertOrganization), ctx, arg)
 }
 
 // InsertRefreshtoken mocks base method.
