@@ -75,6 +75,17 @@ const (
 	flagWebauthnRPID                     = "webauthn-rp-id"
 	flagWebauthnRPOrigins                = "webauthn-rp-origins"
 	flagWebauthnAttestationTimeout       = "webauthn-attestation-timeout"
+	flagRateLimitGlobalBurst             = "rate-limit-global-burst"
+	flagRateLimitGlobalInterval          = "rate-limit-global-interval"
+	flagRateLimitEmailBurst              = "rate-limit-email-burst"
+	flagRateLimitEmailInterval           = "rate-limit-email-interval"
+	flagRateLimitEmailIsGlobal           = "rate-limit-email-is-global"
+	flagRateLimitSMSBurst                = "rate-limit-sms-burst"
+	flagRateLimitSMSInterval             = "rate-limit-sms-interval"
+	flagRateLimitBruteForceBurst         = "rate-limit-brute-force-burst"
+	flagRateLimitBruteForceInterval      = "rate-limit-brute-force-interval"
+	flagRateLimitSignupsBurst            = "rate-limit-signups-burst"
+	flagRateLimitSignupsInterval         = "rate-limit-signups-interval"
 )
 
 func CommandServe() *cli.Command { //nolint:funlen,maintidx
@@ -86,7 +97,7 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 			&cli.StringFlag{ //nolint: exhaustruct
 				Name:     flagAPIPrefix,
 				Usage:    "prefix for all routes",
-				Value:    "/",
+				Value:    "",
 				Category: "server",
 				EnvVars:  []string{"AUTH_API_PREFIX"},
 			},
@@ -442,6 +453,83 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 				Category: "webauthn",
 				EnvVars:  []string{"AUTH_WEBAUTHN_ATTESTATION_TIMEOUT"},
 			},
+			&cli.IntFlag{ //nolint: exhaustruct
+				Name:     flagRateLimitGlobalBurst,
+				Usage:    "Global rate limit burst",
+				Value:    100, //nolint:mnd
+				Category: "rate-limit",
+				EnvVars:  []string{"AUTH_RATE_LIMIT_GLOBAL_BURST"},
+			},
+			&cli.DurationFlag{ //nolint: exhaustruct
+				Name:     flagRateLimitGlobalInterval,
+				Usage:    "Global rate limit interval",
+				Value:    time.Minute,
+				Category: "rate-limit",
+				EnvVars:  []string{"AUTH_RATE_LIMIT_GLOBAL_INTERVAL"},
+			},
+			&cli.IntFlag{ //nolint: exhaustruct
+				Name:     flagRateLimitEmailBurst,
+				Usage:    "Email rate limit burst",
+				Value:    10, //nolint:mnd
+				Category: "rate-limit",
+				EnvVars:  []string{"AUTH_RATE_LIMIT_EMAIL_BURST"},
+			},
+			&cli.DurationFlag{ //nolint: exhaustruct
+				Name:     flagRateLimitEmailInterval,
+				Usage:    "Email rate limit interval",
+				Value:    time.Hour,
+				Category: "rate-limit",
+				EnvVars:  []string{"AUTH_RATE_LIMIT_EMAIL_INTERVAL"},
+			},
+			&cli.BoolFlag{ //nolint: exhaustruct
+				Name:     flagRateLimitEmailIsGlobal,
+				Usage:    "Email rate limit is global instead of per user",
+				Value:    false,
+				Category: "rate-limit",
+				EnvVars:  []string{"AUTH_RATE_LIMIT_EMAIL_IS_GLOBAL"},
+			},
+			&cli.IntFlag{ //nolint: exhaustruct
+				Name:     flagRateLimitSMSBurst,
+				Usage:    "SMS rate limit burst",
+				Value:    10, //nolint:mnd
+				Category: "rate-limit",
+				EnvVars:  []string{"AUTH_RATE_LIMIT_SMS_BURST"},
+			},
+			&cli.DurationFlag{ //nolint: exhaustruct
+				Name:     flagRateLimitSMSInterval,
+				Usage:    "SMS rate limit interval",
+				Value:    time.Hour,
+				Category: "rate-limit",
+				EnvVars:  []string{"AUTH_RATE_LIMIT_SMS_INTERVAL"},
+			},
+			&cli.IntFlag{ //nolint: exhaustruct
+				Name:     flagRateLimitBruteForceBurst,
+				Usage:    "Brute force rate limit burst",
+				Value:    10, //nolint:mnd
+				Category: "rate-limit",
+				EnvVars:  []string{"AUTH_RATE_LIMIT_BRUTE_FORCE_BURST"},
+			},
+			&cli.DurationFlag{ //nolint: exhaustruct
+				Name:     flagRateLimitBruteForceInterval,
+				Usage:    "Brute force rate limit interval",
+				Value:    5 * time.Minute, //nolint:mnd
+				Category: "rate-limit",
+				EnvVars:  []string{"AUTH_RATE_LIMIT_BRUTE_FORCE_INTERVAL"},
+			},
+			&cli.IntFlag{ //nolint: exhaustruct
+				Name:     flagRateLimitSignupsBurst,
+				Usage:    "Signups rate limit burst",
+				Value:    10, //nolint:mnd
+				Category: "rate-limit",
+				EnvVars:  []string{"AUTH_RATE_LIMIT_SIGNUPS_BURST"},
+			},
+			&cli.DurationFlag{ //nolint: exhaustruct
+				Name:     flagRateLimitSignupsInterval,
+				Usage:    "Signups rate limit interval",
+				Value:    5 * time.Minute, //nolint:mnd
+				Category: "rate-limit",
+				EnvVars:  []string{"AUTH_RATE_LIMIT_SIGNUPS_INTERVAL"},
+			},
 		},
 		Action: serve,
 	}
@@ -486,6 +574,24 @@ func getNodeServer(cCtx *cli.Context) *exec.Cmd {
 	return cmd
 }
 
+func getRateLimiter(cCtx *cli.Context) gin.HandlerFunc {
+	return middleware.RateLimit(
+		cCtx.String(flagAPIPrefix),
+		int64(cCtx.Int(flagRateLimitGlobalBurst)),
+		cCtx.Duration(flagRateLimitGlobalInterval),
+		int64(cCtx.Int(flagRateLimitEmailBurst)),
+		cCtx.Duration(flagRateLimitEmailInterval),
+		cCtx.Bool(flagRateLimitEmailIsGlobal),
+		cCtx.Bool(flagEmailSigninEmailVerifiedRequired),
+		int64(cCtx.Int(flagRateLimitSMSBurst)),
+		cCtx.Duration(flagRateLimitSMSInterval),
+		int64(cCtx.Int(flagRateLimitBruteForceBurst)),
+		cCtx.Duration(flagRateLimitBruteForceInterval),
+		int64(cCtx.Int(flagRateLimitSignupsBurst)),
+		cCtx.Duration(flagRateLimitSignupsInterval),
+	)
+}
+
 func getGoServer( //nolint:funlen
 	cCtx *cli.Context, db *sql.Queries, logger *slog.Logger,
 ) (*http.Server, error) {
@@ -505,6 +611,7 @@ func getGoServer( //nolint:funlen
 		gin.Recovery(),
 		cors(),
 		middleware.Logger(logger),
+		getRateLimiter(cCtx),
 	)
 
 	emailer, err := getEmailer(cCtx, logger)
