@@ -1,3 +1,4 @@
+//nolint:canonicalheader
 package middleware
 
 import (
@@ -39,8 +40,6 @@ func (t Trace) NewSpan() Trace {
 
 // FromHTTPHeaders extracts tracing information from HTTP headers.
 // If no tracing information is found, a new trace is created with only `TraceID` set.
-//
-//nolint:canonicalheader
 func TraceFromHTTPHeaders(headers http.Header) Trace {
 	traceID := headers.Get(headerTraceID)
 	if traceID == "" {
@@ -58,8 +57,6 @@ func TraceFromHTTPHeaders(headers http.Header) Trace {
 }
 
 // ToHTTPHeaders adds tracing information to HTTP headers.
-//
-//nolint:canonicalheader
 func TraceToHTTPHeaders(trace Trace, header http.Header) {
 	header.Set(headerTraceID, trace.TraceID)
 	header.Set(headerParentSpanID, trace.ParentSpanID)

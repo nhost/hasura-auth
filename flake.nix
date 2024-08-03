@@ -161,6 +161,7 @@
             {
               nativeBuildInputs = with pkgs;
                 [
+                  nodejs-slim_20
                   nodePackages.pnpm
                   cacert
                 ];
@@ -174,6 +175,7 @@
               ln -s ${node_modules-builder}/node_modules node_modules
 
               export XDG_DATA_HOME=$TMPDIR/.local/share
+              export HOME=$TMPDIR
 
               echo "➜ Running pnpm audit"
               pnpx audit-ci --config ./audit-ci.jsonc
