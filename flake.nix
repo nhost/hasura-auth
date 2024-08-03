@@ -14,7 +14,7 @@
         overlays = [
           nixops.overlays.default
           (final: prev: {
-            nodejs = prev.nodejs-18_x;
+            nodejs = prev.nodejs_20;
           })
         ];
 
@@ -203,7 +203,7 @@
             pname = "node-${name}";
 
             buildInputs = with pkgs; [
-              pkgs.nodejs-slim_18
+              pkgs.nodejs-slim_20
             ];
 
             nativeBuildInputs = with pkgs; [
@@ -236,7 +236,7 @@
 
             postInstall = ''
               wrapProgram $out/bin/hasura-auth \
-                  --suffix PATH : ${pkgs.nodejs-slim_18}/bin \
+                  --suffix PATH : ${pkgs.nodejs-slim_20}/bin \
                   --prefix AUTH_NODE_SERVER_PATH : ${node-auth}
             '';
           };
