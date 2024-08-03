@@ -39,14 +39,16 @@ func (t Trace) NewSpan() Trace {
 
 // FromHTTPHeaders extracts tracing information from HTTP headers.
 // If no tracing information is found, a new trace is created with only `TraceID` set.
+//
+//nolint:canonicalheader
 func TraceFromHTTPHeaders(headers http.Header) Trace {
-	traceID := headers.Get(headerTraceID) //nolint:canonicalheader
+	traceID := headers.Get(headerTraceID)
 	if traceID == "" {
 		traceID = uuid.New().String()
 	}
 
-	spanID := headers.Get(headerSpanID)             //nolint:canonicalheader
-	parentSpanID := headers.Get(headerParentSpanID) //nolint:canonicalheader
+	spanID := headers.Get(headerSpanID)
+	parentSpanID := headers.Get(headerParentSpanID)
 
 	return Trace{
 		TraceID:      traceID,
@@ -56,8 +58,10 @@ func TraceFromHTTPHeaders(headers http.Header) Trace {
 }
 
 // ToHTTPHeaders adds tracing information to HTTP headers.
+//
+//nolint:canonicalheader
 func TraceToHTTPHeaders(trace Trace, header http.Header) {
-	header.Set(headerTraceID, trace.TraceID)           //nolint:canonicalheader
-	header.Set(headerParentSpanID, trace.ParentSpanID) //nolint:canonicalheader
-	header.Set(headerSpanID, trace.SpanID)             //nolint:canonicalheader
+	header.Set(headerTraceID, trace.TraceID)
+	header.Set(headerParentSpanID, trace.ParentSpanID)
+	header.Set(headerSpanID, trace.SpanID)
 }
