@@ -97,7 +97,7 @@ func TestRateLimiterAdd(t *testing.T) {
 			name: "empty",
 			rateLimiter: func() RateLimiter {
 				return RateLimiter{
-					recoveryRate: time.Second,
+					recoveryRate: time.Minute,
 					maxBurst:     10,
 					buckets:      make(map[string]*BurstBucket),
 				}
@@ -108,7 +108,7 @@ func TestRateLimiterAdd(t *testing.T) {
 			name: "full",
 			rateLimiter: func() RateLimiter {
 				return RateLimiter{
-					recoveryRate: time.Second,
+					recoveryRate: time.Minute,
 					maxBurst:     10,
 					buckets: map[string]*BurstBucket{
 						"key": {
@@ -125,7 +125,7 @@ func TestRateLimiterAdd(t *testing.T) {
 			name: "recovered",
 			rateLimiter: func() RateLimiter {
 				return RateLimiter{
-					recoveryRate: time.Second,
+					recoveryRate: time.Minute,
 					maxBurst:     10,
 					buckets: map[string]*BurstBucket{
 						"key": {
@@ -165,7 +165,7 @@ func TestRateLimiterClean(t *testing.T) {
 			name: "empty",
 			rateLimiter: func() RateLimiter {
 				return RateLimiter{
-					recoveryRate: time.Second,
+					recoveryRate: time.Minute,
 					maxBurst:     10,
 					buckets:      make(map[string]*BurstBucket),
 				}
@@ -176,7 +176,7 @@ func TestRateLimiterClean(t *testing.T) {
 			name: "with one",
 			rateLimiter: func() RateLimiter {
 				return RateLimiter{
-					recoveryRate: time.Second,
+					recoveryRate: time.Minute,
 					maxBurst:     10,
 					buckets: map[string]*BurstBucket{
 						"key": {
@@ -193,7 +193,7 @@ func TestRateLimiterClean(t *testing.T) {
 			name: "with one expired",
 			rateLimiter: func() RateLimiter {
 				return RateLimiter{
-					recoveryRate: time.Second,
+					recoveryRate: time.Minute,
 					maxBurst:     10,
 					buckets: map[string]*BurstBucket{
 						"key": {
