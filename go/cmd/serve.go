@@ -75,6 +75,7 @@ const (
 	flagWebauthnRPID                     = "webauthn-rp-id"
 	flagWebauthnRPOrigins                = "webauthn-rp-origins"
 	flagWebauthnAttestationTimeout       = "webauthn-attestation-timeout"
+	flagRateEnable                       = "rate-enable"
 	flagRateLimitGlobalBurst             = "rate-limit-global-burst"
 	flagRateLimitGlobalInterval          = "rate-limit-global-interval"
 	flagRateLimitEmailBurst              = "rate-limit-email-burst"
@@ -453,6 +454,13 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 				Category: "webauthn",
 				EnvVars:  []string{"AUTH_WEBAUTHN_ATTESTATION_TIMEOUT"},
 			},
+			&cli.BoolFlag{ //nolint: exhaustruct
+				Name:     flagRateEnable,
+				Usage:    "Enable rate limiting",
+				Value:    false,
+				Category: "rate-limit",
+				EnvVars:  []string{"AUTH_RATE_ENABLE"},
+			},
 			&cli.IntFlag{ //nolint: exhaustruct
 				Name:     flagRateLimitGlobalBurst,
 				Usage:    "Global rate limit burst",
@@ -606,13 +614,18 @@ func getGoServer( //nolint:funlen
 		URL: cCtx.String(flagAPIPrefix),
 	})
 
-	router.Use(
+	handlers := []gin.HandlerFunc{
 		// ginmiddleware.OapiRequestValidator(doc),
 		gin.Recovery(),
 		cors(),
 		middleware.Logger(logger),
-		getRateLimiter(cCtx),
-	)
+	}
+
+	if cCtx.Bool(flagRateEnable) {
+		handlers = append(handlers, getRateLimiter(cCtx))
+	}
+
+	router.Use(handlers...)
 
 	emailer, err := getEmailer(cCtx, logger)
 	if err != nil {
