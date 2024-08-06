@@ -5,9 +5,7 @@ import (
 	"time"
 )
 
-func TestBurstBucket(t *testing.T) {
-	t.Parallel()
-
+func TestBurstBucket(t *testing.T) { //nolint:tparallel,paralleltest
 	cases := []struct {
 		name   string
 		bucket func() *BurstBucket
@@ -153,9 +151,7 @@ func TestRateLimiterAdd(t *testing.T) {
 	}
 }
 
-func TestRateLimiterClean(t *testing.T) {
-	t.Parallel()
-
+func TestRateLimiterClean(t *testing.T) { //nolint:tparallel,paralleltest
 	cases := []struct {
 		name        string
 		rateLimiter func() RateLimiter
