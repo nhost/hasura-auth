@@ -5,7 +5,9 @@ import (
 	"time"
 )
 
-func TestBurstBucket(t *testing.T) { //nolint:tparallel,paralleltest
+func TestBurstBucket(t *testing.T) {
+	t.Parallel()
+
 	cases := []struct {
 		name   string
 		bucket func() *BurstBucket
