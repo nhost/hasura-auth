@@ -212,7 +212,7 @@ func TestRateLimiterClean(t *testing.T) { //nolint:tparallel,paralleltest
 			rateLimiter.Clean()
 			got := len(rateLimiter.buckets)
 			if got != tc.length {
-				t.Errorf("Add() = %v; want %v", got, tc.length)
+				t.Errorf("len() = %v; want %v", got, tc.length)
 			}
 		})
 	}
