@@ -75,7 +75,7 @@ const (
 	flagWebauthnRPID                     = "webauthn-rp-id"
 	flagWebauthnRPOrigins                = "webauthn-rp-origins"
 	flagWebauthnAttestationTimeout       = "webauthn-attestation-timeout"
-	flagRateEnable                       = "rate-enable"
+	flagRateLimitEnable                  = "rate-limit-enable"
 	flagRateLimitGlobalBurst             = "rate-limit-global-burst"
 	flagRateLimitGlobalInterval          = "rate-limit-global-interval"
 	flagRateLimitEmailBurst              = "rate-limit-email-burst"
@@ -455,11 +455,11 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 				EnvVars:  []string{"AUTH_WEBAUTHN_ATTESTATION_TIMEOUT"},
 			},
 			&cli.BoolFlag{ //nolint: exhaustruct
-				Name:     flagRateEnable,
+				Name:     flagRateLimitEnable,
 				Usage:    "Enable rate limiting",
 				Value:    false,
 				Category: "rate-limit",
-				EnvVars:  []string{"AUTH_RATE_ENABLE"},
+				EnvVars:  []string{"AUTH_RATE_LIMIT_ENABLE"},
 			},
 			&cli.IntFlag{ //nolint: exhaustruct
 				Name:     flagRateLimitGlobalBurst,
@@ -621,7 +621,7 @@ func getGoServer( //nolint:funlen
 		middleware.Logger(logger),
 	}
 
-	if cCtx.Bool(flagRateEnable) {
+	if cCtx.Bool(flagRateLimitEnable) {
 		handlers = append(handlers, getRateLimiter(cCtx))
 	}
 
