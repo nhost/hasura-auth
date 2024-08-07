@@ -107,15 +107,15 @@ func TestRateLimiterAdd(t *testing.T) {
 		{
 			name: "full",
 			rateLimiter: func() RateLimiter {
+				bucket := NewBurstBucket(10, time.Minute)
+				bucket.lastEntry = time.Now()
+				bucket.currentBurst = 10
+
 				return RateLimiter{
 					recoveryRate: time.Minute,
 					maxBurst:     10,
 					buckets: map[string]*BurstBucket{
-						"key": {
-							maxBurst:     10,
-							currentBurst: 10,
-							lastEntry:    time.Now(),
-						},
+						"key": bucket,
 					},
 				}
 			},
@@ -124,15 +124,15 @@ func TestRateLimiterAdd(t *testing.T) {
 		{
 			name: "recovered",
 			rateLimiter: func() RateLimiter {
+				bucket := NewBurstBucket(10, time.Minute)
+				bucket.lastEntry = time.Now().Add(-1 * time.Minute)
+				bucket.currentBurst = 10
+
 				return RateLimiter{
 					recoveryRate: time.Minute,
 					maxBurst:     10,
 					buckets: map[string]*BurstBucket{
-						"key": {
-							maxBurst:     10,
-							currentBurst: 10,
-							lastEntry:    time.Now().Add(-1 * time.Second),
-						},
+						"key": bucket,
 					},
 				}
 			},
@@ -173,15 +173,15 @@ func TestRateLimiterClean(t *testing.T) { //nolint:tparallel,paralleltest
 		{
 			name: "with one",
 			rateLimiter: func() RateLimiter {
+				bucket := NewBurstBucket(10, time.Minute)
+				bucket.lastEntry = time.Now()
+				bucket.currentBurst = 10
+
 				return RateLimiter{
 					recoveryRate: time.Minute,
 					maxBurst:     10,
 					buckets: map[string]*BurstBucket{
-						"key": {
-							maxBurst:     10,
-							currentBurst: 10,
-							lastEntry:    time.Now(),
-						},
+						"key": bucket,
 					},
 				}
 			},
@@ -190,15 +190,15 @@ func TestRateLimiterClean(t *testing.T) { //nolint:tparallel,paralleltest
 		{
 			name: "with one expired",
 			rateLimiter: func() RateLimiter {
+				bucket := NewBurstBucket(10, time.Minute)
+				bucket.lastEntry = time.Now().Add(-1 * time.Minute)
+				bucket.currentBurst = 10
+
 				return RateLimiter{
 					recoveryRate: time.Minute,
 					maxBurst:     10,
 					buckets: map[string]*BurstBucket{
-						"key": {
-							maxBurst:     10,
-							currentBurst: 10,
-							lastEntry:    time.Now().Add(-1 * time.Minute),
-						},
+						"key": bucket,
 					},
 				}
 			},
