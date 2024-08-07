@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"net/http"
 	"slices"
 	"strings"
@@ -29,6 +30,13 @@ func (b *BurstBucket) Clean() {
 	elapsedMs := float64(time.Since(b.lastEntry).Milliseconds())
 
 	currentBurst := b.currentBurst - int64(elapsedMs/b.recoverRateMs)
+
+	fmt.Println("now", time.Now())                  //nolint
+	fmt.Println("lastEntry", b.lastEntry)           //nolint
+	fmt.Println("elapsedMs", elapsedMs)             //nolint
+	fmt.Println("b.recoverRateMs", b.recoverRateMs) //nolint
+	fmt.Println("currentBurst", currentBurst)       //nolint
+
 	if currentBurst < 0 {
 		b.currentBurst = 0
 	} else {
