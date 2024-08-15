@@ -3,6 +3,5 @@
   "$schema": "https://github.com/IBM/audit-ci/raw/main/docs/schema.json",
   "moderate": true,
   "allowlist": [
-      "GHSA-8hc4-vh64-cxmj" // No fix yet
   ]
 }
