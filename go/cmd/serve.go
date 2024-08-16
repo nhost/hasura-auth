@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/bradfitz/gomemcache/memcache"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/getkin/kin-openapi/openapi3filter"
 	"github.com/gin-gonic/gin"
@@ -18,6 +19,7 @@ import (
 	"github.com/nhost/hasura-auth/go/controller"
 	"github.com/nhost/hasura-auth/go/hibp"
 	"github.com/nhost/hasura-auth/go/middleware"
+	"github.com/nhost/hasura-auth/go/middleware/ratelimit"
 	"github.com/nhost/hasura-auth/go/sql"
 	ginmiddleware "github.com/oapi-codegen/gin-middleware"
 	"github.com/urfave/cli/v2"
@@ -87,6 +89,8 @@ const (
 	flagRateLimitBruteForceInterval      = "rate-limit-brute-force-interval"
 	flagRateLimitSignupsBurst            = "rate-limit-signups-burst"
 	flagRateLimitSignupsInterval         = "rate-limit-signups-interval"
+	flagRateLimitMemcacheServer          = "rate-limit-memcache-server"
+	flagRateLimitMemcachePrefix          = "rate-limit-memcache-prefix"
 )
 
 func CommandServe() *cli.Command { //nolint:funlen,maintidx
@@ -538,6 +542,18 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 				Category: "rate-limit",
 				EnvVars:  []string{"AUTH_RATE_LIMIT_SIGNUPS_INTERVAL"},
 			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagRateLimitMemcacheServer,
+				Usage:    "Store sliding window rate limit data in memcache",
+				Category: "rate-limit",
+				EnvVars:  []string{"AUTH_RATE_LIMIT_MEMCACHE_SERVER"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagRateLimitMemcachePrefix,
+				Usage:    "Prefix for rate limit keys in memcache",
+				Category: "rate-limit",
+				EnvVars:  []string{"AUTH_RATE_LIMIT_MEMCACHE_PREFIX"},
+			},
 		},
 		Action: serve,
 	}
@@ -582,21 +598,33 @@ func getNodeServer(cCtx *cli.Context) *exec.Cmd {
 	return cmd
 }
 
-func getRateLimiter(cCtx *cli.Context) gin.HandlerFunc {
-	return middleware.RateLimit(
+func getRateLimiter(cCtx *cli.Context, logger *slog.Logger) gin.HandlerFunc {
+	var store ratelimit.Store
+	if cCtx.String(flagRateLimitMemcacheServer) != "" {
+		store = ratelimit.NewMemcacheStore(
+			memcache.New(cCtx.String(flagRateLimitMemcacheServer)),
+			cCtx.String(flagRateLimitMemcachePrefix),
+			logger.WithGroup("rate-limit-memcache"),
+		)
+	} else {
+		store = ratelimit.NewInMemoryStore()
+	}
+
+	return ratelimit.RateLimit(
 		cCtx.String(flagAPIPrefix),
-		int64(cCtx.Int(flagRateLimitGlobalBurst)),
+		cCtx.Int(flagRateLimitGlobalBurst),
 		cCtx.Duration(flagRateLimitGlobalInterval),
-		int64(cCtx.Int(flagRateLimitEmailBurst)),
+		cCtx.Int(flagRateLimitEmailBurst),
 		cCtx.Duration(flagRateLimitEmailInterval),
 		cCtx.Bool(flagRateLimitEmailIsGlobal),
 		cCtx.Bool(flagEmailSigninEmailVerifiedRequired),
-		int64(cCtx.Int(flagRateLimitSMSBurst)),
+		cCtx.Int(flagRateLimitSMSBurst),
 		cCtx.Duration(flagRateLimitSMSInterval),
-		int64(cCtx.Int(flagRateLimitBruteForceBurst)),
+		cCtx.Int(flagRateLimitBruteForceBurst),
 		cCtx.Duration(flagRateLimitBruteForceInterval),
-		int64(cCtx.Int(flagRateLimitSignupsBurst)),
+		cCtx.Int(flagRateLimitSignupsBurst),
 		cCtx.Duration(flagRateLimitSignupsInterval),
+		store,
 	)
 }
 
@@ -622,7 +650,7 @@ func getGoServer( //nolint:funlen
 	}
 
 	if cCtx.Bool(flagRateLimitEnable) {
-		handlers = append(handlers, getRateLimiter(cCtx))
+		handlers = append(handlers, getRateLimiter(cCtx, logger))
 	}
 
 	router.Use(handlers...)

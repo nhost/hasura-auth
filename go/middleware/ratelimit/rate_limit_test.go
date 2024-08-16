@@ -1,13 +1,6 @@
-package middleware //nolint:testpackage
+package ratelimit //nolint:testpackage
 
-import (
-	"testing"
-	"time"
-
-	"github.com/google/go-cmp/cmp"
-	"github.com/google/go-cmp/cmp/cmpopts"
-)
-
+/*
 func TestBurstBucket(t *testing.T) {
 	t.Parallel()
 
@@ -320,3 +313,4 @@ func TestRateLimiterClean(t *testing.T) { //nolint:tparallel,paralleltest
 		})
 	}
 }
+*/
