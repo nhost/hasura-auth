@@ -1,6 +1,7 @@
 package ratelimit_test
 
 import (
+	"log/slog"
 	"testing"
 	"time"
 
@@ -12,7 +13,7 @@ func TestNewMemcacheStore(t *testing.T) {
 	t.Parallel()
 
 	cl := memcache.New("localhost:11211")
-	store := ratelimit.NewMemcacheStore(cl)
+	store := ratelimit.NewMemcacheStore(cl, "test", slog.Default())
 
 	if e := store.Get("key"); e != 0 {
 		t.Errorf("Expected 0, got %d", e)

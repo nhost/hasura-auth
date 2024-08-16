@@ -51,7 +51,11 @@ func (r *SlidingWindow) Allow(key string) bool {
 	now := time.Now()
 
 	windowKey := r.windowKey(now, key)
-	remainingTime := float64(r.window.Milliseconds()) - float64(now.UnixMilli()%r.window.Milliseconds())
+	remainingTime := float64(
+		r.window.Milliseconds(),
+	) - float64(
+		now.UnixMilli()%r.window.Milliseconds(),
+	)
 
 	count := r.store.Get(windowKey)
 
