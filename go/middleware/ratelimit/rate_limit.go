@@ -47,27 +47,6 @@ func isSignup(path string) bool {
 	return strings.HasPrefix(path, "/signup")
 }
 
-type RateLimiterConfiguration struct {
-	IgnorePrefix string
-
-	GlobalLimit    int64
-	GlobalInterval time.Duration
-
-	EmailLimit         int64
-	EmailInterval      time.Duration
-	EmailIsGlobal      bool
-	EmailVerifyEnabled bool
-
-	SMSLimit    int64
-	SMSInterval time.Duration
-
-	BruteForceLimit    int64
-	BruteForceInterval time.Duration
-
-	SignupsLimit    int64
-	SignupsInterval time.Duration
-}
-
 func RateLimit( //nolint:cyclop,funlen
 	ignorePrefix string,
 	globalLimit int,
