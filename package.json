@@ -80,6 +80,7 @@
     "@graphql-codegen/typescript-operations": "^2.5.13",
     "@react-email/components": "0.0.22",
     "@simplewebauthn/types": "^9.0.1",
+    "@swc/core": "^1.7.12",
     "@types/bcryptjs": "^2.4.6",
     "@types/cors": "2.8.6",
     "@types/ejs": "3.0.2",
