@@ -28,7 +28,7 @@ const main = {
 };
 
 const container = {
-  margin: '0 auto',
+  margin: '20px auto 0 auto',
   padding: '20px',
   maxWidth: '560px',
   backgroundColor: '#ffffff',
@@ -86,19 +86,17 @@ const linkColumn = {
   margin: 0,
 };
 
-export function EmailConfirmChange() {
+export function PasswordReset() {
   return (
     <Html>
       <Head />
       <Body style={main}>
         <Container style={container}>
-          <Heading style={heading}>Confirm Email Change</Heading>
-          <Text style={paragraph}>
-            Use this link to confirm changing email:
-          </Text>
+          <Heading style={heading}>Reset Password</Heading>
+          <Text style={paragraph}>Use this link to reset your password:</Text>
           <Section style={buttonContainer}>
             <Button style={button} href="${link}">
-              Confirm Email Change
+              Reset Password
             </Button>
           </Section>
           <Hr style={hr} />
@@ -126,4 +124,4 @@ export function EmailConfirmChange() {
   );
 }
 
-export default EmailConfirmChange;
+export default PasswordReset;

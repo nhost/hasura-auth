@@ -28,7 +28,7 @@ const main = {
 };
 
 const container = {
-  margin: '0 auto',
+  margin: '20px auto 0 auto',
   padding: '20px',
   maxWidth: '560px',
   backgroundColor: '#ffffff',

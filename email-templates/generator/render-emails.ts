@@ -13,6 +13,7 @@ function renderEmails(targetLocale: string) {
       name: 'email-confirm-change',
       body: prettier.format(render(EmailConfirmChange()), {
         parser: 'html',
+        printWidth: 500,
       }),
       subject: '<subject>',
     },
@@ -20,6 +21,7 @@ function renderEmails(targetLocale: string) {
       name: 'email-verify',
       body: prettier.format(render(EmailVerify()), {
         parser: 'html',
+        printWidth: 500,
       }),
       subject: '<subject>',
     },
@@ -27,6 +29,7 @@ function renderEmails(targetLocale: string) {
       name: 'password-reset',
       body: prettier.format(render(PasswordReset()), {
         parser: 'html',
+        printWidth: 500,
       }),
       subject: '<subject>',
     },
@@ -34,6 +37,7 @@ function renderEmails(targetLocale: string) {
       name: 'signin-passwordless',
       body: prettier.format(render(SignInPasswordless()), {
         parser: 'html',
+        printWidth: 500,
       }),
       subject: '<subject>',
     },

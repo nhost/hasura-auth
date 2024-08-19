@@ -28,7 +28,7 @@ const main = {
 };
 
 const container = {
-  margin: '0 auto',
+  margin: '20px auto 0 auto',
   padding: '20px',
   maxWidth: '560px',
   backgroundColor: '#ffffff',
@@ -86,17 +86,19 @@ const linkColumn = {
   margin: 0,
 };
 
-export function EmailVerify() {
+export function EmailConfirmChange() {
   return (
     <Html>
       <Head />
       <Body style={main}>
         <Container style={container}>
-          <Heading style={heading}>Verify Email</Heading>
-          <Text style={paragraph}>Use this link to verify your email:</Text>
+          <Heading style={heading}>Confirm Email Change</Heading>
+          <Text style={paragraph}>
+            Use this link to confirm changing email:
+          </Text>
           <Section style={buttonContainer}>
             <Button style={button} href="${link}">
-              Verify Email
+              Confirm Email Change
             </Button>
           </Section>
           <Hr style={hr} />
@@ -124,4 +126,4 @@ export function EmailVerify() {
   );
 }
 
-export default EmailVerify;
+export default EmailConfirmChange;

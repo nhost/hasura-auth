@@ -28,7 +28,7 @@ const main = {
 };
 
 const container = {
-  margin: '0 auto',
+  margin: '20px auto 0 auto',
   padding: '20px',
   maxWidth: '560px',
   backgroundColor: '#ffffff',
@@ -86,17 +86,17 @@ const linkColumn = {
   margin: 0,
 };
 
-export function PasswordReset() {
+export function EmailVerify() {
   return (
     <Html>
       <Head />
       <Body style={main}>
         <Container style={container}>
-          <Heading style={heading}>Reset Password</Heading>
-          <Text style={paragraph}>Use this link to reset your password:</Text>
+          <Heading style={heading}>Verify Email</Heading>
+          <Text style={paragraph}>Use this link to verify your email:</Text>
           <Section style={buttonContainer}>
             <Button style={button} href="${link}">
-              Reset Password
+              Verify Email
             </Button>
           </Section>
           <Hr style={hr} />
@@ -124,4 +124,4 @@ export function PasswordReset() {
   );
 }
 
-export default PasswordReset;
+export default EmailVerify;
