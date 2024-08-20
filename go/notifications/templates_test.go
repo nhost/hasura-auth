@@ -150,6 +150,7 @@ func TestRenderEmailVerify(t *testing.T) {
 				ClientURL:   "http://client.test",
 			},
 			locale: "non-existent",
+			//nolint:lll
 			expectedBody: `<!DOCTYPE html>
 <html dir="ltr" lang="en">
   <head>
