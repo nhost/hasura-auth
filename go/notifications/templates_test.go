@@ -149,8 +149,8 @@ func TestRenderEmailVerify(t *testing.T) {
 				ServerURL:   "http://server.test",
 				ClientURL:   "http://client.test",
 			},
-			locale: "non-existent",
-			expectedBody: `<!DOCTYPE html>
+			locale:          "non-existent",
+			expectedBody:    `<!DOCTYPE html>
 <html dir="ltr" lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -194,8 +194,8 @@ func TestRenderEmailVerify(t *testing.T) {
       </tbody>
     </table>
   </body>
-</html>`, //nolint:lll
-			expectedSubject: "Verify your email", //nolint:lll
+</html>`,
+			expectedSubject: "Verify your email",                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             //nolint:lll
 		},
 	}
 
