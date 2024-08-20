@@ -195,7 +195,7 @@ func TestRenderEmailVerify(t *testing.T) {
     </table>
   </body>
 </html>`,
-			expectedSubject: "Verify your email", //nolint:lll
+			expectedSubject: "Verify your email",
 		},
 	}
 
