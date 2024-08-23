@@ -300,15 +300,11 @@ func TestPostUserPasswordReset(t *testing.T) { //nolint:maintidx
 					Options: nil,
 				},
 			},
-			expectedResponse: controller.ErrorResponse{
-				Error:   "disabled-user",
-				Message: "User is disabled",
-				Status:  401,
-			},
-			customClaimer: nil,
-			expectedJWT:   nil,
-			hibp:          nil,
-			jwtTokenFn:    nil,
+			expectedResponse: api.PostUserPasswordReset200JSONResponse("OK"),
+			customClaimer:    nil,
+			expectedJWT:      nil,
+			hibp:             nil,
+			jwtTokenFn:       nil,
 		},
 
 		{
@@ -346,15 +342,11 @@ func TestPostUserPasswordReset(t *testing.T) { //nolint:maintidx
 					Options: nil,
 				},
 			},
-			expectedResponse: controller.ErrorResponse{
-				Error:   "unverified-user",
-				Message: "User is not verified.",
-				Status:  401,
-			},
-			customClaimer: nil,
-			expectedJWT:   nil,
-			hibp:          nil,
-			jwtTokenFn:    nil,
+			expectedResponse: api.PostUserPasswordReset200JSONResponse("OK"),
+			customClaimer:    nil,
+			expectedJWT:      nil,
+			hibp:             nil,
+			jwtTokenFn:       nil,
 		},
 	}
 

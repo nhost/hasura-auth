@@ -24,13 +24,16 @@ func (ctrl *Controller) PostUserPasswordReset( //nolint:ireturn
 	request.Body.Options = options
 
 	if !ctrl.wf.ValidateEmail(string(request.Body.Email)) {
-		logger.Warn("email didn't pass access control checks")
-		return ctrl.sendError(ErrInvalidEmailPassword), nil
+		logger.Warn("email didn't pass access control checks", logError(err))
+		// we return OK to avoid leaking information
+		return api.PostUserPasswordReset200JSONResponse(api.OK), nil
 	}
 
 	user, apiErr := ctrl.wf.GetUserByEmail(ctx, string(request.Body.Email), logger)
 	if apiErr != nil {
-		return ctrl.respondWithError(apiErr), nil
+		logger.Warn("problem getting user by email", logError(apiErr))
+		// we return OK to avoid leaking information
+		return api.PostUserPasswordReset200JSONResponse(api.OK), nil
 	}
 
 	ticket := generateTicket(TicketTypePasswordReset)
