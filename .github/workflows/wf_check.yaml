@@ -71,9 +71,11 @@ jobs:
 
     - name: "Run checks"
       run: make check
+      if: ${{ steps.verify-build.outputs.BUILD_NEEDED == 'yes' }}
 
     - name: "Cache checks"
       run: |
        # DEPENDENCIES=($(nix-store --query --requisites --include-outputs ${{ steps.verify-build.outputs.DERIVATION_PATH }}))
        # nix copy --to http://127.0.0.1:37515 "${DEPENDENCIES[@]}" || exit 0
        nix copy --to http://127.0.0.1:37515 ${{ steps.verify-build.outputs.DERIVATION_PATH }}|| exit 0
+      if: ${{ steps.verify-build.outputs.BUILD_NEEDED == 'yes' }}
