@@ -76,5 +76,6 @@ jobs:
       run: |
        DEPENDENCIES=($(nix-store --query --requisites --include-outputs ${{ steps.verify-build.outputs.DERIVATION_PATH }}))
 
-       nix copy --to http://127.0.0.1:37515 "${DEPENDENCIES[@]}" || sleep 60 \
+       nix copy --to http://127.0.0.1:37515 "${DEPENDENCIES[@]}" || sleep $((30 + RANDOM % 60)) \
+          && nix copy --to http://127.0.0.1:37515 "${DEPENDENCIES[@]}" || sleep $((30 + RANDOM % 60)) \
           && nix copy --to http://127.0.0.1:37515 "${DEPENDENCIES[@]}" || exit 1
