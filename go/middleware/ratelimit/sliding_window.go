@@ -60,5 +60,5 @@ func (r *SlidingWindow) Allow(key string) bool {
 		return false
 	}
 
-	return r.store.Increment(windowKey, r.window*2) <= r.limit //nolint:gomnd
+	return r.store.Increment(windowKey, r.window*2) <= r.limit //nolint:mnd
 }
