@@ -298,7 +298,7 @@ paths:
   /user/password:
     post:
       summary: >-
-        Change user password. The user must be authenticated
+        Change user password. The user must be authenticated or provide a ticket
       tags:
         - user
         - password
@@ -363,7 +363,6 @@ paths:
 
 components:
   securitySchemes:
-    None: {}
     BearerAuth:
       type: http
       scheme: bearer
