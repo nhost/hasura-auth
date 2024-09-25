@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -64,10 +65,15 @@ func makeTurnstileRequest(
 	return &turnstileResponse, nil
 }
 
-func Tunrstile(secret string) gin.HandlerFunc {
+func Tunrstile(secret string, prefix string) gin.HandlerFunc {
 	cl := http.Client{} //nolint:exhaustruct
 
 	return func(ctx *gin.Context) {
+		if !strings.HasPrefix(ctx.Request.URL.Path, prefix+"/signup/") {
+			ctx.Next()
+			return
+		}
+
 		token := ctx.Request.Header.Get("x-cf-turnstile-response")
 
 		if token == "" {

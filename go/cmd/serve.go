@@ -661,7 +661,9 @@ func getGoServer( //nolint:funlen
 	}
 
 	if cCtx.String(flagTurnstileSecret) != "" {
-		handlers = append(handlers, middleware.Tunrstile(cCtx.String(flagTurnstileSecret)))
+		handlers = append(handlers, middleware.Tunrstile(
+			cCtx.String(flagTurnstileSecret), cCtx.String(flagAPIPrefix)),
+		)
 	}
 
 	router.Use(handlers...)
