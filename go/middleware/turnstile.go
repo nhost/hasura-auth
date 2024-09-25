@@ -69,7 +69,9 @@ func Tunrstile(secret string, prefix string) gin.HandlerFunc {
 	cl := http.Client{} //nolint:exhaustruct
 
 	return func(ctx *gin.Context) {
-		if !strings.HasPrefix(ctx.Request.URL.Path, prefix+"/signup/") {
+		if !strings.HasPrefix(ctx.Request.URL.Path, prefix+"/signup/") ||
+			strings.HasSuffix(ctx.Request.URL.Path, "/verify") ||
+			strings.HasSuffix(ctx.Request.URL.Path, "/callback") {
 			ctx.Next()
 			return
 		}
