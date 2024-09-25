@@ -77,7 +77,9 @@ func Tunrstile(secret string, prefix string) gin.HandlerFunc {
 		token := ctx.Request.Header.Get("x-cf-turnstile-response")
 
 		if token == "" {
-			_ = ctx.Error(fmt.Errorf("%w: missing x-cf-turnstile-response header", ErrTurnstileFailed))
+			_ = ctx.Error(
+				fmt.Errorf("%w: missing x-cf-turnstile-response header", ErrTurnstileFailed),
+			)
 			ctx.AbortWithStatusJSON(
 				http.StatusForbidden,
 				gin.H{"error": "missing x-cf-turnstile-response header"},
@@ -98,7 +100,12 @@ func Tunrstile(secret string, prefix string) gin.HandlerFunc {
 			_ = ctx.Error(fmt.Errorf("%w: %s", ErrTurnstileFailed, string(turnstileResponse.Raw)))
 			ctx.AbortWithStatusJSON(
 				http.StatusForbidden,
-				gin.H{"error": fmt.Sprintf("failed to pass turnstile: %v", turnstileResponse.Messages)},
+				gin.H{
+					"error": fmt.Sprintf(
+						"failed to pass turnstile: %v",
+						turnstileResponse.Messages,
+					),
+				},
 			)
 			return
 		}
