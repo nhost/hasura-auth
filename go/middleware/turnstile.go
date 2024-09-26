@@ -96,6 +96,7 @@ func Tunrstile(secret string, prefix string) gin.HandlerFunc {
 				http.StatusInternalServerError,
 				gin.H{"error": "internal server error when attempting to pass turnstile"},
 			)
+			return
 		}
 
 		if !turnstileResponse.Success {
