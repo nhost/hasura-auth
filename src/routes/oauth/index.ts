@@ -334,6 +334,7 @@ export const oauthProviders = Router()
         const userInput = await transformOauthProfile(profile, options);
         user = await insertUser({
           ...userInput,
+          disabled: ENV.AUTH_DISABLE_NEW_USERS,
           userProviders: {
             data: [
               {
