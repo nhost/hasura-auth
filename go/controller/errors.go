@@ -19,7 +19,10 @@ func (e *APIError) Error() string {
 	return fmt.Sprintf("API error: %s", e.t)
 }
 
-var ErrElevatedClaimRequired = errors.New("elevated-claim-required")
+var (
+	ErrElevatedClaimRequired = errors.New("elevated-claim-required")
+	ErrAudienceEmpty         = errors.New("audience-empty")
+)
 
 var (
 	ErrUserEmailNotFound               = &APIError{api.InvalidEmailPassword}
