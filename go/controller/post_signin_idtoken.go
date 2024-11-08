@@ -152,7 +152,7 @@ func (ctrl *Controller) PostSigninIdtoken( //nolint:ireturn
 	}
 
 	if found {
-		return ctrl.postSigninIdtokenSignin(ctx, req, user, token, logger)
+		return ctrl.postSigninIdtokenSignin(ctx, user, logger)
 	}
 
 	return ctrl.postSigninIdtokenSignup(ctx, req, profile, logger)
@@ -280,11 +280,18 @@ func (ctrl *Controller) postSigninIdtokenSignupWithoutSession(
 
 func (ctrl *Controller) postSigninIdtokenSignin( //nolint:ireturn
 	ctx context.Context,
-	req api.PostSigninIdtokenRequestObject,
 	user sql.AuthUser,
-	token *jwt.Token,
 	logger *slog.Logger,
 ) (api.PostSigninIdtokenResponseObject, error) {
 	logger.Info("user found, signing in")
-	return nil, nil
+
+	session, err := ctrl.wf.NewSession(ctx, user, logger)
+	if err != nil {
+		logger.Error("error getting new session", logError(err))
+		return ctrl.sendError(ErrInternalServerError), nil
+	}
+
+	return api.PostSigninIdtoken200JSONResponse{
+		Session: session,
+	}, nil
 }
