@@ -148,17 +148,14 @@ func cmpDBParams(
 }
 
 type testRequest[T, U any] struct {
-	name                      string
-	config                    func() *controller.Config
-	db                        func(ctrl *gomock.Controller) controller.DBClient
-	emailer                   func(ctrl *gomock.Controller) *mock.MockEmailer
-	hibp                      func(ctrl *gomock.Controller) *mock.MockHIBPClient
-	customClaimer             func(ctrl *gomock.Controller) controller.CustomClaimer
-	jwtTokenFn                func() *jwt.Token
-	idTokenValidatorProviders func(t *testing.T) *oidc.IDTokenValidatorProviders
-	request                   T
-	expectedResponse          U
-	expectedJWT               *jwt.Token
+	name              string
+	config            func() *controller.Config
+	db                func(ctrl *gomock.Controller) controller.DBClient
+	jwtTokenFn        func() *jwt.Token
+	request           T
+	expectedResponse  U
+	expectedJWT       *jwt.Token
+	getControllerOpts []getControllerOptsFunc
 }
 
 type getControllerOpts struct {
@@ -168,20 +165,53 @@ type getControllerOpts struct {
 	idTokenValidatorProviders func(t *testing.T) *oidc.IDTokenValidatorProviders
 }
 
+type getControllerOptsFunc func(*getControllerOpts)
+
+func withCusomClaimer(cc func(*gomock.Controller) controller.CustomClaimer) getControllerOptsFunc {
+	return func(o *getControllerOpts) {
+		o.customClaimer = cc
+	}
+}
+
+func withEmailer(emailer func(*gomock.Controller) *mock.MockEmailer) getControllerOptsFunc {
+	return func(o *getControllerOpts) {
+		o.emailer = emailer
+	}
+}
+
+func withHIBP(hibp func(*gomock.Controller) *mock.MockHIBPClient) getControllerOptsFunc {
+	return func(o *getControllerOpts) {
+		o.hibp = hibp
+	}
+}
+
+func withIDTokenValidatorProviders(
+	idTokenValidatorProviders func(t *testing.T) *oidc.IDTokenValidatorProviders,
+) getControllerOptsFunc {
+	return func(o *getControllerOpts) {
+		o.idTokenValidatorProviders = idTokenValidatorProviders
+	}
+}
+
 func getController(
 	t *testing.T,
 	ctrl *gomock.Controller,
 	configFn func() *controller.Config,
 	db func(ctrl *gomock.Controller) controller.DBClient,
-	opts getControllerOpts,
+	opts ...getControllerOptsFunc,
 ) (*controller.Controller, *controller.JWTGetter) {
 	t.Helper()
 
 	config := *configFn()
 
+	var controllerOpts getControllerOpts
+	for _, o := range opts {
+		o(&controllerOpts)
+	}
+
 	var cc controller.CustomClaimer
-	if opts.customClaimer != nil {
-		cc = opts.customClaimer(ctrl)
+	if controllerOpts.customClaimer != nil {
+		cc = controllerOpts.customClaimer(ctrl)
 	}
 
 	jwtGetter, err := controller.NewJWTGetter(
@@ -196,22 +226,21 @@ func getController(
 	}
 
 	var emailer controller.Emailer
-	if opts.emailer != nil {
-		emailer = opts.emailer(ctrl)
+	if controllerOpts.emailer != nil {
+		emailer = controllerOpts.emailer(ctrl)
 	}
 
 	var hibp controller.HIBPClient
-	if opts.hibp != nil {
-		hibp = opts.hibp(ctrl)
+	if controllerOpts.hibp != nil {
+		hibp = controllerOpts.hibp(ctrl)
 	}
 
 	var idTokenValidator *oidc.IDTokenValidatorProviders
-	if opts.idTokenValidatorProviders != nil {
-		idTokenValidator = opts.idTokenValidatorProviders(t)
+	if controllerOpts.idTokenValidatorProviders != nil {
+		idTokenValidator = controllerOpts.idTokenValidatorProviders(t)
 	}
 
 	c, err := controller.New(
-		context.Background(),
 		db(ctrl),
 		config,
 		jwtGetter,

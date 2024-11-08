@@ -134,7 +134,9 @@ func TestPostSigninIdToken(t *testing.T) { //nolint:maintidx
 
 				return mock
 			},
-			emailer: nil,
+			getControllerOpts: []getControllerOptsFunc{
+				withIDTokenValidatorProviders(getTestIDTokenValidatorProviders()),
+			},
 			request: api.PostSigninIdtokenRequestObject{
 				Body: &api.SignInIdTokenRequest{
 					IdToken:  token,
@@ -188,10 +190,7 @@ func TestPostSigninIdToken(t *testing.T) { //nolint:maintidx
 				Signature: []byte{},
 				Valid:     true,
 			},
-			customClaimer:             nil,
-			hibp:                      nil,
-			jwtTokenFn:                nil,
-			idTokenValidatorProviders: getTestIDTokenValidatorProviders(),
+			jwtTokenFn: nil,
 		},
 
 		{
@@ -248,7 +247,6 @@ func TestPostSigninIdToken(t *testing.T) { //nolint:maintidx
 
 				return mock
 			},
-			emailer: nil,
 			request: api.PostSigninIdtokenRequestObject{
 				Body: &api.SignInIdTokenRequest{
 					IdToken: token,
@@ -311,10 +309,10 @@ func TestPostSigninIdToken(t *testing.T) { //nolint:maintidx
 				Signature: []byte{},
 				Valid:     true,
 			},
-			customClaimer:             nil,
-			hibp:                      nil,
-			jwtTokenFn:                nil,
-			idTokenValidatorProviders: getTestIDTokenValidatorProviders(),
+			getControllerOpts: []getControllerOptsFunc{
+				withIDTokenValidatorProviders(getTestIDTokenValidatorProviders()),
+			},
+			jwtTokenFn: nil,
 		},
 
 		{
@@ -342,7 +340,6 @@ func TestPostSigninIdToken(t *testing.T) { //nolint:maintidx
 
 				return mock
 			},
-			emailer: nil,
 			request: api.PostSigninIdtokenRequestObject{
 				Body: &api.SignInIdTokenRequest{
 					IdToken:  token,
@@ -356,11 +353,11 @@ func TestPostSigninIdToken(t *testing.T) { //nolint:maintidx
 				Message: "Sign up is disabled.",
 				Status:  403,
 			},
-			customClaimer:             nil,
-			hibp:                      nil,
-			jwtTokenFn:                nil,
-			expectedJWT:               nil,
-			idTokenValidatorProviders: getTestIDTokenValidatorProviders(),
+			jwtTokenFn:  nil,
+			expectedJWT: nil,
+			getControllerOpts: []getControllerOptsFunc{
+				withIDTokenValidatorProviders(getTestIDTokenValidatorProviders()),
+			},
 		},
 
 		{
@@ -413,7 +410,6 @@ func TestPostSigninIdToken(t *testing.T) { //nolint:maintidx
 
 				return mock
 			},
-			emailer: nil,
 			request: api.PostSigninIdtokenRequestObject{
 				Body: &api.SignInIdTokenRequest{
 					IdToken:  token,
@@ -427,11 +423,11 @@ func TestPostSigninIdToken(t *testing.T) { //nolint:maintidx
 				Message: "User is disabled",
 				Status:  401,
 			},
-			customClaimer:             nil,
-			hibp:                      nil,
-			jwtTokenFn:                nil,
-			expectedJWT:               nil,
-			idTokenValidatorProviders: getTestIDTokenValidatorProviders(),
+			jwtTokenFn:  nil,
+			expectedJWT: nil,
+			getControllerOpts: []getControllerOptsFunc{
+				withIDTokenValidatorProviders(getTestIDTokenValidatorProviders()),
+			},
 		},
 
 		{
@@ -446,7 +442,6 @@ func TestPostSigninIdToken(t *testing.T) { //nolint:maintidx
 
 				return mock
 			},
-			emailer: nil,
 			request: api.PostSigninIdtokenRequestObject{
 				Body: &api.SignInIdTokenRequest{
 					IdToken:  token,
@@ -460,11 +455,11 @@ func TestPostSigninIdToken(t *testing.T) { //nolint:maintidx
 				Message: "Incorrect email or password",
 				Status:  401,
 			},
-			customClaimer:             nil,
-			hibp:                      nil,
-			jwtTokenFn:                nil,
-			expectedJWT:               nil,
-			idTokenValidatorProviders: getTestIDTokenValidatorProviders(),
+			jwtTokenFn:  nil,
+			expectedJWT: nil,
+			getControllerOpts: []getControllerOptsFunc{
+				withIDTokenValidatorProviders(getTestIDTokenValidatorProviders()),
+			},
 		},
 	}
 
@@ -474,12 +469,7 @@ func TestPostSigninIdToken(t *testing.T) { //nolint:maintidx
 
 			ctrl := gomock.NewController(t)
 
-			c, jwtGetter := getController(t, ctrl, tc.config, tc.db, getControllerOpts{
-				customClaimer:             nil,
-				emailer:                   tc.emailer,
-				hibp:                      nil,
-				idTokenValidatorProviders: tc.idTokenValidatorProviders,
-			})
+			c, jwtGetter := getController(t, ctrl, tc.config, tc.db, tc.getControllerOpts...)
 
 			resp := assertRequest(
 				context.Background(),

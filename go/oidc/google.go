@@ -43,8 +43,6 @@ func (g *Google) GetProfile(token *jwt.Token) (Profile, error) {
 		return Profile{}, fmt.Errorf("failed to get email_verified claim from token: %w", err)
 	}
 
-	fmt.Println("emailVerified: ", emailVerified)
-
 	name, err := getClaim[string](token, "name")
 	if err != nil && !errors.Is(err, ErrClaimNotFound) {
 		return Profile{}, fmt.Errorf("failed to get name claim from token: %w", err)

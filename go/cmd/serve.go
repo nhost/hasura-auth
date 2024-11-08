@@ -724,14 +724,7 @@ func getGoServer( //nolint:funlen
 	}
 
 	ctrl, err := controller.New(
-		cCtx.Context,
-		db,
-		config,
-		jwtGetter,
-		emailer,
-		hibp.NewClient(),
-		idTokenValidator,
-		cCtx.App.Version,
+		db, config, jwtGetter, emailer, hibp.NewClient(), idTokenValidator, cCtx.App.Version,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create controller: %w", err)

@@ -117,7 +117,6 @@ type Controller struct {
 }
 
 func New(
-	ctx context.Context,
 	db DBClient,
 	config Config,
 	jwtGetter *JWTGetter,

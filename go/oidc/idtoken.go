@@ -12,7 +12,7 @@ import (
 	"github.com/nhost/hasura-auth/go/api"
 )
 
-func getClaim[T any](token *jwt.Token, claim string) (T, error) {
+func getClaim[T any](token *jwt.Token, claim string) (T, error) { //nolint:ireturn
 	var claimValue T
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok {
