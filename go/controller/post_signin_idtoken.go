@@ -184,10 +184,12 @@ func (ctrl *Controller) postSigninIdtokenSignup( //nolint:ireturn
 		),
 		logger,
 	)
-
 	if apiErr != nil {
 		return ctrl.sendError(apiErr), nil
 	}
+
+	session.User.AvatarUrl = profile.Picture
+	session.User.EmailVerified = profile.EmailVerified
 
 	return api.PostSigninIdtoken200JSONResponse{Session: session}, nil
 }
@@ -203,7 +205,7 @@ func (ctrl *Controller) postSigninIdtokenSignupWithSession(
 		refreshTokenExpiresAt pgtype.Timestamptz,
 		metadata []byte,
 		gravatarURL string,
-	) (sql.AuthUser, uuid.UUID, error) {
+	) (uuid.UUID, uuid.UUID, error) {
 		avatarURL := gravatarURL
 		if profile.Picture != "" {
 			avatarURL = profile.Picture
@@ -230,11 +232,11 @@ func (ctrl *Controller) postSigninIdtokenSignupWithSession(
 			},
 		)
 		if err != nil {
-			return sql.AuthUser{}, uuid.Nil,
+			return uuid.Nil, uuid.Nil,
 				fmt.Errorf("error inserting user with refresh token: %w", err)
 		}
 
-		return resp.AuthUser, resp.RefreshTokenID, nil
+		return resp.ID, resp.RefreshTokenID, nil
 	}
 }
 

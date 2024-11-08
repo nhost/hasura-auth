@@ -90,7 +90,7 @@ func (ctrl *Controller) postSignupEmailPasswordWithSession(
 		refreshTokenExpiresAt pgtype.Timestamptz,
 		metadata []byte,
 		gravatarURL string,
-	) (sql.AuthUser, uuid.UUID, error) {
+	) (uuid.UUID, uuid.UUID, error) {
 		resp, err := ctrl.wf.db.InsertUserWithRefreshToken(
 			ctx, sql.InsertUserWithRefreshTokenParams{
 				Disabled:              ctrl.config.DisableNewUsers,
@@ -110,11 +110,11 @@ func (ctrl *Controller) postSignupEmailPasswordWithSession(
 			},
 		)
 		if err != nil {
-			return sql.AuthUser{}, uuid.Nil,
+			return uuid.Nil, uuid.Nil,
 				fmt.Errorf("error inserting user with refresh token: %w", err)
 		}
 
-		return resp.AuthUser, resp.RefreshTokenID, nil
+		return resp.ID, resp.RefreshTokenID, nil
 	}
 }
 

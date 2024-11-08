@@ -101,12 +101,9 @@ WITH inserted_user AS (
     SELECT inserted_user.id, roles.role
     FROM inserted_user, unnest(@roles::TEXT[]) AS roles(role)
 )
-SELECT sqlc.embed(u), r.id AS refresh_token_id
-FROM auth.users u
-JOIN inserted_refresh_token r
-ON u.id = r.user_id
-WHERE u.id = (SELECT id FROM inserted_user);
-
+SELECT
+    (SELECT id FROM inserted_user),
+    (SELECT id FROM inserted_refresh_token) AS refresh_token_id;
 
 -- name: InsertUserWithSecurityKey :one
 WITH inserted_user AS (
@@ -203,11 +200,9 @@ WITH inserted_user AS (
     SELECT inserted_user.id, roles.role
     FROM inserted_user, unnest(@roles::TEXT[]) AS roles(role)
 )
-SELECT sqlc.embed(u), r.id AS refresh_token_id
-FROM auth.users u
-JOIN inserted_refresh_token r
-ON u.id = r.user_id
-WHERE u.id = (SELECT id FROM inserted_user);
+SELECT
+    (SELECT id FROM inserted_user),
+    (SELECT id FROM inserted_refresh_token) AS refresh_token_id;
 
 -- name: InsertUserWithRefreshToken :one
 WITH inserted_user AS (
@@ -238,11 +233,9 @@ WITH inserted_user AS (
     SELECT inserted_user.id, roles.role
     FROM inserted_user, unnest(@roles::TEXT[]) AS roles(role)
 )
-SELECT sqlc.embed(u), r.id AS refresh_token_id
-FROM auth.users u
-JOIN inserted_refresh_token r
-ON u.id = r.user_id
-WHERE u.id = (SELECT id FROM inserted_user);
+SELECT
+    (SELECT id FROM inserted_user),
+    (SELECT id FROM inserted_refresh_token) AS refresh_token_id;
 
 
 -- name: InsertRefreshtoken :one

@@ -53,35 +53,8 @@ func TestPostSigninIdToken(t *testing.T) { //nolint:maintidx
 	userID := uuid.MustParse("DB477732-48FA-4289-B694-2886A646B6EB")
 	refreshTokenID := uuid.MustParse("DB477732-48FA-4289-B694-2886A646B6EB")
 
-	//nolint:exhaustruct
 	insertResponse := sql.InsertUserWithUserProviderAndRefreshTokenRow{
-		AuthUser: sql.AuthUser{
-			ID:                       userID,
-			CreatedAt:                sql.TimestampTz(time.Now()),
-			UpdatedAt:                sql.TimestampTz(time.Now()),
-			LastSeen:                 sql.TimestampTz(time.Now()),
-			Disabled:                 false,
-			DisplayName:              "John",
-			AvatarUrl:                "https://lh3.googleusercontent.com/a/ACg8ocKX6Sv26oC88RiNGS1BHGscxWLrgj1pxbCHPqFDyctZRVyeyw=s96-c", //nolint:lll
-			Locale:                   "en",
-			Email:                    sql.Text("veweyif660@gmail.com"),
-			PhoneNumber:              pgtype.Text{},
-			PasswordHash:             pgtype.Text{},
-			EmailVerified:            true,
-			PhoneNumberVerified:      false,
-			NewEmail:                 pgtype.Text{},
-			OtpMethodLastUsed:        pgtype.Text{},
-			OtpHash:                  pgtype.Text{},
-			OtpHashExpiresAt:         pgtype.Timestamptz{},
-			DefaultRole:              "user",
-			IsAnonymous:              false,
-			TotpSecret:               pgtype.Text{},
-			ActiveMfaType:            pgtype.Text{},
-			Ticket:                   sql.Text(""),
-			TicketExpiresAt:          sql.TimestampTz(time.Now()),
-			Metadata:                 []byte("null"),
-			WebauthnCurrentChallenge: pgtype.Text{},
-		},
+		ID:             userID,
 		RefreshTokenID: refreshTokenID,
 	}
 
@@ -211,12 +184,6 @@ func TestPostSigninIdToken(t *testing.T) { //nolint:maintidx
 					gomock.Any(),
 					sql.Text("veweyif660@gmail.com"),
 				).Return(sql.AuthUser{}, pgx.ErrNoRows) //nolint:exhaustruct
-
-				insertResponse := insertResponse
-				insertResponse.AuthUser.DisplayName = "Some other name"
-				insertResponse.AuthUser.Locale = "se"
-				insertResponse.AuthUser.DefaultRole = "me"
-				insertResponse.AuthUser.Metadata = []byte(`{"key":"value"}`)
 
 				mock.EXPECT().InsertUserWithUserProviderAndRefreshToken(
 					gomock.Any(),

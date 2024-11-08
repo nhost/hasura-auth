@@ -155,35 +155,8 @@ func TestPostSignupWebauthnVerify(t *testing.T) { //nolint:maintidx
 	refreshTokenID := uuid.MustParse("c3b747ef-76a9-4c56-8091-ed3e6b8afb2c")
 	userID := uuid.MustParse("cf91d1bc-875e-49bc-897f-fbccf32ede11")
 
-	//nolint:exhaustruct
 	insertResponse := sql.InsertUserWithSecurityKeyAndRefreshTokenRow{
-		AuthUser: sql.AuthUser{
-			ID:                       userID,
-			CreatedAt:                sql.TimestampTz(time.Now()),
-			UpdatedAt:                sql.TimestampTz(time.Now()),
-			LastSeen:                 sql.TimestampTz(time.Now()),
-			Disabled:                 false,
-			DisplayName:              "Jane Doe",
-			AvatarUrl:                "",
-			Locale:                   "en",
-			Email:                    sql.Text("jane@acme.com"),
-			PhoneNumber:              pgtype.Text{},
-			PasswordHash:             pgtype.Text{},
-			EmailVerified:            false,
-			PhoneNumberVerified:      false,
-			NewEmail:                 pgtype.Text{},
-			OtpMethodLastUsed:        pgtype.Text{},
-			OtpHash:                  pgtype.Text{},
-			OtpHashExpiresAt:         pgtype.Timestamptz{},
-			DefaultRole:              "user",
-			IsAnonymous:              false,
-			TotpSecret:               pgtype.Text{},
-			ActiveMfaType:            pgtype.Text{},
-			Ticket:                   pgtype.Text{},
-			TicketExpiresAt:          pgtype.Timestamptz{},
-			Metadata:                 []byte{},
-			WebauthnCurrentChallenge: pgtype.Text{},
-		},
+		ID:             userID,
 		RefreshTokenID: refreshTokenID,
 	}
 

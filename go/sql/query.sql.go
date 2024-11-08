@@ -442,11 +442,9 @@ WITH inserted_user AS (
     SELECT inserted_user.id, roles.role
     FROM inserted_user, unnest($14::TEXT[]) AS roles(role)
 )
-SELECT u.id, u.created_at, u.updated_at, u.last_seen, u.disabled, u.display_name, u.avatar_url, u.locale, u.email, u.phone_number, u.password_hash, u.email_verified, u.phone_number_verified, u.new_email, u.otp_method_last_used, u.otp_hash, u.otp_hash_expires_at, u.default_role, u.is_anonymous, u.totp_secret, u.active_mfa_type, u.ticket, u.ticket_expires_at, u.metadata, u.webauthn_current_challenge, r.id AS refresh_token_id
-FROM auth.users u
-JOIN inserted_refresh_token r
-ON u.id = r.user_id
-WHERE u.id = (SELECT id FROM inserted_user)
+SELECT
+    (SELECT id FROM inserted_user),
+    (SELECT id FROM inserted_refresh_token) AS refresh_token_id
 `
 
 type InsertUserWithRefreshTokenParams struct {
@@ -467,7 +465,7 @@ type InsertUserWithRefreshTokenParams struct {
 }
 
 type InsertUserWithRefreshTokenRow struct {
-	AuthUser       AuthUser
+	ID             uuid.UUID
 	RefreshTokenID uuid.UUID
 }
 
@@ -489,34 +487,7 @@ func (q *Queries) InsertUserWithRefreshToken(ctx context.Context, arg InsertUser
 		arg.Roles,
 	)
 	var i InsertUserWithRefreshTokenRow
-	err := row.Scan(
-		&i.AuthUser.ID,
-		&i.AuthUser.CreatedAt,
-		&i.AuthUser.UpdatedAt,
-		&i.AuthUser.LastSeen,
-		&i.AuthUser.Disabled,
-		&i.AuthUser.DisplayName,
-		&i.AuthUser.AvatarUrl,
-		&i.AuthUser.Locale,
-		&i.AuthUser.Email,
-		&i.AuthUser.PhoneNumber,
-		&i.AuthUser.PasswordHash,
-		&i.AuthUser.EmailVerified,
-		&i.AuthUser.PhoneNumberVerified,
-		&i.AuthUser.NewEmail,
-		&i.AuthUser.OtpMethodLastUsed,
-		&i.AuthUser.OtpHash,
-		&i.AuthUser.OtpHashExpiresAt,
-		&i.AuthUser.DefaultRole,
-		&i.AuthUser.IsAnonymous,
-		&i.AuthUser.TotpSecret,
-		&i.AuthUser.ActiveMfaType,
-		&i.AuthUser.Ticket,
-		&i.AuthUser.TicketExpiresAt,
-		&i.AuthUser.Metadata,
-		&i.AuthUser.WebauthnCurrentChallenge,
-		&i.RefreshTokenID,
-	)
+	err := row.Scan(&i.ID, &i.RefreshTokenID)
 	return i, err
 }
 
@@ -627,11 +598,9 @@ WITH inserted_user AS (
     SELECT inserted_user.id, roles.role
     FROM inserted_user, unnest($17::TEXT[]) AS roles(role)
 )
-SELECT u.id, u.created_at, u.updated_at, u.last_seen, u.disabled, u.display_name, u.avatar_url, u.locale, u.email, u.phone_number, u.password_hash, u.email_verified, u.phone_number_verified, u.new_email, u.otp_method_last_used, u.otp_hash, u.otp_hash_expires_at, u.default_role, u.is_anonymous, u.totp_secret, u.active_mfa_type, u.ticket, u.ticket_expires_at, u.metadata, u.webauthn_current_challenge, r.id AS refresh_token_id
-FROM auth.users u
-JOIN inserted_refresh_token r
-ON u.id = r.user_id
-WHERE u.id = (SELECT id FROM inserted_user)
+SELECT
+    (SELECT id FROM inserted_user),
+    (SELECT id FROM inserted_refresh_token) AS refresh_token_id
 `
 
 type InsertUserWithSecurityKeyAndRefreshTokenParams struct {
@@ -655,7 +624,7 @@ type InsertUserWithSecurityKeyAndRefreshTokenParams struct {
 }
 
 type InsertUserWithSecurityKeyAndRefreshTokenRow struct {
-	AuthUser       AuthUser
+	ID             uuid.UUID
 	RefreshTokenID uuid.UUID
 }
 
@@ -680,34 +649,7 @@ func (q *Queries) InsertUserWithSecurityKeyAndRefreshToken(ctx context.Context, 
 		arg.Roles,
 	)
 	var i InsertUserWithSecurityKeyAndRefreshTokenRow
-	err := row.Scan(
-		&i.AuthUser.ID,
-		&i.AuthUser.CreatedAt,
-		&i.AuthUser.UpdatedAt,
-		&i.AuthUser.LastSeen,
-		&i.AuthUser.Disabled,
-		&i.AuthUser.DisplayName,
-		&i.AuthUser.AvatarUrl,
-		&i.AuthUser.Locale,
-		&i.AuthUser.Email,
-		&i.AuthUser.PhoneNumber,
-		&i.AuthUser.PasswordHash,
-		&i.AuthUser.EmailVerified,
-		&i.AuthUser.PhoneNumberVerified,
-		&i.AuthUser.NewEmail,
-		&i.AuthUser.OtpMethodLastUsed,
-		&i.AuthUser.OtpHash,
-		&i.AuthUser.OtpHashExpiresAt,
-		&i.AuthUser.DefaultRole,
-		&i.AuthUser.IsAnonymous,
-		&i.AuthUser.TotpSecret,
-		&i.AuthUser.ActiveMfaType,
-		&i.AuthUser.Ticket,
-		&i.AuthUser.TicketExpiresAt,
-		&i.AuthUser.Metadata,
-		&i.AuthUser.WebauthnCurrentChallenge,
-		&i.RefreshTokenID,
-	)
+	err := row.Scan(&i.ID, &i.RefreshTokenID)
 	return i, err
 }
 
@@ -816,11 +758,9 @@ WITH inserted_user AS (
     SELECT inserted_user.id, roles.role
     FROM inserted_user, unnest($16::TEXT[]) AS roles(role)
 )
-SELECT u.id, u.created_at, u.updated_at, u.last_seen, u.disabled, u.display_name, u.avatar_url, u.locale, u.email, u.phone_number, u.password_hash, u.email_verified, u.phone_number_verified, u.new_email, u.otp_method_last_used, u.otp_hash, u.otp_hash_expires_at, u.default_role, u.is_anonymous, u.totp_secret, u.active_mfa_type, u.ticket, u.ticket_expires_at, u.metadata, u.webauthn_current_challenge, r.id AS refresh_token_id
-FROM auth.users u
-JOIN inserted_refresh_token r
-ON u.id = r.user_id
-WHERE u.id = (SELECT id FROM inserted_user)
+SELECT
+    (SELECT id FROM inserted_user),
+    (SELECT id FROM inserted_refresh_token) AS refresh_token_id
 `
 
 type InsertUserWithUserProviderAndRefreshTokenParams struct {
@@ -843,7 +783,7 @@ type InsertUserWithUserProviderAndRefreshTokenParams struct {
 }
 
 type InsertUserWithUserProviderAndRefreshTokenRow struct {
-	AuthUser       AuthUser
+	ID             uuid.UUID
 	RefreshTokenID uuid.UUID
 }
 
@@ -867,34 +807,7 @@ func (q *Queries) InsertUserWithUserProviderAndRefreshToken(ctx context.Context,
 		arg.Roles,
 	)
 	var i InsertUserWithUserProviderAndRefreshTokenRow
-	err := row.Scan(
-		&i.AuthUser.ID,
-		&i.AuthUser.CreatedAt,
-		&i.AuthUser.UpdatedAt,
-		&i.AuthUser.LastSeen,
-		&i.AuthUser.Disabled,
-		&i.AuthUser.DisplayName,
-		&i.AuthUser.AvatarUrl,
-		&i.AuthUser.Locale,
-		&i.AuthUser.Email,
-		&i.AuthUser.PhoneNumber,
-		&i.AuthUser.PasswordHash,
-		&i.AuthUser.EmailVerified,
-		&i.AuthUser.PhoneNumberVerified,
-		&i.AuthUser.NewEmail,
-		&i.AuthUser.OtpMethodLastUsed,
-		&i.AuthUser.OtpHash,
-		&i.AuthUser.OtpHashExpiresAt,
-		&i.AuthUser.DefaultRole,
-		&i.AuthUser.IsAnonymous,
-		&i.AuthUser.TotpSecret,
-		&i.AuthUser.ActiveMfaType,
-		&i.AuthUser.Ticket,
-		&i.AuthUser.TicketExpiresAt,
-		&i.AuthUser.Metadata,
-		&i.AuthUser.WebauthnCurrentChallenge,
-		&i.RefreshTokenID,
-	)
+	err := row.Scan(&i.ID, &i.RefreshTokenID)
 	return i, err
 }
 
