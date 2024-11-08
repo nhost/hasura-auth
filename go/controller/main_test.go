@@ -15,6 +15,7 @@ import (
 	"github.com/nhost/hasura-auth/go/api"
 	"github.com/nhost/hasura-auth/go/controller"
 	"github.com/nhost/hasura-auth/go/controller/mock"
+	"github.com/nhost/hasura-auth/go/oidc"
 	"github.com/nhost/hasura-auth/go/testhelpers"
 	"go.uber.org/mock/gomock"
 	"golang.org/x/crypto/bcrypt"
@@ -147,22 +148,24 @@ func cmpDBParams(
 }
 
 type testRequest[T, U any] struct {
-	name             string
-	config           func() *controller.Config
-	db               func(ctrl *gomock.Controller) controller.DBClient
-	emailer          func(ctrl *gomock.Controller) *mock.MockEmailer
-	hibp             func(ctrl *gomock.Controller) *mock.MockHIBPClient
-	customClaimer    func(ctrl *gomock.Controller) controller.CustomClaimer
-	jwtTokenFn       func() *jwt.Token
-	request          T
-	expectedResponse U
-	expectedJWT      *jwt.Token
+	name                      string
+	config                    func() *controller.Config
+	db                        func(ctrl *gomock.Controller) controller.DBClient
+	emailer                   func(ctrl *gomock.Controller) *mock.MockEmailer
+	hibp                      func(ctrl *gomock.Controller) *mock.MockHIBPClient
+	customClaimer             func(ctrl *gomock.Controller) controller.CustomClaimer
+	jwtTokenFn                func() *jwt.Token
+	idTokenValidatorProviders func(t *testing.T) *oidc.IDTokenValidatorProviders
+	request                   T
+	expectedResponse          U
+	expectedJWT               *jwt.Token
 }
 
 type getControllerOpts struct {
-	customClaimer func(*gomock.Controller) controller.CustomClaimer
-	emailer       func(*gomock.Controller) *mock.MockEmailer
-	hibp          func(*gomock.Controller) *mock.MockHIBPClient
+	customClaimer             func(*gomock.Controller) controller.CustomClaimer
+	emailer                   func(*gomock.Controller) *mock.MockEmailer
+	hibp                      func(*gomock.Controller) *mock.MockHIBPClient
+	idTokenValidatorProviders func(t *testing.T) *oidc.IDTokenValidatorProviders
 }
 
 func getController(
@@ -202,12 +205,19 @@ func getController(
 		hibp = opts.hibp(ctrl)
 	}
 
+	var idTokenValidator *oidc.IDTokenValidatorProviders
+	if opts.idTokenValidatorProviders != nil {
+		idTokenValidator = opts.idTokenValidatorProviders(t)
+	}
+
 	c, err := controller.New(
+		context.Background(),
 		db(ctrl),
 		config,
 		jwtGetter,
 		emailer,
 		hibp,
+		idTokenValidator,
 		"dev",
 	)
 	if err != nil {

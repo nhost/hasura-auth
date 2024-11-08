@@ -263,6 +263,35 @@ func (wf *Workflows) GetUserByEmail(
 	return user, nil
 }
 
+func (wf *Workflows) GetUserByProviderUserID(
+	ctx context.Context,
+	providerID string,
+	providerUserID string,
+	logger *slog.Logger,
+) (sql.AuthUser, *APIError) {
+	user, err := wf.db.GetUserByProviderID(
+		ctx,
+		sql.GetUserByProviderIDParams{
+			ProviderID:     providerID,
+			ProviderUserID: providerUserID,
+		},
+	)
+	if errors.Is(err, pgx.ErrNoRows) {
+		logger.Warn("user provider not found")
+		return sql.AuthUser{}, ErrUserProviderNotFound
+	}
+	if err != nil {
+		logger.Error("error getting user by provider id", logError(err))
+		return sql.AuthUser{}, ErrInternalServerError
+	}
+
+	if err := wf.ValidateUser(user, logger); err != nil {
+		return user, err
+	}
+
+	return user, nil
+}
+
 func (wf *Workflows) GetUserByRefreshTokenHash(
 	ctx context.Context,
 	refreshToken string,
@@ -638,7 +667,7 @@ type databaseWithSessionFn func(
 	refreshTokenExpiresAt pgtype.Timestamptz,
 	metadata []byte,
 	gravatarURL string,
-) (uuid.UUID, uuid.UUID, error)
+) (sql.AuthUser, uuid.UUID, error)
 
 type databaseWithoutSessionFn func(
 	ticket pgtype.Text,
@@ -689,7 +718,7 @@ func (wf *Workflows) SignupUserWithSession( //nolint:funlen
 
 	gravatarURL := wf.gravatarURL(email)
 
-	userID, refreshTokenID, err := databaseWithUserSession(
+	user, refreshTokenID, err := databaseWithUserSession(
 		sql.Text(hashRefreshToken([]byte(refreshToken.String()))),
 		sql.TimestampTz(refreshTokenExpiresAt),
 		metadata,
@@ -705,7 +734,7 @@ func (wf *Workflows) SignupUserWithSession( //nolint:funlen
 	}
 
 	accessToken, expiresIn, err := wf.jwtGetter.GetToken(
-		ctx, userID, false, deptr(options.AllowedRoles), *options.DefaultRole, logger,
+		ctx, user.ID, false, deptr(options.AllowedRoles), *options.DefaultRole, logger,
 	)
 	if err != nil {
 		logger.Error("error getting jwt", logError(err))
@@ -718,18 +747,18 @@ func (wf *Workflows) SignupUserWithSession( //nolint:funlen
 		RefreshTokenId:       refreshTokenID.String(),
 		RefreshToken:         refreshToken.String(),
 		User: &api.User{
-			AvatarUrl:           gravatarURL,
-			CreatedAt:           time.Now(),
-			DefaultRole:         *options.DefaultRole,
-			DisplayName:         deptr(options.DisplayName),
-			Email:               ptr(types.Email(email)),
-			EmailVerified:       false,
-			Id:                  userID.String(),
-			IsAnonymous:         false,
-			Locale:              deptr(options.Locale),
+			AvatarUrl:           user.AvatarUrl,
+			CreatedAt:           user.CreatedAt.Time,
+			DefaultRole:         user.DefaultRole,
+			DisplayName:         user.DisplayName,
+			Email:               pgtypeTextToOAPIEmail(user.Email),
+			EmailVerified:       user.EmailVerified,
+			Id:                  user.ID.String(),
+			IsAnonymous:         user.IsAnonymous,
+			Locale:              user.Locale,
 			Metadata:            deptr(options.Metadata),
-			PhoneNumber:         "",
-			PhoneNumberVerified: false,
+			PhoneNumber:         user.PhoneNumber.String,
+			PhoneNumberVerified: user.PhoneNumberVerified,
 			Roles:               deptr(options.AllowedRoles),
 		},
 	}, nil

@@ -26,8 +26,35 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx
 
 	refreshTokenID := uuid.MustParse("c3b747ef-76a9-4c56-8091-ed3e6b8afb2c")
 	userID := uuid.MustParse("DB477732-48FA-4289-B694-2886A646B6EB")
+	//nolint:dupl,exhaustruct
 	insertResponse := sql.InsertUserWithRefreshTokenRow{
-		UserID:         userID,
+		AuthUser: sql.AuthUser{
+			ID:                       userID,
+			CreatedAt:                sql.TimestampTz(time.Now()),
+			UpdatedAt:                sql.TimestampTz(time.Now()),
+			LastSeen:                 sql.TimestampTz(time.Now()),
+			Disabled:                 false,
+			DisplayName:              "jane@acme.com",
+			AvatarUrl:                "",
+			Locale:                   "en",
+			Email:                    sql.Text("jane@acme.com"),
+			PhoneNumber:              pgtype.Text{},
+			PasswordHash:             pgtype.Text{},
+			EmailVerified:            false,
+			PhoneNumberVerified:      false,
+			NewEmail:                 pgtype.Text{},
+			OtpMethodLastUsed:        pgtype.Text{},
+			OtpHash:                  pgtype.Text{},
+			OtpHashExpiresAt:         pgtype.Timestamptz{},
+			DefaultRole:              "user",
+			IsAnonymous:              false,
+			TotpSecret:               pgtype.Text{},
+			ActiveMfaType:            pgtype.Text{},
+			Ticket:                   pgtype.Text{},
+			TicketExpiresAt:          pgtype.Timestamptz{},
+			Metadata:                 []byte{},
+			WebauthnCurrentChallenge: pgtype.Text{},
+		},
 		RefreshTokenID: refreshTokenID,
 	}
 
@@ -129,6 +156,11 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx
 			config: getConfig,
 			db: func(ctrl *gomock.Controller) controller.DBClient {
 				mock := mock.NewMockDBClient(ctrl)
+
+				insertResponse := insertResponse
+				insertResponse.AuthUser.DefaultRole = "me"
+				insertResponse.AuthUser.DisplayName = "Jane Doe"
+				insertResponse.AuthUser.Locale = "se"
 
 				mock.EXPECT().InsertUserWithRefreshToken(
 					gomock.Any(),
@@ -730,6 +762,9 @@ func TestPostSignupEmailPassword(t *testing.T) { //nolint:maintidx
 			},
 			db: func(ctrl *gomock.Controller) controller.DBClient {
 				mock := mock.NewMockDBClient(ctrl)
+
+				insertResponse := insertResponse
+				insertResponse.AuthUser.AvatarUrl = "https://www.gravatar.com/avatar/a6b55dc639dd4151e97efbc42ee1a28b?d=blank&r=g" //nolint:lll
 
 				mock.EXPECT().InsertUserWithRefreshToken(
 					gomock.Any(),

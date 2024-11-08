@@ -135,7 +135,7 @@ func (ctrl *Controller) postSignupWebauthnVerifyWithSession(
 		refreshTokenExpiresAt pgtype.Timestamptz,
 		metadata []byte,
 		gravatarURL string,
-	) (uuid.UUID, uuid.UUID, error) {
+	) (sql.AuthUser, uuid.UUID, error) {
 		resp, err := ctrl.wf.db.InsertUserWithSecurityKeyAndRefreshToken(
 			ctx, sql.InsertUserWithSecurityKeyAndRefreshTokenParams{
 				ID:                    webauthnUser.ID,
@@ -158,11 +158,11 @@ func (ctrl *Controller) postSignupWebauthnVerifyWithSession(
 			},
 		)
 		if err != nil {
-			return uuid.Nil, uuid.Nil,
+			return sql.AuthUser{}, uuid.Nil,
 				fmt.Errorf("error inserting user with security key and refresh token: %w", err)
 		}
 
-		return resp.UserID, resp.RefreshTokenID, nil
+		return resp.AuthUser, resp.RefreshTokenID, nil
 	}
 }
 

@@ -30,6 +30,17 @@ SET ticket = NULL, ticket_expires_at = now()
 WHERE id = (SELECT id FROM selected_user)
 RETURNING *;
 
+-- name: GetUserByProviderID :one
+WITH user_providers AS (
+    SELECT * FROM auth.user_providers
+    WHERE provider_user_id = $1
+    AND provider_id = $2
+    LIMIT 1
+)
+SELECT * FROM auth.users
+WHERE id = (SELECT user_id FROM user_providers) LIMIT 1;
+
+
 -- name: InsertUser :one
 WITH inserted_user AS (
     INSERT INTO auth.users (
@@ -79,17 +90,23 @@ WITH inserted_user AS (
         (user_id, refresh_token_hash, expires_at)
     VALUES
         ($1, @refresh_token_hash, @refresh_token_expires_at)
-    RETURNING id AS refresh_token_id
+    RETURNING id, user_id
 ), inserted_security_key AS (
     INSERT INTO auth.user_security_keys
         (user_id, credential_id, credential_public_key, nickname)
     VALUES
         ($1, @credential_id, @credential_public_key, @nickname)
-)
-INSERT INTO auth.user_roles (user_id, role)
+), inserted_user_role AS (
+    INSERT INTO auth.user_roles (user_id, role)
     SELECT inserted_user.id, roles.role
     FROM inserted_user, unnest(@roles::TEXT[]) AS roles(role)
-RETURNING (SELECT refresh_token_id FROM inserted_refresh_token), user_id;
+)
+SELECT sqlc.embed(u), r.id AS refresh_token_id
+FROM auth.users u
+JOIN inserted_refresh_token r
+ON u.id = r.user_id
+WHERE u.id = (SELECT id FROM inserted_user);
+
 
 -- name: InsertUserWithSecurityKey :one
 WITH inserted_user AS (
@@ -121,6 +138,77 @@ INSERT INTO auth.user_roles (user_id, role)
     FROM inserted_user, unnest(@roles::TEXT[]) AS roles(role)
 RETURNING user_id;
 
+-- name: InsertUserWithUserProvider :one
+WITH inserted_user AS (
+    INSERT INTO auth.users (
+        id,
+        disabled,
+        display_name,
+        avatar_url,
+        email,
+        ticket,
+        ticket_expires_at,
+        email_verified,
+        locale,
+        default_role,
+        metadata,
+        last_seen
+    ) VALUES (
+      $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, now()
+    )
+    RETURNING id
+), inserted_user_provider AS (
+    INSERT INTO auth.user_providers
+        (user_id, provider_id, provider_user_id)
+    VALUES
+        ($1, @provider_id, @provider_user_id)
+)
+INSERT INTO auth.user_roles (user_id, role)
+    SELECT inserted_user.id, roles.role
+    FROM inserted_user, unnest(@roles::TEXT[]) AS roles(role)
+RETURNING user_id;
+
+-- name: InsertUserWithUserProviderAndRefreshToken :one
+WITH inserted_user AS (
+    INSERT INTO auth.users (
+        id,
+        disabled,
+        display_name,
+        avatar_url,
+        email,
+        ticket,
+        ticket_expires_at,
+        email_verified,
+        locale,
+        default_role,
+        metadata,
+        last_seen
+    ) VALUES (
+      $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, now()
+    )
+    RETURNING id
+), inserted_refresh_token AS (
+    INSERT INTO auth.refresh_tokens
+        (user_id, refresh_token_hash, expires_at)
+    VALUES
+        ($1, @refresh_token_hash, @refresh_token_expires_at)
+    RETURNING id , user_id
+), inserted_user_provider AS (
+    INSERT INTO auth.user_providers
+        (user_id, provider_id, provider_user_id)
+    VALUES
+        ($1, @provider_id, @provider_user_id)
+), inserted_user_role AS (
+    INSERT INTO auth.user_roles (user_id, role)
+    SELECT inserted_user.id, roles.role
+    FROM inserted_user, unnest(@roles::TEXT[]) AS roles(role)
+)
+SELECT sqlc.embed(u), r.id AS refresh_token_id
+FROM auth.users u
+JOIN inserted_refresh_token r
+ON u.id = r.user_id
+WHERE u.id = (SELECT id FROM inserted_user);
+
 -- name: InsertUserWithRefreshToken :one
 WITH inserted_user AS (
     INSERT INTO auth.users (
@@ -139,17 +227,23 @@ WITH inserted_user AS (
     ) VALUES (
       $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, now()
     )
-    RETURNING id, created_at
+    RETURNING id
 ), inserted_refresh_token AS (
     INSERT INTO auth.refresh_tokens (user_id, refresh_token_hash, expires_at)
         SELECT inserted_user.id, @refresh_token_hash, @refresh_token_expires_at
         FROM inserted_user
-    RETURNING id AS refresh_token_id
-)
-INSERT INTO auth.user_roles (user_id, role)
+    RETURNING id, user_id
+), inserted_user_role AS (
+    INSERT INTO auth.user_roles (user_id, role)
     SELECT inserted_user.id, roles.role
     FROM inserted_user, unnest(@roles::TEXT[]) AS roles(role)
-RETURNING (SELECT refresh_token_id FROM inserted_refresh_token), user_id;
+)
+SELECT sqlc.embed(u), r.id AS refresh_token_id
+FROM auth.users u
+JOIN inserted_refresh_token r
+ON u.id = r.user_id
+WHERE u.id = (SELECT id FROM inserted_user);
+
 
 -- name: InsertRefreshtoken :one
 INSERT INTO auth.refresh_tokens (user_id, refresh_token_hash, expires_at, type, metadata)
@@ -227,3 +321,7 @@ WHERE user_id = $1;
 -- name: DeleteUserRoles :exec
 DELETE FROM auth.user_roles
 WHERE user_id = $1;
+
+-- name: FindUserProviderByProviderId :one
+SELECT * FROM auth.user_providers
+WHERE provider_user_id = $1 AND provider_id = $2;
