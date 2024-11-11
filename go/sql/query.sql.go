@@ -674,9 +674,9 @@ WITH inserted_user AS (
     RETURNING id
 ), inserted_user_provider AS (
     INSERT INTO auth.user_providers
-        (user_id, provider_id, provider_user_id)
+        (user_id, access_token, provider_id, provider_user_id)
     VALUES
-        ($1, $13, $14)
+        ($1, 'unset', $13, $14)
 )
 INSERT INTO auth.user_roles (user_id, role)
     SELECT inserted_user.id, roles.role
@@ -750,9 +750,9 @@ WITH inserted_user AS (
     RETURNING id , user_id
 ), inserted_user_provider AS (
     INSERT INTO auth.user_providers
-        (user_id, provider_id, provider_user_id)
+        (user_id, access_token, provider_id, provider_user_id)
     VALUES
-        ($1, $14, $15)
+        ($1, 'unset', $14, $15)
 ), inserted_user_role AS (
     INSERT INTO auth.user_roles (user_id, role)
     SELECT inserted_user.id, roles.role
