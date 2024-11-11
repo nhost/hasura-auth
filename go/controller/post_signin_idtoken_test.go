@@ -428,6 +428,337 @@ func TestPostSigninIdToken(t *testing.T) { //nolint:maintidx
 				withIDTokenValidatorProviders(getTestIDTokenValidatorProviders()),
 			},
 		},
+
+		{
+			name:   "signin - simple - provider id found",
+			config: getConfig,
+			db: func(ctrl *gomock.Controller) controller.DBClient {
+				mock := mock.NewMockDBClient(ctrl)
+
+				mock.EXPECT().GetUserByProviderID(
+					gomock.Any(),
+					sql.GetUserByProviderIDParams{
+						ProviderID:     "google",
+						ProviderUserID: "106964149809169421082",
+					},
+				).Return(
+					//nolint:exhaustruct
+					sql.AuthUser{
+						ID: userID,
+						CreatedAt: pgtype.Timestamptz{
+							Time: time.Now(),
+						},
+						UpdatedAt:   pgtype.Timestamptz{},
+						LastSeen:    pgtype.Timestamptz{},
+						Disabled:    false,
+						DisplayName: "John",
+						AvatarUrl:   "https://lh3.googleusercontent.com/a/ACg8ocKX6Sv26oC88RiNGS1BHGscxWLrgj1pxbCHPqFDyctZRVyeyw=s96-c",
+						Locale:      "en",
+						Email:       sql.Text("veweyif660@gmail.com"),
+						PhoneNumber: pgtype.Text{},
+						PasswordHash: sql.Text(
+							"$2a$10$pyv7eu9ioQcFnLSz7u/enex22P3ORdh6z6116Vj5a3vSjo0oxFa1u",
+						),
+						EmailVerified:            true,
+						PhoneNumberVerified:      false,
+						NewEmail:                 pgtype.Text{},
+						OtpMethodLastUsed:        pgtype.Text{},
+						OtpHash:                  pgtype.Text{},
+						OtpHashExpiresAt:         pgtype.Timestamptz{},
+						DefaultRole:              "user",
+						IsAnonymous:              false,
+						TotpSecret:               pgtype.Text{},
+						ActiveMfaType:            pgtype.Text{},
+						Ticket:                   pgtype.Text{},
+						TicketExpiresAt:          pgtype.Timestamptz{},
+						Metadata:                 []byte{},
+						WebauthnCurrentChallenge: pgtype.Text{},
+					}, nil)
+
+				mock.EXPECT().GetUserRoles(
+					gomock.Any(), userID,
+				).Return([]sql.AuthUserRole{
+					{UserID: userID, Role: "user"}, //nolint:exhaustruct
+					{UserID: userID, Role: "me"},   //nolint:exhaustruct
+				}, nil)
+
+				mock.EXPECT().InsertRefreshtoken(
+					gomock.Any(),
+					cmpDBParams(sql.InsertRefreshtokenParams{
+						UserID:           userID,
+						RefreshTokenHash: pgtype.Text{}, //nolint:exhaustruct
+						ExpiresAt:        sql.TimestampTz(time.Now().Add(30 * 24 * time.Hour)),
+						Type:             sql.RefreshTokenTypeRegular,
+						Metadata:         nil,
+					}),
+				).Return(refreshTokenID, nil)
+
+				mock.EXPECT().UpdateUserLastSeen(
+					gomock.Any(), userID,
+				).Return(sql.TimestampTz(time.Now()), nil)
+
+				return mock
+			},
+			getControllerOpts: []getControllerOptsFunc{
+				withIDTokenValidatorProviders(getTestIDTokenValidatorProviders()),
+			},
+			request: api.PostSigninIdtokenRequestObject{
+				Body: &api.SignInIdTokenRequest{
+					IdToken:  token,
+					Nonce:    ptr(nonce),
+					Options:  nil,
+					Provider: "google",
+				},
+			},
+			expectedResponse: api.PostSigninIdtoken200JSONResponse{
+				Session: &api.Session{
+					AccessToken:          "",
+					AccessTokenExpiresIn: 900,
+					RefreshTokenId:       "db477732-48fa-4289-b694-2886a646b6eb",
+					RefreshToken:         "1fb17604-86c7-444e-b337-09a644465f2d",
+					User: &api.User{
+						AvatarUrl:           "https://lh3.googleusercontent.com/a/ACg8ocKX6Sv26oC88RiNGS1BHGscxWLrgj1pxbCHPqFDyctZRVyeyw=s96-c", //nolint:lll
+						CreatedAt:           time.Now(),
+						DefaultRole:         "user",
+						DisplayName:         "John",
+						Email:               ptr(types.Email("veweyif660@gmail.com")),
+						EmailVerified:       true,
+						Id:                  "db477732-48fa-4289-b694-2886a646b6eb",
+						IsAnonymous:         false,
+						Locale:              "en",
+						Metadata:            nil,
+						PhoneNumber:         "",
+						PhoneNumberVerified: false,
+						Roles:               []string{"user", "me"},
+					},
+				},
+			},
+			expectedJWT: &jwt.Token{
+				Raw:    "",
+				Method: jwt.SigningMethodHS256,
+				Header: map[string]any{
+					"alg": "HS256",
+					"typ": "JWT",
+				},
+				Claims: jwt.MapClaims{
+					"exp": float64(time.Now().Add(900 * time.Second).Unix()),
+					"https://hasura.io/jwt/claims": map[string]any{
+						"x-hasura-allowed-roles":     []any{"user", "me"},
+						"x-hasura-default-role":      "user",
+						"x-hasura-user-id":           "db477732-48fa-4289-b694-2886a646b6eb",
+						"x-hasura-user-is-anonymous": "false",
+					},
+					"iat": float64(time.Now().Unix()),
+					"iss": "hasura-auth",
+					"sub": "db477732-48fa-4289-b694-2886a646b6eb",
+				},
+				Signature: []byte{},
+				Valid:     true,
+			},
+			jwtTokenFn: nil,
+		},
+
+		{
+			name:   "signin - simple - user id found",
+			config: getConfig,
+			db: func(ctrl *gomock.Controller) controller.DBClient {
+				mock := mock.NewMockDBClient(ctrl)
+
+				mock.EXPECT().GetUserByProviderID(
+					gomock.Any(),
+					sql.GetUserByProviderIDParams{
+						ProviderID:     "google",
+						ProviderUserID: "106964149809169421082",
+					},
+				).Return(sql.AuthUser{}, pgx.ErrNoRows) //nolint:exhaustruct
+
+				mock.EXPECT().GetUserByEmail(
+					gomock.Any(),
+					sql.Text("veweyif660@gmail.com"),
+				).Return(
+					//nolint:exhaustruct
+					sql.AuthUser{
+						ID: userID,
+						CreatedAt: pgtype.Timestamptz{
+							Time: time.Now(),
+						},
+						UpdatedAt:   pgtype.Timestamptz{},
+						LastSeen:    pgtype.Timestamptz{},
+						Disabled:    false,
+						DisplayName: "John",
+						AvatarUrl:   "https://lh3.googleusercontent.com/a/ACg8ocKX6Sv26oC88RiNGS1BHGscxWLrgj1pxbCHPqFDyctZRVyeyw=s96-c",
+						Locale:      "en",
+						Email:       sql.Text("veweyif660@gmail.com"),
+						PhoneNumber: pgtype.Text{},
+						PasswordHash: sql.Text(
+							"$2a$10$pyv7eu9ioQcFnLSz7u/enex22P3ORdh6z6116Vj5a3vSjo0oxFa1u",
+						),
+						EmailVerified:            true,
+						PhoneNumberVerified:      false,
+						NewEmail:                 pgtype.Text{},
+						OtpMethodLastUsed:        pgtype.Text{},
+						OtpHash:                  pgtype.Text{},
+						OtpHashExpiresAt:         pgtype.Timestamptz{},
+						DefaultRole:              "user",
+						IsAnonymous:              false,
+						TotpSecret:               pgtype.Text{},
+						ActiveMfaType:            pgtype.Text{},
+						Ticket:                   pgtype.Text{},
+						TicketExpiresAt:          pgtype.Timestamptz{},
+						Metadata:                 []byte{},
+						WebauthnCurrentChallenge: pgtype.Text{},
+					}, nil)
+
+				mock.EXPECT().GetUserRoles(
+					gomock.Any(), userID,
+				).Return([]sql.AuthUserRole{
+					{UserID: userID, Role: "user"}, //nolint:exhaustruct
+					{UserID: userID, Role: "me"},   //nolint:exhaustruct
+				}, nil)
+
+				mock.EXPECT().InsertRefreshtoken(
+					gomock.Any(),
+					cmpDBParams(sql.InsertRefreshtokenParams{
+						UserID:           userID,
+						RefreshTokenHash: pgtype.Text{}, //nolint:exhaustruct
+						ExpiresAt:        sql.TimestampTz(time.Now().Add(30 * 24 * time.Hour)),
+						Type:             sql.RefreshTokenTypeRegular,
+						Metadata:         nil,
+					}),
+				).Return(refreshTokenID, nil)
+
+				mock.EXPECT().UpdateUserLastSeen(
+					gomock.Any(), userID,
+				).Return(sql.TimestampTz(time.Now()), nil)
+
+				return mock
+			},
+			getControllerOpts: []getControllerOptsFunc{
+				withIDTokenValidatorProviders(getTestIDTokenValidatorProviders()),
+			},
+			request: api.PostSigninIdtokenRequestObject{
+				Body: &api.SignInIdTokenRequest{
+					IdToken:  token,
+					Nonce:    ptr(nonce),
+					Options:  nil,
+					Provider: "google",
+				},
+			},
+			expectedResponse: api.PostSigninIdtoken200JSONResponse{
+				Session: &api.Session{
+					AccessToken:          "",
+					AccessTokenExpiresIn: 900,
+					RefreshTokenId:       "db477732-48fa-4289-b694-2886a646b6eb",
+					RefreshToken:         "1fb17604-86c7-444e-b337-09a644465f2d",
+					User: &api.User{
+						AvatarUrl:           "https://lh3.googleusercontent.com/a/ACg8ocKX6Sv26oC88RiNGS1BHGscxWLrgj1pxbCHPqFDyctZRVyeyw=s96-c", //nolint:lll
+						CreatedAt:           time.Now(),
+						DefaultRole:         "user",
+						DisplayName:         "John",
+						Email:               ptr(types.Email("veweyif660@gmail.com")),
+						EmailVerified:       true,
+						Id:                  "db477732-48fa-4289-b694-2886a646b6eb",
+						IsAnonymous:         false,
+						Locale:              "en",
+						Metadata:            nil,
+						PhoneNumber:         "",
+						PhoneNumberVerified: false,
+						Roles:               []string{"user", "me"},
+					},
+				},
+			},
+			expectedJWT: &jwt.Token{
+				Raw:    "",
+				Method: jwt.SigningMethodHS256,
+				Header: map[string]any{
+					"alg": "HS256",
+					"typ": "JWT",
+				},
+				Claims: jwt.MapClaims{
+					"exp": float64(time.Now().Add(900 * time.Second).Unix()),
+					"https://hasura.io/jwt/claims": map[string]any{
+						"x-hasura-allowed-roles":     []any{"user", "me"},
+						"x-hasura-default-role":      "user",
+						"x-hasura-user-id":           "db477732-48fa-4289-b694-2886a646b6eb",
+						"x-hasura-user-is-anonymous": "false",
+					},
+					"iat": float64(time.Now().Unix()),
+					"iss": "hasura-auth",
+					"sub": "db477732-48fa-4289-b694-2886a646b6eb",
+				},
+				Signature: []byte{},
+				Valid:     true,
+			},
+			jwtTokenFn: nil,
+		},
+
+		{
+			name:   "signin - simple - user disabled",
+			config: getConfig,
+			db: func(ctrl *gomock.Controller) controller.DBClient {
+				mock := mock.NewMockDBClient(ctrl)
+
+				mock.EXPECT().GetUserByProviderID(
+					gomock.Any(),
+					sql.GetUserByProviderIDParams{
+						ProviderID:     "google",
+						ProviderUserID: "106964149809169421082",
+					},
+				).Return(
+					//nolint:exhaustruct
+					sql.AuthUser{
+						ID: userID,
+						CreatedAt: pgtype.Timestamptz{
+							Time: time.Now(),
+						},
+						UpdatedAt:   pgtype.Timestamptz{},
+						LastSeen:    pgtype.Timestamptz{},
+						Disabled:    true,
+						DisplayName: "John",
+						AvatarUrl:   "https://lh3.googleusercontent.com/a/ACg8ocKX6Sv26oC88RiNGS1BHGscxWLrgj1pxbCHPqFDyctZRVyeyw=s96-c",
+						Locale:      "en",
+						Email:       sql.Text("veweyif660@gmail.com"),
+						PhoneNumber: pgtype.Text{},
+						PasswordHash: sql.Text(
+							"$2a$10$pyv7eu9ioQcFnLSz7u/enex22P3ORdh6z6116Vj5a3vSjo0oxFa1u",
+						),
+						EmailVerified:            true,
+						PhoneNumberVerified:      false,
+						NewEmail:                 pgtype.Text{},
+						OtpMethodLastUsed:        pgtype.Text{},
+						OtpHash:                  pgtype.Text{},
+						OtpHashExpiresAt:         pgtype.Timestamptz{},
+						DefaultRole:              "user",
+						IsAnonymous:              false,
+						TotpSecret:               pgtype.Text{},
+						ActiveMfaType:            pgtype.Text{},
+						Ticket:                   pgtype.Text{},
+						TicketExpiresAt:          pgtype.Timestamptz{},
+						Metadata:                 []byte{},
+						WebauthnCurrentChallenge: pgtype.Text{},
+					}, nil)
+
+				return mock
+			},
+			getControllerOpts: []getControllerOptsFunc{
+				withIDTokenValidatorProviders(getTestIDTokenValidatorProviders()),
+			},
+			request: api.PostSigninIdtokenRequestObject{
+				Body: &api.SignInIdTokenRequest{
+					IdToken:  token,
+					Nonce:    ptr(nonce),
+					Options:  nil,
+					Provider: "google",
+				},
+			},
+			expectedResponse: controller.ErrorResponse{
+				Error:   "disabled-user",
+				Message: "User is disabled",
+				Status:  401,
+			},
+			expectedJWT: nil,
+			jwtTokenFn:  nil,
+		},
 	}
 
 	for _, tc := range cases {
