@@ -435,7 +435,7 @@ func TestPostSigninIdToken(t *testing.T) { //nolint:maintidx
 			db: func(ctrl *gomock.Controller) controller.DBClient {
 				mock := mock.NewMockDBClient(ctrl)
 
-				mock.EXPECT().GetUserByProviderID(
+				mock.EXPECT().GetUserByProviderID( //nolint:dupl
 					gomock.Any(),
 					sql.GetUserByProviderIDParams{
 						ProviderID:     "google",
@@ -698,7 +698,7 @@ func TestPostSigninIdToken(t *testing.T) { //nolint:maintidx
 			db: func(ctrl *gomock.Controller) controller.DBClient {
 				mock := mock.NewMockDBClient(ctrl)
 
-				mock.EXPECT().GetUserByProviderID(
+				mock.EXPECT().GetUserByProviderID( //nolint:dupl
 					gomock.Any(),
 					sql.GetUserByProviderIDParams{
 						ProviderID:     "google",
