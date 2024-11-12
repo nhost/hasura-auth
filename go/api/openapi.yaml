@@ -270,7 +270,7 @@ paths:
       responses:
         '200':
           description: >-
-            Magic link sent to user's email successfully
+            Identity linked successfully
           content:
             application/json:
               schema:
