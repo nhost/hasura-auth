@@ -282,7 +282,6 @@ func TestPostLinkIdToken(t *testing.T) { //nolint:maintidx
 				).Return(
 					sql.AuthUserProvider{}, //nolint:exhaustruct
 					errors.New(`ERROR: duplicate key value violates unique constraint "user_providers_user_id_provider_id_key" (SQLSTATE 23505)`), //nolint:goerr113,lll
-
 				)
 
 				return mock
