@@ -955,7 +955,7 @@ func (wf *Workflows) InsertUserProvider(
 		},
 	)
 	if err != nil {
-		if sqlIsDuplcateError(err, "user_providers_user_id_provider_id_key") {
+		if sqlIsDuplcateError(err, "user_providers_provider_id_provider_user_id_key") {
 			logger.Error("user provider id already in use", logError(err))
 			return sql.AuthUserProvider{}, ErrUserProviderAlreadyLinked
 		}
