@@ -22,6 +22,9 @@ import (
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
+	// Get public keys for JWT verification in JWK Set format
+	// (GET /.well-known/jwks.json)
+	GetWellKnownJwksJson(c *gin.Context)
 	// Health check
 	// (GET /healthz)
 	GetHealthz(c *gin.Context)
@@ -86,6 +89,19 @@ type ServerInterfaceWrapper struct {
 }
 
 type MiddlewareFunc func(c *gin.Context)
+
+// GetWellKnownJwksJson operation middleware
+func (siw *ServerInterfaceWrapper) GetWellKnownJwksJson(c *gin.Context) {
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		middleware(c)
+		if c.IsAborted() {
+			return
+		}
+	}
+
+	siw.Handler.GetWellKnownJwksJson(c)
+}
 
 // GetHealthz operation middleware
 func (siw *ServerInterfaceWrapper) GetHealthz(c *gin.Context) {
@@ -358,6 +374,7 @@ func RegisterHandlersWithOptions(router gin.IRouter, si ServerInterface, options
 		ErrorHandler:       errorHandler,
 	}
 
+	router.GET(options.BaseURL+"/.well-known/jwks.json", wrapper.GetWellKnownJwksJson)
 	router.GET(options.BaseURL+"/healthz", wrapper.GetHealthz)
 	router.HEAD(options.BaseURL+"/healthz", wrapper.HeadHealthz)
 	router.POST(options.BaseURL+"/link/idtoken", wrapper.PostLinkIdtoken)
@@ -376,6 +393,22 @@ func RegisterHandlersWithOptions(router gin.IRouter, si ServerInterface, options
 	router.POST(options.BaseURL+"/user/password", wrapper.PostUserPassword)
 	router.POST(options.BaseURL+"/user/password/reset", wrapper.PostUserPasswordReset)
 	router.GET(options.BaseURL+"/version", wrapper.GetVersion)
+}
+
+type GetWellKnownJwksJsonRequestObject struct {
+}
+
+type GetWellKnownJwksJsonResponseObject interface {
+	VisitGetWellKnownJwksJsonResponse(w http.ResponseWriter) error
+}
+
+type GetWellKnownJwksJson200JSONResponse JWKSet
+
+func (response GetWellKnownJwksJson200JSONResponse) VisitGetWellKnownJwksJsonResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
 type GetHealthzRequestObject struct {
@@ -702,6 +735,9 @@ func (response GetVersion200JSONResponse) VisitGetVersionResponse(w http.Respons
 
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
+	// Get public keys for JWT verification in JWK Set format
+	// (GET /.well-known/jwks.json)
+	GetWellKnownJwksJson(ctx context.Context, request GetWellKnownJwksJsonRequestObject) (GetWellKnownJwksJsonResponseObject, error)
 	// Health check
 	// (GET /healthz)
 	GetHealthz(ctx context.Context, request GetHealthzRequestObject) (GetHealthzResponseObject, error)
@@ -768,6 +804,31 @@ func NewStrictHandler(ssi StrictServerInterface, middlewares []StrictMiddlewareF
 type strictHandler struct {
 	ssi         StrictServerInterface
 	middlewares []StrictMiddlewareFunc
+}
+
+// GetWellKnownJwksJson operation middleware
+func (sh *strictHandler) GetWellKnownJwksJson(ctx *gin.Context) {
+	var request GetWellKnownJwksJsonRequestObject
+
+	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.GetWellKnownJwksJson(ctx, request.(GetWellKnownJwksJsonRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetWellKnownJwksJson")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		ctx.Error(err)
+		ctx.Status(http.StatusInternalServerError)
+	} else if validResponse, ok := response.(GetWellKnownJwksJsonResponseObject); ok {
+		if err := validResponse.VisitGetWellKnownJwksJsonResponse(ctx.Writer); err != nil {
+			ctx.Error(err)
+		}
+	} else if response != nil {
+		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+	}
 }
 
 // GetHealthz operation middleware
