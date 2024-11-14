@@ -283,6 +283,18 @@ SET password_hash = $2
 WHERE id = $1
 RETURNING id;
 
+-- name: UpdateUserConfirmChangeEmail :one
+UPDATE auth.users
+SET (email, new_email) = (new_email, null)
+WHERE id = $1
+RETURNING *;
+
+-- name: UpdateUserVerifyEmail :one
+UPDATE auth.users
+SET email_verified = true
+WHERE id = $1
+RETURNING *;
+
 -- name: CountSecurityKeysUser :one
 SELECT COUNT(*) FROM auth.user_security_keys
 WHERE user_id = $1;
