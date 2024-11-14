@@ -888,7 +888,7 @@ func (q *Queries) RefreshTokenAndGetUserRoles(ctx context.Context, arg RefreshTo
 
 const updateUserChangeEmail = `-- name: UpdateUserChangeEmail :one
 UPDATE auth.users
-SET (ticket, ticket_expires_at, new_email) = ($2, $3, $4)
+SET (ticket, ticket_expires_at, new_email, email_verified) = ($2, $3, $4, true)
 WHERE id = $1
 RETURNING id, created_at, updated_at, last_seen, disabled, display_name, avatar_url, locale, email, phone_number, password_hash, email_verified, phone_number_verified, new_email, otp_method_last_used, otp_hash, otp_hash_expires_at, default_role, is_anonymous, totp_secret, active_mfa_type, ticket, ticket_expires_at, metadata, webauthn_current_challenge
 `

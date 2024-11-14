@@ -123,8 +123,10 @@ func (ctrl *Controller) getVerifyEmailConfirmChange(
 func (ctrl *Controller) getVerifyEmailPasswordLessEmail(
 	ctx context.Context, user sql.AuthUser, logger *slog.Logger,
 ) *APIError {
-	if _, apiErr := ctrl.wf.UpdateUserVerifyEmail(ctx, user.ID, logger); apiErr != nil {
-		return apiErr
+	if !user.EmailVerified {
+		if _, apiErr := ctrl.wf.UpdateUserVerifyEmail(ctx, user.ID, logger); apiErr != nil {
+			return apiErr
+		}
 	}
 	return nil
 }
@@ -132,8 +134,10 @@ func (ctrl *Controller) getVerifyEmailPasswordLessEmail(
 func (ctrl *Controller) getVerifyEmail(
 	ctx context.Context, user sql.AuthUser, logger *slog.Logger,
 ) *APIError {
-	if _, apiErr := ctrl.wf.UpdateUserVerifyEmail(ctx, user.ID, logger); apiErr != nil {
-		return apiErr
+	if !user.EmailVerified {
+		if _, apiErr := ctrl.wf.UpdateUserVerifyEmail(ctx, user.ID, logger); apiErr != nil {
+			return apiErr
+		}
 	}
 	return nil
 }
