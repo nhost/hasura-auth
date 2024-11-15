@@ -83,13 +83,14 @@ const amazingText = {
 
 export function SignInOTP() {
   const ticket = "${ticket}";
+  const redirectTo = "${redirectTo}";
   return (
     <Html>
       <Head />
       <Body style={main}>
         <Container style={container}>
-          <Heading style={heading}>OTP</Heading>
-          <Text style={paragraph}>Use the following OTP:</Text>
+          <Heading style={heading}>One-time Password</Heading>
+          <Text style={paragraph}>To signin to {redirectTo}, please, use the following one-time password:</Text>
           <Section style={buttonContainer}>
             <Text style={amazingText}>
             {ticket}
