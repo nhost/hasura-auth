@@ -98,7 +98,7 @@ export function EmailConfirmChange() {
           </Text>
           <Section style={buttonContainer}>
             <Button style={button} href="${link}">
-              Confirm Email Change
+              Change Email
             </Button>
           </Section>
           <Hr style={hr} />
