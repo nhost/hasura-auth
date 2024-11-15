@@ -133,7 +133,7 @@ func (response ErrorResponse) VisitPostSigninOtpEmailResponse(w http.ResponseWri
 	return response.visit(w)
 }
 
-func (response ErrorResponse) VisitPostSigninOtpVerifyResponse(w http.ResponseWriter) error {
+func (response ErrorResponse) VisitPostSigninOtpEmailVerifyResponse(w http.ResponseWriter) error {
 	return response.visit(w)
 }
 

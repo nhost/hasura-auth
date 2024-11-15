@@ -30,7 +30,7 @@ func TestPostSigninPasswordlessEmail(t *testing.T) { //nolint:maintidx
 
 	userID := uuid.MustParse("DB477732-48FA-4289-B694-2886A646B6EB")
 
-	cases := []testRequest[api.PostSigninPasswordlessEmailRequestObject, api.PostSigninPasswordlessEmailResponseObject]{
+	cases := []testRequest[api.PostSigninPasswordlessEmailRequestObject, api.PostSigninPasswordlessEmailResponseObject]{ //nolint:dupl,lll
 		{
 			name:   "signup required",
 			config: getConfig,
