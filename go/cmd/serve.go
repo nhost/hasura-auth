@@ -95,6 +95,9 @@ const (
 	flagTurnstileSecret                  = "turnstile-secret"
 	flagAppleAudience                    = "apple-audience"
 	flagGoogleAudience                   = "google-audience"
+	flagAppleClientID                    = "apple-client-id"
+	flagGoogleClientID                   = "google-client-id"
+	flagOTPEmailEnabled                  = "otp-email-enabled"
 )
 
 func CommandServe() *cli.Command { //nolint:funlen,maintidx
@@ -575,6 +578,12 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 				Usage:    "Google Audience. Used to verify the audience on JWT tokens provided by Google. Needed for idtoken validation",
 				Category: "google",
 				EnvVars:  []string{"AUTH_PROVIDER_GOOGLE_AUDIENCE"},
+			},
+			&cli.BoolFlag{ //nolint: exhaustruct
+				Name:     flagOTPEmailEnabled,
+				Usage:    "Enable OTP via email",
+				Category: "otp",
+				EnvVars:  []string{"AUTH_OTP_EMAIL_ENABLED"},
 			},
 		},
 		Action: serve,

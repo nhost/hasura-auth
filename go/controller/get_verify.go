@@ -22,6 +22,8 @@ func getTicketType(ticket string, logger *slog.Logger) (TicketType, *APIError) {
 		return TicketTypeVerifyEmail, nil
 	case strings.HasPrefix(ticket, "passwordReset:"):
 		return TicketTypePasswordReset, nil
+	case strings.HasPrefix(ticket, "otp:"):
+		return TicketTypeOTP, nil
 	default:
 		logger.Error("unknown ticket type", slog.String("ticket", ticket))
 		return "", ErrInvalidTicket
@@ -51,6 +53,9 @@ func (ctrl *Controller) GetVerify( //nolint:ireturn
 		// this isn't great, but it is for historical reasons.
 	case TicketTypeVerifyEmail:
 		apiErr = ctrl.getVerifyEmail(ctx, user, logger)
+	case TicketTypeOTP:
+		logger.Error("OTP verification is not supported in this context")
+		return ctrl.sendError(ErrInvalidRequest), nil
 	}
 
 	if apiErr != nil {
