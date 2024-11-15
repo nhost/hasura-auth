@@ -95,8 +95,6 @@ const (
 	flagTurnstileSecret                  = "turnstile-secret"
 	flagAppleAudience                    = "apple-audience"
 	flagGoogleAudience                   = "google-audience"
-	flagAppleClientID                    = "apple-client-id"
-	flagGoogleClientID                   = "google-client-id"
 	flagOTPEmailEnabled                  = "otp-email-enabled"
 )
 
