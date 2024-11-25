@@ -1043,7 +1043,7 @@ func (wf *Workflows) GetUserSecurityKeys(
 	logger *slog.Logger,
 ) ([]sql.AuthUserSecurityKey, *APIError) {
 	keys, err := wf.db.GetSecurityKeys(ctx, userID)
-	if errors.Is(err, pgx.ErrNoRows) {
+	if errors.Is(err, pgx.ErrNoRows) || len(keys) == 0 {
 		logger.Warn("security keys not found")
 		return nil, ErrSecurityKeyNotFound
 	}
