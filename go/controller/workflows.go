@@ -485,6 +485,10 @@ func (wf *Workflows) NewSession(
 		return nil, fmt.Errorf("error updating user last seen: %w", err)
 	}
 
+	if !slices.Contains(allowedRoles, user.DefaultRole) {
+		allowedRoles = append(allowedRoles, user.DefaultRole)
+	}
+
 	accessToken, expiresIn, err := wf.jwtGetter.GetToken(
 		ctx, user.ID, user.IsAnonymous, allowedRoles, user.DefaultRole, logger,
 	)
