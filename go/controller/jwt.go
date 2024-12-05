@@ -226,10 +226,10 @@ func (j *JWTGetter) GetToken(
 		}
 
 		k = strings.ToLower("x-hasura-" + k)
-		//if _, ok := c[k]; ok {
-		//	// we do not allow custom claims to overwrite the default claims
-		//	continue
-		//}
+		if _, ok := c[k]; ok {
+			// we do not allow custom claims to overwrite the default claims
+			continue
+		}
 		c[k] = value
 	}
 

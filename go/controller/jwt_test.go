@@ -179,7 +179,7 @@ func TestGetJWTFunc(t *testing.T) {
 						},
 						"x-hasura-default-role":      "user",
 						"x-hasura-float":             "123.456",
-						"x-hasura-user-id":           "custom-claims-that-shadow-default-claims-are-ignored",
+						"x-hasura-user-id":           "585e21fc-3664-4d03-8539-69945342a4f4",
 						"x-hasura-user-is-anonymous": "false",
 						"x-hasura-custom-claim":      "custom-claim-value",
 						"x-hasura-custom-claim-2":    "custom-claim-value-2",
