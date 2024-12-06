@@ -408,7 +408,7 @@ func (wf *Workflows) UpdateSession( //nolint:funlen
 		return nil, ErrInternalServerError
 	}
 
-	allowedRoles := make([]string, 0, len(userRoles))
+	allowedRoles := make([]string, len(userRoles))
 	for _, role := range userRoles {
 		if role.Role.Valid {
 			allowedRoles = append(allowedRoles, role.Role.String)
