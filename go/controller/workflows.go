@@ -408,7 +408,7 @@ func (wf *Workflows) UpdateSession( //nolint:funlen
 		return nil, ErrInternalServerError
 	}
 
-	allowedRoles := make([]string, len(userRoles))
+	allowedRoles := make([]string, 0, len(userRoles))
 	for _, role := range userRoles {
 		if role.Role.Valid {
 			allowedRoles = append(allowedRoles, role.Role.String)
@@ -467,9 +467,13 @@ func (wf *Workflows) NewSession(
 	if err != nil {
 		return nil, fmt.Errorf("error getting roles by user id: %w", err)
 	}
-	allowedRoles := make([]string, len(userRoles))
+	allowedRoles := make([]string, 0, len(userRoles))
 	for i, role := range userRoles {
 		allowedRoles[i] = role.Role
+	}
+
+	if !slices.Contains(allowedRoles, user.DefaultRole) {
+		allowedRoles = append(allowedRoles, user.DefaultRole)
 	}
 
 	refreshToken := uuid.New()
@@ -483,10 +487,6 @@ func (wf *Workflows) NewSession(
 
 	if _, err := wf.db.UpdateUserLastSeen(ctx, user.ID); err != nil {
 		return nil, fmt.Errorf("error updating user last seen: %w", err)
-	}
-
-	if !slices.Contains(allowedRoles, user.DefaultRole) {
-		allowedRoles = append(allowedRoles, user.DefaultRole)
 	}
 
 	accessToken, expiresIn, err := wf.jwtGetter.GetToken(
