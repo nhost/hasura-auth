@@ -468,8 +468,8 @@ func (wf *Workflows) NewSession(
 		return nil, fmt.Errorf("error getting roles by user id: %w", err)
 	}
 	allowedRoles := make([]string, 0, len(userRoles))
-	for i, role := range userRoles {
-		allowedRoles[i] = role.Role
+	for _, role := range userRoles {
+		allowedRoles = append(allowedRoles, role.Role)
 	}
 
 	if !slices.Contains(allowedRoles, user.DefaultRole) {
