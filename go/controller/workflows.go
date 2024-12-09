@@ -458,7 +458,7 @@ func (wf *Workflows) UpdateSession( //nolint:funlen
 	}, nil
 }
 
-func (wf *Workflows) NewSession(
+func (wf *Workflows) NewSession( //nolint:funlen
 	ctx context.Context,
 	user sql.AuthUser,
 	logger *slog.Logger,
