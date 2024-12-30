@@ -1,11 +1,68 @@
 package controller
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
+	"fmt"
+	"log/slog"
 
+	"github.com/go-webauthn/webauthn/protocol"
+	"github.com/go-webauthn/webauthn/webauthn"
+	"github.com/google/uuid"
 	"github.com/nhost/hasura-auth/go/api"
 	"github.com/nhost/hasura-auth/go/middleware"
 )
+
+func (ctrl *Controller) PostSigninWebauthnVerifyUserHandle(
+	ctx context.Context,
+	response *protocol.ParsedCredentialAssertionData,
+	logger *slog.Logger,
+) webauthn.DiscoverableUserHandler {
+	return func(_, userHandle []byte) (webauthn.User, error) {
+		// we need to encoide it back because the client treats it as a string including the hyphens
+		b, err := json.Marshal(protocol.URLEncodedBase64(userHandle))
+		if err != nil {
+			return nil, fmt.Errorf("failed to marshal user handle: %w", err)
+		}
+		userID, err := uuid.Parse(string(b))
+		if err != nil {
+			return nil, fmt.Errorf("failed to parse user ID: %w", err)
+		}
+
+		keys, apiErr := ctrl.wf.GetUserSecurityKeys(ctx, userID, logger)
+		if apiErr != nil {
+			return nil, apiErr
+		}
+
+		creds, apiErr := webauthnCredentials(keys, logger)
+		if apiErr != nil {
+			return nil, apiErr
+		}
+
+		for i, userCreds := range creds {
+			if bytes.Equal(response.RawID, userCreds.ID) {
+				userCreds.Flags = webauthn.CredentialFlags{
+					UserPresent:    response.Response.AuthenticatorData.Flags.UserPresent(),
+					UserVerified:   response.Response.AuthenticatorData.Flags.UserVerified(),
+					BackupEligible: response.Response.AuthenticatorData.Flags.HasBackupEligible(),
+					BackupState:    response.Response.AuthenticatorData.Flags.HasBackupState(),
+				}
+				creds[i] = userCreds
+			}
+		}
+		fmt.Println(userID)
+
+		return WebauthnUser{
+			ID:           userID,
+			Name:         "",
+			Email:        "",
+			Credentials:  creds,
+			Discoverable: true,
+			UserHandle:   userHandle,
+		}, nil
+	}
+}
 
 func (ctrl *Controller) PostSigninWebauthnVerify( //nolint:ireturn
 	ctx context.Context,
@@ -24,12 +81,25 @@ func (ctrl *Controller) PostSigninWebauthnVerify( //nolint:ireturn
 		return ctrl.sendError(ErrInvalidRequest), nil
 	}
 
-	_, webauthnUser, apiErr := ctrl.Webauthn.FinishLogin(credData, logger)
+	_, _, apiErr := ctrl.Webauthn.FinishLogin(
+		credData,
+		ctrl.PostSigninWebauthnVerifyUserHandle(ctx, credData, logger),
+		logger,
+	)
 	if apiErr != nil {
 		return ctrl.sendError(apiErr), nil
 	}
 
-	user, apiErr := ctrl.wf.GetUser(ctx, webauthnUser.ID, logger)
+	b, err := json.Marshal(protocol.URLEncodedBase64(credData.Response.UserHandle))
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal user handle: %w", err)
+	}
+	userID, err := uuid.Parse(string(b))
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse user ID: %w", err)
+	}
+
+	user, apiErr := ctrl.wf.GetUser(ctx, userID, logger)
 	if apiErr != nil {
 		return ctrl.sendError(apiErr), nil
 	}
