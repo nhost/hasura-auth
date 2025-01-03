@@ -2,6 +2,7 @@ package controller
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"log/slog"
 	"time"
@@ -211,6 +212,15 @@ func (w *Webauthn) FinishLogin(
 		}
 	}
 
+	// we do this in case the userHandle hasn't been urlencoded by the library
+	b, err := json.Marshal(protocol.URLEncodedBase64(response.Response.UserHandle))
+	if err == nil {
+		potentialUUID, err := uuid.Parse(string(b))
+		if err == nil && bytes.Equal(potentialUUID[:], challenge.User.ID[:]) {
+			response.Response.UserHandle = challenge.User.WebAuthnID()
+		}
+	}
+
 	cred, err := w.wa.ValidateLogin(challenge.User, challenge.Session, response)
 	if err != nil {
 		logger.Info("failed to validate webauthn login", logError(err))
@@ -241,6 +251,7 @@ func (w *Webauthn) BeginDiscoverableLogin(
 			Email:        "",
 			Credentials:  []webauthn.Credential{},
 			Discoverable: true,
+			UserHandle:   nil,
 		},
 		Options: nil,
 	}

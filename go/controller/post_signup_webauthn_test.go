@@ -104,6 +104,7 @@ func TestPostSignupWebauthn(t *testing.T) { //nolint:maintidx
 					Email:        "jane@acme.com",
 					Credentials:  nil,
 					Discoverable: false,
+					UserHandle:   nil,
 				},
 				Options: &api.SignUpOptions{
 					AllowedRoles: &[]string{"user", "me"},
@@ -201,6 +202,7 @@ func TestPostSignupWebauthn(t *testing.T) { //nolint:maintidx
 					Email:        "jane@acme.com",
 					Credentials:  nil,
 					Discoverable: false,
+					UserHandle:   nil,
 				},
 				Options: &api.SignUpOptions{
 					AllowedRoles: &[]string{"user"},
@@ -349,6 +351,7 @@ func TestPostSignupWebauthn(t *testing.T) { //nolint:maintidx
 					Email:        "jane@acme.com",
 					Credentials:  nil,
 					Discoverable: false,
+					UserHandle:   nil,
 				},
 				Options: &api.SignUpOptions{
 					AllowedRoles: &[]string{"user", "me"},

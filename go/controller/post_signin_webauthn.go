@@ -85,6 +85,7 @@ func (ctrl *Controller) PostSigninWebauthn( //nolint:ireturn
 		Email:        user.Email.String,
 		Credentials:  creds,
 		Discoverable: false,
+		UserHandle:   nil,
 	}
 
 	creation, apiErr := ctrl.Webauthn.BeginLogin(waUser, logger)

@@ -51,7 +51,6 @@ func (ctrl *Controller) PostSigninWebauthnVerifyUserHandle(
 				creds[i] = userCreds
 			}
 		}
-		fmt.Println(userID)
 
 		return WebauthnUser{
 			ID:           userID,
@@ -90,11 +89,7 @@ func (ctrl *Controller) PostSigninWebauthnVerify( //nolint:ireturn
 		return ctrl.sendError(apiErr), nil
 	}
 
-	b, err := json.Marshal(protocol.URLEncodedBase64(credData.Response.UserHandle))
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshal user handle: %w", err)
-	}
-	userID, err := uuid.Parse(string(b))
+	userID, err := uuid.Parse(string(credData.Response.UserHandle))
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse user ID: %w", err)
 	}
