@@ -40,6 +40,7 @@ func (ctrl *Controller) PostSigninWebauthnVerifyUserHandle(
 			return nil, apiErr
 		}
 
+		// we don't track the flags so we just copy them
 		for i, userCreds := range creds {
 			if bytes.Equal(response.RawID, userCreds.ID) {
 				userCreds.Flags = webauthn.CredentialFlags{
@@ -52,13 +53,14 @@ func (ctrl *Controller) PostSigninWebauthnVerifyUserHandle(
 			}
 		}
 
+		response.Response.UserHandle = []byte(userID.String())
+
 		return WebauthnUser{
 			ID:           userID,
 			Name:         "",
 			Email:        "",
 			Credentials:  creds,
 			Discoverable: true,
-			UserHandle:   userHandle,
 		}, nil
 	}
 }

@@ -18,14 +18,10 @@ type WebauthnUser struct {
 	Name         string
 	Email        string
 	Credentials  []webauthn.Credential
-	UserHandle   []byte
 	Discoverable bool
 }
 
 func (u WebauthnUser) WebAuthnID() []byte {
-	if u.Discoverable {
-		return u.UserHandle
-	}
 	return []byte(u.ID.String())
 }
 
@@ -251,7 +247,6 @@ func (w *Webauthn) BeginDiscoverableLogin(
 			Email:        "",
 			Credentials:  []webauthn.Credential{},
 			Discoverable: true,
-			UserHandle:   nil,
 		},
 		Options: nil,
 	}
