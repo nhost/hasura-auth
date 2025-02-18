@@ -33,9 +33,9 @@ jobs:
           /nix/store
           /nix/var/nix/db
           ~/.cache/nix
-        key: ${{ runner.os }}-nix-check-${{ hashFiles('**/*.nix') }}
+        key: ${{ runner.os }}-${{ runner.arch }}-nix-check-${{ hashFiles('**/*.nix') }}
         restore-keys: |
-          ${{ runner.os }}-nix-check-
+          ${{ runner.os }}-${{ runner.arch }}-nix-check-
 
     - uses: cachix/install-nix-action@v30
       with:
