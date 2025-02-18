@@ -27,6 +27,16 @@ jobs:
         fetch-depth: 0
         ref: ${{ inputs.GIT_REF }}
 
+    - uses: actions/cache@v4
+      with:
+        path: |
+          /nix/store
+          /nix/var/nix/db
+          ~/.cache/nix
+        key: ${{ runner.os }}-nix-check-${{ hashFiles('**/*.nix') }}
+        restore-keys: |
+          ${{ runner.os }}-nix-check-
+
     - uses: cachix/install-nix-action@v30
       with:
         install_url: "https://releases.nixos.org/nix/nix-2.22.3/install"
@@ -37,11 +47,6 @@ jobs:
           access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
           substituters = https://cache.nixos.org/?priority=40
           trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=
-
-    - uses: DeterminateSystems/magic-nix-cache-action@v9
-      with:
-        diagnostic-endpoint: ""
-        use-flakehub: false
 
     - name: "Verify if we need to build"
       id: verify-build
