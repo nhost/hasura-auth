@@ -92,8 +92,3 @@ jobs:
         path: result
         retention-days: 7
       if: ${{ ( inputs.DOCKER ) }}
-
-    # - name: "Cache build environment"
-    #   run: |
-    #    # DEPENDENCIES=($(nix-store --query --requisites --include-outputs ${{ steps.verify-build.outputs.DERIVATION_PATH }}))
-    #    nix copy --to http://127.0.0.1:37515 "${DEPENDENCIES[@]}" || exit 0
