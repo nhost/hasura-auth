@@ -387,36 +387,38 @@ func pgtypeTextToOAPIEmail(pgemail pgtype.Text) *types.Email {
 	return email
 }
 
-func (wf *Workflows) UpdateSession( //nolint:funlen
+func (wf *Workflows) RefreshSession( //nolint:funlen
 	ctx context.Context,
 	user sql.AuthUser,
-	refreshToken string,
 	logger *slog.Logger,
 ) (*api.Session, *APIError) {
-	userRoles, err := wf.db.RefreshTokenAndGetUserRoles(ctx, sql.RefreshTokenAndGetUserRolesParams{
-		RefreshTokenHash: sql.Text(hashRefreshToken([]byte(refreshToken))),
-		ExpiresAt: sql.TimestampTz(
-			time.Now().Add(time.Duration(wf.config.RefreshTokenExpiresIn) * time.Second),
-		),
-	})
-	if errors.Is(err, pgx.ErrNoRows) {
-		logger.Warn("invalid refresh token")
-		return &api.Session{}, ErrInvalidRefreshToken
-	}
+	userRoles, err := wf.db.GetUserRoles(ctx, user.ID)
 	if err != nil {
-		logger.Error("error getting user roles by refresh token", logError(err))
+		logger.Error("error getting user roles", logError(err))
 		return nil, ErrInternalServerError
 	}
 
 	allowedRoles := make([]string, 0, len(userRoles))
 	for _, role := range userRoles {
-		if role.Role.Valid {
-			allowedRoles = append(allowedRoles, role.Role.String)
-		}
+		allowedRoles = append(allowedRoles, role.Role)
 	}
 
 	if !slices.Contains(allowedRoles, user.DefaultRole) {
 		allowedRoles = append(allowedRoles, user.DefaultRole)
+	}
+
+	refreshToken := uuid.New()
+	expiresAt := time.Now().Add(time.Duration(wf.config.RefreshTokenExpiresIn) * time.Second)
+	refreshTokenID, apiErr := wf.InsertRefreshtoken(
+		ctx, user.ID, refreshToken.String(), expiresAt, sql.RefreshTokenTypeRegular, nil, logger,
+	)
+	if apiErr != nil {
+		return nil, apiErr
+	}
+
+	if _, err = wf.db.UpdateUserLastSeen(ctx, user.ID); err != nil {
+		logger.Error("error updating user last seen", logError(err))
+		return nil, ErrInternalServerError
 	}
 
 	accessToken, expiresIn, err := wf.jwtGetter.GetToken(
@@ -435,11 +437,15 @@ func (wf *Workflows) UpdateSession( //nolint:funlen
 		}
 	}
 
+	if err = wf.db.DeleteRefreshTokens(ctx, user.ID); err != nil {
+		logger.Error("error deleting refresh tokens", logError(err))
+	}
+
 	return &api.Session{
 		AccessToken:          accessToken,
 		AccessTokenExpiresIn: expiresIn,
-		RefreshToken:         refreshToken,
-		RefreshTokenId:       userRoles[0].RefreshTokenID.String(),
+		RefreshToken:         refreshToken.String(),
+		RefreshTokenId:       refreshTokenID.String(),
 		User: &api.User{
 			AvatarUrl:           user.AvatarUrl,
 			CreatedAt:           user.CreatedAt.Time,
