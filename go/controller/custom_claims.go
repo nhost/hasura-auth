@@ -111,6 +111,7 @@ type CustomClaims struct {
 	httpclient         *http.Client
 	graphqlURL         string
 	requestInterceptor []RequestInterceptor
+	defaults           map[string]any
 }
 
 func CustomClaimerAddAdminSecret(adminSecret string) RequestInterceptor {
@@ -123,6 +124,7 @@ func NewCustomClaims(
 	rawClaims map[string]string,
 	httpclient *http.Client,
 	graphqlURL string,
+	defaults map[string]any,
 	requestInterceptor ...RequestInterceptor,
 ) (*CustomClaims, error) {
 	claims := make(map[string]any)
@@ -153,6 +155,7 @@ func NewCustomClaims(
 		httpclient:         httpclient,
 		graphqlURL:         graphqlURL,
 		requestInterceptor: requestInterceptor,
+		defaults:           defaults,
 	}, nil
 }
 
@@ -211,6 +214,14 @@ func (c *CustomClaims) ExtractClaims(data any) (map[string]any, error) {
 				got = v[0][0].Interface()
 			}
 		}
+
+		// Check for nil value and apply default if available
+		if got == nil && c.defaults != nil {
+			if defVal, exists := c.defaults[name]; exists {
+				got = defVal
+			}
+		}
+
 		claims[name] = got
 	}
 	return claims, nil

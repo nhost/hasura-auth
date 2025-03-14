@@ -62,6 +62,7 @@ const (
 	flagAllowRedirectURLs                = "allow-redirect-urls"
 	flagEnableChangeEnv                  = "enable-change-env"
 	flagCustomClaims                     = "custom-claims"
+	flagCustomClaimsDefaults             = "custom-claims-defaults"
 	flagGraphqlURL                       = "graphql-url"
 	flagHasuraAdminSecret                = "hasura-admin-secret" //nolint:gosec
 	flagPasswordMinLength                = "password-min-length"
