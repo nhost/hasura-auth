@@ -78,7 +78,7 @@ func TestCustomClaims(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 
-			c, err := controller.NewCustomClaims(tc.claims, nil, "")
+			c, err := controller.NewCustomClaims(tc.claims, nil, "", nil)
 			if err != nil {
 				t.Fatalf("failed to get custom claims: %v", err)
 			}
