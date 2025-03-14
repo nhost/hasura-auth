@@ -407,6 +407,10 @@ func (wf *Workflows) RefreshSession( //nolint:funlen
 		allowedRoles = append(allowedRoles, user.DefaultRole)
 	}
 
+	if err = wf.db.DeleteRefreshTokens(ctx, user.ID); err != nil {
+		logger.Error("error deleting refresh tokens", logError(err))
+	}
+
 	refreshToken := uuid.New()
 	expiresAt := time.Now().Add(time.Duration(wf.config.RefreshTokenExpiresIn) * time.Second)
 	refreshTokenID, apiErr := wf.InsertRefreshtoken(
@@ -435,10 +439,6 @@ func (wf *Workflows) RefreshSession( //nolint:funlen
 			logger.Error("error unmarshalling user metadata", logError(err))
 			return nil, ErrInternalServerError
 		}
-	}
-
-	if err = wf.db.DeleteRefreshTokens(ctx, user.ID); err != nil {
-		logger.Error("error deleting refresh tokens", logError(err))
 	}
 
 	return &api.Session{
