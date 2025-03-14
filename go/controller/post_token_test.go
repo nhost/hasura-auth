@@ -57,7 +57,7 @@ func TestPostToken(t *testing.T) { //nolint:maintidx
 	userID := uuid.MustParse("db477732-48fa-4289-b694-2886a646b6eb")
 	token := uuid.MustParse("1fb17604-86c7-444e-b337-09a644465f2d")
 	hashedToken := `\x9698157153010b858587119503cbeef0cf288f11775e51cdb6bfd65e930d9310`
-	refreshTokenID := uuid.MustParse("c3b747ef-76a9-4c56-8091-ed3e6b8afb2c")
+	newTokenID := uuid.MustParse("c3b747ef-76a9-4c56-8091-ed3e6b8afb2c")
 
 	cases := []testRequest[api.PostTokenRequestObject, api.PostTokenResponseObject]{
 		{
@@ -91,7 +91,7 @@ func TestPostToken(t *testing.T) { //nolint:maintidx
 						Type:             sql.RefreshTokenTypeRegular,
 						Metadata:         nil,
 					}),
-				).Return(refreshTokenID, nil)
+				).Return(newTokenID, nil)
 
 				mock.EXPECT().UpdateUserLastSeen(
 					gomock.Any(),
@@ -188,7 +188,7 @@ func TestPostToken(t *testing.T) { //nolint:maintidx
 						Type:             sql.RefreshTokenTypeRegular,
 						Metadata:         nil,
 					}),
-				).Return(refreshTokenID, nil)
+				).Return(newTokenID, nil)
 
 				mock.EXPECT().UpdateUserLastSeen(
 					gomock.Any(),
