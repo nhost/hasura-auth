@@ -420,7 +420,7 @@ func (wf *Workflows) RefreshSession( //nolint:funlen
 		return nil, apiErr
 	}
 
-	if _, err = wf.db.UpdateUserLastSeen(ctx, user.ID); err != nil {
+	if _, err := wf.db.UpdateUserLastSeen(ctx, user.ID); err != nil {
 		logger.Error("error updating user last seen", logError(err))
 		return nil, ErrInternalServerError
 	}
