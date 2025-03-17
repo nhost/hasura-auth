@@ -101,11 +101,11 @@ func TestCustomClaims(t *testing.T) {
 				"array[*].ids":      []any{1, 2, 3},
 				"array.ids[]":       []any{1, 2, 3},
 				"metadata.m1":       1,
-				"nonexistent":       nil,
+				"nonexistent":       "defaultNonExistent",
 			},
 			customClaimsDefaults: map[string]any{
-				"root":                    "defaultRoot",
-				"nonexistent.nonexistent": "defaultNonExistent",
+				"root":        "defaultRoot",
+				"nonexistent": "defaultNonExistent",
 			},
 		},
 	}

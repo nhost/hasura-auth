@@ -191,6 +191,15 @@ func (c *CustomClaims) getClaimsBackwardsCompatibility(data any, path []string) 
 	return nil
 }
 
+func (c *CustomClaims) defaultOrNil(name string) any {
+	if c.defaults != nil {
+		if val, exists := c.defaults[name]; exists {
+			return val
+		}
+	}
+	return nil
+}
+
 func (c *CustomClaims) ExtractClaims(data any) (map[string]any, error) {
 	claims := make(map[string]any)
 	for name, j := range c.jsonPaths {
@@ -200,7 +209,7 @@ func (c *CustomClaims) ExtractClaims(data any) (map[string]any, error) {
 		} else {
 			v, err := j.jpath.FindResults(data)
 			if err != nil {
-				claims[name] = nil
+				claims[name] = c.defaultOrNil(name)
 				continue
 			}
 
@@ -212,13 +221,6 @@ func (c *CustomClaims) ExtractClaims(data any) (map[string]any, error) {
 				got = g
 			} else {
 				got = v[0][0].Interface()
-			}
-		}
-
-		// Check for nil value and apply default if available
-		if got == nil && c.defaults != nil {
-			if defVal, exists := c.defaults[name]; exists {
-				got = defVal
 			}
 		}
 
