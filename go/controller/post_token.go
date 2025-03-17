@@ -30,7 +30,7 @@ func (ctrl *Controller) PostToken( //nolint:ireturn
 		}
 	}
 
-	session, err := ctrl.wf.RefreshSession(ctx, user, logger)
+	session, err := ctrl.wf.UpdateSession(ctx, user, request.Body.RefreshToken, logger)
 	if err != nil {
 		logger.Error("error updating session", logError(err))
 		return ctrl.sendError(ErrInternalServerError), nil

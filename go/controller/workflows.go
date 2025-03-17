@@ -387,42 +387,38 @@ func pgtypeTextToOAPIEmail(pgemail pgtype.Text) *types.Email {
 	return email
 }
 
-func (wf *Workflows) RefreshSession( //nolint:funlen
+func (wf *Workflows) UpdateSession( //nolint:funlen
 	ctx context.Context,
 	user sql.AuthUser,
+	oldRefreshToken string,
 	logger *slog.Logger,
 ) (*api.Session, *APIError) {
-	userRoles, err := wf.db.GetUserRoles(ctx, user.ID)
+	refreshToken := uuid.New()
+	userRoles, err := wf.db.RefreshTokenAndGetUserRoles(ctx, sql.RefreshTokenAndGetUserRolesParams{
+		NewRefreshTokenHash: sql.Text(hashRefreshToken(refreshToken[:])),
+		ExpiresAt: sql.TimestampTz(
+			time.Now().Add(time.Duration(wf.config.RefreshTokenExpiresIn) * time.Second),
+		),
+		OldRefreshTokenHash: sql.Text(hashRefreshToken([]byte(oldRefreshToken))),
+	})
+	if errors.Is(err, pgx.ErrNoRows) {
+		logger.Warn("invalid refresh token")
+		return &api.Session{}, ErrInvalidRefreshToken
+	}
 	if err != nil {
-		logger.Error("error getting user roles", logError(err))
+		logger.Error("error getting user roles by refresh token", logError(err))
 		return nil, ErrInternalServerError
 	}
 
 	allowedRoles := make([]string, 0, len(userRoles))
 	for _, role := range userRoles {
-		allowedRoles = append(allowedRoles, role.Role)
+		if role.Role.Valid {
+			allowedRoles = append(allowedRoles, role.Role.String)
+		}
 	}
 
 	if !slices.Contains(allowedRoles, user.DefaultRole) {
 		allowedRoles = append(allowedRoles, user.DefaultRole)
-	}
-
-	if err = wf.db.DeleteRefreshTokens(ctx, user.ID); err != nil {
-		logger.Error("error deleting refresh tokens", logError(err))
-	}
-
-	refreshToken := uuid.New()
-	expiresAt := time.Now().Add(time.Duration(wf.config.RefreshTokenExpiresIn) * time.Second)
-	refreshTokenID, apiErr := wf.InsertRefreshtoken(
-		ctx, user.ID, refreshToken.String(), expiresAt, sql.RefreshTokenTypeRegular, nil, logger,
-	)
-	if apiErr != nil {
-		return nil, apiErr
-	}
-
-	if _, err := wf.db.UpdateUserLastSeen(ctx, user.ID); err != nil {
-		logger.Error("error updating user last seen", logError(err))
-		return nil, ErrInternalServerError
 	}
 
 	accessToken, expiresIn, err := wf.jwtGetter.GetToken(
@@ -445,7 +441,7 @@ func (wf *Workflows) RefreshSession( //nolint:funlen
 		AccessToken:          accessToken,
 		AccessTokenExpiresIn: expiresIn,
 		RefreshToken:         refreshToken.String(),
-		RefreshTokenId:       refreshTokenID.String(),
+		RefreshTokenId:       userRoles[0].RefreshTokenID.String(),
 		User: &api.User{
 			AvatarUrl:           user.AvatarUrl,
 			CreatedAt:           user.CreatedAt.Time,

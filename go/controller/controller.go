@@ -111,6 +111,10 @@ type DBClient interface { //nolint:interfacebloat
 	DeleteUserRoles(ctx context.Context, userID uuid.UUID) error
 	GetUserRoles(ctx context.Context, userID uuid.UUID) ([]sql.AuthUserRole, error)
 	InsertRefreshtoken(ctx context.Context, arg sql.InsertRefreshtokenParams) (uuid.UUID, error)
+	RefreshTokenAndGetUserRoles(
+		ctx context.Context,
+		arg sql.RefreshTokenAndGetUserRolesParams,
+	) ([]sql.RefreshTokenAndGetUserRolesRow, error)
 }
 
 type Controller struct {

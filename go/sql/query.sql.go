@@ -918,6 +918,56 @@ func (q *Queries) InsertUserWithUserProviderAndRefreshToken(ctx context.Context,
 	return i, err
 }
 
+const refreshTokenAndGetUserRoles = `-- name: RefreshTokenAndGetUserRoles :many
+WITH refreshed_token AS (
+    UPDATE auth.refresh_tokens
+    SET
+		expires_at = $2,
+		refresh_token_hash = $1
+    WHERE refresh_token_hash = $3
+    RETURNING id AS refresh_token_id, user_id
+),
+updated_user AS (
+	UPDATE auth.users
+	SET last_seen = now()
+	FROM refreshed_token
+	WHERE auth.users.id = refreshed_token.user_id
+)
+SELECT refreshed_token.refresh_token_id, role FROM auth.user_roles
+RIGHT JOIN refreshed_token ON auth.user_roles.user_id = refreshed_token.user_id
+`
+
+type RefreshTokenAndGetUserRolesParams struct {
+	NewRefreshTokenHash pgtype.Text
+	ExpiresAt           pgtype.Timestamptz
+	OldRefreshTokenHash pgtype.Text
+}
+
+type RefreshTokenAndGetUserRolesRow struct {
+	RefreshTokenID uuid.UUID
+	Role           pgtype.Text
+}
+
+func (q *Queries) RefreshTokenAndGetUserRoles(ctx context.Context, arg RefreshTokenAndGetUserRolesParams) ([]RefreshTokenAndGetUserRolesRow, error) {
+	rows, err := q.db.Query(ctx, refreshTokenAndGetUserRoles, arg.NewRefreshTokenHash, arg.ExpiresAt, arg.OldRefreshTokenHash)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []RefreshTokenAndGetUserRolesRow
+	for rows.Next() {
+		var i RefreshTokenAndGetUserRolesRow
+		if err := rows.Scan(&i.RefreshTokenID, &i.Role); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const updateUserChangeEmail = `-- name: UpdateUserChangeEmail :one
 UPDATE auth.users
 SET (ticket, ticket_expires_at, new_email, email_verified) = ($2, $3, $4, true)

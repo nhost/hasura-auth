@@ -57,7 +57,7 @@ func TestPostToken(t *testing.T) { //nolint:maintidx
 	userID := uuid.MustParse("db477732-48fa-4289-b694-2886a646b6eb")
 	token := uuid.MustParse("1fb17604-86c7-444e-b337-09a644465f2d")
 	hashedToken := `\x9698157153010b858587119503cbeef0cf288f11775e51cdb6bfd65e930d9310`
-	newTokenID := uuid.MustParse("c3b747ef-76a9-4c56-8091-ed3e6b8afb2c")
+	newTokenID := uuid.MustParse("1fb13604-86c7-4444-a337-09a644465f2d")
 
 	cases := []testRequest[api.PostTokenRequestObject, api.PostTokenResponseObject]{
 		{
@@ -74,34 +74,17 @@ func TestPostToken(t *testing.T) { //nolint:maintidx
 					},
 				).Return(getSigninUser(userID), nil)
 
-				mock.EXPECT().GetUserRoles(
+				mock.EXPECT().RefreshTokenAndGetUserRoles(
 					gomock.Any(),
-					userID,
-				).Return([]sql.AuthUserRole{
-					{Role: "user"},
-					{Role: "me"},
-				}, nil)
-
-				mock.EXPECT().InsertRefreshtoken(
-					gomock.Any(),
-					cmpDBParams(sql.InsertRefreshtokenParams{
-						UserID:           userID,
-						RefreshTokenHash: pgtype.Text{}, //nolint:exhaustruct
-						ExpiresAt:        sql.TimestampTz(time.Now().Add(30 * 24 * time.Hour)),
-						Type:             sql.RefreshTokenTypeRegular,
-						Metadata:         nil,
+					cmpDBParams(sql.RefreshTokenAndGetUserRolesParams{
+						NewRefreshTokenHash: sql.Text(""),
+						ExpiresAt:           sql.TimestampTz(time.Now().Add(time.Duration(2592000) * time.Second)),
+						OldRefreshTokenHash: sql.Text(hashedToken),
 					}),
-				).Return(newTokenID, nil)
-
-				mock.EXPECT().UpdateUserLastSeen(
-					gomock.Any(),
-					userID,
-				).Return(sql.TimestampTz(time.Now()), nil)
-
-				mock.EXPECT().DeleteRefreshTokens(
-					gomock.Any(),
-					userID,
-				).Return(nil)
+				).Return([]sql.RefreshTokenAndGetUserRolesRow{
+					{Role: sql.Text("user"), RefreshTokenID: newTokenID},
+					{Role: sql.Text("me"), RefreshTokenID: newTokenID},
+				}, nil)
 
 				return mock
 			},
@@ -115,7 +98,7 @@ func TestPostToken(t *testing.T) { //nolint:maintidx
 					AccessToken:          "",
 					AccessTokenExpiresIn: 900,
 					RefreshToken:         "1fb17604-86c7-444e-b337-09a644465f2d",
-					RefreshTokenId:       "c3b747ef-76a9-4c56-8091-ed3e6b8afb2c",
+					RefreshTokenId:       "1fb13604-86c7-4444-a337-09a644465f2d",
 					User: &api.User{
 						AvatarUrl:           "",
 						CreatedAt:           time.Now(),
@@ -172,33 +155,16 @@ func TestPostToken(t *testing.T) { //nolint:maintidx
 					},
 				).Return(getAnonymousUser(userID), nil)
 
-				mock.EXPECT().GetUserRoles(
+				mock.EXPECT().RefreshTokenAndGetUserRoles(
 					gomock.Any(),
-					userID,
-				).Return([]sql.AuthUserRole{
-					{Role: "anonymous"},
-				}, nil)
-
-				mock.EXPECT().InsertRefreshtoken(
-					gomock.Any(),
-					cmpDBParams(sql.InsertRefreshtokenParams{
-						UserID:           userID,
-						RefreshTokenHash: pgtype.Text{}, //nolint:exhaustruct
-						ExpiresAt:        sql.TimestampTz(time.Now().Add(30 * 24 * time.Hour)),
-						Type:             sql.RefreshTokenTypeRegular,
-						Metadata:         nil,
+					cmpDBParams(sql.RefreshTokenAndGetUserRolesParams{
+						NewRefreshTokenHash: sql.Text(""),
+						ExpiresAt:           sql.TimestampTz(time.Now().Add(time.Duration(2592000) * time.Second)),
+						OldRefreshTokenHash: sql.Text(hashedToken),
 					}),
-				).Return(newTokenID, nil)
-
-				mock.EXPECT().UpdateUserLastSeen(
-					gomock.Any(),
-					userID,
-				).Return(sql.TimestampTz(time.Now()), nil)
-
-				mock.EXPECT().DeleteRefreshTokens(
-					gomock.Any(),
-					userID,
-				).Return(nil)
+				).Return([]sql.RefreshTokenAndGetUserRolesRow{
+					{Role: sql.Text("anonymous"), RefreshTokenID: newTokenID},
+				}, nil)
 
 				return mock
 			},
@@ -212,7 +178,7 @@ func TestPostToken(t *testing.T) { //nolint:maintidx
 					AccessToken:          "",
 					AccessTokenExpiresIn: 900,
 					RefreshToken:         "1fb17604-86c7-444e-b337-09a644465f2d",
-					RefreshTokenId:       "c3b747ef-76a9-4c56-8091-ed3e6b8afb2c",
+					RefreshTokenId:       "1fb13604-86c7-4444-a337-09a644465f2d",
 					User: &api.User{
 						AvatarUrl:           "",
 						CreatedAt:           time.Now(),
