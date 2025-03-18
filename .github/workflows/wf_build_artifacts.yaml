@@ -80,14 +80,14 @@ jobs:
     - name: "Build artifact"
       run: |
         make get-version VER=0.0.0-dev # we revert this to avoid rebuilding just due to version change
-        make build ARCH=${{ matrix.platform }}
+        make build
         zip -r result.zip result
 
     - name: "Push artifact to artifact repository"
       uses: actions/upload-artifact@v4
       with:
         name: ${{ inputs.NAME }}-artifact-${{ matrix.platform }}-${{ steps.vars.outputs.VERSION }}
-        path: ${{ inputs.PROJECT }}/result.zip
+        path: result.zip
         retention-days: 7
 
     - name: "Build docker image"
@@ -95,7 +95,7 @@ jobs:
         sudo chmod 755 /run/containers
         sudo mkdir -p "/run/containers/$(id -u runner)"
         sudo chown runner: "/run/containers/$(id -u runner)"
-        make build-docker-image ARCH=${{ matrix.platform }}
+        make build-docker-image
 
     - name: "Push docker image to artifact repository"
       uses: actions/upload-artifact@v4
