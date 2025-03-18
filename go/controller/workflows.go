@@ -393,9 +393,10 @@ func (wf *Workflows) UpdateSession( //nolint:funlen
 	oldRefreshToken string,
 	logger *slog.Logger,
 ) (*api.Session, *APIError) {
-	refreshToken := uuid.New()
+	refreshToken := uuid.New().String()
+
 	userRoles, err := wf.db.RefreshTokenAndGetUserRoles(ctx, sql.RefreshTokenAndGetUserRolesParams{
-		NewRefreshTokenHash: sql.Text(hashRefreshToken(refreshToken[:])),
+		NewRefreshTokenHash: sql.Text(hashRefreshToken([]byte(refreshToken))),
 		ExpiresAt: sql.TimestampTz(
 			time.Now().Add(time.Duration(wf.config.RefreshTokenExpiresIn) * time.Second),
 		),
@@ -440,7 +441,7 @@ func (wf *Workflows) UpdateSession( //nolint:funlen
 	return &api.Session{
 		AccessToken:          accessToken,
 		AccessTokenExpiresIn: expiresIn,
-		RefreshToken:         refreshToken.String(),
+		RefreshToken:         refreshToken,
 		RefreshTokenId:       userRoles[0].RefreshTokenID.String(),
 		User: &api.User{
 			AvatarUrl:           user.AvatarUrl,
