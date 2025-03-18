@@ -33,11 +33,6 @@ jobs:
         ref: ${{ inputs.GIT_REF }}
         actions: read
 
-    - name: Collect Workflow Telemetry
-      uses: catchpoint/workflow-telemetry-action@v2
-      with:
-        comment_on_pr: false
-
     - name: Configure aws
       uses: aws-actions/configure-aws-credentials@v4
       with:
