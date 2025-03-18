@@ -78,7 +78,9 @@ func TestPostToken(t *testing.T) { //nolint:maintidx
 					gomock.Any(),
 					cmpDBParams(sql.RefreshTokenAndGetUserRolesParams{
 						NewRefreshTokenHash: sql.Text(""),
-						ExpiresAt:           sql.TimestampTz(time.Now().Add(time.Duration(2592000) * time.Second)),
+						ExpiresAt: sql.TimestampTz(
+							time.Now().Add(time.Duration(2592000) * time.Second),
+						),
 						OldRefreshTokenHash: sql.Text(hashedToken),
 					}),
 				).Return([]sql.RefreshTokenAndGetUserRolesRow{
@@ -159,7 +161,9 @@ func TestPostToken(t *testing.T) { //nolint:maintidx
 					gomock.Any(),
 					cmpDBParams(sql.RefreshTokenAndGetUserRolesParams{
 						NewRefreshTokenHash: sql.Text(""),
-						ExpiresAt:           sql.TimestampTz(time.Now().Add(time.Duration(2592000) * time.Second)),
+						ExpiresAt: sql.TimestampTz(
+							time.Now().Add(time.Duration(2592000) * time.Second),
+						),
 						OldRefreshTokenHash: sql.Text(hashedToken),
 					}),
 				).Return([]sql.RefreshTokenAndGetUserRolesRow{

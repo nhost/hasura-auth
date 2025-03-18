@@ -922,16 +922,16 @@ const refreshTokenAndGetUserRoles = `-- name: RefreshTokenAndGetUserRoles :many
 WITH refreshed_token AS (
     UPDATE auth.refresh_tokens
     SET
-		expires_at = $2,
-		refresh_token_hash = $1
+        expires_at = $2,
+        refresh_token_hash = $1
     WHERE refresh_token_hash = $3
     RETURNING id AS refresh_token_id, user_id
 ),
 updated_user AS (
-	UPDATE auth.users
-	SET last_seen = now()
-	FROM refreshed_token
-	WHERE auth.users.id = refreshed_token.user_id
+    UPDATE auth.users
+    SET last_seen = now()
+    FROM refreshed_token
+    WHERE auth.users.id = refreshed_token.user_id
 )
 SELECT refreshed_token.refresh_token_id, role FROM auth.user_roles
 RIGHT JOIN refreshed_token ON auth.user_roles.user_id = refreshed_token.user_id
