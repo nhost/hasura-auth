@@ -60,7 +60,7 @@ check-dry-run-go:  ## Run nix flake check
 
 
 .PHONY: dev-env-up
-dev-env-up:  ## Starts development environment
+dev-env-up: build-docker-image  ## Starts development environment
 	cd build/dev/docker && docker compose \
 		--project-name auth-dev \
 		up \
