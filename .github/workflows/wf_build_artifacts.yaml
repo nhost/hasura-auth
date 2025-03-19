@@ -65,7 +65,8 @@ jobs:
       id: vars
       run: |
         echo "VERSION=$(make get-version VER=${{ inputs.VERSION }})" >> $GITHUB_OUTPUT
-
+        ARCH=$([ "${{ runner.arch }}" == "X64" ] && echo "x86_64" || echo "aarch64")
+        echo "ARCH=${ARCH}" >> $GITHUB_OUTPUT
     - name: "Build artifact"
       run: |
         make get-version VER=0.0.0-dev # we revert this to avoid rebuilding just due to version change
@@ -75,7 +76,7 @@ jobs:
     - name: "Push artifact to artifact repository"
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ inputs.NAME }}-artifact-${{ runner.arch }}-${{ steps.vars.outputs.VERSION }}
+        name: ${{ inputs.NAME }}-artifact-${{ steps.vars.outputs.ARCH }}-${{ steps.vars.outputs.VERSION }}
         path: result.zip
         retention-days: 7
 
@@ -89,7 +90,7 @@ jobs:
     - name: "Push docker image to artifact repository"
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ inputs.NAME }}-docker-image-${{ runner.arch }}-${{ steps.vars.outputs.VERSION }}
+        name: ${{ inputs.NAME }}-docker-image-${{ steps.vars.outputs.ARCH }}-${{ steps.vars.outputs.VERSION }}
         path: result
         retention-days: 7
 
