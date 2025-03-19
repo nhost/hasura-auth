@@ -36,7 +36,7 @@ help: ## Show this help.
 
 .PHONY: get-version
 get-version:  ## Return version
-	@sed -i "s/version\s*=\s*\"[^\"]*\"/version = \"${VERSION}\"/" flake.nix
+	@sed -i '/^\s*version = "0\.0\.0-dev";/s//version = "${VERSION}";/' flake.nix
 	@echo $(VERSION)
 
 
