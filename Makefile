@@ -1,7 +1,7 @@
 ifdef VER
 VERSION=$(shell echo $(VER) | sed -e 's/^v//g' -e 's/\//_/g')
 else
-VERSION=$(shell grep -oP 'version\s*=\s*"\K[^"]+' flake.nix)
+VERSION=$(shell grep -oP 'version\s*=\s*"\K[^"]+' flake.nix | head -n 1)
 endif
 
 ifeq ($(shell uname -m),x86_64)
