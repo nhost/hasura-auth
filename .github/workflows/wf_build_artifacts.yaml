@@ -61,17 +61,6 @@ jobs:
           substituters = https://cache.nixos.org/?priority=40 s3://nhost-nix-cache?region=eu-central-1&priority=50
           trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= ${{ secrets.NIX_CACHE_PUB_KEY }}
 
-    - name: "Verify if we need to build"
-      id: verify-build
-      run: |
-        export drvPath=$(make check-dry-run)
-        # nix store verify --no-trust --store http://127.0.0.1:37515 $drvPath \
-        nix store verify --no-trust --store s3://nhost-nix-cache\?region=eu-central-1 $drvPath \
-          && export BUILD_NEEDED=no \
-          || export BUILD_NEEDED=yes
-        echo BUILD_NEEDED=$BUILD_NEEDED >> $GITHUB_OUTPUT
-        echo DERIVATION_PATH=$drvPath >> $GITHUB_OUTPUT
-
     - name: Compute common env vars
       id: vars
       run: |
@@ -86,7 +75,7 @@ jobs:
     - name: "Push artifact to artifact repository"
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ inputs.NAME }}-artifact-${{ matrix.platform }}-${{ steps.vars.outputs.VERSION }}
+        name: ${{ inputs.NAME }}-artifact-${{ runner.arch }}-${{ steps.vars.outputs.VERSION }}
         path: result.zip
         retention-days: 7
 
@@ -100,16 +89,12 @@ jobs:
     - name: "Push docker image to artifact repository"
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ inputs.NAME }}-docker-image-${{ matrix.platform }}-${{ steps.vars.outputs.VERSION }}
-        path: ${{ inputs.PROJECT }}/result
+        name: ${{ inputs.NAME }}-docker-image-${{ runner.arch }}-${{ steps.vars.outputs.VERSION }}
+        path: result
         retention-days: 7
 
     - name: "Cache build"
       run: |
-       echo ${{ secrets.NIX_CACHE_PRIV_KEY }} > cache-priv-key.pem
-       nix store sign --key-file cache-priv-key.pem --all
-       find /nix/store -maxdepth 1 -name "*-*" -type d -exec nix copy --to s3://nhost-nix-cache\?region=eu-central-1 {} \;
-      if: always()
-
-    - run: rm -f cache-priv-key.pem
+        nix store sign --key-file <(echo "${{ secrets.NIX_CACHE_PRIV_KEY }}") --all
+        find /nix/store -maxdepth 1 -name "*-*" -type d -exec nix copy --to s3://nhost-nix-cache\?region=eu-central-1 {} \;
       if: always()
