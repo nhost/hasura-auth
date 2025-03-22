@@ -26,6 +26,7 @@ func getConfig() *controller.Config {
 		BlockedEmails:              []string{},
 		ClientURL:                  clientURL,
 		CustomClaims:               "",
+		CustomClaimsDefaults:       "",
 		ConcealErrors:              false,
 		DisableSignup:              false,
 		DisableNewUsers:            false,
