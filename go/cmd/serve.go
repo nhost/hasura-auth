@@ -356,6 +356,12 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 				EnvVars:  []string{"AUTH_JWT_CUSTOM_CLAIMS"},
 			},
 			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagCustomClaimsDefaults,
+				Usage:    "Custom claims defaults",
+				Category: "jwt",
+				EnvVars:  []string{"AUTH_JWT_CUSTOM_CLAIMS_DEFAULTS"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
 				Name:     flagGraphqlURL,
 				Usage:    "Hasura GraphQL endpoint. Required for custom claims",
 				Category: "jwt",

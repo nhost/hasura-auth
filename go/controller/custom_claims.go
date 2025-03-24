@@ -224,7 +224,11 @@ func (c *CustomClaims) ExtractClaims(data any) (map[string]any, error) {
 			}
 		}
 
-		claims[name] = got
+		if got == nil {
+			claims[name] = c.defaultOrNil(name)
+		} else {
+			claims[name] = got
+		}
 	}
 	return claims, nil
 }
