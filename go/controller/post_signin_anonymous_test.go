@@ -301,7 +301,7 @@ func TestPostSigninAnonymous(t *testing.T) { //nolint:maintidx
 			},
 		},
 
-		{
+		{ //nolint:dupl
 			name: "signup disabled",
 			config: func() *controller.Config {
 				cfg := getConfig()
@@ -351,7 +351,7 @@ func TestPostSigninAnonymous(t *testing.T) { //nolint:maintidx
 			},
 		},
 
-		{
+		{ //nolint:dupl
 			name: "anonymous users disabled",
 			config: func() *controller.Config {
 				cfg := getConfig()
