@@ -903,7 +903,7 @@ func (wf *Workflows) SignupAnonymousUser( //nolint:funlen
 			Metadata:              metadata,
 			RefreshTokenHash:      sql.Text(hashRefreshToken([]byte(refreshToken.String()))),
 			RefreshTokenExpiresAt: sql.TimestampTz(refreshTokenExpiresAt),
-			Roles:                 []string{},
+			Roles:                 []string{anonymousRole},
 		},
 	)
 	if err != nil {

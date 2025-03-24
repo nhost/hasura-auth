@@ -22,6 +22,10 @@ func (ctrl *Controller) postSigninAnonymousValidateRequest(
 		return api.PostSigninAnonymousRequestObject{}, ErrAnonymousUsersDisabled
 	}
 
+	if req.Body == nil {
+		req.Body = &api.PostSigninAnonymousJSONRequestBody{} //nolint:exhaustruct
+	}
+
 	if req.Body.Locale == nil {
 		req.Body.Locale = ptr(ctrl.config.DefaultLocale)
 	}
