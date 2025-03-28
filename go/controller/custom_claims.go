@@ -111,6 +111,7 @@ type CustomClaims struct {
 	httpclient         *http.Client
 	graphqlURL         string
 	requestInterceptor []RequestInterceptor
+	defaults           map[string]any
 }
 
 func CustomClaimerAddAdminSecret(adminSecret string) RequestInterceptor {
@@ -123,6 +124,7 @@ func NewCustomClaims(
 	rawClaims map[string]string,
 	httpclient *http.Client,
 	graphqlURL string,
+	defaults map[string]any,
 	requestInterceptor ...RequestInterceptor,
 ) (*CustomClaims, error) {
 	claims := make(map[string]any)
@@ -153,6 +155,7 @@ func NewCustomClaims(
 		httpclient:         httpclient,
 		graphqlURL:         graphqlURL,
 		requestInterceptor: requestInterceptor,
+		defaults:           defaults,
 	}, nil
 }
 
@@ -188,6 +191,15 @@ func (c *CustomClaims) getClaimsBackwardsCompatibility(data any, path []string) 
 	return nil
 }
 
+func (c *CustomClaims) defaultOrNil(name string) any {
+	if c.defaults != nil {
+		if val, exists := c.defaults[name]; exists {
+			return val
+		}
+	}
+	return nil
+}
+
 func (c *CustomClaims) ExtractClaims(data any) (map[string]any, error) {
 	claims := make(map[string]any)
 	for name, j := range c.jsonPaths {
@@ -197,7 +209,7 @@ func (c *CustomClaims) ExtractClaims(data any) (map[string]any, error) {
 		} else {
 			v, err := j.jpath.FindResults(data)
 			if err != nil {
-				claims[name] = nil
+				claims[name] = c.defaultOrNil(name)
 				continue
 			}
 
@@ -211,7 +223,12 @@ func (c *CustomClaims) ExtractClaims(data any) (map[string]any, error) {
 				got = v[0][0].Interface()
 			}
 		}
-		claims[name] = got
+
+		if got == nil {
+			claims[name] = c.defaultOrNil(name)
+		} else {
+			claims[name] = got
+		}
 	}
 	return claims, nil
 }
