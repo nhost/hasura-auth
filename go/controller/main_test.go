@@ -3,6 +3,7 @@ package controller_test
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/url"
 	"strings"
 	"testing"
@@ -174,6 +175,7 @@ type getControllerOpts struct {
 	emailer                   func(*gomock.Controller) *mock.MockEmailer
 	hibp                      func(*gomock.Controller) *mock.MockHIBPClient
 	idTokenValidatorProviders func(t *testing.T) *oidc.IDTokenValidatorProviders
+	totp                      *controller.Totp
 }
 
 type getControllerOptsFunc func(*getControllerOpts)
@@ -201,6 +203,12 @@ func withIDTokenValidatorProviders(
 ) getControllerOptsFunc {
 	return func(o *getControllerOpts) {
 		o.idTokenValidatorProviders = idTokenValidatorProviders
+	}
+}
+
+func withTotp(totp *controller.Totp) getControllerOptsFunc {
+	return func(o *getControllerOpts) {
+		o.totp = totp
 	}
 }
 
@@ -251,6 +259,11 @@ func getController(
 		idTokenValidator = controllerOpts.idTokenValidatorProviders(t)
 	}
 
+	fmt.Println("controllerOpts.totp", controllerOpts.totp)
+	if controllerOpts.totp == nil {
+		controllerOpts.totp = controller.NewTotp(time.Now)
+	}
+
 	c, err := controller.New(
 		db(ctrl),
 		config,
@@ -258,6 +271,7 @@ func getController(
 		emailer,
 		hibp,
 		idTokenValidator,
+		controllerOpts.totp,
 		"dev",
 	)
 	if err != nil {
