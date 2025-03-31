@@ -2,22 +2,96 @@ package controller
 
 import (
 	"context"
-	"fmt"
+	"log/slog"
+	"net/http"
 	"net/url"
 
 	"github.com/nhost/hasura-auth/go/api"
 	"github.com/nhost/hasura-auth/go/middleware"
 	"github.com/nhost/hasura-auth/go/oauth2"
+	"github.com/nhost/hasura-auth/go/oidc"
 )
 
-func (ctrl *Controller) getSigninProviderProviderCallbackRedirectError(
-	errorMsg string,
-) (api.GetSigninProviderProviderCallbackResponseObject, error) {
-	return api.GetSigninProviderProviderCallback302Response{
-		Headers: api.GetSigninProviderProviderCallback302ResponseHeaders{
-			Location: fmt.Sprintf("http://localhost:3000/auth/error?error=%s", url.QueryEscape(errorMsg)),
+func (ctrl *Controller) getSigninProviderProviderCallbackValidate( //nolint:ireturn
+	req api.GetSigninProviderProviderCallbackRequestObject,
+	clearCookie *http.Cookie,
+	logger *slog.Logger,
+) (api.GetSigninProviderProviderCallbackResponseObject, *api.SignUpOptions, *url.URL, *APIError) {
+	redirectTo := ctrl.config.ClientURL
+
+	cookieData := &oauth2.ProviderSignInData{} //nolint:exhaustruct
+	if err := cookieData.Decode(req.Params.NhostAuthProviderSignInData); err != nil {
+		logger.Error("failed to decode cookie", logError(err))
+		return nil, nil, redirectTo, ErrInvalidState
+	}
+
+	// we just care about the redirect URL for now, the rest is handled by the signin flow
+	options, apiErr := ctrl.wf.ValidateOptionsRedirectTo(
+		&api.OptionsRedirectTo{
+			RedirectTo: cookieData.Options.RedirectTo,
 		},
-	}, nil
+		logger,
+	)
+	if apiErr != nil {
+		return nil, nil, redirectTo, apiErr
+	}
+
+	if req.Params.Error != nil && *req.Params.Error != "" {
+		errorMsg := *req.Params.Error
+		if req.Params.ErrorDescription != nil {
+			errorMsg += ": " + *req.Params.ErrorDescription
+		}
+
+		values := redirectTo.Query()
+		values.Add("error", errorMsg)
+		redirectTo.RawQuery = values.Encode()
+
+		return api.GetSigninProviderProviderCallback302Response{
+			Headers: api.GetSigninProviderProviderCallback302ResponseHeaders{
+				Location:  redirectTo.String(),
+				SetCookie: clearCookie.String(),
+			},
+		}, nil, nil, nil
+	}
+
+	if req.Params.State != cookieData.State {
+		logger.Error("state mismatch", "expected", cookieData.State, "actual", req.Params.State)
+		return nil, nil, redirectTo, ErrInvalidState
+	}
+
+	optionsRedirectTo, err := url.Parse(*options.RedirectTo)
+	if err != nil {
+		logger.Error("error parsing redirect URL", logError(err))
+		return nil, nil, redirectTo, ErrInvalidRequest
+	}
+
+	return nil, &cookieData.Options, optionsRedirectTo, nil
+}
+
+func (ctrl *Controller) getSigninProviderProviderCallbackOauthFlow(
+	ctx context.Context,
+	req api.GetSigninProviderProviderCallbackRequestObject,
+	logger *slog.Logger,
+) (oidc.Profile, *APIError) {
+	provider := ctrl.Providers.Get(string(req.Provider))
+	if provider == nil {
+		logger.Error("provider not enabled")
+		return oidc.Profile{}, ErrDisabledEndpoint
+	}
+
+	token, err := provider.Oauth2().Exchange(ctx, req.Params.Code)
+	if err != nil {
+		logger.Error("failed to exchange token", logError(err))
+		return oidc.Profile{}, ErrOauthTokenExchangeFailed
+	}
+
+	profile, err := provider.GetProfile(ctx, token.AccessToken)
+	if err != nil {
+		logger.Error("failed to get user info", logError(err))
+		return oidc.Profile{}, ErrOauthProfileFetchFailed
+	}
+
+	return profile, nil
 }
 
 func (ctrl *Controller) GetSigninProviderProviderCallback( //nolint:ireturn
@@ -26,58 +100,52 @@ func (ctrl *Controller) GetSigninProviderProviderCallback( //nolint:ireturn
 ) (api.GetSigninProviderProviderCallbackResponseObject, error) {
 	logger := middleware.LoggerFromContext(ctx)
 
-	provider := ctrl.Providers.Get(string(req.Provider))
-	if provider == nil {
-		return nil, fmt.Errorf("provider not found: %s", req.Provider)
+	// Clear the state cookie
+	clearCookie := &http.Cookie{ //nolint:exhaustruct
+		Name:     signinProviderCookieName,
+		Value:    "",
+		MaxAge:   0,
+		Secure:   ctrl.config.UseSecureCookies(),
+		HttpOnly: true,
+		SameSite: http.SameSiteLaxMode,
+		Path:     "/signin/provider/" + string(req.Provider),
 	}
 
-	if req.Params.Error != nil && *req.Params.Error != "" {
-		errorMsg := *req.Params.Error
-		if req.Params.ErrorDescription != nil {
-			errorMsg += ": " + *req.Params.ErrorDescription
-		}
-		return ctrl.getSigninProviderProviderCallbackRedirectError(errorMsg)
+	quickReturn, options, redirectTo, apiErr := ctrl.getSigninProviderProviderCallbackValidate(
+		req, clearCookie, logger,
+	)
+	if apiErr != nil {
+		return ctrl.sendRedirectError(redirectTo, apiErr), nil
+	}
+	if quickReturn != nil {
+		// we use quick return to forward the error message from the oauth provider
+		return quickReturn, nil
 	}
 
-	signInData := &oauth2.ProviderSignInData{} //nolint:exhaustruct
-	if err := signInData.Decode(req.Params.NhostAuthProviderSignInData); err != nil {
-		logger.Error("failed to decode sign-in data", logError(err))
-		return ctrl.getSigninProviderProviderCallbackRedirectError("invalid_state")
+	profile, apiErr := ctrl.getSigninProviderProviderCallbackOauthFlow(ctx, req, logger)
+	if apiErr != nil {
+		return ctrl.sendRedirectError(redirectTo, apiErr), nil
 	}
 
-	if req.Params.State != signInData.State {
-		logger.Error("state mismatch", "expected", signInData.State, "actual", req.Params.State)
-		return ctrl.getSigninProviderProviderCallbackRedirectError("invalid_state")
+	// TODO connect
+
+	session, apiErr := ctrl.providerSignInFlow(
+		ctx, profile, string(req.Provider), options, logger,
+	)
+	if apiErr != nil {
+		return ctrl.sendRedirectError(redirectTo, apiErr), nil
 	}
 
-	token, err := provider.Oauth2().Exchange(ctx, req.Params.Code)
-	if err != nil {
-		logger.Error("failed to exchange token", logError(err))
-		return ctrl.getSigninProviderProviderCallbackRedirectError("token_exchange_failed")
+	if session != nil {
+		values := redirectTo.Query()
+		values.Add("refreshToken", session.RefreshToken)
+		redirectTo.RawQuery = values.Encode()
 	}
-
-	profile, err := provider.GetProfile(ctx, token.AccessToken)
-	if err != nil {
-		logger.Error("failed to get user info", logError(err))
-		return ctrl.getSigninProviderProviderCallbackRedirectError("failed_to_get_user_info")
-	}
-
-	fmt.Println("githubUser", profile)
-
-	// // Clear the state cookie
-	// clearCookie := &http.Cookie{
-	// 	Name:     "nhostAuthSigninGithubData",
-	// 	Value:    "",
-	// 	MaxAge:   -1,
-	// 	Secure:   false, // Change to true in production
-	// 	HttpOnly: true,
-	// 	SameSite: http.SameSiteLaxMode,
-	// 	Path:     "/signin/provider/" + string(req.Provider),
-	// }
 
 	return api.GetSigninProviderProviderCallback302Response{
 		Headers: api.GetSigninProviderProviderCallback302ResponseHeaders{
-			Location: "http://localhost:3000",
+			Location:  redirectTo.String(),
+			SetCookie: clearCookie.String(),
 		},
 	}, nil
 }

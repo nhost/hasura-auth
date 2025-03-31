@@ -1048,7 +1048,8 @@ type GetSigninProviderProviderCallbackResponseObject interface {
 }
 
 type GetSigninProviderProviderCallback302ResponseHeaders struct {
-	Location string
+	Location  string
+	SetCookie string
 }
 
 type GetSigninProviderProviderCallback302Response struct {
@@ -1057,6 +1058,7 @@ type GetSigninProviderProviderCallback302Response struct {
 
 func (response GetSigninProviderProviderCallback302Response) VisitGetSigninProviderProviderCallbackResponse(w http.ResponseWriter) error {
 	w.Header().Set("Location", fmt.Sprint(response.Headers.Location))
+	w.Header().Set("Set-Cookie", fmt.Sprint(response.Headers.SetCookie))
 	w.WriteHeader(302)
 	return nil
 }

@@ -269,7 +269,14 @@ func getController(
 		jwtGetter,
 		emailer,
 		hibp,
-		oauth2.NewProviders(),
+		oauth2.NewProviders(map[string]oauth2.Provider{
+			"google": oauth2.NewGoogleProvider(
+				"clientID",
+				"clientSecret",
+				"http://localhost:4000",
+				[]string{"oidc", "email", "profile"},
+			),
+		}),
 		idTokenValidator,
 		controllerOpts.totp,
 		"dev",

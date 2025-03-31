@@ -40,7 +40,11 @@ func NewIDTokenValidatorProviders(
 	var appleID *IDTokenValidator
 	if appleClientID != "" {
 		var err error
-		appleID, err = NewIDTokenValidator(ctx, api.IdTokenProviderApple, appleClientID, parserOptions...)
+		appleID, err = NewIDTokenValidator(
+			ctx,
+			api.IdTokenProviderApple,
+			appleClientID,
+			parserOptions...)
 		if err != nil {
 			return nil, fmt.Errorf("failed to create Apple ID token validator: %w", err)
 		}
@@ -49,7 +53,11 @@ func NewIDTokenValidatorProviders(
 	var google *IDTokenValidator
 	if googleClientID != "" {
 		var err error
-		google, err = NewIDTokenValidator(ctx, api.IdTokenProviderGoogle, googleClientID, parserOptions...)
+		google, err = NewIDTokenValidator(
+			ctx,
+			api.IdTokenProviderGoogle,
+			googleClientID,
+			parserOptions...)
 		if err != nil {
 			return nil, fmt.Errorf("failed to create Google ID token validator: %w", err)
 		}

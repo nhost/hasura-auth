@@ -117,6 +117,13 @@ func (wf *Workflows) ValidateSignUpOptions( //nolint:cyclop
 		options = &api.SignUpOptions{} //nolint:exhaustruct
 	}
 
+	if options.RedirectTo == nil {
+		options.RedirectTo = ptr(wf.config.ClientURL.String())
+	} else if !wf.redirectURLValidator(deptr(options.RedirectTo)) {
+		logger.Warn("redirect URL not allowed", slog.String("redirectTo", deptr(options.RedirectTo)))
+		return nil, ErrRedirecToNotAllowed
+	}
+
 	if options.DefaultRole == nil {
 		options.DefaultRole = ptr(wf.config.DefaultRole)
 	}
@@ -127,14 +134,14 @@ func (wf *Workflows) ValidateSignUpOptions( //nolint:cyclop
 		for _, role := range deptr(options.AllowedRoles) {
 			if !slices.Contains(wf.config.DefaultAllowedRoles, role) {
 				logger.Warn("role not allowed", slog.String("role", role))
-				return nil, ErrRoleNotAllowed
+				return options, ErrRoleNotAllowed
 			}
 		}
 	}
 
 	if !slices.Contains(deptr(options.AllowedRoles), deptr(options.DefaultRole)) {
 		logger.Warn("default role not in allowed roles")
-		return nil, ErrDefaultRoleMustBeInAllowedRoles
+		return options, ErrDefaultRoleMustBeInAllowedRoles
 	}
 
 	if options.DisplayName == nil {
@@ -150,13 +157,6 @@ func (wf *Workflows) ValidateSignUpOptions( //nolint:cyclop
 			slog.String("locale", deptr(options.Locale)),
 		)
 		options.Locale = ptr(wf.config.DefaultLocale)
-	}
-
-	if options.RedirectTo == nil {
-		options.RedirectTo = ptr(wf.config.ClientURL.String())
-	} else if !wf.redirectURLValidator(deptr(options.RedirectTo)) {
-		logger.Warn("redirect URL not allowed", slog.String("redirectTo", deptr(options.RedirectTo)))
-		return nil, ErrRedirecToNotAllowed
 	}
 
 	return options, nil
@@ -727,7 +727,7 @@ func (wf *Workflows) SignupUserWithFn(
 	databaseWithoutSession databaseWithoutSessionFn,
 	logger *slog.Logger,
 ) (*api.Session, *APIError) {
-	if wf.config.RequireEmailVerification || wf.config.DisableNewUsers {
+	if sendConfirmationEmail && wf.config.RequireEmailVerification || wf.config.DisableNewUsers {
 		return nil, wf.SignupUserWithouthSession(
 			ctx, email, options, sendConfirmationEmail, databaseWithoutSession, logger,
 		)

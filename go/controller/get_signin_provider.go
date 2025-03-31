@@ -16,6 +16,10 @@ import (
 	"github.com/nhost/hasura-auth/go/oauth2"
 )
 
+const (
+	signinProviderCookieName = "nhostAuthProviderSignInData"
+)
+
 const oauth2StateLength = 16
 
 func randString(nByte int) (string, error) {
@@ -96,7 +100,7 @@ func (ctrl *Controller) GetSigninProviderProvider( //nolint:ireturn
 	}
 
 	cookie := &http.Cookie{ //nolint:exhaustruct
-		Name:     "nhostAuthProviderSignInData",
+		Name:     signinProviderCookieName,
 		Value:    dataEncoded,
 		MaxAge:   int(time.Minute.Seconds()),
 		Secure:   ctrl.config.UseSecureCookies(),
