@@ -46,15 +46,15 @@ const (
 	UserNotAnonymous                ErrorResponseError = "user-not-anonymous"
 )
 
+// Defines values for IdTokenProvider.
+const (
+	IdTokenProviderApple  IdTokenProvider = "apple"
+	IdTokenProviderGoogle IdTokenProvider = "google"
+)
+
 // Defines values for OKResponse.
 const (
 	OK OKResponse = "OK"
-)
-
-// Defines values for Provider.
-const (
-	Apple  Provider = "apple"
-	Google Provider = "google"
 )
 
 // Defines values for UserDeanonymizeRequestSignInMethod.
@@ -69,12 +69,30 @@ const (
 	Totp  UserMfaRequestActiveMfaType = "totp"
 )
 
+// Defines values for SigninProvider.
+const (
+	SigninProviderGithub SigninProvider = "github"
+	SigninProviderGoogle SigninProvider = "google"
+)
+
 // Defines values for TicketTypeQuery.
 const (
 	TicketTypeQueryEmailConfirmChange TicketTypeQuery = "emailConfirmChange"
 	TicketTypeQueryEmailVerify        TicketTypeQuery = "emailVerify"
 	TicketTypeQueryPasswordReset      TicketTypeQuery = "passwordReset"
 	TicketTypeQuerySigninPasswordless TicketTypeQuery = "signinPasswordless"
+)
+
+// Defines values for GetSigninProviderProviderParamsProvider.
+const (
+	GetSigninProviderProviderParamsProviderGithub GetSigninProviderProviderParamsProvider = "github"
+	GetSigninProviderProviderParamsProviderGoogle GetSigninProviderProviderParamsProvider = "google"
+)
+
+// Defines values for GetSigninProviderProviderCallbackParamsProvider.
+const (
+	GetSigninProviderProviderCallbackParamsProviderGithub GetSigninProviderProviderCallbackParamsProvider = "github"
+	GetSigninProviderProviderCallbackParamsProviderGoogle GetSigninProviderProviderCallbackParamsProvider = "google"
 )
 
 // Defines values for GetVerifyParamsType.
@@ -116,6 +134,9 @@ type ErrorResponse struct {
 // ErrorResponseError Error code that identifies the application error
 type ErrorResponseError string
 
+// IdTokenProvider defines model for IdTokenProvider.
+type IdTokenProvider string
+
 // JWK defines model for JWK.
 type JWK struct {
 	Alg string `json:"alg"`
@@ -137,8 +158,8 @@ type LinkIdTokenRequest struct {
 	IdToken string `json:"idToken"`
 
 	// Nonce Nonce used during sign in process
-	Nonce    *string  `json:"nonce,omitempty"`
-	Provider Provider `json:"provider"`
+	Nonce    *string         `json:"nonce,omitempty"`
+	Provider IdTokenProvider `json:"provider"`
 }
 
 // MFAChallengePayload defines model for MFAChallengePayload.
@@ -153,9 +174,6 @@ type OKResponse string
 type OptionsRedirectTo struct {
 	RedirectTo *string `json:"redirectTo,omitempty"`
 }
-
-// Provider defines model for Provider.
-type Provider string
 
 // RefreshTokenRequest defines model for RefreshTokenRequest.
 type RefreshTokenRequest struct {
@@ -202,9 +220,9 @@ type SignInIdTokenRequest struct {
 	IdToken string `json:"idToken"`
 
 	// Nonce Nonce used during sign in process
-	Nonce    *string        `json:"nonce,omitempty"`
-	Options  *SignUpOptions `json:"options,omitempty"`
-	Provider Provider       `json:"provider"`
+	Nonce    *string         `json:"nonce,omitempty"`
+	Options  *SignUpOptions  `json:"options,omitempty"`
+	Provider IdTokenProvider `json:"provider"`
 }
 
 // SignInMfaTotpRequest defines model for SignInMfaTotpRequest.
@@ -424,11 +442,62 @@ type UserPasswordResetRequest struct {
 // RedirectToQuery Target URL for the redirect
 type RedirectToQuery = string
 
+// SigninProvider defines model for SigninProvider.
+type SigninProvider string
+
 // TicketQuery Ticket
 type TicketQuery = string
 
 // TicketTypeQuery Type of the ticket
 type TicketTypeQuery string
+
+// GetSigninProviderProviderParams defines parameters for GetSigninProviderProvider.
+type GetSigninProviderProviderParams struct {
+	// AllowedRoles Array of allowed roles for the user
+	AllowedRoles *[]string `form:"allowedRoles,omitempty" json:"allowedRoles,omitempty"`
+
+	// DefaultRole Default role for the user
+	DefaultRole *string `form:"defaultRole,omitempty" json:"defaultRole,omitempty"`
+
+	// DisplayName Display name for the user
+	DisplayName *string `form:"displayName,omitempty" json:"displayName,omitempty"`
+
+	// Locale A two-characters locale
+	Locale *string `form:"locale,omitempty" json:"locale,omitempty"`
+
+	// Metadata Additional metadata for the user
+	Metadata *map[string]interface{} `form:"metadata,omitempty" json:"metadata,omitempty"`
+
+	// RedirectTo URI to redirect to
+	RedirectTo *string `form:"redirectTo,omitempty" json:"redirectTo,omitempty"`
+}
+
+// GetSigninProviderProviderParamsProvider defines parameters for GetSigninProviderProvider.
+type GetSigninProviderProviderParamsProvider string
+
+// GetSigninProviderProviderCallbackParams defines parameters for GetSigninProviderProviderCallback.
+type GetSigninProviderProviderCallbackParams struct {
+	// Code Authorization code provided by GitHub
+	Code string `form:"code" json:"code"`
+
+	// State State parameter to validate against the stored cookie value
+	State string `form:"state" json:"state"`
+
+	// Error Error message if authentication failed
+	Error *string `form:"error,omitempty" json:"error,omitempty"`
+
+	// ErrorDescription Detailed error description if authentication failed
+	ErrorDescription *string `form:"error_description,omitempty" json:"error_description,omitempty"`
+
+	// ErrorUri URI with more information about the error
+	ErrorUri *string `form:"error_uri,omitempty" json:"error_uri,omitempty"`
+
+	// NhostAuthProviderSignInData Authentication state token stored in cookie (for CSRF protection)
+	NhostAuthProviderSignInData string `form:"nhostAuthProviderSignInData" json:"nhostAuthProviderSignInData"`
+}
+
+// GetSigninProviderProviderCallbackParamsProvider defines parameters for GetSigninProviderProviderCallback.
+type GetSigninProviderProviderCallbackParamsProvider string
 
 // GetVerifyParams defines parameters for GetVerify.
 type GetVerifyParams struct {

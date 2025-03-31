@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 14.6 (Debian 14.6-1.pgdg110+1)
+-- Dumped from database version 14.15
 -- Dumped by pg_dump version 17.4
 
 SET statement_timeout = 0;
@@ -27,17 +27,17 @@ CREATE SCHEMA auth;
 ALTER SCHEMA auth OWNER TO nhost_admin;
 
 --
--- Name: email; Type: DOMAIN; Schema: auth; Owner: postgres
+-- Name: email; Type: DOMAIN; Schema: auth; Owner: nhost_auth_admin
 --
 
 CREATE DOMAIN auth.email AS public.citext
 	CONSTRAINT email_check CHECK ((VALUE OPERATOR(public.~) '^[a-zA-Z0-9.!#$%&''*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$'::public.citext));
 
 
-ALTER DOMAIN auth.email OWNER TO postgres;
+ALTER DOMAIN auth.email OWNER TO nhost_auth_admin;
 
 --
--- Name: set_current_timestamp_updated_at(); Type: FUNCTION; Schema: auth; Owner: postgres
+-- Name: set_current_timestamp_updated_at(); Type: FUNCTION; Schema: auth; Owner: nhost_auth_admin
 --
 
 CREATE FUNCTION auth.set_current_timestamp_updated_at() RETURNS trigger
@@ -53,14 +53,14 @@ END;
 $$;
 
 
-ALTER FUNCTION auth.set_current_timestamp_updated_at() OWNER TO postgres;
+ALTER FUNCTION auth.set_current_timestamp_updated_at() OWNER TO nhost_auth_admin;
 
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
 
 --
--- Name: migrations; Type: TABLE; Schema: auth; Owner: postgres
+-- Name: migrations; Type: TABLE; Schema: auth; Owner: nhost_auth_admin
 --
 
 CREATE TABLE auth.migrations (
@@ -71,17 +71,17 @@ CREATE TABLE auth.migrations (
 );
 
 
-ALTER TABLE auth.migrations OWNER TO postgres;
+ALTER TABLE auth.migrations OWNER TO nhost_auth_admin;
 
 --
--- Name: TABLE migrations; Type: COMMENT; Schema: auth; Owner: postgres
+-- Name: TABLE migrations; Type: COMMENT; Schema: auth; Owner: nhost_auth_admin
 --
 
 COMMENT ON TABLE auth.migrations IS 'Internal table for tracking migrations. Don''t modify its structure as Hasura Auth relies on it to function properly.';
 
 
 --
--- Name: provider_requests; Type: TABLE; Schema: auth; Owner: postgres
+-- Name: provider_requests; Type: TABLE; Schema: auth; Owner: nhost_auth_admin
 --
 
 CREATE TABLE auth.provider_requests (
@@ -90,17 +90,17 @@ CREATE TABLE auth.provider_requests (
 );
 
 
-ALTER TABLE auth.provider_requests OWNER TO postgres;
+ALTER TABLE auth.provider_requests OWNER TO nhost_auth_admin;
 
 --
--- Name: TABLE provider_requests; Type: COMMENT; Schema: auth; Owner: postgres
+-- Name: TABLE provider_requests; Type: COMMENT; Schema: auth; Owner: nhost_auth_admin
 --
 
 COMMENT ON TABLE auth.provider_requests IS 'Oauth requests, inserted before redirecting to the provider''s site. Don''t modify its structure as Hasura Auth relies on it to function properly.';
 
 
 --
--- Name: providers; Type: TABLE; Schema: auth; Owner: postgres
+-- Name: providers; Type: TABLE; Schema: auth; Owner: nhost_auth_admin
 --
 
 CREATE TABLE auth.providers (
@@ -108,17 +108,17 @@ CREATE TABLE auth.providers (
 );
 
 
-ALTER TABLE auth.providers OWNER TO postgres;
+ALTER TABLE auth.providers OWNER TO nhost_auth_admin;
 
 --
--- Name: TABLE providers; Type: COMMENT; Schema: auth; Owner: postgres
+-- Name: TABLE providers; Type: COMMENT; Schema: auth; Owner: nhost_auth_admin
 --
 
 COMMENT ON TABLE auth.providers IS 'List of available Oauth providers. Don''t modify its structure as Hasura Auth relies on it to function properly.';
 
 
 --
--- Name: refresh_token_types; Type: TABLE; Schema: auth; Owner: postgres
+-- Name: refresh_token_types; Type: TABLE; Schema: auth; Owner: nhost_auth_admin
 --
 
 CREATE TABLE auth.refresh_token_types (
@@ -127,10 +127,10 @@ CREATE TABLE auth.refresh_token_types (
 );
 
 
-ALTER TABLE auth.refresh_token_types OWNER TO postgres;
+ALTER TABLE auth.refresh_token_types OWNER TO nhost_auth_admin;
 
 --
--- Name: refresh_tokens; Type: TABLE; Schema: auth; Owner: postgres
+-- Name: refresh_tokens; Type: TABLE; Schema: auth; Owner: nhost_auth_admin
 --
 
 CREATE TABLE auth.refresh_tokens (
@@ -144,17 +144,17 @@ CREATE TABLE auth.refresh_tokens (
 );
 
 
-ALTER TABLE auth.refresh_tokens OWNER TO postgres;
+ALTER TABLE auth.refresh_tokens OWNER TO nhost_auth_admin;
 
 --
--- Name: TABLE refresh_tokens; Type: COMMENT; Schema: auth; Owner: postgres
+-- Name: TABLE refresh_tokens; Type: COMMENT; Schema: auth; Owner: nhost_auth_admin
 --
 
 COMMENT ON TABLE auth.refresh_tokens IS 'User refresh tokens. Hasura auth uses them to rotate new access tokens as long as the refresh token is not expired. Don''t modify its structure as Hasura Auth relies on it to function properly.';
 
 
 --
--- Name: roles; Type: TABLE; Schema: auth; Owner: postgres
+-- Name: roles; Type: TABLE; Schema: auth; Owner: nhost_auth_admin
 --
 
 CREATE TABLE auth.roles (
@@ -162,17 +162,17 @@ CREATE TABLE auth.roles (
 );
 
 
-ALTER TABLE auth.roles OWNER TO postgres;
+ALTER TABLE auth.roles OWNER TO nhost_auth_admin;
 
 --
--- Name: TABLE roles; Type: COMMENT; Schema: auth; Owner: postgres
+-- Name: TABLE roles; Type: COMMENT; Schema: auth; Owner: nhost_auth_admin
 --
 
 COMMENT ON TABLE auth.roles IS 'Persistent Hasura roles for users. Don''t modify its structure as Hasura Auth relies on it to function properly.';
 
 
 --
--- Name: user_providers; Type: TABLE; Schema: auth; Owner: postgres
+-- Name: user_providers; Type: TABLE; Schema: auth; Owner: nhost_auth_admin
 --
 
 CREATE TABLE auth.user_providers (
@@ -187,17 +187,17 @@ CREATE TABLE auth.user_providers (
 );
 
 
-ALTER TABLE auth.user_providers OWNER TO postgres;
+ALTER TABLE auth.user_providers OWNER TO nhost_auth_admin;
 
 --
--- Name: TABLE user_providers; Type: COMMENT; Schema: auth; Owner: postgres
+-- Name: TABLE user_providers; Type: COMMENT; Schema: auth; Owner: nhost_auth_admin
 --
 
 COMMENT ON TABLE auth.user_providers IS 'Active providers for a given user. Don''t modify its structure as Hasura Auth relies on it to function properly.';
 
 
 --
--- Name: user_roles; Type: TABLE; Schema: auth; Owner: postgres
+-- Name: user_roles; Type: TABLE; Schema: auth; Owner: nhost_auth_admin
 --
 
 CREATE TABLE auth.user_roles (
@@ -208,17 +208,17 @@ CREATE TABLE auth.user_roles (
 );
 
 
-ALTER TABLE auth.user_roles OWNER TO postgres;
+ALTER TABLE auth.user_roles OWNER TO nhost_auth_admin;
 
 --
--- Name: TABLE user_roles; Type: COMMENT; Schema: auth; Owner: postgres
+-- Name: TABLE user_roles; Type: COMMENT; Schema: auth; Owner: nhost_auth_admin
 --
 
 COMMENT ON TABLE auth.user_roles IS 'Roles of users. Don''t modify its structure as Hasura Auth relies on it to function properly.';
 
 
 --
--- Name: user_security_keys; Type: TABLE; Schema: auth; Owner: postgres
+-- Name: user_security_keys; Type: TABLE; Schema: auth; Owner: nhost_auth_admin
 --
 
 CREATE TABLE auth.user_security_keys (
@@ -232,17 +232,17 @@ CREATE TABLE auth.user_security_keys (
 );
 
 
-ALTER TABLE auth.user_security_keys OWNER TO postgres;
+ALTER TABLE auth.user_security_keys OWNER TO nhost_auth_admin;
 
 --
--- Name: TABLE user_security_keys; Type: COMMENT; Schema: auth; Owner: postgres
+-- Name: TABLE user_security_keys; Type: COMMENT; Schema: auth; Owner: nhost_auth_admin
 --
 
 COMMENT ON TABLE auth.user_security_keys IS 'User webauthn security keys. Don''t modify its structure as Hasura Auth relies on it to function properly.';
 
 
 --
--- Name: users; Type: TABLE; Schema: auth; Owner: postgres
+-- Name: users; Type: TABLE; Schema: auth; Owner: nhost_auth_admin
 --
 
 CREATE TABLE auth.users (
@@ -275,17 +275,17 @@ CREATE TABLE auth.users (
 );
 
 
-ALTER TABLE auth.users OWNER TO postgres;
+ALTER TABLE auth.users OWNER TO nhost_auth_admin;
 
 --
--- Name: TABLE users; Type: COMMENT; Schema: auth; Owner: postgres
+-- Name: TABLE users; Type: COMMENT; Schema: auth; Owner: nhost_auth_admin
 --
 
 COMMENT ON TABLE auth.users IS 'User account information. Don''t modify its structure as Hasura Auth relies on it to function properly.';
 
 
 --
--- Name: migrations migrations_name_key; Type: CONSTRAINT; Schema: auth; Owner: postgres
+-- Name: migrations migrations_name_key; Type: CONSTRAINT; Schema: auth; Owner: nhost_auth_admin
 --
 
 ALTER TABLE ONLY auth.migrations
@@ -293,7 +293,7 @@ ALTER TABLE ONLY auth.migrations
 
 
 --
--- Name: migrations migrations_pkey; Type: CONSTRAINT; Schema: auth; Owner: postgres
+-- Name: migrations migrations_pkey; Type: CONSTRAINT; Schema: auth; Owner: nhost_auth_admin
 --
 
 ALTER TABLE ONLY auth.migrations
@@ -301,7 +301,7 @@ ALTER TABLE ONLY auth.migrations
 
 
 --
--- Name: provider_requests provider_requests_pkey; Type: CONSTRAINT; Schema: auth; Owner: postgres
+-- Name: provider_requests provider_requests_pkey; Type: CONSTRAINT; Schema: auth; Owner: nhost_auth_admin
 --
 
 ALTER TABLE ONLY auth.provider_requests
@@ -309,7 +309,7 @@ ALTER TABLE ONLY auth.provider_requests
 
 
 --
--- Name: providers providers_pkey; Type: CONSTRAINT; Schema: auth; Owner: postgres
+-- Name: providers providers_pkey; Type: CONSTRAINT; Schema: auth; Owner: nhost_auth_admin
 --
 
 ALTER TABLE ONLY auth.providers
@@ -317,7 +317,7 @@ ALTER TABLE ONLY auth.providers
 
 
 --
--- Name: refresh_token_types refresh_token_types_pkey; Type: CONSTRAINT; Schema: auth; Owner: postgres
+-- Name: refresh_token_types refresh_token_types_pkey; Type: CONSTRAINT; Schema: auth; Owner: nhost_auth_admin
 --
 
 ALTER TABLE ONLY auth.refresh_token_types
@@ -325,7 +325,7 @@ ALTER TABLE ONLY auth.refresh_token_types
 
 
 --
--- Name: refresh_tokens refresh_tokens_pkey; Type: CONSTRAINT; Schema: auth; Owner: postgres
+-- Name: refresh_tokens refresh_tokens_pkey; Type: CONSTRAINT; Schema: auth; Owner: nhost_auth_admin
 --
 
 ALTER TABLE ONLY auth.refresh_tokens
@@ -333,7 +333,7 @@ ALTER TABLE ONLY auth.refresh_tokens
 
 
 --
--- Name: roles roles_pkey; Type: CONSTRAINT; Schema: auth; Owner: postgres
+-- Name: roles roles_pkey; Type: CONSTRAINT; Schema: auth; Owner: nhost_auth_admin
 --
 
 ALTER TABLE ONLY auth.roles
@@ -341,7 +341,7 @@ ALTER TABLE ONLY auth.roles
 
 
 --
--- Name: user_providers user_providers_pkey; Type: CONSTRAINT; Schema: auth; Owner: postgres
+-- Name: user_providers user_providers_pkey; Type: CONSTRAINT; Schema: auth; Owner: nhost_auth_admin
 --
 
 ALTER TABLE ONLY auth.user_providers
@@ -349,7 +349,7 @@ ALTER TABLE ONLY auth.user_providers
 
 
 --
--- Name: user_providers user_providers_provider_id_provider_user_id_key; Type: CONSTRAINT; Schema: auth; Owner: postgres
+-- Name: user_providers user_providers_provider_id_provider_user_id_key; Type: CONSTRAINT; Schema: auth; Owner: nhost_auth_admin
 --
 
 ALTER TABLE ONLY auth.user_providers
@@ -357,7 +357,7 @@ ALTER TABLE ONLY auth.user_providers
 
 
 --
--- Name: user_roles user_roles_pkey; Type: CONSTRAINT; Schema: auth; Owner: postgres
+-- Name: user_roles user_roles_pkey; Type: CONSTRAINT; Schema: auth; Owner: nhost_auth_admin
 --
 
 ALTER TABLE ONLY auth.user_roles
@@ -365,7 +365,7 @@ ALTER TABLE ONLY auth.user_roles
 
 
 --
--- Name: user_roles user_roles_user_id_role_key; Type: CONSTRAINT; Schema: auth; Owner: postgres
+-- Name: user_roles user_roles_user_id_role_key; Type: CONSTRAINT; Schema: auth; Owner: nhost_auth_admin
 --
 
 ALTER TABLE ONLY auth.user_roles
@@ -373,7 +373,7 @@ ALTER TABLE ONLY auth.user_roles
 
 
 --
--- Name: user_security_keys user_security_key_credential_id_key; Type: CONSTRAINT; Schema: auth; Owner: postgres
+-- Name: user_security_keys user_security_key_credential_id_key; Type: CONSTRAINT; Schema: auth; Owner: nhost_auth_admin
 --
 
 ALTER TABLE ONLY auth.user_security_keys
@@ -381,7 +381,7 @@ ALTER TABLE ONLY auth.user_security_keys
 
 
 --
--- Name: user_security_keys user_security_keys_pkey; Type: CONSTRAINT; Schema: auth; Owner: postgres
+-- Name: user_security_keys user_security_keys_pkey; Type: CONSTRAINT; Schema: auth; Owner: nhost_auth_admin
 --
 
 ALTER TABLE ONLY auth.user_security_keys
@@ -389,7 +389,7 @@ ALTER TABLE ONLY auth.user_security_keys
 
 
 --
--- Name: users users_email_key; Type: CONSTRAINT; Schema: auth; Owner: postgres
+-- Name: users users_email_key; Type: CONSTRAINT; Schema: auth; Owner: nhost_auth_admin
 --
 
 ALTER TABLE ONLY auth.users
@@ -397,7 +397,7 @@ ALTER TABLE ONLY auth.users
 
 
 --
--- Name: users users_phone_number_key; Type: CONSTRAINT; Schema: auth; Owner: postgres
+-- Name: users users_phone_number_key; Type: CONSTRAINT; Schema: auth; Owner: nhost_auth_admin
 --
 
 ALTER TABLE ONLY auth.users
@@ -405,7 +405,7 @@ ALTER TABLE ONLY auth.users
 
 
 --
--- Name: users users_pkey; Type: CONSTRAINT; Schema: auth; Owner: postgres
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: auth; Owner: nhost_auth_admin
 --
 
 ALTER TABLE ONLY auth.users
@@ -413,28 +413,28 @@ ALTER TABLE ONLY auth.users
 
 
 --
--- Name: refresh_tokens_refresh_token_hash_expires_at_user_id_idx; Type: INDEX; Schema: auth; Owner: postgres
+-- Name: refresh_tokens_refresh_token_hash_expires_at_user_id_idx; Type: INDEX; Schema: auth; Owner: nhost_auth_admin
 --
 
 CREATE INDEX refresh_tokens_refresh_token_hash_expires_at_user_id_idx ON auth.refresh_tokens USING btree (refresh_token_hash, expires_at, user_id);
 
 
 --
--- Name: user_providers set_auth_user_providers_updated_at; Type: TRIGGER; Schema: auth; Owner: postgres
+-- Name: user_providers set_auth_user_providers_updated_at; Type: TRIGGER; Schema: auth; Owner: nhost_auth_admin
 --
 
 CREATE TRIGGER set_auth_user_providers_updated_at BEFORE UPDATE ON auth.user_providers FOR EACH ROW EXECUTE FUNCTION auth.set_current_timestamp_updated_at();
 
 
 --
--- Name: users set_auth_users_updated_at; Type: TRIGGER; Schema: auth; Owner: postgres
+-- Name: users set_auth_users_updated_at; Type: TRIGGER; Schema: auth; Owner: nhost_auth_admin
 --
 
 CREATE TRIGGER set_auth_users_updated_at BEFORE UPDATE ON auth.users FOR EACH ROW EXECUTE FUNCTION auth.set_current_timestamp_updated_at();
 
 
 --
--- Name: users fk_default_role; Type: FK CONSTRAINT; Schema: auth; Owner: postgres
+-- Name: users fk_default_role; Type: FK CONSTRAINT; Schema: auth; Owner: nhost_auth_admin
 --
 
 ALTER TABLE ONLY auth.users
@@ -442,7 +442,7 @@ ALTER TABLE ONLY auth.users
 
 
 --
--- Name: user_providers fk_provider; Type: FK CONSTRAINT; Schema: auth; Owner: postgres
+-- Name: user_providers fk_provider; Type: FK CONSTRAINT; Schema: auth; Owner: nhost_auth_admin
 --
 
 ALTER TABLE ONLY auth.user_providers
@@ -450,7 +450,7 @@ ALTER TABLE ONLY auth.user_providers
 
 
 --
--- Name: user_roles fk_role; Type: FK CONSTRAINT; Schema: auth; Owner: postgres
+-- Name: user_roles fk_role; Type: FK CONSTRAINT; Schema: auth; Owner: nhost_auth_admin
 --
 
 ALTER TABLE ONLY auth.user_roles
@@ -458,7 +458,7 @@ ALTER TABLE ONLY auth.user_roles
 
 
 --
--- Name: user_providers fk_user; Type: FK CONSTRAINT; Schema: auth; Owner: postgres
+-- Name: user_providers fk_user; Type: FK CONSTRAINT; Schema: auth; Owner: nhost_auth_admin
 --
 
 ALTER TABLE ONLY auth.user_providers
@@ -466,7 +466,7 @@ ALTER TABLE ONLY auth.user_providers
 
 
 --
--- Name: user_roles fk_user; Type: FK CONSTRAINT; Schema: auth; Owner: postgres
+-- Name: user_roles fk_user; Type: FK CONSTRAINT; Schema: auth; Owner: nhost_auth_admin
 --
 
 ALTER TABLE ONLY auth.user_roles
@@ -474,7 +474,7 @@ ALTER TABLE ONLY auth.user_roles
 
 
 --
--- Name: refresh_tokens fk_user; Type: FK CONSTRAINT; Schema: auth; Owner: postgres
+-- Name: refresh_tokens fk_user; Type: FK CONSTRAINT; Schema: auth; Owner: nhost_auth_admin
 --
 
 ALTER TABLE ONLY auth.refresh_tokens
@@ -482,7 +482,7 @@ ALTER TABLE ONLY auth.refresh_tokens
 
 
 --
--- Name: user_security_keys fk_user; Type: FK CONSTRAINT; Schema: auth; Owner: postgres
+-- Name: user_security_keys fk_user; Type: FK CONSTRAINT; Schema: auth; Owner: nhost_auth_admin
 --
 
 ALTER TABLE ONLY auth.user_security_keys
@@ -490,7 +490,7 @@ ALTER TABLE ONLY auth.user_security_keys
 
 
 --
--- Name: refresh_tokens refresh_tokens_types_fkey; Type: FK CONSTRAINT; Schema: auth; Owner: postgres
+-- Name: refresh_tokens refresh_tokens_types_fkey; Type: FK CONSTRAINT; Schema: auth; Owner: nhost_auth_admin
 --
 
 ALTER TABLE ONLY auth.refresh_tokens
@@ -503,6 +503,76 @@ ALTER TABLE ONLY auth.refresh_tokens
 
 GRANT ALL ON SCHEMA auth TO nhost_auth_admin;
 GRANT USAGE ON SCHEMA auth TO nhost_hasura;
+
+
+--
+-- Name: TABLE migrations; Type: ACL; Schema: auth; Owner: nhost_auth_admin
+--
+
+GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE auth.migrations TO nhost_hasura;
+
+
+--
+-- Name: TABLE provider_requests; Type: ACL; Schema: auth; Owner: nhost_auth_admin
+--
+
+GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE auth.provider_requests TO nhost_hasura;
+
+
+--
+-- Name: TABLE providers; Type: ACL; Schema: auth; Owner: nhost_auth_admin
+--
+
+GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE auth.providers TO nhost_hasura;
+
+
+--
+-- Name: TABLE refresh_token_types; Type: ACL; Schema: auth; Owner: nhost_auth_admin
+--
+
+GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE auth.refresh_token_types TO nhost_hasura;
+
+
+--
+-- Name: TABLE refresh_tokens; Type: ACL; Schema: auth; Owner: nhost_auth_admin
+--
+
+GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE auth.refresh_tokens TO nhost_hasura;
+
+
+--
+-- Name: TABLE roles; Type: ACL; Schema: auth; Owner: nhost_auth_admin
+--
+
+GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE auth.roles TO nhost_hasura;
+
+
+--
+-- Name: TABLE user_providers; Type: ACL; Schema: auth; Owner: nhost_auth_admin
+--
+
+GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE auth.user_providers TO nhost_hasura;
+
+
+--
+-- Name: TABLE user_roles; Type: ACL; Schema: auth; Owner: nhost_auth_admin
+--
+
+GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE auth.user_roles TO nhost_hasura;
+
+
+--
+-- Name: TABLE user_security_keys; Type: ACL; Schema: auth; Owner: nhost_auth_admin
+--
+
+GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE auth.user_security_keys TO nhost_hasura;
+
+
+--
+-- Name: TABLE users; Type: ACL; Schema: auth; Owner: nhost_auth_admin
+--
+
+GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE auth.users TO nhost_hasura;
 
 
 --
