@@ -40,7 +40,7 @@ func NewIDTokenValidatorProviders(
 	var appleID *IDTokenValidator
 	if appleClientID != "" {
 		var err error
-		appleID, err = NewIDTokenValidator(ctx, api.Apple, appleClientID, parserOptions...)
+		appleID, err = NewIDTokenValidator(ctx, api.IdTokenProviderApple, appleClientID, parserOptions...)
 		if err != nil {
 			return nil, fmt.Errorf("failed to create Apple ID token validator: %w", err)
 		}
@@ -49,7 +49,7 @@ func NewIDTokenValidatorProviders(
 	var google *IDTokenValidator
 	if googleClientID != "" {
 		var err error
-		google, err = NewIDTokenValidator(ctx, api.Google, googleClientID, parserOptions...)
+		google, err = NewIDTokenValidator(ctx, api.IdTokenProviderGoogle, googleClientID, parserOptions...)
 		if err != nil {
 			return nil, fmt.Errorf("failed to create Google ID token validator: %w", err)
 		}
@@ -59,7 +59,7 @@ func NewIDTokenValidatorProviders(
 	if fakeProviderAudience != "" {
 		var err error
 		fakeProvider, err = NewIDTokenValidator(
-			ctx, api.FakeProvider, fakeProviderAudience, parserOptions...,
+			ctx, api.IdTokenProviderFake, fakeProviderAudience, parserOptions...,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("failed to create Fake ID token validator: %w", err)
@@ -88,17 +88,17 @@ type IDTokenValidator struct {
 
 func NewIDTokenValidator(
 	ctx context.Context,
-	providerName api.Provider,
+	providerName api.IdTokenProvider,
 	audience string,
 	options ...jwt.ParserOption,
 ) (*IDTokenValidator, error) {
 	var provider Provider
 	switch providerName {
-	case api.Apple:
+	case api.IdTokenProviderApple:
 		provider = &Apple{}
-	case api.Google:
+	case api.IdTokenProviderGoogle:
 		provider = &Google{}
-	case api.FakeProvider:
+	case api.IdTokenProviderFake:
 		provider = &FakeProvider{}
 	default:
 		return nil, fmt.Errorf("%w: %s", ErrUnsupportedProvider, providerName)

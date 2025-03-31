@@ -96,3 +96,7 @@ func (c *Config) UnmarshalJSON(b []byte) error {
 
 	return nil
 }
+
+func (c *Config) UseSecureCookies() bool {
+	return c.ServerURL.Scheme == "https"
+}
