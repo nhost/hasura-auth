@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/nhost/hasura-auth/go/oidc"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/endpoints"
 )
@@ -39,22 +40,23 @@ type googleUser struct {
 	Picture       string `json:"picture"`
 }
 
-func (g *Google) GetProfile(ctx context.Context, accessToken string) (Profile, error) {
-	user, err := fetchOAuthProfile[googleUser](
+func (g *Google) GetProfile(ctx context.Context, accessToken string) (oidc.Profile, error) {
+	var user googleUser
+	if err := fetchOAuthProfile(
 		ctx,
 		"https://www.googleapis.com/oauth2/v2/userinfo",
 		accessToken,
+		&user,
 		fetchProfileTimeout,
-	)
-	if err != nil {
-		return Profile{}, fmt.Errorf("Google API error: %w", err)
+	); err != nil {
+		return oidc.Profile{}, fmt.Errorf("Google API error: %w", err)
 	}
 
-	return Profile{
-		ID:            user.ID,
-		Email:         user.Email,
-		EmailVerified: user.VerifiedEmail,
-		Name:          user.Name,
-		AvatarURL:     user.Picture,
+	return oidc.Profile{
+		ProviderUserID: user.ID,
+		Email:          user.Email,
+		EmailVerified:  user.VerifiedEmail,
+		Name:           user.Name,
+		Picture:        user.Picture,
 	}, nil
 }

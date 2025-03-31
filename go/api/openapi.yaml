@@ -316,6 +316,11 @@ paths:
           headers:
             Location:
               $ref: '#/components/headers/RedirectLocation'
+            Set-Cookie:
+              schema:
+                type: string
+              description: Clears the 'nhostAuthProviderSignInData' cookie after processing the callback
+              example: nhostAuthProviderSignInData=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0
           content: {}
 
   /signin/otp/email:
@@ -890,6 +895,9 @@ components:
             - invalid-totp
             - mfa-type-not-found
             - totp-already-active
+            - invalid-state
+            - oauth-token-echange-failed
+            - oauth-profile-fetch-failed
       required:
         - status
         - message

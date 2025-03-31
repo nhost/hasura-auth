@@ -25,12 +25,12 @@ func TestGetSigninProviderProvider(t *testing.T) {
 			},
 			request: api.GetSigninProviderProviderRequestObject{
 				Params:   api.GetSigninProviderProviderParams{}, //nolint:exhaustruct
-				Provider: "github",
+				Provider: "google",
 			},
 			expectedResponse: api.GetSigninProviderProvider302Response{
 				Headers: api.GetSigninProviderProvider302ResponseHeaders{
-					Location:  `^https://github.com/login/oauth/authorize\?client_id=\w+&response_type=code&scope=user%3Aemail&state=.+$`, //nolint:lll
-					SetCookie: `^nhostAuthProviderSignInData=.+; Path=/signin/provider/github; Max-Age=60; HttpOnly; SameSite=Lax`,        //nolint:lll
+					Location:  `^https://accounts.google.com/o/oauth2/auth\?client_id=clientID&redirect_uri=http%3A%2F%2Flocalhost%3A4000%2Fsignin%2Fprovider%2Fgoogle%2Fcallback&response_type=code&scope=oidc\+email\+profile&state=.+$`, //nolint:lll
+					SetCookie: `^nhostAuthProviderSignInData=.+; Path=/signin/provider/google; Max-Age=60; HttpOnly; Secure; SameSite=Lax$`,                                                                                                //nolint:lll
 				},
 			},
 			expectedJWT:       nil,
@@ -55,12 +55,12 @@ func TestGetSigninProviderProvider(t *testing.T) {
 					Metadata:     &map[string]any{"key": "value"},
 					RedirectTo:   ptr("http://localhost:3000/redirect"),
 				},
-				Provider: "github",
+				Provider: "google",
 			},
 			expectedResponse: api.GetSigninProviderProvider302Response{
 				Headers: api.GetSigninProviderProvider302ResponseHeaders{
-					Location:  `^https://github.com/login/oauth/authorize\?client_id=\w+&response_type=code&scope=user%3Aemail&state=.+$`, //nolint:lll
-					SetCookie: `^nhostAuthProviderSignInData=.+; Path=/signin/provider/github; Max-Age=60; HttpOnly; SameSite=Lax`,        //nolint:lll
+					Location:  `^https://accounts.google.com/o/oauth2/auth\?client_id=clientID&redirect_uri=http%3A%2F%2Flocalhost%3A4000%2Fsignin%2Fprovider%2Fgoogle%2Fcallback&response_type=code&scope=oidc\+email\+profile&state=.+$`, //nolint:lll
+					SetCookie: `^nhostAuthProviderSignInData=.+; Path=/signin/provider/google; Max-Age=60; HttpOnly; Secure; SameSite=Lax$`,                                                                                                //nolint:lll
 				},
 			},
 			expectedJWT:       nil,
@@ -126,7 +126,11 @@ func TestGetSigninProviderProvider(t *testing.T) {
 			c, _ := getController(t, ctrl, tc.config, tc.db, tc.getControllerOpts...)
 
 			assertRequest(
-				context.Background(), t, c.GetSigninProviderProvider, tc.request, tc.expectedResponse,
+				context.Background(),
+				t,
+				c.GetSigninProviderProvider,
+				tc.request,
+				tc.expectedResponse,
 				cmp.FilterPath(func(p cmp.Path) bool {
 					if last := p.Last(); last != nil {
 						return last.String() == ".Location" || last.String() == ".SetCookie"

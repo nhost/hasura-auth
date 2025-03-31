@@ -54,6 +54,9 @@ var (
 	ErrInvalidTotp                     = &APIError{api.InvalidTotp}
 	ErrMfaTypeNotFound                 = &APIError{api.MfaTypeNotFound}
 	ErrTotpAlreadyActive               = &APIError{api.TotpAlreadyActive}
+	ErrInvalidState                    = &APIError{api.InvalidState}
+	ErrOauthTokenExchangeFailed        = &APIError{api.OauthTokenEchangeFailed}
+	ErrOauthProfileFetchFailed         = &APIError{api.OauthProfileFetchFailed}
 )
 
 func logError(err error) slog.Attr {
@@ -106,7 +109,9 @@ func (response ErrorResponse) VisitGetSigninProviderProviderResponse(w http.Resp
 	return response.visit(w)
 }
 
-func (response ErrorResponse) VisitGetSigninProviderProviderCallbackResponse(w http.ResponseWriter) error {
+func (response ErrorResponse) VisitGetSigninProviderProviderCallbackResponse(
+	w http.ResponseWriter,
+) error {
 	return response.visit(w)
 }
 
@@ -206,6 +211,9 @@ func isSensitive(err api.ErrorResponseError) bool {
 		api.UserNotAnonymous,
 		api.MfaTypeNotFound,
 		api.TotpAlreadyActive:
+		api.InvalidState,
+		api.OauthTokenEchangeFailed,
+		api.OauthProfileFetchFailed:
 		return false
 	}
 	return false
@@ -367,6 +375,23 @@ func (ctrl *Controller) getError(err *APIError) ErrorResponse { //nolint:cyclop,
 			Status:  http.StatusBadRequest,
 			Error:   err.t,
 			Message: "TOTP MFA is already active",
+	case api.InvalidState:
+		return ErrorResponse{
+			Status:  http.StatusBadRequest,
+			Error:   err.t,
+			Message: "Invalid state",
+		}
+	case api.OauthTokenEchangeFailed:
+		return ErrorResponse{
+			Status:  http.StatusBadRequest,
+			Error:   err.t,
+			Message: "Failed to exchange token",
+		}
+	case api.OauthProfileFetchFailed:
+		return ErrorResponse{
+			Status:  http.StatusBadRequest,
+			Error:   err.t,
+			Message: "Failed to get user profile",
 		}
 	}
 
@@ -395,11 +420,15 @@ func (response ErrorRedirectResponse) VisitGetVerifyResponse(w http.ResponseWrit
 	return response.visit(w)
 }
 
-func (response ErrorRedirectResponse) VisitGetSigninProviderProviderResponse(w http.ResponseWriter) error {
+func (response ErrorRedirectResponse) VisitGetSigninProviderProviderResponse(
+	w http.ResponseWriter,
+) error {
 	return response.visit(w)
 }
 
-func (response ErrorRedirectResponse) VisitGetSigninProviderProviderCallbackResponse(w http.ResponseWriter) error {
+func (response ErrorRedirectResponse) VisitGetSigninProviderProviderCallbackResponse(
+	w http.ResponseWriter,
+) error {
 	return response.visit(w)
 }
 

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/nhost/hasura-auth/go/oidc"
 	"golang.org/x/oauth2"
 )
 
@@ -45,22 +46,23 @@ type gitHubUser struct {
 	AvatarURL string `json:"avatar_url"`
 }
 
-func (g *Github) GetProfile(ctx context.Context, accessToken string) (Profile, error) {
-	user, err := fetchOAuthProfile[gitHubUser](
+func (g *Github) GetProfile(ctx context.Context, accessToken string) (oidc.Profile, error) {
+	var user gitHubUser
+	if err := fetchOAuthProfile(
 		ctx,
 		g.profileURL,
 		accessToken,
+		&user,
 		fetchProfileTimeout,
-	)
-	if err != nil {
-		return Profile{}, fmt.Errorf("GitHub API error: %w", err)
+	); err != nil {
+		return oidc.Profile{}, fmt.Errorf("GitHub API error: %w", err)
 	}
 
-	return Profile{
-		ID:            strconv.Itoa(user.ID),
-		Email:         user.Email,
-		EmailVerified: user.Email != "",
-		Name:          user.Name,
-		AvatarURL:     user.AvatarURL,
+	return oidc.Profile{
+		ProviderUserID: strconv.Itoa(user.ID),
+		Email:          user.Email,
+		EmailVerified:  user.Email != "",
+		Name:           user.Name,
+		Picture:        user.AvatarURL,
 	}, nil
 }

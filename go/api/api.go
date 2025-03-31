@@ -7,4 +7,4 @@ import (
 //go:embed openapi.yaml
 var OpenAPISchema []byte
 
-const IdTokenProviderFake = IdTokenProvider("fake")
+const IdTokenProviderFake = IdTokenProvider("fake") //nolint:revive,stylecheck
