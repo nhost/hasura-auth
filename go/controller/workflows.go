@@ -1004,7 +1004,7 @@ func (wf *Workflows) DeanonymizeUser(
 }
 
 func (wf *Workflows) GetOIDCProfileFromIDToken(
-	providerID api.Provider,
+	providerID api.IdTokenProvider,
 	idToken string,
 	pnonce *string,
 	logger *slog.Logger,
@@ -1036,15 +1036,15 @@ func (wf *Workflows) GetOIDCProfileFromIDToken(
 }
 
 func (wf *Workflows) getIDTokenValidator(
-	provider api.Provider,
+	provider api.IdTokenProvider,
 ) (*oidc.IDTokenValidator, *APIError) {
 	var validator *oidc.IDTokenValidator
 	switch provider {
-	case api.Apple:
+	case api.IdTokenProviderApple:
 		validator = wf.idTokenValidator.AppleID
-	case api.Google:
+	case api.IdTokenProviderGoogle:
 		validator = wf.idTokenValidator.Google
-	case api.FakeProvider:
+	case api.IdTokenProviderFake:
 		validator = wf.idTokenValidator.FakeProvider
 	default:
 		return nil, ErrInvalidRequest

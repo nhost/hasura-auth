@@ -15,6 +15,7 @@ import (
 	"github.com/nhost/hasura-auth/go/api"
 	"github.com/nhost/hasura-auth/go/controller"
 	"github.com/nhost/hasura-auth/go/controller/mock"
+	"github.com/nhost/hasura-auth/go/oauth2"
 	"github.com/nhost/hasura-auth/go/oidc"
 	"github.com/nhost/hasura-auth/go/testhelpers"
 	"go.uber.org/mock/gomock"
@@ -268,6 +269,7 @@ func getController(
 		jwtGetter,
 		emailer,
 		hibp,
+		oauth2.NewProviders(),
 		idTokenValidator,
 		controllerOpts.totp,
 		"dev",

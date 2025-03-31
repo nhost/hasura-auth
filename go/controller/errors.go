@@ -102,6 +102,14 @@ func (response ErrorResponse) VisitPostSigninPatResponse(w http.ResponseWriter) 
 	return response.visit(w)
 }
 
+func (response ErrorResponse) VisitGetSigninProviderProviderResponse(w http.ResponseWriter) error {
+	return response.visit(w)
+}
+
+func (response ErrorResponse) VisitGetSigninProviderProviderCallbackResponse(w http.ResponseWriter) error {
+	return response.visit(w)
+}
+
 func (response ErrorResponse) VisitPostUserEmailChangeResponse(w http.ResponseWriter) error {
 	return response.visit(w)
 }
@@ -384,6 +392,14 @@ func (response ErrorRedirectResponse) visit(w http.ResponseWriter) error {
 }
 
 func (response ErrorRedirectResponse) VisitGetVerifyResponse(w http.ResponseWriter) error {
+	return response.visit(w)
+}
+
+func (response ErrorRedirectResponse) VisitGetSigninProviderProviderResponse(w http.ResponseWriter) error {
+	return response.visit(w)
+}
+
+func (response ErrorRedirectResponse) VisitGetSigninProviderProviderCallbackResponse(w http.ResponseWriter) error {
 	return response.visit(w)
 }
 

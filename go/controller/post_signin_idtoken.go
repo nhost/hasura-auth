@@ -236,7 +236,7 @@ func (ctrl *Controller) postSigninIdtokenSignin( //nolint:ireturn
 	ctx context.Context,
 	user sql.AuthUser,
 	providerFound bool,
-	provider api.Provider,
+	provider api.IdTokenProvider,
 	providerUserID string,
 	logger *slog.Logger,
 ) (api.PostSigninIdtokenResponseObject, error) {
