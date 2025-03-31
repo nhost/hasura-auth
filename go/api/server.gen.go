@@ -67,6 +67,12 @@ type ServerInterface interface {
 	// Sign in with Personal Access Token (PAT)
 	// (POST /signin/pat)
 	PostSigninPat(c *gin.Context)
+	// Sign in with an oauth2 provider
+	// (GET /signin/provider/{provider})
+	GetSigninProviderProvider(c *gin.Context, provider GetSigninProviderProviderParamsProvider, params GetSigninProviderProviderParams)
+	// Callback for oauth2 provider
+	// (GET /signin/provider/{provider}/callback)
+	GetSigninProviderProviderCallback(c *gin.Context, provider GetSigninProviderProviderCallbackParamsProvider, params GetSigninProviderProviderCallbackParams)
 	// Signin with webauthn
 	// (POST /signin/webauthn)
 	PostSigninWebauthn(c *gin.Context)
@@ -306,6 +312,180 @@ func (siw *ServerInterfaceWrapper) PostSigninPat(c *gin.Context) {
 	}
 
 	siw.Handler.PostSigninPat(c)
+}
+
+// GetSigninProviderProvider operation middleware
+func (siw *ServerInterfaceWrapper) GetSigninProviderProvider(c *gin.Context) {
+
+	var err error
+
+	// ------------- Path parameter "provider" -------------
+	var provider GetSigninProviderProviderParamsProvider
+
+	err = runtime.BindStyledParameterWithOptions("simple", "provider", c.Param("provider"), &provider, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter provider: %w", err), http.StatusBadRequest)
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetSigninProviderProviderParams
+
+	// ------------- Optional query parameter "allowedRoles" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "allowedRoles", c.Request.URL.Query(), &params.AllowedRoles)
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter allowedRoles: %w", err), http.StatusBadRequest)
+		return
+	}
+
+	// ------------- Optional query parameter "defaultRole" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "defaultRole", c.Request.URL.Query(), &params.DefaultRole)
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter defaultRole: %w", err), http.StatusBadRequest)
+		return
+	}
+
+	// ------------- Optional query parameter "displayName" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "displayName", c.Request.URL.Query(), &params.DisplayName)
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter displayName: %w", err), http.StatusBadRequest)
+		return
+	}
+
+	// ------------- Optional query parameter "locale" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "locale", c.Request.URL.Query(), &params.Locale)
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter locale: %w", err), http.StatusBadRequest)
+		return
+	}
+
+	// ------------- Optional query parameter "metadata" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "metadata", c.Request.URL.Query(), &params.Metadata)
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter metadata: %w", err), http.StatusBadRequest)
+		return
+	}
+
+	// ------------- Optional query parameter "redirectTo" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "redirectTo", c.Request.URL.Query(), &params.RedirectTo)
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter redirectTo: %w", err), http.StatusBadRequest)
+		return
+	}
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		middleware(c)
+		if c.IsAborted() {
+			return
+		}
+	}
+
+	siw.Handler.GetSigninProviderProvider(c, provider, params)
+}
+
+// GetSigninProviderProviderCallback operation middleware
+func (siw *ServerInterfaceWrapper) GetSigninProviderProviderCallback(c *gin.Context) {
+
+	var err error
+
+	// ------------- Path parameter "provider" -------------
+	var provider GetSigninProviderProviderCallbackParamsProvider
+
+	err = runtime.BindStyledParameterWithOptions("simple", "provider", c.Param("provider"), &provider, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter provider: %w", err), http.StatusBadRequest)
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetSigninProviderProviderCallbackParams
+
+	// ------------- Required query parameter "code" -------------
+
+	if paramValue := c.Query("code"); paramValue != "" {
+
+	} else {
+		siw.ErrorHandler(c, fmt.Errorf("Query argument code is required, but not found"), http.StatusBadRequest)
+		return
+	}
+
+	err = runtime.BindQueryParameter("form", true, true, "code", c.Request.URL.Query(), &params.Code)
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter code: %w", err), http.StatusBadRequest)
+		return
+	}
+
+	// ------------- Required query parameter "state" -------------
+
+	if paramValue := c.Query("state"); paramValue != "" {
+
+	} else {
+		siw.ErrorHandler(c, fmt.Errorf("Query argument state is required, but not found"), http.StatusBadRequest)
+		return
+	}
+
+	err = runtime.BindQueryParameter("form", true, true, "state", c.Request.URL.Query(), &params.State)
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter state: %w", err), http.StatusBadRequest)
+		return
+	}
+
+	// ------------- Optional query parameter "error" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "error", c.Request.URL.Query(), &params.Error)
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter error: %w", err), http.StatusBadRequest)
+		return
+	}
+
+	// ------------- Optional query parameter "error_description" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "error_description", c.Request.URL.Query(), &params.ErrorDescription)
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter error_description: %w", err), http.StatusBadRequest)
+		return
+	}
+
+	// ------------- Optional query parameter "error_uri" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "error_uri", c.Request.URL.Query(), &params.ErrorUri)
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter error_uri: %w", err), http.StatusBadRequest)
+		return
+	}
+
+	{
+		var cookie string
+
+		if cookie, err = c.Cookie("nhostAuthProviderSignInData"); err == nil {
+			var value string
+			err = runtime.BindStyledParameterWithOptions("simple", "nhostAuthProviderSignInData", cookie, &value, runtime.BindStyledParameterOptions{Explode: true, Required: true})
+			if err != nil {
+				siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter nhostAuthProviderSignInData: %w", err), http.StatusBadRequest)
+				return
+			}
+			params.NhostAuthProviderSignInData = value
+
+		} else {
+			siw.ErrorHandler(c, fmt.Errorf("Query argument nhostAuthProviderSignInData is required, but not found"), http.StatusBadRequest)
+			return
+		}
+	}
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		middleware(c)
+		if c.IsAborted() {
+			return
+		}
+	}
+
+	siw.Handler.GetSigninProviderProviderCallback(c, provider, params)
 }
 
 // PostSigninWebauthn operation middleware
@@ -582,6 +762,8 @@ func RegisterHandlersWithOptions(router gin.IRouter, si ServerInterface, options
 	router.POST(options.BaseURL+"/signin/otp/email/verify", wrapper.PostSigninOtpEmailVerify)
 	router.POST(options.BaseURL+"/signin/passwordless/email", wrapper.PostSigninPasswordlessEmail)
 	router.POST(options.BaseURL+"/signin/pat", wrapper.PostSigninPat)
+	router.GET(options.BaseURL+"/signin/provider/:provider", wrapper.GetSigninProviderProvider)
+	router.GET(options.BaseURL+"/signin/provider/:provider/callback", wrapper.GetSigninProviderProviderCallback)
 	router.POST(options.BaseURL+"/signin/webauthn", wrapper.PostSigninWebauthn)
 	router.POST(options.BaseURL+"/signin/webauthn/verify", wrapper.PostSigninWebauthnVerify)
 	router.POST(options.BaseURL+"/signup/email-password", wrapper.PostSignupEmailPassword)
@@ -829,6 +1011,54 @@ func (response PostSigninPat200JSONResponse) VisitPostSigninPatResponse(w http.R
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
+}
+
+type GetSigninProviderProviderRequestObject struct {
+	Provider GetSigninProviderProviderParamsProvider `json:"provider"`
+	Params   GetSigninProviderProviderParams
+}
+
+type GetSigninProviderProviderResponseObject interface {
+	VisitGetSigninProviderProviderResponse(w http.ResponseWriter) error
+}
+
+type GetSigninProviderProvider302ResponseHeaders struct {
+	Location  string
+	SetCookie string
+}
+
+type GetSigninProviderProvider302Response struct {
+	Headers GetSigninProviderProvider302ResponseHeaders
+}
+
+func (response GetSigninProviderProvider302Response) VisitGetSigninProviderProviderResponse(w http.ResponseWriter) error {
+	w.Header().Set("Location", fmt.Sprint(response.Headers.Location))
+	w.Header().Set("Set-Cookie", fmt.Sprint(response.Headers.SetCookie))
+	w.WriteHeader(302)
+	return nil
+}
+
+type GetSigninProviderProviderCallbackRequestObject struct {
+	Provider GetSigninProviderProviderCallbackParamsProvider `json:"provider"`
+	Params   GetSigninProviderProviderCallbackParams
+}
+
+type GetSigninProviderProviderCallbackResponseObject interface {
+	VisitGetSigninProviderProviderCallbackResponse(w http.ResponseWriter) error
+}
+
+type GetSigninProviderProviderCallback302ResponseHeaders struct {
+	Location string
+}
+
+type GetSigninProviderProviderCallback302Response struct {
+	Headers GetSigninProviderProviderCallback302ResponseHeaders
+}
+
+func (response GetSigninProviderProviderCallback302Response) VisitGetSigninProviderProviderCallbackResponse(w http.ResponseWriter) error {
+	w.Header().Set("Location", fmt.Sprint(response.Headers.Location))
+	w.WriteHeader(302)
+	return nil
 }
 
 type PostSigninWebauthnRequestObject struct {
@@ -1137,6 +1367,12 @@ type StrictServerInterface interface {
 	// Sign in with Personal Access Token (PAT)
 	// (POST /signin/pat)
 	PostSigninPat(ctx context.Context, request PostSigninPatRequestObject) (PostSigninPatResponseObject, error)
+	// Sign in with an oauth2 provider
+	// (GET /signin/provider/{provider})
+	GetSigninProviderProvider(ctx context.Context, request GetSigninProviderProviderRequestObject) (GetSigninProviderProviderResponseObject, error)
+	// Callback for oauth2 provider
+	// (GET /signin/provider/{provider}/callback)
+	GetSigninProviderProviderCallback(ctx context.Context, request GetSigninProviderProviderCallbackRequestObject) (GetSigninProviderProviderCallbackResponseObject, error)
 	// Signin with webauthn
 	// (POST /signin/webauthn)
 	PostSigninWebauthn(ctx context.Context, request PostSigninWebauthnRequestObject) (PostSigninWebauthnResponseObject, error)
@@ -1618,6 +1854,62 @@ func (sh *strictHandler) PostSigninPat(ctx *gin.Context) {
 		ctx.Status(http.StatusInternalServerError)
 	} else if validResponse, ok := response.(PostSigninPatResponseObject); ok {
 		if err := validResponse.VisitPostSigninPatResponse(ctx.Writer); err != nil {
+			ctx.Error(err)
+		}
+	} else if response != nil {
+		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetSigninProviderProvider operation middleware
+func (sh *strictHandler) GetSigninProviderProvider(ctx *gin.Context, provider GetSigninProviderProviderParamsProvider, params GetSigninProviderProviderParams) {
+	var request GetSigninProviderProviderRequestObject
+
+	request.Provider = provider
+	request.Params = params
+
+	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.GetSigninProviderProvider(ctx, request.(GetSigninProviderProviderRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetSigninProviderProvider")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		ctx.Error(err)
+		ctx.Status(http.StatusInternalServerError)
+	} else if validResponse, ok := response.(GetSigninProviderProviderResponseObject); ok {
+		if err := validResponse.VisitGetSigninProviderProviderResponse(ctx.Writer); err != nil {
+			ctx.Error(err)
+		}
+	} else if response != nil {
+		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetSigninProviderProviderCallback operation middleware
+func (sh *strictHandler) GetSigninProviderProviderCallback(ctx *gin.Context, provider GetSigninProviderProviderCallbackParamsProvider, params GetSigninProviderProviderCallbackParams) {
+	var request GetSigninProviderProviderCallbackRequestObject
+
+	request.Provider = provider
+	request.Params = params
+
+	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.GetSigninProviderProviderCallback(ctx, request.(GetSigninProviderProviderCallbackRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetSigninProviderProviderCallback")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		ctx.Error(err)
+		ctx.Status(http.StatusInternalServerError)
+	} else if validResponse, ok := response.(GetSigninProviderProviderCallbackResponseObject); ok {
+		if err := validResponse.VisitGetSigninProviderProviderCallbackResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {
