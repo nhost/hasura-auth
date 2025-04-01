@@ -173,9 +173,9 @@ func TestPostSigninMfaTotp(t *testing.T) { //nolint:maintidx
 				},
 			},
 			expectedResponse: controller.ErrorResponse{
-				Error:   "invalid-request",
-				Message: "The request payload is incorrect",
-				Status:  400,
+				Error:   "invalid-totp",
+				Message: "Invalid TOTP code",
+				Status:  401,
 			},
 			jwtTokenFn:  nil,
 			expectedJWT: nil,
