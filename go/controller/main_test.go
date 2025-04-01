@@ -259,7 +259,6 @@ func getController(
 		idTokenValidator = controllerOpts.idTokenValidatorProviders(t)
 	}
 
-	fmt.Println("controllerOpts.totp", controllerOpts.totp)
 	if controllerOpts.totp == nil {
 		controllerOpts.totp = controller.NewTotp(time.Now)
 	}
