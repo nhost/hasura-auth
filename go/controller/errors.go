@@ -173,6 +173,7 @@ func isSensitive(err api.ErrorResponseError) bool {
 		api.InvalidRefreshToken,
 		api.InvalidTicket,
 		api.DisabledMfaTotp,
+		api.InvalidTotp,
 		api.NoTotpSecret:
 		return true
 	case
@@ -328,6 +329,12 @@ func (ctrl *Controller) getError(err *APIError) ErrorResponse { //nolint:cyclop,
 			Status:  http.StatusUnauthorized,
 			Error:   err.t,
 			Message: "User does not have a TOTP secret",
+		}
+	case api.InvalidTotp:
+		return ErrorResponse{
+			Status:  http.StatusUnauthorized,
+			Error:   err.t,
+			Message: "Invalid TOTP code",
 		}
 	}
 

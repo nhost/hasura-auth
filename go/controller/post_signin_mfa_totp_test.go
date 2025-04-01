@@ -46,7 +46,7 @@ func getUserSigninMfaTotp(userID uuid.UUID) sql.AuthUser {
 	}
 }
 
-func TestPostSigninMfaTotp(t *testing.T) {
+func TestPostSigninMfaTotp(t *testing.T) { //nolint:maintidx
 	t.Parallel()
 
 	refreshTokenID := uuid.MustParse("c3b747ef-76a9-4c56-8091-ed3e6b8afb2c")
@@ -56,7 +56,7 @@ func TestPostSigninMfaTotp(t *testing.T) {
 		{
 			name:   "success",
 			config: getConfig,
-			db: func(ctrl *gomock.Controller) controller.DBClient { //nolint:dup
+			db: func(ctrl *gomock.Controller) controller.DBClient { //nolint:dupl
 				mock := mock.NewMockDBClient(ctrl)
 
 				mock.EXPECT().GetUserByTicket(
