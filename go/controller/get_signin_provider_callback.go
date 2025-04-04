@@ -109,7 +109,9 @@ func (ctrl *Controller) GetSigninProviderProviderCallback( //nolint:ireturn
 	}
 
 	quickReturn, options, connnect, redirectTo, apiErr := ctrl.getSigninProviderProviderCallbackValidate(
-		req, clearCookie, logger,
+		req,
+		clearCookie,
+		logger,
 	)
 	if apiErr != nil {
 		return ctrl.sendRedirectError(redirectTo, apiErr), nil
@@ -125,7 +127,9 @@ func (ctrl *Controller) GetSigninProviderProviderCallback( //nolint:ireturn
 	}
 
 	if connnect != nil {
-		// TODO
+		return ctrl.getSigninProviderProviderCallbackConnect(
+			ctx, *connnect, req.Provider, profile, redirectTo, clearCookie, logger,
+		)
 	}
 
 	session, apiErr := ctrl.providerSignInFlow(
@@ -141,6 +145,56 @@ func (ctrl *Controller) GetSigninProviderProviderCallback( //nolint:ireturn
 		redirectTo.RawQuery = values.Encode()
 	}
 
+	return api.GetSigninProviderProviderCallback302Response{
+		Headers: api.GetSigninProviderProviderCallback302ResponseHeaders{
+			Location:  redirectTo.String(),
+			SetCookie: clearCookie.String(),
+		},
+	}, nil
+}
+
+func (ctrl *Controller) getSigninProviderProviderCallbackConnect( //nolint:ireturn
+	ctx context.Context,
+	connnect string,
+	provider api.GetSigninProviderProviderCallbackParamsProvider,
+	profile oidc.Profile,
+	redirectTo *url.URL,
+	clearCookie *http.Cookie,
+	logger *slog.Logger,
+) (api.GetSigninProviderProviderCallbackResponseObject, error) {
+	// Decode JWT token from connect parameter
+	jwtToken, err := ctrl.wf.jwtGetter.Validate(connnect)
+	if err != nil {
+		logger.Error("invalid jwt token", logError(err))
+		return ctrl.sendRedirectError(redirectTo, ErrInvalidRequest), nil
+	}
+
+	// Extract user ID from JWT token
+	userID, err := ctrl.wf.jwtGetter.GetUserID(jwtToken)
+	if err != nil {
+		logger.Error("error getting user id from jwt token", logError(err))
+		return ctrl.sendRedirectError(redirectTo, ErrInvalidRequest), nil
+	}
+
+	// Verify user exists
+	if _, apiError := ctrl.wf.GetUser(ctx, userID, logger); apiError != nil {
+		logger.Error("error getting user", logError(apiError))
+		return ctrl.sendRedirectError(redirectTo, apiError), nil
+	}
+
+	// Insert user provider
+	if _, apiErr := ctrl.wf.InsertUserProvider(
+		ctx,
+		userID,
+		string(provider),
+		profile.ProviderUserID,
+		logger,
+	); apiErr != nil {
+		return ctrl.sendRedirectError(redirectTo, apiErr), nil
+	}
+
+	// User is already authenticated, so we don't need to create a session
+	// Just redirect to the provided URL
 	return api.GetSigninProviderProviderCallback302Response{
 		Headers: api.GetSigninProviderProviderCallback302ResponseHeaders{
 			Location:  redirectTo.String(),
