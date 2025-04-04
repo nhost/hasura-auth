@@ -2,6 +2,7 @@ package controller_test
 
 import (
 	"context"
+	"errors"
 	"testing"
 	"time"
 
@@ -28,11 +29,15 @@ func TestGetSigninProviderProviderCallback(t *testing.T) { //nolint:maintidx
 
 	userID := uuid.MustParse("DB477732-48FA-4289-B694-2886A646B6EB")
 	refreshTokenID := uuid.MustParse("DB477732-48FA-4289-B694-2886A646B6EB")
+	userIDConnect := uuid.MustParse("f90782de-f0a3-41fe-b778-01e4f80c2413")
 
 	insertResponse := sql.InsertUserWithUserProviderAndRefreshTokenRow{
 		ID:             userID,
 		RefreshTokenID: refreshTokenID,
 	}
+
+	// Create JWT token for connect tests
+	jwtToken := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjEwNzExMTE4MDI0LCJodHRwczovL2hhc3VyYS5pby9qd3QvY2xhaW1zIjp7IngtaGFzdXJhLWFsbG93ZWQtcm9sZXMiOlsibWUiLCJ1c2VyIiwiZWRpdG9yIl0sIngtaGFzdXJhLWRlZmF1bHQtcm9sZSI6InVzZXIiLCJ4LWhhc3VyYS11c2VyLWlkIjoiZjkwNzgyZGUtZjBhMy00MWZlLWI3NzgtMDFlNGY4MGMyNDEzIiwieC1oYXN1cmEtdXNlci1pcy1hbm9ueW1vdXMiOiJmYWxzZSJ9LCJpYXQiOjE3MTExMTgwMjQsImlzcyI6Imhhc3VyYS1hdXRoIiwic3ViIjoiZjkwNzgyZGUtZjBhMy00MWZlLWI3NzgtMDFlNGY4MGMyNDEzIn0.wms_3kNeVVeqxQvSMcM2l7By1BTz4uteKSAGmVgafYY" //nolint:lll,gosec
 
 	cases := []testRequest[api.GetSigninProviderProviderCallbackRequestObject, api.GetSigninProviderProviderCallbackResponseObject]{ //nolint:lll
 		{
@@ -160,7 +165,8 @@ func TestGetSigninProviderProviderCallback(t *testing.T) { //nolint:maintidx
 					State: "state",
 					NhostAuthProviderSignInData: getState(
 						oauth2.ProviderSignInData{
-							State: "state",
+							State:   "state",
+							Connect: nil,
 							Options: api.SignUpOptions{
 								AllowedRoles: &[]string{"me"},
 								DefaultRole:  ptr("me"),
@@ -678,7 +684,8 @@ func TestGetSigninProviderProviderCallback(t *testing.T) { //nolint:maintidx
 					State: "state",
 					NhostAuthProviderSignInData: getState(
 						oauth2.ProviderSignInData{
-							State: "state",
+							Connect: nil,
+							State:   "state",
 							Options: api.SignUpOptions{ //nolint:exhaustruct
 								RedirectTo: ptr("http://now.allowed/redirect/me/here"),
 							},
@@ -751,6 +758,322 @@ func TestGetSigninProviderProviderCallback(t *testing.T) { //nolint:maintidx
 			expectedResponse: api.GetSigninProviderProviderCallback302Response{
 				Headers: api.GetSigninProviderProviderCallback302ResponseHeaders{ //nolint:exhaustruct
 					Location: `http://localhost:3000?error=invalid_request&error_description=Invalid+request&error_url=https%3A%2F%2Fexample.com%2Ferror`, //nolint:lll
+				},
+			},
+			expectedJWT:       nil,
+			jwtTokenFn:        nil,
+			getControllerOpts: nil,
+		},
+
+		{
+			name:   "connect - success",
+			config: getConfig,
+			db: func(ctrl *gomock.Controller) controller.DBClient {
+				mock := mock.NewMockDBClient(ctrl)
+
+				//nolint:exhaustruct
+				mock.EXPECT().GetUser( //nolint:dupl
+					gomock.Any(),
+					userIDConnect,
+				).Return(sql.AuthUser{
+					ID: userID,
+					CreatedAt: pgtype.Timestamptz{
+						Time: time.Now(),
+					},
+					UpdatedAt:   pgtype.Timestamptz{},
+					LastSeen:    pgtype.Timestamptz{},
+					Disabled:    false,
+					DisplayName: "John",
+					AvatarUrl:   "",
+					Locale:      "en",
+					Email:       sql.Text("fake@gmail.com"),
+					PhoneNumber: pgtype.Text{},
+					PasswordHash: sql.Text(
+						"$2a$10$pyv7eu9ioQcFnLSz7u/enex22P3ORdh6z6116Vj5a3vSjo0oxFa1u",
+					),
+					EmailVerified:            true,
+					PhoneNumberVerified:      false,
+					NewEmail:                 pgtype.Text{},
+					OtpMethodLastUsed:        pgtype.Text{},
+					OtpHash:                  pgtype.Text{},
+					OtpHashExpiresAt:         pgtype.Timestamptz{},
+					DefaultRole:              "user",
+					IsAnonymous:              false,
+					TotpSecret:               pgtype.Text{},
+					ActiveMfaType:            pgtype.Text{},
+					Ticket:                   pgtype.Text{},
+					TicketExpiresAt:          sql.TimestampTz(time.Now()),
+					Metadata:                 []byte{},
+					WebauthnCurrentChallenge: pgtype.Text{},
+				}, nil)
+
+				mock.EXPECT().InsertUserProvider(
+					gomock.Any(),
+					sql.InsertUserProviderParams{
+						UserID:         userIDConnect,
+						ProviderID:     "fake",
+						ProviderUserID: "1234567890",
+					},
+				).Return(
+					//nolint:exhaustruct
+					sql.AuthUserProvider{
+						ID:             userIDConnect,
+						CreatedAt:      pgtype.Timestamptz{},
+						UpdatedAt:      pgtype.Timestamptz{},
+						UserID:         userID,
+						AccessToken:    "unset",
+						RefreshToken:   pgtype.Text{},
+						ProviderID:     "fake",
+						ProviderUserID: "1234567890",
+					}, nil,
+				)
+
+				return mock
+			},
+			request: api.GetSigninProviderProviderCallbackRequestObject{
+				Params: api.GetSigninProviderProviderCallbackParams{ //nolint:exhaustruct
+					Code:  "valid-code-1",
+					State: "state",
+					NhostAuthProviderSignInData: getState(
+						oauth2.ProviderSignInData{
+							State:   "state",
+							Connect: &jwtToken,
+							Options: api.SignUpOptions{ //nolint:exhaustruct
+								RedirectTo: ptr("http://localhost:3000/connect-success"),
+							},
+						},
+					),
+				},
+				Provider: "fake",
+			},
+			expectedResponse: api.GetSigninProviderProviderCallback302Response{
+				Headers: api.GetSigninProviderProviderCallback302ResponseHeaders{
+					Location:  `^http://localhost:3000/connect-success$`,
+					SetCookie: `nhostAuthProviderSignInData=; Path=/signin/provider/fake; HttpOnly; Secure; SameSite=Lax$`,
+				},
+			},
+			expectedJWT:       nil,
+			jwtTokenFn:        nil,
+			getControllerOpts: nil,
+		},
+
+		{
+			name:   "connect - user disabled",
+			config: getConfig,
+			db: func(ctrl *gomock.Controller) controller.DBClient {
+				mock := mock.NewMockDBClient(ctrl)
+
+				//nolint:exhaustruct
+				mock.EXPECT().GetUser( //nolint:dupl
+					gomock.Any(),
+					userIDConnect,
+				).Return(sql.AuthUser{
+					ID: userIDConnect,
+					CreatedAt: pgtype.Timestamptz{
+						Time: time.Now(),
+					},
+					UpdatedAt:   pgtype.Timestamptz{},
+					LastSeen:    pgtype.Timestamptz{},
+					Disabled:    true,
+					DisplayName: "John",
+					AvatarUrl:   "",
+					Locale:      "en",
+					Email:       sql.Text("fake@gmail.com"),
+					PhoneNumber: pgtype.Text{},
+					PasswordHash: sql.Text(
+						"$2a$10$pyv7eu9ioQcFnLSz7u/enex22P3ORdh6z6116Vj5a3vSjo0oxFa1u",
+					),
+					EmailVerified:            true,
+					PhoneNumberVerified:      false,
+					NewEmail:                 pgtype.Text{},
+					OtpMethodLastUsed:        pgtype.Text{},
+					OtpHash:                  pgtype.Text{},
+					OtpHashExpiresAt:         pgtype.Timestamptz{},
+					DefaultRole:              "user",
+					IsAnonymous:              false,
+					TotpSecret:               pgtype.Text{},
+					ActiveMfaType:            pgtype.Text{},
+					Ticket:                   pgtype.Text{},
+					TicketExpiresAt:          sql.TimestampTz(time.Now()),
+					Metadata:                 []byte{},
+					WebauthnCurrentChallenge: pgtype.Text{},
+				}, nil)
+
+				return mock
+			},
+			request: api.GetSigninProviderProviderCallbackRequestObject{
+				Params: api.GetSigninProviderProviderCallbackParams{ //nolint:exhaustruct
+					Code:  "valid-code-1",
+					State: "state",
+					NhostAuthProviderSignInData: getState(
+						oauth2.ProviderSignInData{
+							State:   "state",
+							Connect: &jwtToken,
+							Options: api.SignUpOptions{ //nolint:exhaustruct
+								RedirectTo: ptr("http://localhost:3000/connect-success"),
+							},
+						},
+					),
+				},
+				Provider: "fake",
+			},
+			expectedResponse: controller.ErrorRedirectResponse{
+				Headers: struct{ Location string }{
+					Location: `^http://localhost:3000/connect-success\?error=disabled-user&errorDescription=.*$`,
+				},
+			},
+			expectedJWT:       nil,
+			jwtTokenFn:        nil,
+			getControllerOpts: nil,
+		},
+
+		{
+			name:   "connect - user not found",
+			config: getConfig,
+			db: func(ctrl *gomock.Controller) controller.DBClient {
+				mock := mock.NewMockDBClient(ctrl)
+
+				mock.EXPECT().GetUser(
+					gomock.Any(),
+					userIDConnect,
+				).Return(sql.AuthUser{}, pgx.ErrNoRows) //nolint:exhaustruct
+
+				return mock
+			},
+			request: api.GetSigninProviderProviderCallbackRequestObject{
+				Params: api.GetSigninProviderProviderCallbackParams{ //nolint:exhaustruct
+					Code:  "valid-code-1",
+					State: "state",
+					NhostAuthProviderSignInData: getState(
+						oauth2.ProviderSignInData{
+							State:   "state",
+							Connect: &jwtToken,
+							Options: api.SignUpOptions{ //nolint:exhaustruct
+								RedirectTo: ptr("http://localhost:3000/connect-success"),
+							},
+						},
+					),
+				},
+				Provider: "fake",
+			},
+			expectedResponse: controller.ErrorRedirectResponse{
+				Headers: struct{ Location string }{
+					Location: `^http://localhost:3000/connect-success\?error=invalid-email-password&errorDescription=.*$`,
+				},
+			},
+			expectedJWT:       nil,
+			jwtTokenFn:        nil,
+			getControllerOpts: nil,
+		},
+
+		{
+			name:   "connect - provider already linked",
+			config: getConfig,
+			db: func(ctrl *gomock.Controller) controller.DBClient {
+				mock := mock.NewMockDBClient(ctrl)
+
+				//nolint:exhaustruct
+				mock.EXPECT().GetUser( //nolint:dupl
+					gomock.Any(),
+					userIDConnect,
+				).Return(sql.AuthUser{
+					ID: userIDConnect,
+					CreatedAt: pgtype.Timestamptz{
+						Time: time.Now(),
+					},
+					UpdatedAt:   pgtype.Timestamptz{},
+					LastSeen:    pgtype.Timestamptz{},
+					Disabled:    false,
+					DisplayName: "John",
+					AvatarUrl:   "",
+					Locale:      "en",
+					Email:       sql.Text("fake@gmail.com"),
+					PhoneNumber: pgtype.Text{},
+					PasswordHash: sql.Text(
+						"$2a$10$pyv7eu9ioQcFnLSz7u/enex22P3ORdh6z6116Vj5a3vSjo0oxFa1u",
+					),
+					EmailVerified:            true,
+					PhoneNumberVerified:      false,
+					NewEmail:                 pgtype.Text{},
+					OtpMethodLastUsed:        pgtype.Text{},
+					OtpHash:                  pgtype.Text{},
+					OtpHashExpiresAt:         pgtype.Timestamptz{},
+					DefaultRole:              "user",
+					IsAnonymous:              false,
+					TotpSecret:               pgtype.Text{},
+					ActiveMfaType:            pgtype.Text{},
+					Ticket:                   pgtype.Text{},
+					TicketExpiresAt:          sql.TimestampTz(time.Now()),
+					Metadata:                 []byte{},
+					WebauthnCurrentChallenge: pgtype.Text{},
+				}, nil)
+
+				mock.EXPECT().InsertUserProvider(
+					gomock.Any(),
+					sql.InsertUserProviderParams{
+						UserID:         userIDConnect,
+						ProviderID:     "fake",
+						ProviderUserID: "1234567890",
+					},
+				).Return(
+					sql.AuthUserProvider{}, //nolint:exhaustruct
+					errors.New(`ERROR: duplicate key value violates unique constraint "user_providers_provider_id_provider_user_id_key" (SQLSTATE 23505)`), //nolint:lll,goerr113
+				)
+
+				return mock
+			},
+			request: api.GetSigninProviderProviderCallbackRequestObject{
+				Params: api.GetSigninProviderProviderCallbackParams{ //nolint:exhaustruct
+					Code:  "valid-code-1",
+					State: "state",
+					NhostAuthProviderSignInData: getState(
+						oauth2.ProviderSignInData{
+							State:   "state",
+							Connect: &jwtToken,
+							Options: api.SignUpOptions{ //nolint:exhaustruct
+								RedirectTo: ptr("http://localhost:3000/connect-success"),
+							},
+						},
+					),
+				},
+				Provider: "fake",
+			},
+			expectedResponse: controller.ErrorRedirectResponse{
+				Headers: struct{ Location string }{
+					Location: `^http://localhost:3000/connect-success\?error=invalid-request&errorDescription=.*$`,
+				},
+			},
+			expectedJWT:       nil,
+			jwtTokenFn:        nil,
+			getControllerOpts: nil,
+		},
+
+		{
+			name:   "connect - invalid JWT",
+			config: getConfig,
+			db: func(ctrl *gomock.Controller) controller.DBClient {
+				mock := mock.NewMockDBClient(ctrl)
+				return mock
+			},
+			request: api.GetSigninProviderProviderCallbackRequestObject{
+				Params: api.GetSigninProviderProviderCallbackParams{ //nolint:exhaustruct
+					Code:  "valid-code-1",
+					State: "state",
+					NhostAuthProviderSignInData: getState(
+						oauth2.ProviderSignInData{
+							State:   "state",
+							Connect: ptr("invalid-jwt-token"),
+							Options: api.SignUpOptions{ //nolint:exhaustruct
+								RedirectTo: ptr("http://localhost:3000/connect-success"),
+							},
+						},
+					),
+				},
+				Provider: "fake",
+			},
+			expectedResponse: controller.ErrorRedirectResponse{
+				Headers: struct{ Location string }{
+					Location: `^http://localhost:3000/connect-success\?error=invalid-request&errorDescription=.*$`,
 				},
 			},
 			expectedJWT:       nil,
