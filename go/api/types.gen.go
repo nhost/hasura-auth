@@ -74,8 +74,10 @@ const (
 
 // Defines values for SigninProvider.
 const (
-	SigninProviderGithub SigninProvider = "github"
-	SigninProviderGoogle SigninProvider = "google"
+	SigninProviderApple    SigninProvider = "apple"
+	SigninProviderGithub   SigninProvider = "github"
+	SigninProviderGoogle   SigninProvider = "google"
+	SigninProviderLinkedin SigninProvider = "linkedin"
 )
 
 // Defines values for TicketTypeQuery.
@@ -88,14 +90,18 @@ const (
 
 // Defines values for GetSigninProviderProviderParamsProvider.
 const (
-	GetSigninProviderProviderParamsProviderGithub GetSigninProviderProviderParamsProvider = "github"
-	GetSigninProviderProviderParamsProviderGoogle GetSigninProviderProviderParamsProvider = "google"
+	GetSigninProviderProviderParamsProviderApple    GetSigninProviderProviderParamsProvider = "apple"
+	GetSigninProviderProviderParamsProviderGithub   GetSigninProviderProviderParamsProvider = "github"
+	GetSigninProviderProviderParamsProviderGoogle   GetSigninProviderProviderParamsProvider = "google"
+	GetSigninProviderProviderParamsProviderLinkedin GetSigninProviderProviderParamsProvider = "linkedin"
 )
 
 // Defines values for GetSigninProviderProviderCallbackParamsProvider.
 const (
-	GetSigninProviderProviderCallbackParamsProviderGithub GetSigninProviderProviderCallbackParamsProvider = "github"
-	GetSigninProviderProviderCallbackParamsProviderGoogle GetSigninProviderProviderCallbackParamsProvider = "google"
+	GetSigninProviderProviderCallbackParamsProviderApple    GetSigninProviderProviderCallbackParamsProvider = "apple"
+	GetSigninProviderProviderCallbackParamsProviderGithub   GetSigninProviderProviderCallbackParamsProvider = "github"
+	GetSigninProviderProviderCallbackParamsProviderGoogle   GetSigninProviderProviderCallbackParamsProvider = "google"
+	GetSigninProviderProviderCallbackParamsProviderLinkedin GetSigninProviderProviderCallbackParamsProvider = "linkedin"
 )
 
 // Defines values for GetVerifyParamsType.
