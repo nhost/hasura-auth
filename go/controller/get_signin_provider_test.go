@@ -25,12 +25,12 @@ func TestGetSigninProviderProvider(t *testing.T) {
 			},
 			request: api.GetSigninProviderProviderRequestObject{
 				Params:   api.GetSigninProviderProviderParams{}, //nolint:exhaustruct
-				Provider: "google",
+				Provider: "fake",
 			},
 			expectedResponse: api.GetSigninProviderProvider302Response{
 				Headers: api.GetSigninProviderProvider302ResponseHeaders{
-					Location:  `^https://accounts.google.com/o/oauth2/auth\?client_id=clientID&redirect_uri=http%3A%2F%2Flocalhost%3A4000%2Fsignin%2Fprovider%2Fgoogle%2Fcallback&response_type=code&scope=oidc\+email\+profile&state=.+$`, //nolint:lll
-					SetCookie: `^nhostAuthProviderSignInData=.+; Path=/signin/provider/google; Max-Age=60; HttpOnly; Secure; SameSite=Lax$`,                                                                                                //nolint:lll
+					Location:  `^https://accounts.fake.com/o/oauth2/auth\?client_id=client-id&redirect_uri=https%3A%2F%2Fauth.nhost.dev%2Fsignin%2Fprovider%2Ffake%2Fcallback&response_type=code&scope=openid\+email\+profile&state=.*$`, //nolint:lll
+					SetCookie: `^nhostAuthProviderSignInData=.+; Path=/signin/provider/fake; Max-Age=60; HttpOnly; Secure; SameSite=Lax$`,                                                                                                //nolint:lll
 				},
 			},
 			expectedJWT:       nil,
@@ -54,13 +54,14 @@ func TestGetSigninProviderProvider(t *testing.T) {
 					Locale:       ptr("es"),
 					Metadata:     &map[string]any{"key": "value"},
 					RedirectTo:   ptr("http://localhost:3000/redirect"),
+					Connect:      ptr("asdasd"),
 				},
-				Provider: "google",
+				Provider: "fake",
 			},
 			expectedResponse: api.GetSigninProviderProvider302Response{
 				Headers: api.GetSigninProviderProvider302ResponseHeaders{
-					Location:  `^https://accounts.google.com/o/oauth2/auth\?client_id=clientID&redirect_uri=http%3A%2F%2Flocalhost%3A4000%2Fsignin%2Fprovider%2Fgoogle%2Fcallback&response_type=code&scope=oidc\+email\+profile&state=.+$`, //nolint:lll
-					SetCookie: `^nhostAuthProviderSignInData=.+; Path=/signin/provider/google; Max-Age=60; HttpOnly; Secure; SameSite=Lax$`,                                                                                                //nolint:lll
+					Location:  `^https://accounts.fake.com/o/oauth2/auth\?client_id=client-id&redirect_uri=https%3A%2F%2Fauth.nhost.dev%2Fsignin%2Fprovider%2Ffake%2Fcallback&response_type=code&scope=openid\+email\+profile&state=.*$`, //nolint:lll
+					SetCookie: `^nhostAuthProviderSignInData=.+; Path=/signin/provider/fake; Max-Age=60; HttpOnly; Secure; SameSite=Lax$`,                                                                                                //nolint:lll
 				},
 			},
 			expectedJWT:       nil,

@@ -16,13 +16,13 @@ func (ctrl *Controller) getSigninProviderProviderCallbackValidate( //nolint:iret
 	req api.GetSigninProviderProviderCallbackRequestObject,
 	clearCookie *http.Cookie,
 	logger *slog.Logger,
-) (api.GetSigninProviderProviderCallbackResponseObject, *api.SignUpOptions, *url.URL, *APIError) {
+) (api.GetSigninProviderProviderCallbackResponseObject, *api.SignUpOptions, *string, *url.URL, *APIError) {
 	redirectTo := ctrl.config.ClientURL
 
 	cookieData := &oauth2.ProviderSignInData{} //nolint:exhaustruct
 	if err := cookieData.Decode(req.Params.NhostAuthProviderSignInData); err != nil {
 		logger.Error("failed to decode cookie", logError(err))
-		return nil, nil, redirectTo, ErrInvalidState
+		return nil, nil, nil, redirectTo, ErrInvalidState
 	}
 
 	// we just care about the redirect URL for now, the rest is handled by the signin flow
@@ -33,17 +33,14 @@ func (ctrl *Controller) getSigninProviderProviderCallbackValidate( //nolint:iret
 		logger,
 	)
 	if apiErr != nil {
-		return nil, nil, redirectTo, apiErr
+		return nil, nil, nil, redirectTo, apiErr
 	}
 
 	if req.Params.Error != nil && *req.Params.Error != "" {
-		errorMsg := *req.Params.Error
-		if req.Params.ErrorDescription != nil {
-			errorMsg += ": " + *req.Params.ErrorDescription
-		}
-
 		values := redirectTo.Query()
-		values.Add("error", errorMsg)
+		values.Add("error", deptr(req.Params.Error))
+		values.Add("error_description", deptr(req.Params.ErrorDescription))
+		values.Add("error_url", deptr(req.Params.ErrorUri))
 		redirectTo.RawQuery = values.Encode()
 
 		return api.GetSigninProviderProviderCallback302Response{
@@ -51,21 +48,21 @@ func (ctrl *Controller) getSigninProviderProviderCallbackValidate( //nolint:iret
 				Location:  redirectTo.String(),
 				SetCookie: clearCookie.String(),
 			},
-		}, nil, nil, nil
+		}, nil, nil, nil, nil
 	}
 
 	if req.Params.State != cookieData.State {
 		logger.Error("state mismatch", "expected", cookieData.State, "actual", req.Params.State)
-		return nil, nil, redirectTo, ErrInvalidState
+		return nil, nil, nil, redirectTo, ErrInvalidState
 	}
 
 	optionsRedirectTo, err := url.Parse(*options.RedirectTo)
 	if err != nil {
 		logger.Error("error parsing redirect URL", logError(err))
-		return nil, nil, redirectTo, ErrInvalidRequest
+		return nil, nil, nil, redirectTo, ErrInvalidRequest
 	}
 
-	return nil, &cookieData.Options, optionsRedirectTo, nil
+	return nil, &cookieData.Options, cookieData.Connect, optionsRedirectTo, nil
 }
 
 func (ctrl *Controller) getSigninProviderProviderCallbackOauthFlow(
@@ -79,7 +76,7 @@ func (ctrl *Controller) getSigninProviderProviderCallbackOauthFlow(
 		return oidc.Profile{}, ErrDisabledEndpoint
 	}
 
-	token, err := provider.Oauth2().Exchange(ctx, req.Params.Code)
+	token, err := provider.Exchange(ctx, req.Params.Code)
 	if err != nil {
 		logger.Error("failed to exchange token", logError(err))
 		return oidc.Profile{}, ErrOauthTokenExchangeFailed
@@ -111,7 +108,7 @@ func (ctrl *Controller) GetSigninProviderProviderCallback( //nolint:ireturn
 		Path:     "/signin/provider/" + string(req.Provider),
 	}
 
-	quickReturn, options, redirectTo, apiErr := ctrl.getSigninProviderProviderCallbackValidate(
+	quickReturn, options, connnect, redirectTo, apiErr := ctrl.getSigninProviderProviderCallbackValidate(
 		req, clearCookie, logger,
 	)
 	if apiErr != nil {
@@ -127,7 +124,9 @@ func (ctrl *Controller) GetSigninProviderProviderCallback( //nolint:ireturn
 		return ctrl.sendRedirectError(redirectTo, apiErr), nil
 	}
 
-	// TODO connect
+	if connnect != nil {
+		// TODO
+	}
 
 	session, apiErr := ctrl.providerSignInFlow(
 		ctx, profile, string(req.Provider), options, logger,

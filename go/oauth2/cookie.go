@@ -10,6 +10,7 @@ import (
 
 type ProviderSignInData struct {
 	State   string            `json:"state"`
+	Connect *string           `json:"connect"`
 	Options api.SignUpOptions `json:"options"`
 }
 

@@ -34,10 +34,6 @@ func NewGithubProvider(
 	}
 }
 
-func (g *Github) Oauth2() *oauth2.Config {
-	return g.Config
-}
-
 type gitHubUser struct {
 	ID        int    `json:"id"`
 	Login     string `json:"login"`

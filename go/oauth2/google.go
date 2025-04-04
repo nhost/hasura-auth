@@ -28,10 +28,6 @@ func NewGoogleProvider(
 	}
 }
 
-func (g *Google) Oauth2() *oauth2.Config {
-	return g.Config
-}
-
 type googleUser struct {
 	ID            string `json:"id"`
 	Email         string `json:"email"`
