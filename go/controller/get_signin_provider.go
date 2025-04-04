@@ -78,12 +78,13 @@ func (ctrl *Controller) GetSigninProviderProvider( //nolint:ireturn
 		return ctrl.sendRedirectError(redirectTo, ErrDisabledEndpoint), nil
 	}
 
-	url := provider.Oauth2().AuthCodeURL(
+	url := provider.AuthCodeURL(
 		state,
 	)
 
 	data := oauth2.ProviderSignInData{
-		State: state,
+		State:   state,
+		Connect: req.Params.Connect,
 		Options: api.SignUpOptions{
 			AllowedRoles: req.Params.AllowedRoles,
 			DefaultRole:  req.Params.DefaultRole,

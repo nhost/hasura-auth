@@ -11,6 +11,7 @@ import (
 const fetchProfileTimeout = 10 * time.Second
 
 type Provider interface {
+	AuthCodeURL(state string, opts ...oauth2.AuthCodeOption) string
+	Exchange(ctx context.Context, code string, opts ...oauth2.AuthCodeOption) (*oauth2.Token, error)
 	GetProfile(ctx context.Context, accessToken string) (oidc.Profile, error)
-	Oauth2() *oauth2.Config
 }

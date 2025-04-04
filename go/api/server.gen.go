@@ -379,6 +379,14 @@ func (siw *ServerInterfaceWrapper) GetSigninProviderProvider(c *gin.Context) {
 		return
 	}
 
+	// ------------- Optional query parameter "connect" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "connect", c.Request.URL.Query(), &params.Connect)
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter connect: %w", err), http.StatusBadRequest)
+		return
+	}
+
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
 		if c.IsAborted() {

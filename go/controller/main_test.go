@@ -270,11 +270,11 @@ func getController(
 		emailer,
 		hibp,
 		oauth2.NewProviders(map[string]oauth2.Provider{
-			"google": oauth2.NewGoogleProvider(
-				"clientID",
-				"clientSecret",
-				"http://localhost:4000",
-				[]string{"oidc", "email", "profile"},
+			"fake": oauth2.NewFakeProvider(
+				"client-id",
+				"client-secret",
+				"https://auth.nhost.dev",
+				[]string{"openid", "email", "profile"},
 			),
 		}),
 		idTokenValidator,
