@@ -110,6 +110,16 @@ const (
 	flagGoogleClientID                   = "google-client-id"
 	flagGoogleClientSecret               = "google-client-secret"
 	flagGoogleScope                      = "google-scope"
+	flagAppleEnabled                     = "apple-enabled"
+	flagAppleClientID                    = "apple-client-id"
+	flagAppleTeamID                      = "apple-team-id"
+	flagAppleKeyID                       = "apple-key-id"
+	flagApplePrivateKey                  = "apple-private-key"
+	flagAppleScope                       = "apple-scope"
+	flagLinkedInEnabled                  = "linkedin-enabled"
+	flagLinkedInClientID                 = "linkedin-client-id"
+	flagLinkedInClientSecret             = "linkedin-client-secret"
+	flagLinkedInScope                    = "linkedin-scope"
 )
 
 func CommandServe() *cli.Command { //nolint:funlen,maintidx
@@ -692,6 +702,72 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 				Value:    cli.NewStringSlice("openid", "email", "profile"),
 				EnvVars:  []string{"AUTH_PROVIDER_GOOGLE_SCOPE"},
 			},
+			// Apple provider flags
+			&cli.BoolFlag{ //nolint: exhaustruct
+				Name:     flagAppleEnabled,
+				Usage:    "Enable Apple OAuth provider",
+				Category: "oauth-apple",
+				Value:    false,
+				EnvVars:  []string{"AUTH_PROVIDER_APPLE_ENABLED"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagAppleClientID,
+				Usage:    "Apple OAuth client ID",
+				Category: "oauth-apple",
+				EnvVars:  []string{"AUTH_PROVIDER_APPLE_CLIENT_ID"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagAppleTeamID,
+				Usage:    "Apple OAuth team ID",
+				Category: "oauth-apple",
+				EnvVars:  []string{"AUTH_PROVIDER_APPLE_TEAM_ID"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagAppleKeyID,
+				Usage:    "Apple OAuth key ID",
+				Category: "oauth-apple",
+				EnvVars:  []string{"AUTH_PROVIDER_APPLE_KEY_ID"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagApplePrivateKey,
+				Usage:    "Apple OAuth private key",
+				Category: "oauth-apple",
+				EnvVars:  []string{"AUTH_PROVIDER_APPLE_PRIVATE_KEY"},
+			},
+			&cli.StringSliceFlag{ //nolint: exhaustruct
+				Name:     flagAppleScope,
+				Usage:    "Apple OAuth scope",
+				Category: "oauth-apple",
+				Value:    cli.NewStringSlice("name", "email"),
+				EnvVars:  []string{"AUTH_PROVIDER_APPLE_SCOPE"},
+			},
+			// LinkedIn provider flags
+			&cli.BoolFlag{ //nolint: exhaustruct
+				Name:     flagLinkedInEnabled,
+				Usage:    "Enable LinkedIn OAuth provider",
+				Category: "oauth-linkedin",
+				Value:    false,
+				EnvVars:  []string{"AUTH_PROVIDER_LINKEDIN_ENABLED"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagLinkedInClientID,
+				Usage:    "LinkedIn OAuth client ID",
+				Category: "oauth-linkedin",
+				EnvVars:  []string{"AUTH_PROVIDER_LINKEDIN_CLIENT_ID"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagLinkedInClientSecret,
+				Usage:    "LinkedIn OAuth client secret",
+				Category: "oauth-linkedin",
+				EnvVars:  []string{"AUTH_PROVIDER_LINKEDIN_CLIENT_SECRET"},
+			},
+			&cli.StringSliceFlag{ //nolint: exhaustruct
+				Name:     flagLinkedInScope,
+				Usage:    "LinkedIn OAuth scope",
+				Category: "oauth-linkedin",
+				Value:    cli.NewStringSlice("r_emailaddress", "r_liteprofile"),
+				EnvVars:  []string{"AUTH_PROVIDER_LINKEDIN_SCOPE"},
+			},
 		},
 		Action: serve,
 	}
@@ -840,6 +916,11 @@ func getGoServer( //nolint:funlen
 		return nil, err
 	}
 
+	oauthProviders, err := getOauth2Providers(cCtx)
+	if err != nil {
+		return nil, fmt.Errorf("problem creating oauth providers: %w", err)
+	}
+
 	ctrl, err := controller.New(
 		db,
 		config,
@@ -849,6 +930,7 @@ func getGoServer( //nolint:funlen
 		idTokenValidator,
 		controller.NewTotp(cCtx.String(flagMfaTotpIssuer), time.Now),
 		getOauth2Providers(cCtx),
+		oauthProviders,
 		idTokenValidator,
 		cCtx.App.Version,
 	)
