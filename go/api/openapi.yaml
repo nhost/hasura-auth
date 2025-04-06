@@ -93,6 +93,27 @@ paths:
           description: >-
             Successfully refreshed the JWT access token
 
+  /signin/anonymous:
+    post:
+      summary: Sign in anonymously
+      tags:
+        - signin
+        - anonymous
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SigninAnonymousRequest'
+        required: false
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionPayload'
+          description: >-
+            Successfully signed in
+
   /signin/email-password:
     post:
       summary: Sign in with email and password
@@ -114,6 +135,30 @@ paths:
                 $ref: '#/components/schemas/SignInEmailPasswordResponse'
           description: >-
             Successfully signed in. Null session means TOTP challenge is needed
+
+  /signin/mfa/totp:
+    post:
+      summary: Verify TOTP and return a session if validation is successful
+      tags:
+        - signin
+        - mfa
+        - totp
+        - email-and-password
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignInMfaTotpRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionPayload'
+          description: >-
+            Successfully signed in
 
   /signin/passwordless/email:
     post:
@@ -396,6 +441,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/UserDeanonymizeRequest'
+        required: true
       responses:
         '200':
           description: >-
@@ -418,6 +464,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/UserEmailChangeRequest'
+        required: true
       responses:
         '200':
           description: >-
@@ -463,6 +510,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/UserPasswordRequest'
+        required: true
       responses:
         '200':
           description: >-
@@ -484,6 +532,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/UserPasswordResetRequest'
+        required: true
       responses:
         '200':
           description: >-
@@ -664,6 +713,9 @@ components:
             - invalid-pat
             - invalid-refresh-token
             - invalid-ticket
+            - disabled-mfa-totp
+            - no-totp-secret
+            - invalid-totp
       required:
         - status
         - message
@@ -904,6 +956,27 @@ components:
           format: uri
           example: https://my-app.com/catch-redirection
 
+    SigninAnonymousRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        displayName:
+          example: John Smith
+          type: string
+        locale:
+          description: A two-characters locale
+          example: en
+          maxLength: 2
+          minLength: 2
+          type: string
+        metadata:
+          type: object
+          additionalProperties: true
+          example:
+            firstName: John
+            lastName: Smith
+          properties: {}
+
     SignInEmailPasswordRequest:
       type: object
       additionalProperties: false
@@ -1131,6 +1204,21 @@ components:
       required:
         - provider
         - idToken
+
+    SignInMfaTotpRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        ticket:
+          type: string
+          description: Ticket
+          pattern: ^mfaTotp:.*$
+        otp:
+          type: string
+          description: One time password
+      required:
+        - ticket
+        - otp
 
     Provider:
       type: string

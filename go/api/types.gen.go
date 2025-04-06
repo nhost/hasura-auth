@@ -21,6 +21,7 @@ const (
 const (
 	DefaultRoleMustBeInAllowedRoles ErrorResponseError = "default-role-must-be-in-allowed-roles"
 	DisabledEndpoint                ErrorResponseError = "disabled-endpoint"
+	DisabledMfaTotp                 ErrorResponseError = "disabled-mfa-totp"
 	DisabledUser                    ErrorResponseError = "disabled-user"
 	EmailAlreadyInUse               ErrorResponseError = "email-already-in-use"
 	EmailAlreadyVerified            ErrorResponseError = "email-already-verified"
@@ -31,7 +32,9 @@ const (
 	InvalidRefreshToken             ErrorResponseError = "invalid-refresh-token"
 	InvalidRequest                  ErrorResponseError = "invalid-request"
 	InvalidTicket                   ErrorResponseError = "invalid-ticket"
+	InvalidTotp                     ErrorResponseError = "invalid-totp"
 	LocaleNotAllowed                ErrorResponseError = "locale-not-allowed"
+	NoTotpSecret                    ErrorResponseError = "no-totp-secret"
 	PasswordInHibpDatabase          ErrorResponseError = "password-in-hibp-database"
 	PasswordTooShort                ErrorResponseError = "password-too-short"
 	RedirectToNotAllowed            ErrorResponseError = "redirectTo-not-allowed"
@@ -196,6 +199,15 @@ type SignInIdTokenRequest struct {
 	Provider Provider       `json:"provider"`
 }
 
+// SignInMfaTotpRequest defines model for SignInMfaTotpRequest.
+type SignInMfaTotpRequest struct {
+	// Otp One time password
+	Otp string `json:"otp"`
+
+	// Ticket Ticket
+	Ticket string `json:"ticket"`
+}
+
 // SignInOTPEmailRequest defines model for SignInOTPEmailRequest.
 type SignInOTPEmailRequest struct {
 	// Email A valid email
@@ -296,6 +308,15 @@ type SignUpWebauthnVerifyRequest struct {
 		RedirectTo *string                 `json:"redirectTo,omitempty"`
 	} `json:"options,omitempty"`
 	AdditionalProperties map[string]interface{} `json:"-"`
+}
+
+// SigninAnonymousRequest defines model for SigninAnonymousRequest.
+type SigninAnonymousRequest struct {
+	DisplayName *string `json:"displayName,omitempty"`
+
+	// Locale A two-characters locale
+	Locale   *string                 `json:"locale,omitempty"`
+	Metadata *map[string]interface{} `json:"metadata,omitempty"`
 }
 
 // User defines model for User.
@@ -401,11 +422,17 @@ type PostLinkIdtokenJSONRequestBody = LinkIdTokenRequest
 // PostPatJSONRequestBody defines body for PostPat for application/json ContentType.
 type PostPatJSONRequestBody = CreatePATRequest
 
+// PostSigninAnonymousJSONRequestBody defines body for PostSigninAnonymous for application/json ContentType.
+type PostSigninAnonymousJSONRequestBody = SigninAnonymousRequest
+
 // PostSigninEmailPasswordJSONRequestBody defines body for PostSigninEmailPassword for application/json ContentType.
 type PostSigninEmailPasswordJSONRequestBody = SignInEmailPasswordRequest
 
 // PostSigninIdtokenJSONRequestBody defines body for PostSigninIdtoken for application/json ContentType.
 type PostSigninIdtokenJSONRequestBody = SignInIdTokenRequest
+
+// PostSigninMfaTotpJSONRequestBody defines body for PostSigninMfaTotp for application/json ContentType.
+type PostSigninMfaTotpJSONRequestBody = SignInMfaTotpRequest
 
 // PostSigninOtpEmailJSONRequestBody defines body for PostSigninOtpEmail for application/json ContentType.
 type PostSigninOtpEmailJSONRequestBody = SignInOTPEmailRequest
