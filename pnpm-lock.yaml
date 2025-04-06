@@ -9406,7 +9406,7 @@ snapshots:
   constantinople@4.0.1:
     dependencies:
       '@babel/parser': 7.25.3
-      '@babel/types': 7.25.2
+      '@babel/types': 7.24.0
 
   content-disposition@0.5.4:
     dependencies:
@@ -13873,7 +13873,7 @@ snapshots:
   with@7.0.2:
     dependencies:
       '@babel/parser': 7.25.3
-      '@babel/types': 7.25.2
+      '@babel/types': 7.24.0
       assert-never: 1.2.1
       babel-walk: 3.0.0-canary-5
 
