@@ -40,8 +40,12 @@ func (ctrl *Controller) PostChangeEnv(fn gin.HandlerFunc) gin.HandlerFunc { //no
 				c.JSON(http.StatusBadRequest, gin.H{"message": "failed to unmarshal custom claims", "error": err.Error()})
 			}
 			var defaults map[string]any
-			if err := json.Unmarshal([]byte(ctrl.config.CustomClaimsDefaults), &defaults); err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{"message": "failed to unmarshal custom claims defaults", "error": err.Error()})
+			if ctrl.config.CustomClaimsDefaults == "" {
+				defaults = nil
+			} else {
+				if err := json.Unmarshal([]byte(ctrl.config.CustomClaimsDefaults), &defaults); err != nil {
+					c.JSON(http.StatusBadRequest, gin.H{"message": "failed to unmarshal custom claims defaults", "error": err.Error()})
+				}
 			}
 
 			if len(rawClaims) > 0 {
