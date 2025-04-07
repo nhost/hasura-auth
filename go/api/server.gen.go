@@ -73,6 +73,9 @@ type ServerInterface interface {
 	// Callback for oauth2 provider
 	// (GET /signin/provider/{provider}/callback)
 	GetSigninProviderProviderCallback(c *gin.Context, provider GetSigninProviderProviderCallbackParamsProvider, params GetSigninProviderProviderCallbackParams)
+	// Callback for oauth2 provider using form_post response mode
+	// (POST /signin/provider/{provider}/callback)
+	PostSigninProviderProviderCallback(c *gin.Context, provider PostSigninProviderProviderCallbackParamsProvider)
 	// Signin with webauthn
 	// (POST /signin/webauthn)
 	PostSigninWebauthn(c *gin.Context)
@@ -414,18 +417,19 @@ func (siw *ServerInterfaceWrapper) GetSigninProviderProviderCallback(c *gin.Cont
 	// Parameter object where we will unmarshal all parameters from the context
 	var params GetSigninProviderProviderCallbackParams
 
-	// ------------- Required query parameter "code" -------------
+	// ------------- Optional query parameter "code" -------------
 
-	if paramValue := c.Query("code"); paramValue != "" {
-
-	} else {
-		siw.ErrorHandler(c, fmt.Errorf("Query argument code is required, but not found"), http.StatusBadRequest)
+	err = runtime.BindQueryParameter("form", true, false, "code", c.Request.URL.Query(), &params.Code)
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter code: %w", err), http.StatusBadRequest)
 		return
 	}
 
-	err = runtime.BindQueryParameter("form", true, true, "code", c.Request.URL.Query(), &params.Code)
+	// ------------- Optional query parameter "id_token" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "id_token", c.Request.URL.Query(), &params.IdToken)
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter code: %w", err), http.StatusBadRequest)
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter id_token: %w", err), http.StatusBadRequest)
 		return
 	}
 
@@ -468,22 +472,28 @@ func (siw *ServerInterfaceWrapper) GetSigninProviderProviderCallback(c *gin.Cont
 		return
 	}
 
-	{
-		var cookie string
-
-		if cookie, err = c.Cookie("nhostAuthProviderSignInData"); err == nil {
-			var value string
-			err = runtime.BindStyledParameterWithOptions("simple", "nhostAuthProviderSignInData", cookie, &value, runtime.BindStyledParameterOptions{Explode: true, Required: true})
-			if err != nil {
-				siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter nhostAuthProviderSignInData: %w", err), http.StatusBadRequest)
-				return
-			}
-			params.NhostAuthProviderSignInData = value
-
-		} else {
-			siw.ErrorHandler(c, fmt.Errorf("Query argument nhostAuthProviderSignInData is required, but not found"), http.StatusBadRequest)
+	for _, middleware := range siw.HandlerMiddlewares {
+		middleware(c)
+		if c.IsAborted() {
 			return
 		}
+	}
+
+	siw.Handler.GetSigninProviderProviderCallback(c, provider, params)
+}
+
+// PostSigninProviderProviderCallback operation middleware
+func (siw *ServerInterfaceWrapper) PostSigninProviderProviderCallback(c *gin.Context) {
+
+	var err error
+
+	// ------------- Path parameter "provider" -------------
+	var provider PostSigninProviderProviderCallbackParamsProvider
+
+	err = runtime.BindStyledParameterWithOptions("simple", "provider", c.Param("provider"), &provider, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter provider: %w", err), http.StatusBadRequest)
+		return
 	}
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -493,7 +503,7 @@ func (siw *ServerInterfaceWrapper) GetSigninProviderProviderCallback(c *gin.Cont
 		}
 	}
 
-	siw.Handler.GetSigninProviderProviderCallback(c, provider, params)
+	siw.Handler.PostSigninProviderProviderCallback(c, provider)
 }
 
 // PostSigninWebauthn operation middleware
@@ -772,6 +782,7 @@ func RegisterHandlersWithOptions(router gin.IRouter, si ServerInterface, options
 	router.POST(options.BaseURL+"/signin/pat", wrapper.PostSigninPat)
 	router.GET(options.BaseURL+"/signin/provider/:provider", wrapper.GetSigninProviderProvider)
 	router.GET(options.BaseURL+"/signin/provider/:provider/callback", wrapper.GetSigninProviderProviderCallback)
+	router.POST(options.BaseURL+"/signin/provider/:provider/callback", wrapper.PostSigninProviderProviderCallback)
 	router.POST(options.BaseURL+"/signin/webauthn", wrapper.PostSigninWebauthn)
 	router.POST(options.BaseURL+"/signin/webauthn/verify", wrapper.PostSigninWebauthnVerify)
 	router.POST(options.BaseURL+"/signup/email-password", wrapper.PostSignupEmailPassword)
@@ -1031,8 +1042,7 @@ type GetSigninProviderProviderResponseObject interface {
 }
 
 type GetSigninProviderProvider302ResponseHeaders struct {
-	Location  string
-	SetCookie string
+	Location string
 }
 
 type GetSigninProviderProvider302Response struct {
@@ -1041,7 +1051,6 @@ type GetSigninProviderProvider302Response struct {
 
 func (response GetSigninProviderProvider302Response) VisitGetSigninProviderProviderResponse(w http.ResponseWriter) error {
 	w.Header().Set("Location", fmt.Sprint(response.Headers.Location))
-	w.Header().Set("Set-Cookie", fmt.Sprint(response.Headers.SetCookie))
 	w.WriteHeader(302)
 	return nil
 }
@@ -1056,8 +1065,7 @@ type GetSigninProviderProviderCallbackResponseObject interface {
 }
 
 type GetSigninProviderProviderCallback302ResponseHeaders struct {
-	Location  string
-	SetCookie string
+	Location string
 }
 
 type GetSigninProviderProviderCallback302Response struct {
@@ -1066,7 +1074,29 @@ type GetSigninProviderProviderCallback302Response struct {
 
 func (response GetSigninProviderProviderCallback302Response) VisitGetSigninProviderProviderCallbackResponse(w http.ResponseWriter) error {
 	w.Header().Set("Location", fmt.Sprint(response.Headers.Location))
-	w.Header().Set("Set-Cookie", fmt.Sprint(response.Headers.SetCookie))
+	w.WriteHeader(302)
+	return nil
+}
+
+type PostSigninProviderProviderCallbackRequestObject struct {
+	Provider PostSigninProviderProviderCallbackParamsProvider `json:"provider"`
+	Body     *PostSigninProviderProviderCallbackFormdataRequestBody
+}
+
+type PostSigninProviderProviderCallbackResponseObject interface {
+	VisitPostSigninProviderProviderCallbackResponse(w http.ResponseWriter) error
+}
+
+type PostSigninProviderProviderCallback302ResponseHeaders struct {
+	Location string
+}
+
+type PostSigninProviderProviderCallback302Response struct {
+	Headers PostSigninProviderProviderCallback302ResponseHeaders
+}
+
+func (response PostSigninProviderProviderCallback302Response) VisitPostSigninProviderProviderCallbackResponse(w http.ResponseWriter) error {
+	w.Header().Set("Location", fmt.Sprint(response.Headers.Location))
 	w.WriteHeader(302)
 	return nil
 }
@@ -1383,6 +1413,9 @@ type StrictServerInterface interface {
 	// Callback for oauth2 provider
 	// (GET /signin/provider/{provider}/callback)
 	GetSigninProviderProviderCallback(ctx context.Context, request GetSigninProviderProviderCallbackRequestObject) (GetSigninProviderProviderCallbackResponseObject, error)
+	// Callback for oauth2 provider using form_post response mode
+	// (POST /signin/provider/{provider}/callback)
+	PostSigninProviderProviderCallback(ctx context.Context, request PostSigninProviderProviderCallbackRequestObject) (PostSigninProviderProviderCallbackResponseObject, error)
 	// Signin with webauthn
 	// (POST /signin/webauthn)
 	PostSigninWebauthn(ctx context.Context, request PostSigninWebauthnRequestObject) (PostSigninWebauthnResponseObject, error)
@@ -1920,6 +1953,44 @@ func (sh *strictHandler) GetSigninProviderProviderCallback(ctx *gin.Context, pro
 		ctx.Status(http.StatusInternalServerError)
 	} else if validResponse, ok := response.(GetSigninProviderProviderCallbackResponseObject); ok {
 		if err := validResponse.VisitGetSigninProviderProviderCallbackResponse(ctx.Writer); err != nil {
+			ctx.Error(err)
+		}
+	} else if response != nil {
+		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PostSigninProviderProviderCallback operation middleware
+func (sh *strictHandler) PostSigninProviderProviderCallback(ctx *gin.Context, provider PostSigninProviderProviderCallbackParamsProvider) {
+	var request PostSigninProviderProviderCallbackRequestObject
+
+	request.Provider = provider
+
+	if err := ctx.Request.ParseForm(); err != nil {
+		ctx.Error(err)
+		return
+	}
+	var body PostSigninProviderProviderCallbackFormdataRequestBody
+	if err := runtime.BindForm(&body, ctx.Request.Form, nil, nil); err != nil {
+		ctx.Error(err)
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.PostSigninProviderProviderCallback(ctx, request.(PostSigninProviderProviderCallbackRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PostSigninProviderProviderCallback")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		ctx.Error(err)
+		ctx.Status(http.StatusInternalServerError)
+	} else if validResponse, ok := response.(PostSigninProviderProviderCallbackResponseObject); ok {
+		if err := validResponse.VisitPostSigninProviderProviderCallbackResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {

@@ -7,6 +7,36 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
+func getDefaultScopes(provider string) []string {
+	switch provider {
+	case "google":
+		return oauth2.DefaultGoogleScopes
+	case "github":
+		return oauth2.DefaultGithubScopes
+	case "apple":
+		return oauth2.DefaultAppleScopes
+	case "linkedin":
+		return oauth2.DefaultLinkedInScopes
+	default:
+		return []string{}
+	}
+}
+
+func getScopes(provider string, scopes []string) []string {
+	// clean the scopes in case of empty string
+	var cleanedScopes []string
+	for _, scope := range scopes {
+		if scope != "" {
+			cleanedScopes = append(cleanedScopes, scope)
+		}
+	}
+
+	if len(cleanedScopes) > 0 {
+		return cleanedScopes
+	}
+	return getDefaultScopes(provider)
+}
+
 func getOauth2Providers(cCtx *cli.Context) (*oauth2.Providers, error) {
 	providers := make(map[string]oauth2.Provider)
 
@@ -15,7 +45,7 @@ func getOauth2Providers(cCtx *cli.Context) (*oauth2.Providers, error) {
 			cCtx.String(flagGoogleClientID),
 			cCtx.String(flagGoogleClientSecret),
 			cCtx.String(flagServerURL),
-			cCtx.StringSlice(flagGoogleScope),
+			getScopes("google", cCtx.StringSlice(flagGoogleScope)),
 		)
 	}
 
@@ -27,7 +57,7 @@ func getOauth2Providers(cCtx *cli.Context) (*oauth2.Providers, error) {
 			cCtx.String(flagGithubAuthorizationURL),
 			cCtx.String(flagGithubTokenURL),
 			cCtx.String(flagGithubUserProfileURL),
-			cCtx.StringSlice(flagGithubScope),
+			getScopes("github", cCtx.StringSlice(flagGithubScope)),
 		)
 	}
 
@@ -42,12 +72,16 @@ func getOauth2Providers(cCtx *cli.Context) (*oauth2.Providers, error) {
 			return nil, fmt.Errorf("failed to generate Apple client secret: %w", err)
 		}
 
-		providers["apple"] = oauth2.NewAppleProvider(
+		providers["apple"], err = oauth2.NewAppleProvider(
+			cCtx.Context,
 			cCtx.String(flagAppleClientID),
 			clientSecret,
 			cCtx.String(flagServerURL),
-			cCtx.StringSlice(flagAppleScope),
+			getScopes("apple", cCtx.StringSlice(flagAppleScope)),
 		)
+		if err != nil {
+			return nil, fmt.Errorf("failed to create Apple provider: %w", err)
+		}
 	}
 
 	if cCtx.Bool(flagLinkedInEnabled) {
@@ -55,7 +89,7 @@ func getOauth2Providers(cCtx *cli.Context) (*oauth2.Providers, error) {
 			cCtx.String(flagLinkedInClientID),
 			cCtx.String(flagLinkedInClientSecret),
 			cCtx.String(flagServerURL),
-			cCtx.StringSlice(flagLinkedInScope),
+			getScopes("linkedin", cCtx.StringSlice(flagLinkedInScope)),
 		)
 	}
 

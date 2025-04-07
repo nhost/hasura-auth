@@ -3,7 +3,6 @@ package controller
 import (
 	"context"
 	"log/slog"
-	"net/http"
 	"net/url"
 
 	"github.com/nhost/hasura-auth/go/api"
@@ -12,77 +11,83 @@ import (
 	"github.com/nhost/hasura-auth/go/oidc"
 )
 
-func (ctrl *Controller) getSigninProviderProviderCallbackValidate( //nolint:ireturn
-	req api.GetSigninProviderProviderCallbackRequestObject,
-	clearCookie *http.Cookie,
+type providerCallbackData struct {
+	State            string
+	Provider         string
+	Code             *string
+	IDToken          *string
+	Error            *string
+	ErrorDescription *string
+	ErrorURI         *string
+	Extras           map[string]any
+}
+
+func (ctrl *Controller) signinProviderProviderCallbackValidate(
+	req providerCallbackData,
 	logger *slog.Logger,
-) (api.GetSigninProviderProviderCallbackResponseObject, *api.SignUpOptions, *string, *url.URL, *APIError) {
+) (*api.SignUpOptions, *string, *url.URL, *APIError) {
 	redirectTo := ctrl.config.ClientURL
 
-	cookieData := &oauth2.ProviderSignInData{} //nolint:exhaustruct
-	if err := cookieData.Decode(req.Params.NhostAuthProviderSignInData); err != nil {
-		logger.Error("failed to decode cookie", logError(err))
-		return nil, nil, nil, redirectTo, ErrInvalidState
+	stateToken, err := ctrl.wf.jwtGetter.Validate(req.State)
+	if err != nil {
+		logger.Error("invalid state token", logError(err))
+		return nil, nil, redirectTo, ErrInvalidRequest
+	}
+
+	stateData := &oauth2.State{}
+	if err := stateData.Decode(stateToken.Claims); err != nil {
+		logger.Error("error decoding state token", logError(err))
+		return nil, nil, redirectTo, ErrInvalidRequest
 	}
 
 	// we just care about the redirect URL for now, the rest is handled by the signin flow
 	options, apiErr := ctrl.wf.ValidateOptionsRedirectTo(
 		&api.OptionsRedirectTo{
-			RedirectTo: cookieData.Options.RedirectTo,
+			RedirectTo: stateData.Options.RedirectTo,
 		},
 		logger,
 	)
 	if apiErr != nil {
-		return nil, nil, nil, redirectTo, apiErr
+		return nil, nil, redirectTo, apiErr
 	}
 
-	if req.Params.Error != nil && *req.Params.Error != "" {
+	if req.Error != nil && *req.Error != "" {
 		values := redirectTo.Query()
-		values.Add("error", deptr(req.Params.Error))
-		values.Add("error_description", deptr(req.Params.ErrorDescription))
-		values.Add("error_url", deptr(req.Params.ErrorUri))
+		values.Add("provider_error", deptr(req.Error))
+		values.Add("provider_error_description", deptr(req.ErrorDescription))
+		values.Add("provider_error_url", deptr(req.ErrorURI))
 		redirectTo.RawQuery = values.Encode()
 
-		return api.GetSigninProviderProviderCallback302Response{
-			Headers: api.GetSigninProviderProviderCallback302ResponseHeaders{
-				Location:  redirectTo.String(),
-				SetCookie: clearCookie.String(),
-			},
-		}, nil, nil, nil, nil
-	}
-
-	if req.Params.State != cookieData.State {
-		logger.Error("state mismatch", "expected", cookieData.State, "actual", req.Params.State)
-		return nil, nil, nil, redirectTo, ErrInvalidState
+		return nil, nil, redirectTo, ErrInvalidRequest
 	}
 
 	optionsRedirectTo, err := url.Parse(*options.RedirectTo)
 	if err != nil {
 		logger.Error("error parsing redirect URL", logError(err))
-		return nil, nil, nil, redirectTo, ErrInvalidRequest
+		return nil, nil, redirectTo, ErrInvalidRequest
 	}
 
-	return nil, &cookieData.Options, cookieData.Connect, optionsRedirectTo, nil
+	return stateData.Options, stateData.Connect, optionsRedirectTo, nil
 }
 
-func (ctrl *Controller) getSigninProviderProviderCallbackOauthFlow(
+func (ctrl *Controller) signinProviderProviderCallbackOauthFlow(
 	ctx context.Context,
-	req api.GetSigninProviderProviderCallbackRequestObject,
+	req providerCallbackData,
 	logger *slog.Logger,
 ) (oidc.Profile, *APIError) {
-	provider := ctrl.Providers.Get(string(req.Provider))
+	provider := ctrl.Providers.Get(req.Provider)
 	if provider == nil {
 		logger.Error("provider not enabled")
 		return oidc.Profile{}, ErrDisabledEndpoint
 	}
 
-	token, err := provider.Exchange(ctx, req.Params.Code)
+	token, err := provider.Exchange(ctx, *req.Code)
 	if err != nil {
 		logger.Error("failed to exchange token", logError(err))
 		return oidc.Profile{}, ErrOauthTokenExchangeFailed
 	}
 
-	profile, err := provider.GetProfile(ctx, token.AccessToken)
+	profile, err := provider.GetProfile(ctx, token.AccessToken, req.IDToken, req.Extras)
 	if err != nil {
 		logger.Error("failed to get user info", logError(err))
 		return oidc.Profile{}, ErrOauthProfileFetchFailed
@@ -91,114 +96,148 @@ func (ctrl *Controller) getSigninProviderProviderCallbackOauthFlow(
 	return profile, nil
 }
 
+func (ctrl *Controller) signinProviderProviderCallback(
+	ctx context.Context,
+	req providerCallbackData,
+) (*url.URL, *APIError) {
+	logger := middleware.LoggerFromContext(ctx)
+
+	options, connnect, redirectTo, apiErr := ctrl.signinProviderProviderCallbackValidate(
+		req,
+		logger,
+	)
+	if apiErr != nil {
+		return redirectTo, apiErr
+	}
+
+	profile, apiErr := ctrl.signinProviderProviderCallbackOauthFlow(ctx, req, logger)
+	if apiErr != nil {
+		return redirectTo, apiErr
+	}
+
+	if connnect != nil {
+		if apiErr := ctrl.signinProviderProviderCallbackConnect(
+			ctx, *connnect, req.Provider, profile, logger,
+		); apiErr != nil {
+			return redirectTo, apiErr
+		}
+	} else {
+		session, apiErr := ctrl.providerSignInFlow(
+			ctx, profile, req.Provider, options, logger,
+		)
+		if apiErr != nil {
+			return redirectTo, apiErr
+		}
+
+		if session != nil {
+			values := redirectTo.Query()
+			values.Add("refreshToken", session.RefreshToken)
+			redirectTo.RawQuery = values.Encode()
+		}
+	}
+
+	return redirectTo, nil
+}
+
 func (ctrl *Controller) GetSigninProviderProviderCallback( //nolint:ireturn
 	ctx context.Context,
 	req api.GetSigninProviderProviderCallbackRequestObject,
 ) (api.GetSigninProviderProviderCallbackResponseObject, error) {
-	logger := middleware.LoggerFromContext(ctx)
-
-	// Clear the state cookie
-	clearCookie := &http.Cookie{ //nolint:exhaustruct
-		Name:     signinProviderCookieName,
-		Value:    "",
-		MaxAge:   0,
-		Secure:   ctrl.config.UseSecureCookies(),
-		HttpOnly: true,
-		SameSite: http.SameSiteLaxMode,
-		Path:     "/signin/provider/" + string(req.Provider),
+	providerCallbackData := providerCallbackData{
+		State:            req.Params.State,
+		Provider:         string(req.Provider),
+		Code:             req.Params.Code,
+		IDToken:          req.Params.IdToken,
+		Extras:           nil,
+		Error:            req.Params.Error,
+		ErrorDescription: req.Params.ErrorDescription,
+		ErrorURI:         req.Params.ErrorUri,
 	}
 
-	quickReturn, options, connnect, redirectTo, apiErr := ctrl.getSigninProviderProviderCallbackValidate(
-		req,
-		clearCookie,
-		logger,
+	redirectTo, apiErr := ctrl.signinProviderProviderCallback(
+		ctx,
+		providerCallbackData,
 	)
 	if apiErr != nil {
 		return ctrl.sendRedirectError(redirectTo, apiErr), nil
-	}
-	if quickReturn != nil {
-		// we use quick return to forward the error message from the oauth provider
-		return quickReturn, nil
-	}
-
-	profile, apiErr := ctrl.getSigninProviderProviderCallbackOauthFlow(ctx, req, logger)
-	if apiErr != nil {
-		return ctrl.sendRedirectError(redirectTo, apiErr), nil
-	}
-
-	if connnect != nil {
-		return ctrl.getSigninProviderProviderCallbackConnect(
-			ctx, *connnect, req.Provider, profile, redirectTo, clearCookie, logger,
-		)
-	}
-
-	session, apiErr := ctrl.providerSignInFlow(
-		ctx, profile, string(req.Provider), options, logger,
-	)
-	if apiErr != nil {
-		return ctrl.sendRedirectError(redirectTo, apiErr), nil
-	}
-
-	if session != nil {
-		values := redirectTo.Query()
-		values.Add("refreshToken", session.RefreshToken)
-		redirectTo.RawQuery = values.Encode()
 	}
 
 	return api.GetSigninProviderProviderCallback302Response{
 		Headers: api.GetSigninProviderProviderCallback302ResponseHeaders{
-			Location:  redirectTo.String(),
-			SetCookie: clearCookie.String(),
+			Location: redirectTo.String(),
 		},
 	}, nil
 }
 
-func (ctrl *Controller) getSigninProviderProviderCallbackConnect( //nolint:ireturn
+func (ctrl *Controller) signinProviderProviderCallbackConnect(
 	ctx context.Context,
 	connnect string,
-	provider api.GetSigninProviderProviderCallbackParamsProvider,
+	provider string,
 	profile oidc.Profile,
-	redirectTo *url.URL,
-	clearCookie *http.Cookie,
 	logger *slog.Logger,
-) (api.GetSigninProviderProviderCallbackResponseObject, error) {
+) *APIError {
 	// Decode JWT token from connect parameter
 	jwtToken, err := ctrl.wf.jwtGetter.Validate(connnect)
 	if err != nil {
 		logger.Error("invalid jwt token", logError(err))
-		return ctrl.sendRedirectError(redirectTo, ErrInvalidRequest), nil
+		return ErrInvalidRequest
 	}
 
 	// Extract user ID from JWT token
 	userID, err := ctrl.wf.jwtGetter.GetUserID(jwtToken)
 	if err != nil {
 		logger.Error("error getting user id from jwt token", logError(err))
-		return ctrl.sendRedirectError(redirectTo, ErrInvalidRequest), nil
+		return ErrInvalidRequest
 	}
 
 	// Verify user exists
 	if _, apiError := ctrl.wf.GetUser(ctx, userID, logger); apiError != nil {
 		logger.Error("error getting user", logError(apiError))
-		return ctrl.sendRedirectError(redirectTo, apiError), nil
+		return apiError
 	}
 
 	// Insert user provider
 	if _, apiErr := ctrl.wf.InsertUserProvider(
 		ctx,
 		userID,
-		string(provider),
+		provider,
 		profile.ProviderUserID,
 		logger,
 	); apiErr != nil {
+		return apiErr
+	}
+
+	return nil
+}
+
+func (ctrl *Controller) PostSigninProviderProviderCallback( //nolint:ireturn
+	ctx context.Context,
+	req api.PostSigninProviderProviderCallbackRequestObject,
+) (api.PostSigninProviderProviderCallbackResponseObject, error) {
+	providerCallbackData := providerCallbackData{
+		State:    req.Body.State,
+		Provider: string(req.Provider),
+		Code:     req.Body.Code,
+		IDToken:  req.Body.IdToken,
+		Extras: map[string]any{
+			"user": req.Body.User,
+		},
+		Error:            req.Body.Error,
+		ErrorDescription: req.Body.ErrorDescription,
+		ErrorURI:         req.Body.ErrorUri,
+	}
+
+	redirectTo, apiErr := ctrl.signinProviderProviderCallback(
+		ctx,
+		providerCallbackData,
+	)
+	if apiErr != nil {
 		return ctrl.sendRedirectError(redirectTo, apiErr), nil
 	}
 
-	// User is already authenticated, so we don't need to create a session
-	// Just redirect to the provided URL
-	return api.GetSigninProviderProviderCallback302Response{
-		Headers: api.GetSigninProviderProviderCallback302ResponseHeaders{
-			Location:  redirectTo.String(),
-			SetCookie: clearCookie.String(),
+	return api.PostSigninProviderProviderCallback302Response{
+		Headers: api.PostSigninProviderProviderCallback302ResponseHeaders{
+			Location: redirectTo.String(),
 		},
 	}, nil
 }

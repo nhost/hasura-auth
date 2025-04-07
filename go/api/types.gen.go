@@ -102,6 +102,14 @@ const (
 	GetSigninProviderProviderCallbackParamsProviderLinkedin GetSigninProviderProviderCallbackParamsProvider = "linkedin"
 )
 
+// Defines values for PostSigninProviderProviderCallbackParamsProvider.
+const (
+	Apple    PostSigninProviderProviderCallbackParamsProvider = "apple"
+	Github   PostSigninProviderProviderCallbackParamsProvider = "github"
+	Google   PostSigninProviderProviderCallbackParamsProvider = "google"
+	Linkedin PostSigninProviderProviderCallbackParamsProvider = "linkedin"
+)
+
 // Defines values for GetVerifyParamsType.
 const (
 	GetVerifyParamsTypeEmailConfirmChange GetVerifyParamsType = "emailConfirmChange"
@@ -478,10 +486,13 @@ type GetSigninProviderProviderParamsProvider string
 
 // GetSigninProviderProviderCallbackParams defines parameters for GetSigninProviderProviderCallback.
 type GetSigninProviderProviderCallbackParams struct {
-	// Code Authorization code provided by GitHub
-	Code string `form:"code" json:"code"`
+	// Code Authorization code provided by the authentication provider
+	Code *string `form:"code,omitempty" json:"code,omitempty"`
 
-	// State State parameter to validate against the stored cookie value
+	// IdToken ID token provided by the authentication provider
+	IdToken *string `form:"id_token,omitempty" json:"id_token,omitempty"`
+
+	// State State parameter to avoid CSRF attacks
 	State string `form:"state" json:"state"`
 
 	// Error Error message if authentication failed
@@ -492,13 +503,38 @@ type GetSigninProviderProviderCallbackParams struct {
 
 	// ErrorUri URI with more information about the error
 	ErrorUri *string `form:"error_uri,omitempty" json:"error_uri,omitempty"`
-
-	// NhostAuthProviderSignInData Authentication state token stored in cookie (for CSRF protection)
-	NhostAuthProviderSignInData string `form:"nhostAuthProviderSignInData" json:"nhostAuthProviderSignInData"`
 }
 
 // GetSigninProviderProviderCallbackParamsProvider defines parameters for GetSigninProviderProviderCallback.
 type GetSigninProviderProviderCallbackParamsProvider string
+
+// PostSigninProviderProviderCallbackFormdataBody defines parameters for PostSigninProviderProviderCallback.
+type PostSigninProviderProviderCallbackFormdataBody struct {
+	// Code Authorization code provided by the authentication provider
+	Code *string `form:"code" json:"code"`
+
+	// Error Error message if authentication failed
+	Error *string `form:"error" json:"error"`
+
+	// ErrorDescription Detailed error description if authentication failed
+	ErrorDescription *string `form:"error_description" json:"error_description"`
+
+	// ErrorUri URI with more information about the error
+	ErrorUri *string `form:"error_uri" json:"error_uri"`
+
+	// IdToken ID token provided by the authentication provider
+	IdToken *string `form:"id_token" json:"id_token"`
+
+	// State State parameter to avoid CSRF attacks
+	State string `form:"state" json:"state"`
+
+	// User JSON string containing user information (only provided on first authentication with Apple)
+	User                 *string                `form:"user" json:"user"`
+	AdditionalProperties map[string]interface{} `json:"-"`
+}
+
+// PostSigninProviderProviderCallbackParamsProvider defines parameters for PostSigninProviderProviderCallback.
+type PostSigninProviderProviderCallbackParamsProvider string
 
 // GetVerifyParams defines parameters for GetVerify.
 type GetVerifyParams struct {
@@ -544,6 +580,9 @@ type PostSigninPasswordlessEmailJSONRequestBody = SignInPasswordlessEmailRequest
 
 // PostSigninPatJSONRequestBody defines body for PostSigninPat for application/json ContentType.
 type PostSigninPatJSONRequestBody = SignInPATRequest
+
+// PostSigninProviderProviderCallbackFormdataRequestBody defines body for PostSigninProviderProviderCallback for application/x-www-form-urlencoded ContentType.
+type PostSigninProviderProviderCallbackFormdataRequestBody PostSigninProviderProviderCallbackFormdataBody
 
 // PostSigninWebauthnJSONRequestBody defines body for PostSigninWebauthn for application/json ContentType.
 type PostSigninWebauthnJSONRequestBody = SignInWebauthnRequest

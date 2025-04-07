@@ -102,8 +102,7 @@ func TestGetSigninProviderProviderCallback(t *testing.T) { //nolint:maintidx
 			},
 			expectedResponse: api.GetSigninProviderProviderCallback302Response{
 				Headers: api.GetSigninProviderProviderCallback302ResponseHeaders{
-					Location:  `^http://localhost:3000\?refreshToken=.*$`,
-					SetCookie: `nhostAuthProviderSignInData=; Path=/signin/provider/fake; HttpOnly; Secure; SameSite=Lax$`,
+					Location: `^http://localhost:3000\?refreshToken=.*$`,
 				},
 			},
 			expectedJWT:       nil,
@@ -184,8 +183,7 @@ func TestGetSigninProviderProviderCallback(t *testing.T) { //nolint:maintidx
 			},
 			expectedResponse: api.GetSigninProviderProviderCallback302Response{
 				Headers: api.GetSigninProviderProviderCallback302ResponseHeaders{
-					Location:  `^http://localhost:3000/redirect/me/here\?refreshToken=.*$`,
-					SetCookie: `nhostAuthProviderSignInData=; Path=/signin/provider/fake; HttpOnly; Secure; SameSite=Lax$`,
+					Location: `^http://localhost:3000/redirect/me/here\?refreshToken=.*$`,
 				},
 			},
 			expectedJWT:       nil,
@@ -443,8 +441,7 @@ func TestGetSigninProviderProviderCallback(t *testing.T) { //nolint:maintidx
 			},
 			expectedResponse: api.GetSigninProviderProviderCallback302Response{
 				Headers: api.GetSigninProviderProviderCallback302ResponseHeaders{
-					Location:  `^http://localhost:3000\?refreshToken=.*$`,
-					SetCookie: `nhostAuthProviderSignInData=; Path=/signin/provider/fake; HttpOnly; Secure; SameSite=Lax$`,
+					Location: `^http://localhost:3000\?refreshToken=.*$`,
 				},
 			},
 			expectedJWT:       nil,
@@ -561,8 +558,7 @@ func TestGetSigninProviderProviderCallback(t *testing.T) { //nolint:maintidx
 			},
 			expectedResponse: api.GetSigninProviderProviderCallback302Response{
 				Headers: api.GetSigninProviderProviderCallback302ResponseHeaders{
-					Location:  `^http://localhost:3000\?refreshToken=.*$`,
-					SetCookie: `nhostAuthProviderSignInData=; Path=/signin/provider/fake; HttpOnly; Secure; SameSite=Lax$`,
+					Location: `^http://localhost:3000\?refreshToken=.*$`,
 				},
 			},
 			expectedJWT:       nil,
@@ -848,8 +844,7 @@ func TestGetSigninProviderProviderCallback(t *testing.T) { //nolint:maintidx
 			},
 			expectedResponse: api.GetSigninProviderProviderCallback302Response{
 				Headers: api.GetSigninProviderProviderCallback302ResponseHeaders{
-					Location:  `^http://localhost:3000/connect-success$`,
-					SetCookie: `nhostAuthProviderSignInData=; Path=/signin/provider/fake; HttpOnly; Secure; SameSite=Lax$`,
+					Location: `^http://localhost:3000/connect-success$`,
 				},
 			},
 			expectedJWT:       nil,
@@ -1098,8 +1093,7 @@ func TestGetSigninProviderProviderCallback(t *testing.T) { //nolint:maintidx
 				tc.expectedResponse,
 				cmp.FilterPath(func(p cmp.Path) bool {
 					if last := p.Last(); last != nil {
-						return last.String() == ".Location" || //nolint:goconst
-							last.String() == ".SetCookie"
+						return last.String() == ".Location" //nolint:goconst
 					}
 					return false
 				}, RegexpComparer()),

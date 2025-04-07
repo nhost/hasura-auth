@@ -432,6 +432,12 @@ func (response ErrorRedirectResponse) VisitGetSigninProviderProviderCallbackResp
 	return response.visit(w)
 }
 
+func (response ErrorRedirectResponse) VisitPostSigninProviderProviderCallbackResponse(
+	w http.ResponseWriter,
+) error {
+	return response.visit(w)
+}
+
 func (ctrl *Controller) sendRedirectError(
 	redirectURL *url.URL,
 	err *APIError,

@@ -2,33 +2,14 @@ package controller
 
 import (
 	"context"
-	"crypto/rand"
-	"encoding/base64"
-	"fmt"
-	"io"
 	"log/slog"
-	"net/http"
 	"net/url"
 	"time"
 
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/nhost/hasura-auth/go/api"
 	"github.com/nhost/hasura-auth/go/middleware"
-	"github.com/nhost/hasura-auth/go/oauth2"
 )
-
-const (
-	signinProviderCookieName = "nhostAuthProviderSignInData"
-)
-
-const oauth2StateLength = 16
-
-func randString(nByte int) (string, error) {
-	b := make([]byte, nByte)
-	if _, err := io.ReadFull(rand.Reader, b); err != nil {
-		return "", fmt.Errorf("error reading random bytes: %w", err)
-	}
-	return base64.RawURLEncoding.EncodeToString(b), nil
-}
 
 func (ctrl *Controller) getSigninProviderValidateRequest(
 	req api.GetSigninProviderProviderRequestObject,
@@ -66,54 +47,39 @@ func (ctrl *Controller) GetSigninProviderProvider( //nolint:ireturn
 		return ctrl.sendError(apiErr), nil
 	}
 
-	state, err := randString(oauth2StateLength)
-	if err != nil {
-		logger.Error("error generating random string", logError(err))
-		return ctrl.sendRedirectError(redirectTo, ErrInternalServerError), nil
-	}
-
 	provider := ctrl.Providers.Get(string(req.Provider))
 	if provider == nil {
 		logger.Error("provider not enabled")
 		return ctrl.sendRedirectError(redirectTo, ErrDisabledEndpoint), nil
 	}
 
+	state, err := ctrl.wf.jwtGetter.SignTokenWithClaims(
+		ctx,
+		jwt.MapClaims{
+			"connect": req.Params.Connect,
+			"options": api.SignUpOptions{
+				AllowedRoles: req.Params.AllowedRoles,
+				DefaultRole:  req.Params.DefaultRole,
+				DisplayName:  req.Params.DisplayName,
+				Locale:       req.Params.Locale,
+				Metadata:     req.Params.Metadata,
+				RedirectTo:   req.Params.RedirectTo,
+			},
+		},
+		time.Now().Add(time.Minute),
+	)
+	if err != nil {
+		logger.Error("error signing state token", logError(err))
+		return ctrl.sendRedirectError(redirectTo, ErrInternalServerError), nil
+	}
+
 	url := provider.AuthCodeURL(
 		state,
 	)
 
-	data := oauth2.ProviderSignInData{
-		State:   state,
-		Connect: req.Params.Connect,
-		Options: api.SignUpOptions{
-			AllowedRoles: req.Params.AllowedRoles,
-			DefaultRole:  req.Params.DefaultRole,
-			DisplayName:  req.Params.DisplayName,
-			Locale:       req.Params.Locale,
-			Metadata:     req.Params.Metadata,
-			RedirectTo:   req.Params.RedirectTo,
-		},
-	}
-	dataEncoded, err := data.Encode()
-	if err != nil {
-		logger.Error("error encoding provider sign in data", logError(err))
-		return ctrl.sendRedirectError(redirectTo, ErrInternalServerError), nil
-	}
-
-	cookie := &http.Cookie{ //nolint:exhaustruct
-		Name:     signinProviderCookieName,
-		Value:    dataEncoded,
-		MaxAge:   int(time.Minute.Seconds()),
-		Secure:   ctrl.config.UseSecureCookies(),
-		HttpOnly: true,
-		SameSite: http.SameSiteLaxMode,
-		Path:     "/signin/provider/" + string(req.Provider),
-	}
-
 	return api.GetSigninProviderProvider302Response{
 		Headers: api.GetSigninProviderProvider302ResponseHeaders{
-			Location:  url,
-			SetCookie: cookie.String(),
+			Location: url,
 		},
 	}, nil
 }

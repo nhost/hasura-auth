@@ -258,7 +258,6 @@ paths:
             If set, this means that the user is already authenticated and wants to link their account. This needs to be a valid JWT access token.
           schema:
             type: string
-            default: false
 
       responses:
         '302':
@@ -266,11 +265,6 @@ paths:
           headers:
             Location:
               $ref: '#/components/headers/RedirectLocation'
-            Set-Cookie:
-              schema:
-                type: string
-              description: Sets a cookie named 'nhostAuthProviderSignInData' containing authentication state information
-              example: nhostAuthProviderSignInData=abc123; Path=/; HttpOnly; Secure; SameSite=Lax
           content: {}
 
   /signin/provider/{provider}/callback:
@@ -282,22 +276,20 @@ paths:
         - social
       parameters:
         - $ref: '#/components/parameters/SigninProvider'
-        - name: nhostAuthProviderSignInData
-          in: cookie
-          required: true
-          description: Authentication state token stored in cookie (for CSRF protection)
-          schema:
-            type: string
         - name: code
           in: query
-          required: true
-          description: Authorization code provided by GitHub
+          description: Authorization code provided by the authentication provider
+          schema:
+            type: string
+        - name: id_token
+          in: query
+          description: ID token provided by the authentication provider
           schema:
             type: string
         - name: state
           in: query
           required: true
-          description: State parameter to validate against the stored cookie value
+          description: State parameter to avoid CSRF attacks
           schema:
             type: string
         - name: error
@@ -324,11 +316,59 @@ paths:
           headers:
             Location:
               $ref: '#/components/headers/RedirectLocation'
-            Set-Cookie:
-              schema:
-                type: string
-              description: Clears the 'nhostAuthProviderSignInData' cookie after processing the callback
-              example: nhostAuthProviderSignInData=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0
+          content: {}
+
+    post:
+      summary: Callback for oauth2 provider using form_post response mode
+      tags:
+        - signin
+        - signup
+        - social
+      parameters:
+        - $ref: '#/components/parameters/SigninProvider'
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                  nullable: true
+                  description: Authorization code provided by the authentication provider
+                id_token:
+                  type: string
+                  nullable: true
+                  description: ID token provided by the authentication provider
+                state:
+                  type: string
+                  description: State parameter to avoid CSRF attacks
+                user:
+                  type: string
+                  nullable: true
+                  description: JSON string containing user information (only provided on first authentication with Apple)
+                error:
+                  type: string
+                  nullable: true
+                  description: Error message if authentication failed
+                error_description:
+                  type: string
+                  nullable: true
+                  description: Detailed error description if authentication failed
+                error_uri:
+                  type: string
+                  nullable: true
+                  description: URI with more information about the error
+              required:
+                - state
+              additionalProperties: true
+      responses:
+        '302':
+          description: Redirect to client application after successful authentication
+          headers:
+            Location:
+              $ref: '#/components/headers/RedirectLocation'
           content: {}
 
   /signin/otp/email:
