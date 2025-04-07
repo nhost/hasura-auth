@@ -49,7 +49,12 @@ func (f *FakeProvider) Exchange(
 	}
 }
 
-func (f *FakeProvider) GetProfile(_ context.Context, accessToken string) (oidc.Profile, error) {
+func (f *FakeProvider) GetProfile(
+	_ context.Context,
+	accessToken string,
+	_ *string,
+	_ map[string]any,
+) (oidc.Profile, error) {
 	switch accessToken {
 	case "valid-accesstoken-1":
 		return oidc.Profile{

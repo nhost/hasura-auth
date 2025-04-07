@@ -22,7 +22,7 @@ func NewLinkedInProvider(
 			ClientSecret: clientSecret,
 			RedirectURL:  authServerURL + "/signin/provider/linkedin/callback",
 			Scopes:       scopes,
-			Endpoint: oauth2.Endpoint{
+			Endpoint: oauth2.Endpoint{ //nolint:exhaustruct
 				AuthURL:  "https://www.linkedin.com/oauth/v2/authorization",
 				TokenURL: "https://www.linkedin.com/oauth/v2/accessToken",
 			},
@@ -30,68 +30,50 @@ func NewLinkedInProvider(
 	}
 }
 
-type linkedInUserProfile struct {
-	ID        string `json:"id"`
-	FirstName string `json:"localizedFirstName"`
-	LastName  string `json:"localizedLastName"`
+type linkedInUserInfoProfile struct {
+	ID         string `json:"sub"`
+	Email      string `json:"email"`
+	GivenName  string `json:"given_name"`
+	FamilyName string `json:"family_name"`
+	Picture    string `json:"picture"`
 }
 
-type linkedInUserEmail struct {
-	Elements []struct {
-		HandleTilde struct {
-			EmailAddress string `json:"emailAddress"`
-		} `json:"handle~"`
-		Primary bool `json:"primary"`
-	} `json:"elements"`
-}
-
-func (l *LinkedIn) GetProfile(ctx context.Context, accessToken string) (oidc.Profile, error) {
-	// Fetch basic profile data
-	var userProfile linkedInUserProfile
+func (l *LinkedIn) GetProfile(
+	ctx context.Context,
+	accessToken string,
+	_ *string,
+	_ map[string]any,
+) (oidc.Profile, error) {
+	var userProfile linkedInUserInfoProfile
 	if err := fetchOAuthProfile(
 		ctx,
-		"https://api.linkedin.com/v2/me",
+		"https://api.linkedin.com/v2/userinfo",
 		accessToken,
 		&userProfile,
 		fetchProfileTimeout,
 	); err != nil {
-		return oidc.Profile{}, fmt.Errorf("LinkedIn API error (profile): %w", err)
-	}
-
-	// Fetch email data
-	var userEmail linkedInUserEmail
-	if err := fetchOAuthProfile(
-		ctx,
-		"https://api.linkedin.com/v2/emailAddress?q=members&projection=(elements*(handle~))",
-		accessToken,
-		&userEmail,
-		fetchProfileTimeout,
-	); err != nil {
-		return oidc.Profile{}, fmt.Errorf("LinkedIn API error (email): %w", err)
-	}
-
-	// Extract email from the response
-	email := ""
-	emailVerified := false
-	if len(userEmail.Elements) > 0 {
-		email = userEmail.Elements[0].HandleTilde.EmailAddress
-		emailVerified = email != ""
+		return oidc.Profile{}, fmt.Errorf("LinkedIn API error: %w", err)
 	}
 
 	// Construct the full name
-	name := userProfile.FirstName
-	if userProfile.LastName != "" {
+	name := userProfile.GivenName
+	if userProfile.FamilyName != "" {
 		if name != "" {
 			name += " "
 		}
-		name += userProfile.LastName
+		name += userProfile.FamilyName
+	}
+
+	// If there's no name but there's an email, use email as the name
+	if name == "" && userProfile.Email != "" {
+		name = userProfile.Email
 	}
 
 	return oidc.Profile{
 		ProviderUserID: userProfile.ID,
-		Email:          email,
-		EmailVerified:  emailVerified,
+		Email:          userProfile.Email,
+		EmailVerified:  userProfile.Email != "",
 		Name:           name,
-		Picture:        "", // LinkedIn doesn't provide picture URL in the basic profile
+		Picture:        userProfile.Picture,
 	}, nil
 }

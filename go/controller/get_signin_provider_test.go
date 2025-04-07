@@ -29,8 +29,7 @@ func TestGetSigninProviderProvider(t *testing.T) {
 			},
 			expectedResponse: api.GetSigninProviderProvider302Response{
 				Headers: api.GetSigninProviderProvider302ResponseHeaders{
-					Location:  `^https://accounts.fake.com/o/oauth2/auth\?client_id=client-id&redirect_uri=https%3A%2F%2Fauth.nhost.dev%2Fsignin%2Fprovider%2Ffake%2Fcallback&response_type=code&scope=openid\+email\+profile&state=.*$`, //nolint:lll
-					SetCookie: `^nhostAuthProviderSignInData=.+; Path=/signin/provider/fake; Max-Age=60; HttpOnly; Secure; SameSite=Lax$`,                                                                                                //nolint:lll
+					Location: `^https://accounts.fake.com/o/oauth2/auth\?client_id=client-id&redirect_uri=https%3A%2F%2Fauth.nhost.dev%2Fsignin%2Fprovider%2Ffake%2Fcallback&response_type=code&scope=openid\+email\+profile&state=.*$`, //nolint:lll
 				},
 			},
 			expectedJWT:       nil,
@@ -60,8 +59,7 @@ func TestGetSigninProviderProvider(t *testing.T) {
 			},
 			expectedResponse: api.GetSigninProviderProvider302Response{
 				Headers: api.GetSigninProviderProvider302ResponseHeaders{
-					Location:  `^https://accounts.fake.com/o/oauth2/auth\?client_id=client-id&redirect_uri=https%3A%2F%2Fauth.nhost.dev%2Fsignin%2Fprovider%2Ffake%2Fcallback&response_type=code&scope=openid\+email\+profile&state=.*$`, //nolint:lll
-					SetCookie: `^nhostAuthProviderSignInData=.+; Path=/signin/provider/fake; Max-Age=60; HttpOnly; Secure; SameSite=Lax$`,                                                                                                //nolint:lll
+					Location: `^https://accounts.fake.com/o/oauth2/auth\?client_id=client-id&redirect_uri=https%3A%2F%2Fauth.nhost.dev%2Fsignin%2Fprovider%2Ffake%2Fcallback&response_type=code&scope=openid\+email\+profile&state=.*$`, //nolint:lll
 				},
 			},
 			expectedJWT:       nil,

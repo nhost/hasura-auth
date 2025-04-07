@@ -42,7 +42,12 @@ type gitHubUser struct {
 	AvatarURL string `json:"avatar_url"`
 }
 
-func (g *Github) GetProfile(ctx context.Context, accessToken string) (oidc.Profile, error) {
+func (g *Github) GetProfile(
+	ctx context.Context,
+	accessToken string,
+	_ *string,
+	_ map[string]any,
+) (oidc.Profile, error) {
 	var user gitHubUser
 	if err := fetchOAuthProfile(
 		ctx,

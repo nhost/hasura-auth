@@ -36,7 +36,12 @@ type googleUser struct {
 	Picture       string `json:"picture"`
 }
 
-func (g *Google) GetProfile(ctx context.Context, accessToken string) (oidc.Profile, error) {
+func (g *Google) GetProfile(
+	ctx context.Context,
+	accessToken string,
+	_ *string,
+	_ map[string]any,
+) (oidc.Profile, error) {
 	var user googleUser
 	if err := fetchOAuthProfile(
 		ctx,

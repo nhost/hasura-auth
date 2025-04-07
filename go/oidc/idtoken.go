@@ -11,7 +11,7 @@ import (
 	"github.com/nhost/hasura-auth/go/api"
 )
 
-func getClaim[T any](token *jwt.Token, claim string) (T, error) { //nolint:ireturn
+func GetClaim[T any](token *jwt.Token, claim string) (T, error) { //nolint:ireturn
 	var claimValue T
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok {
@@ -153,7 +153,7 @@ func (a *IDTokenValidator) Validate(
 }
 
 func validateNonce(token *jwt.Token, nonce string) error {
-	gotNonce, err := getClaim[string](token, "nonce")
+	gotNonce, err := GetClaim[string](token, "nonce")
 	switch {
 	case errors.Is(err, ErrClaimNotFound):
 		// we don't have a nonce claim, so we don't have to validate it

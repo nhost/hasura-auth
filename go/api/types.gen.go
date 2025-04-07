@@ -104,6 +104,14 @@ const (
 	GetSigninProviderProviderCallbackParamsProviderLinkedin GetSigninProviderProviderCallbackParamsProvider = "linkedin"
 )
 
+// Defines values for PostSigninProviderProviderCallbackParamsProvider.
+const (
+	Apple    PostSigninProviderProviderCallbackParamsProvider = "apple"
+	Github   PostSigninProviderProviderCallbackParamsProvider = "github"
+	Google   PostSigninProviderProviderCallbackParamsProvider = "google"
+	Linkedin PostSigninProviderProviderCallbackParamsProvider = "linkedin"
+)
+
 // Defines values for GetVerifyParamsType.
 const (
 	GetVerifyParamsTypeEmailConfirmChange GetVerifyParamsType = "emailConfirmChange"
@@ -489,10 +497,13 @@ type GetSigninProviderProviderParamsProvider string
 
 // GetSigninProviderProviderCallbackParams defines parameters for GetSigninProviderProviderCallback.
 type GetSigninProviderProviderCallbackParams struct {
-	// Code Authorization code provided by GitHub
-	Code string `form:"code" json:"code"`
+	// Code Authorization code provided by the authentication provider
+	Code *string `form:"code,omitempty" json:"code,omitempty"`
 
-	// State State parameter to validate against the stored cookie value
+	// IdToken ID token provided by the authentication provider
+	IdToken *string `form:"id_token,omitempty" json:"id_token,omitempty"`
+
+	// State State parameter to avoid CSRF attacks
 	State string `form:"state" json:"state"`
 
 	// Error Error message if authentication failed
@@ -503,13 +514,38 @@ type GetSigninProviderProviderCallbackParams struct {
 
 	// ErrorUri URI with more information about the error
 	ErrorUri *string `form:"error_uri,omitempty" json:"error_uri,omitempty"`
-
-	// NhostAuthProviderSignInData Authentication state token stored in cookie (for CSRF protection)
-	NhostAuthProviderSignInData string `form:"nhostAuthProviderSignInData" json:"nhostAuthProviderSignInData"`
 }
 
 // GetSigninProviderProviderCallbackParamsProvider defines parameters for GetSigninProviderProviderCallback.
 type GetSigninProviderProviderCallbackParamsProvider string
+
+// PostSigninProviderProviderCallbackFormdataBody defines parameters for PostSigninProviderProviderCallback.
+type PostSigninProviderProviderCallbackFormdataBody struct {
+	// Code Authorization code provided by the authentication provider
+	Code *string `form:"code" json:"code"`
+
+	// Error Error message if authentication failed
+	Error *string `form:"error" json:"error"`
+
+	// ErrorDescription Detailed error description if authentication failed
+	ErrorDescription *string `form:"error_description" json:"error_description"`
+
+	// ErrorUri URI with more information about the error
+	ErrorUri *string `form:"error_uri" json:"error_uri"`
+
+	// IdToken ID token provided by the authentication provider
+	IdToken *string `form:"id_token" json:"id_token"`
+
+	// State State parameter to avoid CSRF attacks
+	State string `form:"state" json:"state"`
+
+	// User JSON string containing user information (only provided on first authentication with Apple)
+	User                 *string                `form:"user" json:"user"`
+	AdditionalProperties map[string]interface{} `json:"-"`
+}
+
+// PostSigninProviderProviderCallbackParamsProvider defines parameters for PostSigninProviderProviderCallback.
+type PostSigninProviderProviderCallbackParamsProvider string
 
 // GetVerifyParams defines parameters for GetVerify.
 type GetVerifyParams struct {
@@ -556,6 +592,9 @@ type PostSigninPasswordlessEmailJSONRequestBody = SignInPasswordlessEmailRequest
 // PostSigninPatJSONRequestBody defines body for PostSigninPat for application/json ContentType.
 type PostSigninPatJSONRequestBody = SignInPATRequest
 
+// PostSigninProviderProviderCallbackFormdataRequestBody defines body for PostSigninProviderProviderCallback for application/x-www-form-urlencoded ContentType.
+type PostSigninProviderProviderCallbackFormdataRequestBody PostSigninProviderProviderCallbackFormdataBody
+
 // PostSigninWebauthnJSONRequestBody defines body for PostSigninWebauthn for application/json ContentType.
 type PostSigninWebauthnJSONRequestBody = SignInWebauthnRequest
 
@@ -591,6 +630,162 @@ type PostUserPasswordJSONRequestBody = UserPasswordRequest
 
 // PostUserPasswordResetJSONRequestBody defines body for PostUserPasswordReset for application/json ContentType.
 type PostUserPasswordResetJSONRequestBody = UserPasswordResetRequest
+
+// Getter for additional properties for PostSigninProviderProviderCallbackFormdataBody. Returns the specified
+// element and whether it was found
+func (a PostSigninProviderProviderCallbackFormdataBody) Get(fieldName string) (value interface{}, found bool) {
+	if a.AdditionalProperties != nil {
+		value, found = a.AdditionalProperties[fieldName]
+	}
+	return
+}
+
+// Setter for additional properties for PostSigninProviderProviderCallbackFormdataBody
+func (a *PostSigninProviderProviderCallbackFormdataBody) Set(fieldName string, value interface{}) {
+	if a.AdditionalProperties == nil {
+		a.AdditionalProperties = make(map[string]interface{})
+	}
+	a.AdditionalProperties[fieldName] = value
+}
+
+// Override default JSON handling for PostSigninProviderProviderCallbackFormdataBody to handle AdditionalProperties
+func (a *PostSigninProviderProviderCallbackFormdataBody) UnmarshalJSON(b []byte) error {
+	object := make(map[string]json.RawMessage)
+	err := json.Unmarshal(b, &object)
+	if err != nil {
+		return err
+	}
+
+	if raw, found := object["code"]; found {
+		err = json.Unmarshal(raw, &a.Code)
+		if err != nil {
+			return fmt.Errorf("error reading 'code': %w", err)
+		}
+		delete(object, "code")
+	}
+
+	if raw, found := object["error"]; found {
+		err = json.Unmarshal(raw, &a.Error)
+		if err != nil {
+			return fmt.Errorf("error reading 'error': %w", err)
+		}
+		delete(object, "error")
+	}
+
+	if raw, found := object["error_description"]; found {
+		err = json.Unmarshal(raw, &a.ErrorDescription)
+		if err != nil {
+			return fmt.Errorf("error reading 'error_description': %w", err)
+		}
+		delete(object, "error_description")
+	}
+
+	if raw, found := object["error_uri"]; found {
+		err = json.Unmarshal(raw, &a.ErrorUri)
+		if err != nil {
+			return fmt.Errorf("error reading 'error_uri': %w", err)
+		}
+		delete(object, "error_uri")
+	}
+
+	if raw, found := object["id_token"]; found {
+		err = json.Unmarshal(raw, &a.IdToken)
+		if err != nil {
+			return fmt.Errorf("error reading 'id_token': %w", err)
+		}
+		delete(object, "id_token")
+	}
+
+	if raw, found := object["state"]; found {
+		err = json.Unmarshal(raw, &a.State)
+		if err != nil {
+			return fmt.Errorf("error reading 'state': %w", err)
+		}
+		delete(object, "state")
+	}
+
+	if raw, found := object["user"]; found {
+		err = json.Unmarshal(raw, &a.User)
+		if err != nil {
+			return fmt.Errorf("error reading 'user': %w", err)
+		}
+		delete(object, "user")
+	}
+
+	if len(object) != 0 {
+		a.AdditionalProperties = make(map[string]interface{})
+		for fieldName, fieldBuf := range object {
+			var fieldVal interface{}
+			err := json.Unmarshal(fieldBuf, &fieldVal)
+			if err != nil {
+				return fmt.Errorf("error unmarshaling field %s: %w", fieldName, err)
+			}
+			a.AdditionalProperties[fieldName] = fieldVal
+		}
+	}
+	return nil
+}
+
+// Override default JSON handling for PostSigninProviderProviderCallbackFormdataBody to handle AdditionalProperties
+func (a PostSigninProviderProviderCallbackFormdataBody) MarshalJSON() ([]byte, error) {
+	var err error
+	object := make(map[string]json.RawMessage)
+
+	if a.Code != nil {
+		object["code"], err = json.Marshal(a.Code)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'code': %w", err)
+		}
+	}
+
+	if a.Error != nil {
+		object["error"], err = json.Marshal(a.Error)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'error': %w", err)
+		}
+	}
+
+	if a.ErrorDescription != nil {
+		object["error_description"], err = json.Marshal(a.ErrorDescription)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'error_description': %w", err)
+		}
+	}
+
+	if a.ErrorUri != nil {
+		object["error_uri"], err = json.Marshal(a.ErrorUri)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'error_uri': %w", err)
+		}
+	}
+
+	if a.IdToken != nil {
+		object["id_token"], err = json.Marshal(a.IdToken)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'id_token': %w", err)
+		}
+	}
+
+	object["state"], err = json.Marshal(a.State)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'state': %w", err)
+	}
+
+	if a.User != nil {
+		object["user"], err = json.Marshal(a.User)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'user': %w", err)
+		}
+	}
+
+	for fieldName, field := range a.AdditionalProperties {
+		object[fieldName], err = json.Marshal(field)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling '%s': %w", fieldName, err)
+		}
+	}
+	return json.Marshal(object)
+}
 
 // Getter for additional properties for SignInWebauthnVerifyRequest. Returns the specified
 // element and whether it was found

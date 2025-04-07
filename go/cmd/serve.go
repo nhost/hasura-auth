@@ -20,6 +20,7 @@ import (
 	"github.com/nhost/hasura-auth/go/hibp"
 	"github.com/nhost/hasura-auth/go/middleware"
 	"github.com/nhost/hasura-auth/go/middleware/ratelimit"
+	"github.com/nhost/hasura-auth/go/oauth2"
 	"github.com/nhost/hasura-auth/go/oidc"
 	"github.com/nhost/hasura-auth/go/sql"
 	ginmiddleware "github.com/oapi-codegen/gin-middleware"
@@ -672,7 +673,7 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 				Name:     flagGithubScope,
 				Usage:    "GitHub OAuth scope",
 				Category: "oauth-github",
-				Value:    cli.NewStringSlice("user:email"),
+				Value:    cli.NewStringSlice(oauth2.DefaultGithubScopes...),
 				EnvVars:  []string{"AUTH_PROVIDER_GITHUB_SCOPE"},
 			},
 			// Google provider flags
@@ -699,7 +700,7 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 				Name:     flagGoogleScope,
 				Usage:    "Google OAuth scope",
 				Category: "oauth-google",
-				Value:    cli.NewStringSlice("openid", "email", "profile"),
+				Value:    cli.NewStringSlice(oauth2.DefaultGoogleScopes...),
 				EnvVars:  []string{"AUTH_PROVIDER_GOOGLE_SCOPE"},
 			},
 			// Apple provider flags
@@ -738,7 +739,7 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 				Name:     flagAppleScope,
 				Usage:    "Apple OAuth scope",
 				Category: "oauth-apple",
-				Value:    cli.NewStringSlice("name", "email"),
+				Value:    cli.NewStringSlice(oauth2.DefaultAppleScopes...),
 				EnvVars:  []string{"AUTH_PROVIDER_APPLE_SCOPE"},
 			},
 			// LinkedIn provider flags
@@ -765,7 +766,7 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 				Name:     flagLinkedInScope,
 				Usage:    "LinkedIn OAuth scope",
 				Category: "oauth-linkedin",
-				Value:    cli.NewStringSlice("r_emailaddress", "r_liteprofile"),
+				Value:    cli.NewStringSlice(oauth2.DefaultLinkedInScopes...),
 				EnvVars:  []string{"AUTH_PROVIDER_LINKEDIN_SCOPE"},
 			},
 		},
