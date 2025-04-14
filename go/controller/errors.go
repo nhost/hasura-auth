@@ -25,6 +25,7 @@ var ErrElevatedClaimRequired = errors.New("elevated-claim-required")
 var (
 	ErrJWTConfiguration = errors.New("jwt-configuration")
 
+	ErrAnonymousUsersDisabled          = &APIError{api.DisabledEndpoint}
 	ErrUserEmailNotFound               = &APIError{api.InvalidEmailPassword}
 	ErrUserProviderNotFound            = &APIError{api.InvalidRequest}
 	ErrSecurityKeyNotFound             = &APIError{api.InvalidRequest}
@@ -48,6 +49,9 @@ var (
 	ErrDisabledEndpoint                = &APIError{api.DisabledEndpoint}
 	ErrEmailAlreadyVerified            = &APIError{api.EmailAlreadyVerified}
 	ErrInvalidRefreshToken             = &APIError{api.InvalidRefreshToken}
+	ErrDisabledMfaTotp                 = &APIError{api.DisabledMfaTotp}
+	ErrNoTotpSecret                    = &APIError{api.NoTotpSecret}
+	ErrInvalidTotp                     = &APIError{api.InvalidTotp}
 )
 
 func logError(err error) slog.Attr {
@@ -63,6 +67,14 @@ func (response ErrorResponse) visit(w http.ResponseWriter) error {
 }
 
 func (response ErrorResponse) VisitPostSignupEmailPasswordResponse(w http.ResponseWriter) error {
+	return response.visit(w)
+}
+
+func (response ErrorResponse) VisitPostSigninAnonymousResponse(w http.ResponseWriter) error {
+	return response.visit(w)
+}
+
+func (response ErrorResponse) VisitPostSigninMfaTotpResponse(w http.ResponseWriter) error {
 	return response.visit(w)
 }
 
@@ -159,7 +171,10 @@ func isSensitive(err api.ErrorResponseError) bool {
 		api.SignupDisabled,
 		api.UnverifiedUser,
 		api.InvalidRefreshToken,
-		api.InvalidTicket:
+		api.InvalidTicket,
+		api.DisabledMfaTotp,
+		api.InvalidTotp,
+		api.NoTotpSecret:
 		return true
 	case
 		api.DefaultRoleMustBeInAllowedRoles,
@@ -302,6 +317,24 @@ func (ctrl *Controller) getError(err *APIError) ErrorResponse { //nolint:cyclop,
 			Status:  http.StatusUnauthorized,
 			Error:   err.t,
 			Message: "Invalid ticket",
+		}
+	case api.DisabledMfaTotp:
+		return ErrorResponse{
+			Status:  http.StatusUnauthorized,
+			Error:   err.t,
+			Message: "User does not have TOTP MFA enabled",
+		}
+	case api.NoTotpSecret:
+		return ErrorResponse{
+			Status:  http.StatusUnauthorized,
+			Error:   err.t,
+			Message: "User does not have a TOTP secret",
+		}
+	case api.InvalidTotp:
+		return ErrorResponse{
+			Status:  http.StatusUnauthorized,
+			Error:   err.t,
+			Message: "Invalid TOTP code",
 		}
 	}
 

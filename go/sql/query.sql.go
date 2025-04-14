@@ -533,21 +533,22 @@ WITH inserted_user AS (
         email_verified,
         locale,
         default_role,
+        is_anonymous,
         metadata,
         last_seen
     ) VALUES (
-      $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, now()
+      $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, now()
     )
     RETURNING id
 ), inserted_refresh_token AS (
     INSERT INTO auth.refresh_tokens (user_id, refresh_token_hash, expires_at)
-        SELECT inserted_user.id, $12, $13
+        SELECT inserted_user.id, $13, $14
         FROM inserted_user
     RETURNING id, user_id
 ), inserted_user_role AS (
     INSERT INTO auth.user_roles (user_id, role)
     SELECT inserted_user.id, roles.role
-    FROM inserted_user, unnest($14::TEXT[]) AS roles(role)
+    FROM inserted_user, unnest($15::TEXT[]) AS roles(role)
 )
 SELECT
     (SELECT id FROM inserted_user),
@@ -565,6 +566,7 @@ type InsertUserWithRefreshTokenParams struct {
 	EmailVerified         bool
 	Locale                string
 	DefaultRole           string
+	IsAnonymous           bool
 	Metadata              []byte
 	RefreshTokenHash      pgtype.Text
 	RefreshTokenExpiresAt pgtype.Timestamptz
@@ -588,6 +590,7 @@ func (q *Queries) InsertUserWithRefreshToken(ctx context.Context, arg InsertUser
 		arg.EmailVerified,
 		arg.Locale,
 		arg.DefaultRole,
+		arg.IsAnonymous,
 		arg.Metadata,
 		arg.RefreshTokenHash,
 		arg.RefreshTokenExpiresAt,
@@ -921,8 +924,10 @@ func (q *Queries) InsertUserWithUserProviderAndRefreshToken(ctx context.Context,
 const refreshTokenAndGetUserRoles = `-- name: RefreshTokenAndGetUserRoles :many
 WITH refreshed_token AS (
     UPDATE auth.refresh_tokens
-    SET expires_at = $2
-    WHERE refresh_token_hash = $1
+    SET
+        expires_at = $2,
+        refresh_token_hash = $1
+    WHERE refresh_token_hash = $3
     RETURNING id AS refresh_token_id, user_id
 ),
 updated_user AS (
@@ -936,8 +941,9 @@ RIGHT JOIN refreshed_token ON auth.user_roles.user_id = refreshed_token.user_id
 `
 
 type RefreshTokenAndGetUserRolesParams struct {
-	RefreshTokenHash pgtype.Text
-	ExpiresAt        pgtype.Timestamptz
+	NewRefreshTokenHash pgtype.Text
+	ExpiresAt           pgtype.Timestamptz
+	OldRefreshTokenHash pgtype.Text
 }
 
 type RefreshTokenAndGetUserRolesRow struct {
@@ -946,7 +952,7 @@ type RefreshTokenAndGetUserRolesRow struct {
 }
 
 func (q *Queries) RefreshTokenAndGetUserRoles(ctx context.Context, arg RefreshTokenAndGetUserRolesParams) ([]RefreshTokenAndGetUserRolesRow, error) {
-	rows, err := q.db.Query(ctx, refreshTokenAndGetUserRoles, arg.RefreshTokenHash, arg.ExpiresAt)
+	rows, err := q.db.Query(ctx, refreshTokenAndGetUserRoles, arg.NewRefreshTokenHash, arg.ExpiresAt, arg.OldRefreshTokenHash)
 	if err != nil {
 		return nil, err
 	}

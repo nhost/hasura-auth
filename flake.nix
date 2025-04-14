@@ -13,9 +13,7 @@
       let
         overlays = [
           nixops.overlays.default
-          (final: prev: {
-            nodejs = prev.nodejs_20;
-          })
+          (import ./overlays.nix)
         ];
 
         pkgs = import nixpkgs {
@@ -203,8 +201,8 @@
 
         packages = flake-utils.lib.flattenTree rec {
           node-auth = pkgs.stdenv.mkDerivation {
-            inherit version;
             pname = "node-${name}";
+            version = "hardcoded";
 
             buildInputs = with pkgs; [
               pkgs.nodejs-slim_20

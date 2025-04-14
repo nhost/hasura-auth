@@ -223,10 +223,11 @@ WITH inserted_user AS (
         email_verified,
         locale,
         default_role,
+        is_anonymous,
         metadata,
         last_seen
     ) VALUES (
-      $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, now()
+      $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, now()
     )
     RETURNING id
 ), inserted_refresh_token AS (
@@ -252,8 +253,10 @@ RETURNING id;
 -- name: RefreshTokenAndGetUserRoles :many
 WITH refreshed_token AS (
     UPDATE auth.refresh_tokens
-    SET expires_at = $2
-    WHERE refresh_token_hash = $1
+    SET
+        expires_at = $2,
+        refresh_token_hash = sqlc.arg(new_refresh_token_hash)
+    WHERE refresh_token_hash = sqlc.arg(old_refresh_token_hash)
     RETURNING id AS refresh_token_id, user_id
 ),
 updated_user AS (

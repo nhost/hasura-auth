@@ -17,6 +17,7 @@ func getConfig() *controller.Config {
 
 	//nolint:lll
 	return &controller.Config{
+		AnonymousUsersEnabled:      false,
 		HasuraGraphqlURL:           "http://localhost:8080/v1/graphql",
 		HasuraAdminSecret:          "nhost-admin-secret",
 		AllowedEmailDomains:        []string{},
@@ -50,6 +51,7 @@ func getConfig() *controller.Config {
 		WebauthnRPOrigins:          []string{"https://react-apollo.example.nhost.io"},
 		WebauhtnAttestationTimeout: time.Minute,
 		OTPEmailEnabled:            true,
+		MfaEnabled:                 true,
 	}
 }
 
