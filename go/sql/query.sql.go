@@ -973,7 +973,7 @@ func (q *Queries) RefreshTokenAndGetUserRoles(ctx context.Context, arg RefreshTo
 
 const updateUserActiveMFAType = `-- name: UpdateUserActiveMFAType :exec
 UPDATE auth.users
-SET active_mfa_type = $2, totp_secret = null
+SET active_mfa_type = $2
 WHERE id = $1
 `
 

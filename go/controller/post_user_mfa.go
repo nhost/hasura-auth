@@ -100,7 +100,7 @@ func (ctrl *Controller) PostUserMfa( //nolint:ireturn
 	}
 
 	switch {
-	case req.Body.ActiveMfaType == nil:
+	case req.Body.ActiveMfaType == nil || *req.Body.ActiveMfaType == "":
 		return ctrl.postUserMfaDeactivate(ctx, req, user, logger), nil
 	case *req.Body.ActiveMfaType == api.Totp:
 		return ctrl.postUserMfaActivate(ctx, req, user, logger), nil

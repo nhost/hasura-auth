@@ -65,7 +65,8 @@ const (
 
 // Defines values for UserMfaRequestActiveMfaType.
 const (
-	Totp UserMfaRequestActiveMfaType = "totp"
+	Empty UserMfaRequestActiveMfaType = ""
+	Totp  UserMfaRequestActiveMfaType = "totp"
 )
 
 // Defines values for TicketTypeQuery.
