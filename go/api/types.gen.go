@@ -395,14 +395,14 @@ type UserEmailSendVerificationEmailRequest struct {
 
 // UserMfaRequest defines model for UserMfaRequest.
 type UserMfaRequest struct {
-	// ActiveMfaType Type of MFA to activate. If not set, disable MFA
+	// ActiveMfaType Type of MFA to activate. If not set or set to empty string, disable MFA
 	ActiveMfaType *UserMfaRequestActiveMfaType `json:"activeMfaType,omitempty"`
 
 	// Code MFA activation code
 	Code string `json:"code"`
 }
 
-// UserMfaRequestActiveMfaType Type of MFA to activate. If not set, disable MFA
+// UserMfaRequestActiveMfaType Type of MFA to activate. If not set or set to empty string, disable MFA
 type UserMfaRequestActiveMfaType string
 
 // UserPasswordRequest defines model for UserPasswordRequest.
