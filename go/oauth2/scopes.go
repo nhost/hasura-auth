@@ -13,4 +13,7 @@ var (
 
 	// DefaultLinkedInScopes defines the default scopes for LinkedIn OAuth2.
 	DefaultLinkedInScopes = []string{"openid", "profile", "email"}
+
+	// DefaultDiscordScopes defines the default scopes for Discord OAuth2.
+	DefaultDiscordScopes = []string{"identify", "email"}
 )

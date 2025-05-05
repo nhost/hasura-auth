@@ -1511,6 +1511,7 @@ components:
           - github
           - google
           - linkedin
+          - discord
       deprecated: true
 
     TicketQuery:
