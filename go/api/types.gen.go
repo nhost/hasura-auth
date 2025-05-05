@@ -75,6 +75,7 @@ const (
 // Defines values for SigninProvider.
 const (
 	SigninProviderApple    SigninProvider = "apple"
+	SigninProviderDiscord  SigninProvider = "discord"
 	SigninProviderGithub   SigninProvider = "github"
 	SigninProviderGoogle   SigninProvider = "google"
 	SigninProviderLinkedin SigninProvider = "linkedin"
@@ -91,6 +92,7 @@ const (
 // Defines values for GetSigninProviderProviderParamsProvider.
 const (
 	GetSigninProviderProviderParamsProviderApple    GetSigninProviderProviderParamsProvider = "apple"
+	GetSigninProviderProviderParamsProviderDiscord  GetSigninProviderProviderParamsProvider = "discord"
 	GetSigninProviderProviderParamsProviderGithub   GetSigninProviderProviderParamsProvider = "github"
 	GetSigninProviderProviderParamsProviderGoogle   GetSigninProviderProviderParamsProvider = "google"
 	GetSigninProviderProviderParamsProviderLinkedin GetSigninProviderProviderParamsProvider = "linkedin"
@@ -99,6 +101,7 @@ const (
 // Defines values for GetSigninProviderProviderCallbackParamsProvider.
 const (
 	GetSigninProviderProviderCallbackParamsProviderApple    GetSigninProviderProviderCallbackParamsProvider = "apple"
+	GetSigninProviderProviderCallbackParamsProviderDiscord  GetSigninProviderProviderCallbackParamsProvider = "discord"
 	GetSigninProviderProviderCallbackParamsProviderGithub   GetSigninProviderProviderCallbackParamsProvider = "github"
 	GetSigninProviderProviderCallbackParamsProviderGoogle   GetSigninProviderProviderCallbackParamsProvider = "google"
 	GetSigninProviderProviderCallbackParamsProviderLinkedin GetSigninProviderProviderCallbackParamsProvider = "linkedin"
@@ -107,6 +110,7 @@ const (
 // Defines values for PostSigninProviderProviderCallbackParamsProvider.
 const (
 	Apple    PostSigninProviderProviderCallbackParamsProvider = "apple"
+	Discord  PostSigninProviderProviderCallbackParamsProvider = "discord"
 	Github   PostSigninProviderProviderCallbackParamsProvider = "github"
 	Google   PostSigninProviderProviderCallbackParamsProvider = "google"
 	Linkedin PostSigninProviderProviderCallbackParamsProvider = "linkedin"

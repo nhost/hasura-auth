@@ -121,6 +121,10 @@ const (
 	flagLinkedInClientID                 = "linkedin-client-id"
 	flagLinkedInClientSecret             = "linkedin-client-secret"
 	flagLinkedInScope                    = "linkedin-scope"
+	flagDiscordEnabled                   = "discord-enabled"
+	flagDiscordClientID                  = "discord-client-id"
+	flagDiscordClientSecret              = "discord-client-secret"
+	flagDiscordScope                     = "discord-scope"
 )
 
 func CommandServe() *cli.Command { //nolint:funlen,maintidx
@@ -768,6 +772,33 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 				Category: "oauth-linkedin",
 				Value:    cli.NewStringSlice(oauth2.DefaultLinkedInScopes...),
 				EnvVars:  []string{"AUTH_PROVIDER_LINKEDIN_SCOPE"},
+			},
+			// Discord provider flags
+			&cli.BoolFlag{ //nolint: exhaustruct
+				Name:     flagDiscordEnabled,
+				Usage:    "Enable Discord OAuth provider",
+				Category: "oauth-discord",
+				Value:    false,
+				EnvVars:  []string{"AUTH_PROVIDER_DISCORD_ENABLED"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagDiscordClientID,
+				Usage:    "Discord OAuth client ID",
+				Category: "oauth-discord",
+				EnvVars:  []string{"AUTH_PROVIDER_DISCORD_CLIENT_ID"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagDiscordClientSecret,
+				Usage:    "Discord OAuth client secret",
+				Category: "oauth-discord",
+				EnvVars:  []string{"AUTH_PROVIDER_DISCORD_CLIENT_SECRET"},
+			},
+			&cli.StringSliceFlag{ //nolint: exhaustruct
+				Name:     flagDiscordScope,
+				Usage:    "Discord OAuth scope",
+				Category: "oauth-discord",
+				Value:    cli.NewStringSlice(oauth2.DefaultDiscordScopes...),
+				EnvVars:  []string{"AUTH_PROVIDER_DISCORD_SCOPE"},
 			},
 		},
 		Action: serve,

@@ -93,5 +93,14 @@ func getOauth2Providers(cCtx *cli.Context) (*oauth2.Providers, error) {
 		)
 	}
 
+	if cCtx.Bool(flagDiscordEnabled) {
+		providers["discord"] = oauth2.NewDiscordProvider(
+			cCtx.String(flagDiscordClientID),
+			cCtx.String(flagDiscordClientSecret),
+			cCtx.String(flagServerURL),
+			getScopes("discord", cCtx.StringSlice(flagDiscordScope)),
+		)
+	}
+
 	return oauth2.NewProviders(providers), nil
 }
