@@ -31,13 +31,13 @@ func (ctrl *Controller) signinProviderProviderCallbackValidate(
 	stateToken, err := ctrl.wf.jwtGetter.Validate(req.State)
 	if err != nil {
 		logger.Error("invalid state token", logError(err))
-		return nil, nil, redirectTo, ErrInvalidRequest
+		return nil, nil, redirectTo, ErrInvalidState
 	}
 
 	stateData := &oauth2.State{} //nolint:exhaustruct
 	if err := stateData.Decode(stateToken.Claims); err != nil {
 		logger.Error("error decoding state token", logError(err))
-		return nil, nil, redirectTo, ErrInvalidRequest
+		return nil, nil, redirectTo, ErrInvalidState
 	}
 
 	// we just care about the redirect URL for now, the rest is handled by the signin flow
@@ -58,7 +58,7 @@ func (ctrl *Controller) signinProviderProviderCallbackValidate(
 		values.Add("provider_error_url", deptr(req.ErrorURI))
 		redirectTo.RawQuery = values.Encode()
 
-		return nil, nil, redirectTo, ErrInvalidRequest
+		return nil, nil, redirectTo, ErrOauthProviderError
 	}
 
 	optionsRedirectTo, err := url.Parse(*options.RedirectTo)
