@@ -57,6 +57,7 @@ var (
 	ErrInvalidState                    = &APIError{api.InvalidState}
 	ErrOauthTokenExchangeFailed        = &APIError{api.OauthTokenEchangeFailed}
 	ErrOauthProfileFetchFailed         = &APIError{api.OauthProfileFetchFailed}
+	ErrOauthProviderError              = &APIError{api.OauthProviderError}
 )
 
 func logError(err error) slog.Attr {
@@ -213,7 +214,8 @@ func isSensitive(err api.ErrorResponseError) bool {
 		api.TotpAlreadyActive,
 		api.InvalidState,
 		api.OauthTokenEchangeFailed,
-		api.OauthProfileFetchFailed:
+		api.OauthProfileFetchFailed,
+		api.OauthProviderError:
 		return false
 	}
 	return false
@@ -393,6 +395,12 @@ func (ctrl *Controller) getError(err *APIError) ErrorResponse { //nolint:gocyclo
 			Status:  http.StatusBadRequest,
 			Error:   err.t,
 			Message: "Failed to get user profile",
+		}
+	case api.OauthProviderError:
+		return ErrorResponse{
+			Status:  http.StatusBadRequest,
+			Error:   err.t,
+			Message: "Provider returned an error",
 		}
 	}
 

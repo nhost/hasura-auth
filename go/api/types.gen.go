@@ -38,6 +38,7 @@ const (
 	MfaTypeNotFound                 ErrorResponseError = "mfa-type-not-found"
 	NoTotpSecret                    ErrorResponseError = "no-totp-secret"
 	OauthProfileFetchFailed         ErrorResponseError = "oauth-profile-fetch-failed"
+	OauthProviderError              ErrorResponseError = "oauth-provider-error"
 	OauthTokenEchangeFailed         ErrorResponseError = "oauth-token-echange-failed"
 	PasswordInHibpDatabase          ErrorResponseError = "password-in-hibp-database"
 	PasswordTooShort                ErrorResponseError = "password-too-short"

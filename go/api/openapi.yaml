@@ -946,6 +946,7 @@ components:
             - invalid-state
             - oauth-token-echange-failed
             - oauth-profile-fetch-failed
+            - oauth-provider-error
       required:
         - status
         - message

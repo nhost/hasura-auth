@@ -715,15 +715,16 @@ func TestGetSigninProviderProviderCallback(t *testing.T) { //nolint:maintidx
 			},
 			request: api.GetSigninProviderProviderCallbackRequestObject{
 				Params: api.GetSigninProviderProviderCallbackParams{ //nolint:exhaustruct
-					Error:            ptr("invalid_request"),
-					ErrorDescription: ptr("Invalid request"),
+					State:            getState(t, jwtGetter, nil, api.SignUpOptions{}), //nolint:exhaustruct
+					Error:            ptr("error-coming-from-provider"),
+					ErrorDescription: ptr("This is an error coming from the provider"),
 					ErrorUri:         ptr("https://example.com/error"),
 				},
-				Provider: "idontexist",
+				Provider: "fake",
 			},
-			expectedResponse: api.GetSigninProviderProviderCallback302Response{
+			expectedResponse: controller.ErrorRedirectResponse{
 				Headers: api.GetSigninProviderProviderCallback302ResponseHeaders{
-					Location: `http://localhost:3000?error=invalid_request&error_description=Invalid+request&error_url=https%3A%2F%2Fexample.com%2Ferror`, //nolint:lll
+					Location: `http://localhost:3000?error=oauth-provider-error&errorDescription=Provider+returned+an+error&provider_error=error-coming-from-provider&provider_error_description=This+is+an+error+coming+from+the+provider&provider_error_url=https%3A%2F%2Fexample.com%2Ferror`, //nolint:lll
 				},
 			},
 			expectedJWT:       nil,
