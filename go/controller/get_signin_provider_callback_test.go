@@ -715,7 +715,9 @@ func TestGetSigninProviderProviderCallback(t *testing.T) { //nolint:maintidx
 			},
 			request: api.GetSigninProviderProviderCallbackRequestObject{
 				Params: api.GetSigninProviderProviderCallbackParams{ //nolint:exhaustruct
-					State:            getState(t, jwtGetter, nil, api.SignUpOptions{}), //nolint:exhaustruct
+					State: getState(
+						t, jwtGetter, nil, api.SignUpOptions{}, //nolint:exhaustruct
+					),
 					Error:            ptr("error-coming-from-provider"),
 					ErrorDescription: ptr("This is an error coming from the provider"),
 					ErrorUri:         ptr("https://example.com/error"),
