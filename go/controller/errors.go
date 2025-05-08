@@ -210,7 +210,7 @@ func isSensitive(err api.ErrorResponseError) bool {
 		api.RedirectToNotAllowed,
 		api.UserNotAnonymous,
 		api.MfaTypeNotFound,
-		api.TotpAlreadyActive:
+		api.TotpAlreadyActive,
 		api.InvalidState,
 		api.OauthTokenEchangeFailed,
 		api.OauthProfileFetchFailed:
@@ -219,7 +219,7 @@ func isSensitive(err api.ErrorResponseError) bool {
 	return false
 }
 
-func (ctrl *Controller) getError(err *APIError) ErrorResponse { //nolint:cyclop,funlen
+func (ctrl *Controller) getError(err *APIError) ErrorResponse { //nolint:gocyclo,cyclop,funlen
 	invalidRequest := ErrorResponse{
 		Status:  http.StatusBadRequest,
 		Error:   api.InvalidRequest,
@@ -375,6 +375,7 @@ func (ctrl *Controller) getError(err *APIError) ErrorResponse { //nolint:cyclop,
 			Status:  http.StatusBadRequest,
 			Error:   err.t,
 			Message: "TOTP MFA is already active",
+		}
 	case api.InvalidState:
 		return ErrorResponse{
 			Status:  http.StatusBadRequest,

@@ -21,8 +21,6 @@ func testProviderValidator(
 
 	v, err := oidc.NewIDTokenValidator(
 		t.Context(),
-		api.FakeProvider,
-		context.Background(),
 		api.IdTokenProviderFake,
 		audience,
 		jwt.WithTimeFunc(func() time.Time {

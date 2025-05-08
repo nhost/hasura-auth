@@ -34,7 +34,7 @@ func (ctrl *Controller) signinProviderProviderCallbackValidate(
 		return nil, nil, redirectTo, ErrInvalidRequest
 	}
 
-	stateData := &oauth2.State{}
+	stateData := &oauth2.State{} //nolint:exhaustruct
 	if err := stateData.Decode(stateToken.Claims); err != nil {
 		logger.Error("error decoding state token", logError(err))
 		return nil, nil, redirectTo, ErrInvalidRequest

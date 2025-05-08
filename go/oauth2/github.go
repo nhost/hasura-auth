@@ -54,7 +54,6 @@ func (g *Github) GetProfile(
 		g.profileURL,
 		accessToken,
 		&user,
-		fetchProfileTimeout,
 	); err != nil {
 		return oidc.Profile{}, fmt.Errorf("GitHub API error: %w", err)
 	}

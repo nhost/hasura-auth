@@ -538,8 +538,6 @@ func TestGetVerify(t *testing.T) { //nolint:maintidx
 
 			assertRequest(
 				t.Context(), t, c.GetVerify, tc.request, tc.expectedResponse,
-				LocationRegexpComparer(),
-				context.Background(), t, c.GetVerify, tc.request, tc.expectedResponse,
 				cmp.FilterPath(func(p cmp.Path) bool {
 					if last := p.Last(); last != nil {
 						return last.String() == ".Location"

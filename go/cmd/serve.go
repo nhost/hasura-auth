@@ -632,6 +632,7 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 				Category: "mfa",
 				Value:    "auth",
 				EnvVars:  []string{"AUTH_MFA_TOTP_ISSUER"},
+			},
 			// GitHub provider flags
 			&cli.BoolFlag{ //nolint: exhaustruct
 				Name:     flagGithubEnabled,
@@ -959,11 +960,9 @@ func getGoServer( //nolint:funlen
 		jwtGetter,
 		emailer,
 		hibp.NewClient(),
-		idTokenValidator,
-		controller.NewTotp(cCtx.String(flagMfaTotpIssuer), time.Now),
-		getOauth2Providers(cCtx),
 		oauthProviders,
 		idTokenValidator,
+		controller.NewTotp(cCtx.String(flagMfaTotpIssuer), time.Now),
 		cCtx.App.Version,
 	)
 	if err != nil {
