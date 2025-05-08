@@ -93,6 +93,7 @@ export const generateCustomClaims = async (userId: string) => {
   if (Object.keys(ENV.AUTH_JWT_CUSTOM_CLAIMS).length === 0) return {};
   // * Generate the GraphQL request from the configuration
   const request = createCustomFieldQuery(ENV.AUTH_JWT_CUSTOM_CLAIMS);
+  const defaults = new Map(Object.entries(ENV.AUTH_JWT_CUSTOM_CLAIMS_DEFAULTS))
   try {
     // * Fetch user data that is required for all custom expression to be evaluated
     const {
@@ -109,6 +110,10 @@ export const generateCustomClaims = async (userId: string) => {
         const expression = jsonata(path);
         // * Evaluate the JSONata expression from the fetched user data
         let value = expression.evaluate(user, expression);
+        // * Check for undefined value and apply default if available
+        if (value == undefined && defaults.has(name)) {
+          value = defaults.get(name)
+        }
         // * If the claim is expected to be an array and its value is undefined, set its value to an empty array
         if (value == undefined && path.includes('[]')) {
           value = [];
