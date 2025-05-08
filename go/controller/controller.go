@@ -16,7 +16,7 @@ import (
 const (
 	In30Days   = 720 * time.Hour
 	InAMonth   = 30 * 24 * time.Hour
-	In5Minutes = 5 * time.Minute //nolint:revive
+	In5Minutes = 5 * time.Minute
 )
 
 func deptr[T any](x *T) T { //nolint:ireturn
@@ -79,6 +79,8 @@ type DBClientUpdateUser interface {
 	) (uuid.UUID, error)
 	UpdateUserConfirmChangeEmail(ctx context.Context, id uuid.UUID) (sql.AuthUser, error)
 	UpdateUserVerifyEmail(ctx context.Context, id uuid.UUID) (sql.AuthUser, error)
+	UpdateUserTotpSecret(ctx context.Context, arg sql.UpdateUserTotpSecretParams) error
+	UpdateUserActiveMFAType(ctx context.Context, arg sql.UpdateUserActiveMFATypeParams) error
 }
 
 type DBClientUserProvider interface {

@@ -1,7 +1,6 @@
 package controller_test
 
 import (
-	"context"
 	"testing"
 	"time"
 
@@ -145,6 +144,7 @@ func TestPostSigninMfaTotp(t *testing.T) { //nolint:maintidx
 			},
 			getControllerOpts: []getControllerOptsFunc{
 				withTotp(controller.NewTotp(
+					"auth-test",
 					fakeNow(time.Date(2025, 3, 29, 14, 50, 0o0, 0, time.UTC)),
 				)),
 			},
@@ -153,7 +153,7 @@ func TestPostSigninMfaTotp(t *testing.T) { //nolint:maintidx
 		{
 			name:   "wrong totp",
 			config: getConfig,
-			db: func(ctrl *gomock.Controller) controller.DBClient { //nolint:dup
+			db: func(ctrl *gomock.Controller) controller.DBClient {
 				mock := mock.NewMockDBClient(ctrl)
 
 				mock.EXPECT().GetUserByTicket(
@@ -181,6 +181,7 @@ func TestPostSigninMfaTotp(t *testing.T) { //nolint:maintidx
 			expectedJWT: nil,
 			getControllerOpts: []getControllerOptsFunc{
 				withTotp(controller.NewTotp(
+					"auth-test",
 					fakeNow(time.Date(2025, 3, 29, 14, 50, 0o0, 0, time.UTC)),
 				)),
 			},
@@ -193,7 +194,7 @@ func TestPostSigninMfaTotp(t *testing.T) { //nolint:maintidx
 				c.MfaEnabled = false
 				return c
 			},
-			db: func(ctrl *gomock.Controller) controller.DBClient { //nolint:dup
+			db: func(ctrl *gomock.Controller) controller.DBClient {
 				mock := mock.NewMockDBClient(ctrl)
 
 				return mock
@@ -276,6 +277,7 @@ func TestPostSigninMfaTotp(t *testing.T) { //nolint:maintidx
 			expectedJWT: nil,
 			getControllerOpts: []getControllerOptsFunc{
 				withTotp(controller.NewTotp(
+					"auth-test",
 					fakeNow(time.Date(2025, 3, 29, 14, 50, 0o0, 0, time.UTC)),
 				)),
 			},
@@ -313,6 +315,7 @@ func TestPostSigninMfaTotp(t *testing.T) { //nolint:maintidx
 			expectedJWT: nil,
 			getControllerOpts: []getControllerOptsFunc{
 				withTotp(controller.NewTotp(
+					"auth-test",
 					fakeNow(time.Date(2025, 3, 29, 14, 50, 0o0, 0, time.UTC)),
 				)),
 			},
@@ -344,12 +347,13 @@ func TestPostSigninMfaTotp(t *testing.T) { //nolint:maintidx
 			expectedResponse: controller.ErrorResponse{
 				Error:   "no-totp-secret",
 				Message: "User does not have a TOTP secret",
-				Status:  401,
+				Status:  400,
 			},
 			jwtTokenFn:  nil,
 			expectedJWT: nil,
 			getControllerOpts: []getControllerOptsFunc{
 				withTotp(controller.NewTotp(
+					"auth-test",
 					fakeNow(time.Date(2025, 3, 29, 14, 50, 0o0, 0, time.UTC)),
 				)),
 			},
@@ -365,7 +369,7 @@ func TestPostSigninMfaTotp(t *testing.T) { //nolint:maintidx
 			c, _ := getController(t, ctrl, tc.config, tc.db, tc.getControllerOpts...)
 
 			assertRequest(
-				context.Background(),
+				t.Context(),
 				t,
 				c.PostSigninMfaTotp,
 				tc.request,
