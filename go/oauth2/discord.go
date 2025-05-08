@@ -60,6 +60,10 @@ func (l *Discord) GetProfile(
 		Name:           fmt.Sprintf("%s#%s", userProfile.Username, userProfile.Discriminator),
 		Email:          userProfile.Email,
 		EmailVerified:  userProfile.Email != "",
-		Picture:        fmt.Sprintf("https://cdn.discordapp.com/avatars/%s/%s.png", userProfile.ID, userProfile.Avatar),
+		Picture: fmt.Sprintf(
+			"https://cdn.discordapp.com/avatars/%s/%s.png",
+			userProfile.ID,
+			userProfile.Avatar,
+		),
 	}, nil
 }
