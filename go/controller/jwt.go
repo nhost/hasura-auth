@@ -254,7 +254,6 @@ func (j *JWTGetter) GetToken(
 }
 
 func (j *JWTGetter) SignTokenWithClaims(
-	ctx context.Context,
 	claims jwt.MapClaims,
 	exp time.Time,
 ) (string, error) {

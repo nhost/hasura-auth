@@ -50,7 +50,6 @@ func (l *LinkedIn) GetProfile(
 		"https://api.linkedin.com/v2/userinfo",
 		accessToken,
 		&userProfile,
-		fetchProfileTimeout,
 	); err != nil {
 		return oidc.Profile{}, fmt.Errorf("LinkedIn API error: %w", err)
 	}

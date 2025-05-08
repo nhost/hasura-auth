@@ -9,8 +9,10 @@ import (
 	"time"
 )
 
+const fetchProfileTimeout = 10 * time.Second
+
 func fetchOAuthProfile(
-	ctx context.Context, url string, accessToken string, result any, timeout time.Duration,
+	ctx context.Context, url string, accessToken string, result any,
 ) error {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
@@ -21,7 +23,7 @@ func fetchOAuthProfile(
 	req.Header.Set("Accept", "application/json")
 
 	client := &http.Client{ //nolint:exhaustruct
-		Timeout: timeout,
+		Timeout: fetchProfileTimeout,
 	}
 	resp, err := client.Do(req)
 	if err != nil {

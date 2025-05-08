@@ -37,7 +37,7 @@ func getScopes(provider string, scopes []string) []string {
 	return getDefaultScopes(provider)
 }
 
-func getOauth2Providers(cCtx *cli.Context) (*oauth2.Providers, error) {
+func getOauth2Providers(cCtx *cli.Context) (*oauth2.Providers, error) { //nolint:funlen
 	providers := make(map[string]oauth2.Provider)
 
 	if cCtx.Bool(flagGoogleEnabled) {

@@ -54,7 +54,6 @@ func (ctrl *Controller) GetSigninProviderProvider( //nolint:ireturn
 	}
 
 	state, err := ctrl.wf.jwtGetter.SignTokenWithClaims(
-		ctx,
 		jwt.MapClaims{
 			"connect": req.Params.Connect,
 			"options": api.SignUpOptions{

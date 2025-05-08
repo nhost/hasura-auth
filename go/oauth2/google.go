@@ -48,7 +48,6 @@ func (g *Google) GetProfile(
 		"https://www.googleapis.com/oauth2/v2/userinfo",
 		accessToken,
 		&user,
-		fetchProfileTimeout,
 	); err != nil {
 		return oidc.Profile{}, fmt.Errorf("Google API error: %w", err)
 	}

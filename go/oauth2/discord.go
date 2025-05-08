@@ -51,7 +51,6 @@ func (l *Discord) GetProfile(
 		"https://discord.com/api/users/@me",
 		accessToken,
 		&userProfile,
-		fetchProfileTimeout,
 	); err != nil {
 		return oidc.Profile{}, fmt.Errorf("Discord API error: %w", err)
 	}
