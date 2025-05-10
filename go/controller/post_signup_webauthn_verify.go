@@ -105,6 +105,7 @@ func (ctrl *Controller) PostSignupWebauthnVerify( //nolint:ireturn
 	session, apiErr := ctrl.wf.SignupUserWithFn(
 		ctx,
 		webauthnUser.Email,
+		false,
 		options,
 		true,
 		ctrl.postSignupWebauthnVerifyWithSession(
