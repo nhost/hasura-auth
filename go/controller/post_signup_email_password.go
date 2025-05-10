@@ -61,6 +61,7 @@ func (ctrl *Controller) PostSignupEmailPassword( //nolint:ireturn
 	session, apiErr := ctrl.wf.SignupUserWithFn(
 		ctx,
 		string(req.Body.Email),
+		false,
 		req.Body.Options,
 		true,
 		ctrl.postSignupEmailPasswordWithSession(

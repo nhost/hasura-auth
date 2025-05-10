@@ -126,6 +126,7 @@ func (ctrl *Controller) postSigninIdtokenSignup( //nolint:ireturn
 	session, apiErr := ctrl.wf.SignupUserWithFn(
 		ctx,
 		profile.Email,
+		profile.EmailVerified,
 		req.Body.Options,
 		false,
 		ctrl.postSigninIdtokenSignupWithSession(
@@ -140,8 +141,11 @@ func (ctrl *Controller) postSigninIdtokenSignup( //nolint:ireturn
 		return ctrl.sendError(apiErr), nil
 	}
 
-	session.User.AvatarUrl = profile.Picture
-	session.User.EmailVerified = profile.EmailVerified
+	// Can be nil when email is unverified
+	if session != nil {
+		session.User.AvatarUrl = profile.Picture
+		session.User.EmailVerified = profile.EmailVerified
+	}
 
 	return api.PostSigninIdtoken200JSONResponse{Session: session}, nil
 }

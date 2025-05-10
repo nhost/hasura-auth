@@ -721,13 +721,14 @@ type databaseWithoutSessionFn func(
 func (wf *Workflows) SignupUserWithFn(
 	ctx context.Context,
 	email string,
+	emailVerified bool,
 	options *api.SignUpOptions,
 	sendConfirmationEmail bool,
 	databaseWithSession databaseWithSessionFn,
 	databaseWithoutSession databaseWithoutSessionFn,
 	logger *slog.Logger,
 ) (*api.Session, *APIError) {
-	if wf.config.RequireEmailVerification || wf.config.DisableNewUsers {
+	if (!emailVerified && wf.config.RequireEmailVerification) || wf.config.DisableNewUsers {
 		return nil, wf.SignupUserWithouthSession(
 			ctx, email, options, sendConfirmationEmail, databaseWithoutSession, logger,
 		)
