@@ -727,7 +727,7 @@ func (wf *Workflows) SignupUserWithFn(
 	databaseWithoutSession databaseWithoutSessionFn,
 	logger *slog.Logger,
 ) (*api.Session, *APIError) {
-	if sendConfirmationEmail && wf.config.RequireEmailVerification || wf.config.DisableNewUsers {
+	if (sendConfirmationEmail && wf.config.RequireEmailVerification) || wf.config.DisableNewUsers {
 		return nil, wf.SignupUserWithouthSession(
 			ctx, email, options, sendConfirmationEmail, databaseWithoutSession, logger,
 		)
