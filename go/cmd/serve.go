@@ -20,6 +20,7 @@ import (
 	"github.com/nhost/hasura-auth/go/hibp"
 	"github.com/nhost/hasura-auth/go/middleware"
 	"github.com/nhost/hasura-auth/go/middleware/ratelimit"
+	"github.com/nhost/hasura-auth/go/oauth2"
 	"github.com/nhost/hasura-auth/go/oidc"
 	"github.com/nhost/hasura-auth/go/sql"
 	ginmiddleware "github.com/oapi-codegen/gin-middleware"
@@ -99,6 +100,31 @@ const (
 	flagAnonymousUsersEnabled            = "enable-anonymous-users"
 	flagMfaEnabled                       = "mfa-enabled"
 	flagMfaTotpIssuer                    = "mfa-totp-issuer"
+	flagGithubEnabled                    = "github-enabled"
+	flagGithubClientID                   = "github-client-id"
+	flagGithubClientSecret               = "github-client-secret" //nolint:gosec
+	flagGithubAuthorizationURL           = "github-authorization-url"
+	flagGithubTokenURL                   = "github-token-url" //nolint:gosec
+	flagGithubUserProfileURL             = "github-user-profile-url"
+	flagGithubScope                      = "github-scope"
+	flagGoogleEnabled                    = "google-enabled"
+	flagGoogleClientID                   = "google-client-id"
+	flagGoogleClientSecret               = "google-client-secret"
+	flagGoogleScope                      = "google-scope"
+	flagAppleEnabled                     = "apple-enabled"
+	flagAppleClientID                    = "apple-client-id"
+	flagAppleTeamID                      = "apple-team-id"
+	flagAppleKeyID                       = "apple-key-id"
+	flagApplePrivateKey                  = "apple-private-key"
+	flagAppleScope                       = "apple-scope"
+	flagLinkedInEnabled                  = "linkedin-enabled"
+	flagLinkedInClientID                 = "linkedin-client-id"
+	flagLinkedInClientSecret             = "linkedin-client-secret"
+	flagLinkedInScope                    = "linkedin-scope"
+	flagDiscordEnabled                   = "discord-enabled"
+	flagDiscordClientID                  = "discord-client-id"
+	flagDiscordClientSecret              = "discord-client-secret"
+	flagDiscordScope                     = "discord-scope"
 )
 
 func CommandServe() *cli.Command { //nolint:funlen,maintidx
@@ -341,7 +367,7 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 			},
 			&cli.StringFlag{ //nolint: exhaustruct
 				Name:     flagServerURL,
-				Usage:    "Server URL of where Hasura Backend Plus is running. This value is to used as a callback in email templates and for the OAuth authentication process",
+				Usage:    "Server URL of where Auth service is running. This value is to used as a callback in email templates and for the OAuth authentication process",
 				Category: "server",
 				EnvVars:  []string{"AUTH_SERVER_URL"},
 			},
@@ -607,6 +633,174 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 				Value:    "auth",
 				EnvVars:  []string{"AUTH_MFA_TOTP_ISSUER"},
 			},
+			// GitHub provider flags
+			&cli.BoolFlag{ //nolint: exhaustruct
+				Name:     flagGithubEnabled,
+				Usage:    "Enable GitHub OAuth provider",
+				Category: "oauth-github",
+				Value:    false,
+				EnvVars:  []string{"AUTH_PROVIDER_GITHUB_ENABLED"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagGithubClientID,
+				Usage:    "GitHub OAuth client ID",
+				Category: "oauth-github",
+				EnvVars:  []string{"AUTH_PROVIDER_GITHUB_CLIENT_ID"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagGithubClientSecret,
+				Usage:    "GitHub OAuth client secret",
+				Category: "oauth-github",
+				EnvVars:  []string{"AUTH_PROVIDER_GITHUB_CLIENT_SECRET"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagGithubAuthorizationURL,
+				Usage:    "GitHub OAuth authorization URL",
+				Category: "oauth-github",
+				Value:    "https://github.com/login/oauth/authorize",
+				EnvVars:  []string{"AUTH_PROVIDER_GITHUB_AUTHORIZATION_URL"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagGithubTokenURL,
+				Usage:    "GitHub OAuth token URL",
+				Category: "oauth-github",
+				Value:    "https://github.com/login/oauth/access_token",
+				EnvVars:  []string{"AUTH_PROVIDER_GITHUB_TOKEN_URL"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagGithubUserProfileURL,
+				Usage:    "GitHub OAuth user profile URL",
+				Category: "oauth-github",
+				Value:    "https://api.github.com/user",
+				EnvVars:  []string{"AUTH_PROVIDER_GITHUB_USER_PROFILE_URL"},
+			},
+			&cli.StringSliceFlag{ //nolint: exhaustruct
+				Name:     flagGithubScope,
+				Usage:    "GitHub OAuth scope",
+				Category: "oauth-github",
+				Value:    cli.NewStringSlice(oauth2.DefaultGithubScopes...),
+				EnvVars:  []string{"AUTH_PROVIDER_GITHUB_SCOPE"},
+			},
+			// Google provider flags
+			&cli.BoolFlag{ //nolint: exhaustruct
+				Name:     flagGoogleEnabled,
+				Usage:    "Enable Google OAuth provider",
+				Category: "oauth-google",
+				Value:    false,
+				EnvVars:  []string{"AUTH_PROVIDER_GOOGLE_ENABLED"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagGoogleClientID,
+				Usage:    "Google OAuth client ID",
+				Category: "oauth-google",
+				EnvVars:  []string{"AUTH_PROVIDER_GOOGLE_CLIENT_ID"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagGoogleClientSecret,
+				Usage:    "Google OAuth client secret",
+				Category: "oauth-google",
+				EnvVars:  []string{"AUTH_PROVIDER_GOOGLE_CLIENT_SECRET"},
+			},
+			&cli.StringSliceFlag{ //nolint: exhaustruct
+				Name:     flagGoogleScope,
+				Usage:    "Google OAuth scope",
+				Category: "oauth-google",
+				Value:    cli.NewStringSlice(oauth2.DefaultGoogleScopes...),
+				EnvVars:  []string{"AUTH_PROVIDER_GOOGLE_SCOPE"},
+			},
+			// Apple provider flags
+			&cli.BoolFlag{ //nolint: exhaustruct
+				Name:     flagAppleEnabled,
+				Usage:    "Enable Apple OAuth provider",
+				Category: "oauth-apple",
+				Value:    false,
+				EnvVars:  []string{"AUTH_PROVIDER_APPLE_ENABLED"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagAppleClientID,
+				Usage:    "Apple OAuth client ID",
+				Category: "oauth-apple",
+				EnvVars:  []string{"AUTH_PROVIDER_APPLE_CLIENT_ID"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagAppleTeamID,
+				Usage:    "Apple OAuth team ID",
+				Category: "oauth-apple",
+				EnvVars:  []string{"AUTH_PROVIDER_APPLE_TEAM_ID"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagAppleKeyID,
+				Usage:    "Apple OAuth key ID",
+				Category: "oauth-apple",
+				EnvVars:  []string{"AUTH_PROVIDER_APPLE_KEY_ID"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagApplePrivateKey,
+				Usage:    "Apple OAuth private key",
+				Category: "oauth-apple",
+				EnvVars:  []string{"AUTH_PROVIDER_APPLE_PRIVATE_KEY"},
+			},
+			&cli.StringSliceFlag{ //nolint: exhaustruct
+				Name:     flagAppleScope,
+				Usage:    "Apple OAuth scope",
+				Category: "oauth-apple",
+				Value:    cli.NewStringSlice(oauth2.DefaultAppleScopes...),
+				EnvVars:  []string{"AUTH_PROVIDER_APPLE_SCOPE"},
+			},
+			// LinkedIn provider flags
+			&cli.BoolFlag{ //nolint: exhaustruct
+				Name:     flagLinkedInEnabled,
+				Usage:    "Enable LinkedIn OAuth provider",
+				Category: "oauth-linkedin",
+				Value:    false,
+				EnvVars:  []string{"AUTH_PROVIDER_LINKEDIN_ENABLED"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagLinkedInClientID,
+				Usage:    "LinkedIn OAuth client ID",
+				Category: "oauth-linkedin",
+				EnvVars:  []string{"AUTH_PROVIDER_LINKEDIN_CLIENT_ID"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagLinkedInClientSecret,
+				Usage:    "LinkedIn OAuth client secret",
+				Category: "oauth-linkedin",
+				EnvVars:  []string{"AUTH_PROVIDER_LINKEDIN_CLIENT_SECRET"},
+			},
+			&cli.StringSliceFlag{ //nolint: exhaustruct
+				Name:     flagLinkedInScope,
+				Usage:    "LinkedIn OAuth scope",
+				Category: "oauth-linkedin",
+				Value:    cli.NewStringSlice(oauth2.DefaultLinkedInScopes...),
+				EnvVars:  []string{"AUTH_PROVIDER_LINKEDIN_SCOPE"},
+			},
+			// Discord provider flags
+			&cli.BoolFlag{ //nolint: exhaustruct
+				Name:     flagDiscordEnabled,
+				Usage:    "Enable Discord OAuth provider",
+				Category: "oauth-discord",
+				Value:    false,
+				EnvVars:  []string{"AUTH_PROVIDER_DISCORD_ENABLED"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagDiscordClientID,
+				Usage:    "Discord OAuth client ID",
+				Category: "oauth-discord",
+				EnvVars:  []string{"AUTH_PROVIDER_DISCORD_CLIENT_ID"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagDiscordClientSecret,
+				Usage:    "Discord OAuth client secret",
+				Category: "oauth-discord",
+				EnvVars:  []string{"AUTH_PROVIDER_DISCORD_CLIENT_SECRET"},
+			},
+			&cli.StringSliceFlag{ //nolint: exhaustruct
+				Name:     flagDiscordScope,
+				Usage:    "Discord OAuth scope",
+				Category: "oauth-discord",
+				Value:    cli.NewStringSlice(oauth2.DefaultDiscordScopes...),
+				EnvVars:  []string{"AUTH_PROVIDER_DISCORD_SCOPE"},
+			},
 		},
 		Action: serve,
 	}
@@ -755,12 +949,18 @@ func getGoServer( //nolint:funlen
 		return nil, err
 	}
 
+	oauthProviders, err := getOauth2Providers(cCtx)
+	if err != nil {
+		return nil, fmt.Errorf("problem creating oauth providers: %w", err)
+	}
+
 	ctrl, err := controller.New(
 		db,
 		config,
 		jwtGetter,
 		emailer,
 		hibp.NewClient(),
+		oauthProviders,
 		idTokenValidator,
 		controller.NewTotp(cCtx.String(flagMfaTotpIssuer), time.Now),
 		cCtx.App.Version,
