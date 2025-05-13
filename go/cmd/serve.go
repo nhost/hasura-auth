@@ -129,6 +129,10 @@ const (
 	flagSpotifyClientID                  = "spotify-client-id"
 	flagSpotifyClientSecret              = "spotify-client-secret" //nolint:gosec
 	flagSpotifyScope                     = "spotify-scope"
+	flagTwitchEnabled                    = "twitch-enabled"
+	flagTwitchClientID                   = "twitch-client-id"
+	flagTwitchClientSecret               = "twitch-client-secret"
+	flagTwitchScope                      = "twitch-scope"
 )
 
 func CommandServe() *cli.Command { //nolint:funlen,maintidx
@@ -831,6 +835,34 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 				Category: "oauth-spotify",
 				Value:    cli.NewStringSlice(oauth2.DefaultSpotifyScopes...),
 				EnvVars:  []string{"AUTH_PROVIDER_SPOTIFY_SCOPE"},
+			},
+
+			// Twitch provider flags
+			&cli.BoolFlag{ //nolint: exhaustruct
+				Name:     flagTwitchEnabled,
+				Usage:    "Enable Twitch OAuth provider",
+				Category: "oauth-twitch",
+				Value:    false,
+				EnvVars:  []string{"AUTH_PROVIDER_TWITCH_ENABLED"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagTwitchClientID,
+				Usage:    "Twitch OAuth client ID",
+				Category: "oauth-twitch",
+				EnvVars:  []string{"AUTH_PROVIDER_TWITCH_CLIENT_ID"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagTwitchClientSecret,
+				Usage:    "Twitch OAuth client secret",
+				Category: "oauth-twitch",
+				EnvVars:  []string{"AUTH_PROVIDER_TWITCH_CLIENT_SECRET"},
+			},
+			&cli.StringSliceFlag{ //nolint: exhaustruct
+				Name:     flagTwitchScope,
+				Usage:    "Twitch OAuth scope",
+				Category: "oauth-twitch",
+				Value:    cli.NewStringSlice(oauth2.DefaultTwitchScopes...),
+				EnvVars:  []string{"AUTH_PROVIDER_TWITCH_SCOPE"},
 			},
 		},
 		Action: serve,

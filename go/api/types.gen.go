@@ -81,6 +81,7 @@ const (
 	SigninProviderGoogle   SigninProvider = "google"
 	SigninProviderLinkedin SigninProvider = "linkedin"
 	SigninProviderSpotify  SigninProvider = "spotify"
+	SigninProviderTwitch   SigninProvider = "twitch"
 )
 
 // Defines values for TicketTypeQuery.
@@ -99,6 +100,7 @@ const (
 	GetSigninProviderProviderParamsProviderGoogle   GetSigninProviderProviderParamsProvider = "google"
 	GetSigninProviderProviderParamsProviderLinkedin GetSigninProviderProviderParamsProvider = "linkedin"
 	GetSigninProviderProviderParamsProviderSpotify  GetSigninProviderProviderParamsProvider = "spotify"
+	GetSigninProviderProviderParamsProviderTwitch   GetSigninProviderProviderParamsProvider = "twitch"
 )
 
 // Defines values for GetSigninProviderProviderCallbackParamsProvider.
@@ -109,6 +111,7 @@ const (
 	GetSigninProviderProviderCallbackParamsProviderGoogle   GetSigninProviderProviderCallbackParamsProvider = "google"
 	GetSigninProviderProviderCallbackParamsProviderLinkedin GetSigninProviderProviderCallbackParamsProvider = "linkedin"
 	GetSigninProviderProviderCallbackParamsProviderSpotify  GetSigninProviderProviderCallbackParamsProvider = "spotify"
+	GetSigninProviderProviderCallbackParamsProviderTwitch   GetSigninProviderProviderCallbackParamsProvider = "twitch"
 )
 
 // Defines values for PostSigninProviderProviderCallbackParamsProvider.
@@ -119,6 +122,7 @@ const (
 	Google   PostSigninProviderProviderCallbackParamsProvider = "google"
 	Linkedin PostSigninProviderProviderCallbackParamsProvider = "linkedin"
 	Spotify  PostSigninProviderProviderCallbackParamsProvider = "spotify"
+	Twitch   PostSigninProviderProviderCallbackParamsProvider = "twitch"
 )
 
 // Defines values for GetVerifyParamsType.

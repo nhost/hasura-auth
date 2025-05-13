@@ -19,4 +19,7 @@ var (
 
 	// DefaultSpotifyScopes defines the default scopes for Spotify OAuth2.
 	DefaultSpotifyScopes = []string{"user-read-email", "user-read-private"}
+
+	// DefaultTwitchScopes defines the default scopes for Twitch OAuth2.
+	DefaultTwitchScopes = []string{"user:read:email"}
 )
