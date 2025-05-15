@@ -125,6 +125,10 @@ const (
 	flagDiscordClientID                  = "discord-client-id"
 	flagDiscordClientSecret              = "discord-client-secret"
 	flagDiscordScope                     = "discord-scope"
+	flagSpotifyEnabled                   = "spotify-enabled"
+	flagSpotifyClientID                  = "spotify-client-id"
+	flagSpotifyClientSecret              = "spotify-client-secret" //nolint:gosec
+	flagSpotifyScope                     = "spotify-scope"
 )
 
 func CommandServe() *cli.Command { //nolint:funlen,maintidx
@@ -800,6 +804,33 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 				Category: "oauth-discord",
 				Value:    cli.NewStringSlice(oauth2.DefaultDiscordScopes...),
 				EnvVars:  []string{"AUTH_PROVIDER_DISCORD_SCOPE"},
+			},
+			// Spotify provider flags
+			&cli.BoolFlag{ //nolint: exhaustruct
+				Name:     flagSpotifyEnabled,
+				Usage:    "Enable Spotify OAuth provider",
+				Category: "oauth-spotify",
+				Value:    false,
+				EnvVars:  []string{"AUTH_PROVIDER_SPOTIFY_ENABLED"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagSpotifyClientID,
+				Usage:    "Spotify OAuth client ID",
+				Category: "oauth-spotify",
+				EnvVars:  []string{"AUTH_PROVIDER_SPOTIFY_CLIENT_ID"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagSpotifyClientSecret,
+				Usage:    "Spotify OAuth client secret",
+				Category: "oauth-spotify",
+				EnvVars:  []string{"AUTH_PROVIDER_SPOTIFY_CLIENT_SECRET"},
+			},
+			&cli.StringSliceFlag{ //nolint: exhaustruct
+				Name:     flagSpotifyScope,
+				Usage:    "Spotify OAuth scope",
+				Category: "oauth-spotify",
+				Value:    cli.NewStringSlice(oauth2.DefaultSpotifyScopes...),
+				EnvVars:  []string{"AUTH_PROVIDER_SPOTIFY_SCOPE"},
 			},
 		},
 		Action: serve,
