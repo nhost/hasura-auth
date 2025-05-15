@@ -16,4 +16,7 @@ var (
 
 	// DefaultDiscordScopes defines the default scopes for Discord OAuth2.
 	DefaultDiscordScopes = []string{"identify", "email"}
+
+	// DefaultSpotifyScopes defines the default scopes for Spotify OAuth2.
+	DefaultSpotifyScopes = []string{"user-read-email", "user-read-private"}
 )
