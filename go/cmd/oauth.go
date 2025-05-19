@@ -17,6 +17,8 @@ func getDefaultScopes(provider string) []string {
 		return oauth2.DefaultAppleScopes
 	case "linkedin":
 		return oauth2.DefaultLinkedInScopes
+	case "spotify":
+		return oauth2.DefaultSpotifyScopes
 	default:
 		return []string{}
 	}
@@ -99,6 +101,15 @@ func getOauth2Providers(cCtx *cli.Context) (*oauth2.Providers, error) { //nolint
 			cCtx.String(flagDiscordClientSecret),
 			cCtx.String(flagServerURL),
 			getScopes("discord", cCtx.StringSlice(flagDiscordScope)),
+		)
+	}
+
+	if cCtx.Bool(flagSpotifyEnabled) {
+		providers["spotify"] = oauth2.NewSpotifyProvider(
+			cCtx.String(flagSpotifyClientID),
+			cCtx.String(flagSpotifyClientSecret),
+			cCtx.String(flagServerURL),
+			getScopes("spotify", cCtx.StringSlice(flagSpotifyScope)),
 		)
 	}
 
