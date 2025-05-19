@@ -1513,6 +1513,7 @@ components:
           - google
           - linkedin
           - discord
+          - spotify
       deprecated: true
 
     TicketQuery:
