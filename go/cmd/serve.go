@@ -153,6 +153,10 @@ const (
 	flagAzureadClientSecret              = "azuread-client-secret" //nolint:gosec
 	flagAzureadTenant                    = "azuread-tenant"
 	flagAzureadScope                     = "azuread-scope"
+	flagFacebookEnabled                  = "facebook-enabled"
+	flagFacebookClientID                 = "facebook-client-id"
+	flagFacebookClientSecret             = "facebook-client-secret"
+	flagFacebookScope                    = "facebook-scope"
 )
 
 func CommandServe() *cli.Command { //nolint:funlen,maintidx
@@ -1011,6 +1015,33 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 				Category: "oauth-azuread",
 				Value:    cli.NewStringSlice(oauth2.DefaultAzureadScopes...),
 				EnvVars:  []string{"AUTH_PROVIDER_AZUREAD_SCOPE"},
+			},
+			// Facebook provider flags
+			&cli.BoolFlag{ //nolint: exhaustruct
+				Name:     flagFacebookEnabled,
+				Usage:    "Enable Facebook OAuth provider",
+				Category: "oauth-facebook",
+				Value:    false,
+				EnvVars:  []string{"AUTH_PROVIDER_FACEBOOK_ENABLED"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagFacebookClientID,
+				Usage:    "Facebook OAuth client ID",
+				Category: "oauth-facebook",
+				EnvVars:  []string{"AUTH_PROVIDER_FACEBOOK_CLIENT_ID"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagFacebookClientSecret,
+				Usage:    "Facebook OAuth client secret",
+				Category: "oauth-facebook",
+				EnvVars:  []string{"AUTH_PROVIDER_FACEBOOK_CLIENT_SECRET"},
+			},
+			&cli.StringSliceFlag{ //nolint: exhaustruct
+				Name:     flagFacebookScope,
+				Usage:    "Facebook OAuth scope",
+				Category: "oauth-facebook",
+				Value:    cli.NewStringSlice(oauth2.DefaultFacebookScopes...),
+				EnvVars:  []string{"AUTH_PROVIDER_FACEBOOK_SCOPE"},
 			},
 		},
 		Action: serve,
