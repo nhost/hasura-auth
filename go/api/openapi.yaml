@@ -1517,6 +1517,7 @@ components:
           - linkedin
           - discord
           - spotify
+          - twitch
       deprecated: true
 
     TicketQuery:

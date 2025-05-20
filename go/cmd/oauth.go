@@ -19,6 +19,8 @@ func getDefaultScopes(provider string) []string {
 		return oauth2.DefaultLinkedInScopes
 	case "spotify":
 		return oauth2.DefaultSpotifyScopes
+	case "twitch":
+		return oauth2.DefaultTwitchScopes
 	default:
 		return []string{}
 	}
@@ -110,6 +112,15 @@ func getOauth2Providers(cCtx *cli.Context) (*oauth2.Providers, error) { //nolint
 			cCtx.String(flagSpotifyClientSecret),
 			cCtx.String(flagServerURL),
 			getScopes("spotify", cCtx.StringSlice(flagSpotifyScope)),
+		)
+	}
+
+	if cCtx.Bool(flagTwitchEnabled) {
+		providers["twitch"] = oauth2.NewTwitchProvider(
+			cCtx.String(flagTwitchClientID),
+			cCtx.String(flagTwitchClientSecret),
+			cCtx.String(flagServerURL),
+			getScopes("twitch", cCtx.StringSlice(flagTwitchScope)),
 		)
 	}
 
