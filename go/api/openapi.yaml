@@ -1515,6 +1515,7 @@ components:
           - discord
           - spotify
           - twitch
+          - gitlab
       deprecated: true
 
     TicketQuery:

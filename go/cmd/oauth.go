@@ -21,6 +21,8 @@ func getDefaultScopes(provider string) []string {
 		return oauth2.DefaultSpotifyScopes
 	case "twitch":
 		return oauth2.DefaultTwitchScopes
+	case "gitlab":
+		return oauth2.DefaultGitlabScopes
 	default:
 		return []string{}
 	}
@@ -41,7 +43,10 @@ func getScopes(provider string, scopes []string) []string {
 	return getDefaultScopes(provider)
 }
 
-func getOauth2Providers(cCtx *cli.Context) (*oauth2.Providers, error) { //nolint:funlen
+//nolint:funlen,cyclop
+func getOauth2Providers(
+	cCtx *cli.Context,
+) (*oauth2.Providers, error) {
 	providers := make(map[string]oauth2.Provider)
 
 	if cCtx.Bool(flagGoogleEnabled) {
@@ -121,6 +126,15 @@ func getOauth2Providers(cCtx *cli.Context) (*oauth2.Providers, error) { //nolint
 			cCtx.String(flagTwitchClientSecret),
 			cCtx.String(flagServerURL),
 			getScopes("twitch", cCtx.StringSlice(flagTwitchScope)),
+		)
+	}
+
+	if cCtx.Bool(flagGitlabEnabled) {
+		providers["gitlab"] = oauth2.NewGitlabProvider(
+			cCtx.String(flagGitlabClientID),
+			cCtx.String(flagGitlabClientSecret),
+			cCtx.String(flagServerURL),
+			getScopes("gitlab", cCtx.StringSlice(flagGitlabScope)),
 		)
 	}
 
