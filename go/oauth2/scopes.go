@@ -22,4 +22,7 @@ var (
 
 	// DefaultTwitchScopes defines the default scopes for Twitch OAuth2.
 	DefaultTwitchScopes = []string{"user:read:email"}
+
+	// DefaultGitlabScopes defines the default scopes for Gitlab OAuth2.
+	DefaultGitlabScopes = []string{"read_user"}
 )

@@ -133,6 +133,10 @@ const (
 	flagTwitchClientID                   = "twitch-client-id"
 	flagTwitchClientSecret               = "twitch-client-secret"
 	flagTwitchScope                      = "twitch-scope"
+	flagGitlabEnabled                    = "gitlab-enabled"
+	flagGitlabClientID                   = "gitlab-client-id"
+	flagGitlabClientSecret               = "gitlab-client-secret" //nolint:gosec
+	flagGitlabScope                      = "gitlab-scope"
 )
 
 func CommandServe() *cli.Command { //nolint:funlen,maintidx
@@ -863,6 +867,34 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 				Category: "oauth-twitch",
 				Value:    cli.NewStringSlice(oauth2.DefaultTwitchScopes...),
 				EnvVars:  []string{"AUTH_PROVIDER_TWITCH_SCOPE"},
+			},
+
+			// Gitlab provider flags
+			&cli.BoolFlag{ //nolint: exhaustruct
+				Name:     flagGitlabEnabled,
+				Usage:    "Enable Gitlab OAuth provider",
+				Category: "oauth-gitlab",
+				Value:    false,
+				EnvVars:  []string{"AUTH_PROVIDER_GITLAB_ENABLED"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagGitlabClientID,
+				Usage:    "Gitlab OAuth client ID",
+				Category: "oauth-gitlab",
+				EnvVars:  []string{"AUTH_PROVIDER_GITLAB_CLIENT_ID"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagGitlabClientSecret,
+				Usage:    "Gitlab OAuth client secret",
+				Category: "oauth-gitlab",
+				EnvVars:  []string{"AUTH_PROVIDER_GITLAB_CLIENT_SECRET"},
+			},
+			&cli.StringSliceFlag{ //nolint: exhaustruct
+				Name:     flagGitlabScope,
+				Usage:    "Gitlab OAuth scope",
+				Category: "oauth-gitlab",
+				Value:    cli.NewStringSlice(oauth2.DefaultGitlabScopes...),
+				EnvVars:  []string{"AUTH_PROVIDER_GITLAB_SCOPE"},
 			},
 		},
 		Action: serve,
