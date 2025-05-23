@@ -37,4 +37,7 @@ var (
 
 	// DefaultFacebookScopes defines the default scopes for Facebook OAuth2.
 	DefaultFacebookScopes = []string{"email"}
+
+	// DefaultStravaScopes defines the default scopes for Strava OAuth2.
+	DefaultStravaScopes = []string{"profile:read_all"}
 )

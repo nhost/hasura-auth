@@ -85,6 +85,7 @@ const (
 	SigninProviderGoogle    SigninProvider = "google"
 	SigninProviderLinkedin  SigninProvider = "linkedin"
 	SigninProviderSpotify   SigninProvider = "spotify"
+	SigninProviderStrava    SigninProvider = "strava"
 	SigninProviderTwitch    SigninProvider = "twitch"
 	SigninProviderWorkos    SigninProvider = "workos"
 )
@@ -109,6 +110,7 @@ const (
 	GetSigninProviderProviderParamsProviderGoogle    GetSigninProviderProviderParamsProvider = "google"
 	GetSigninProviderProviderParamsProviderLinkedin  GetSigninProviderProviderParamsProvider = "linkedin"
 	GetSigninProviderProviderParamsProviderSpotify   GetSigninProviderProviderParamsProvider = "spotify"
+	GetSigninProviderProviderParamsProviderStrava    GetSigninProviderProviderParamsProvider = "strava"
 	GetSigninProviderProviderParamsProviderTwitch    GetSigninProviderProviderParamsProvider = "twitch"
 	GetSigninProviderProviderParamsProviderWorkos    GetSigninProviderProviderParamsProvider = "workos"
 )
@@ -125,6 +127,7 @@ const (
 	GetSigninProviderProviderCallbackParamsProviderGoogle    GetSigninProviderProviderCallbackParamsProvider = "google"
 	GetSigninProviderProviderCallbackParamsProviderLinkedin  GetSigninProviderProviderCallbackParamsProvider = "linkedin"
 	GetSigninProviderProviderCallbackParamsProviderSpotify   GetSigninProviderProviderCallbackParamsProvider = "spotify"
+	GetSigninProviderProviderCallbackParamsProviderStrava    GetSigninProviderProviderCallbackParamsProvider = "strava"
 	GetSigninProviderProviderCallbackParamsProviderTwitch    GetSigninProviderProviderCallbackParamsProvider = "twitch"
 	GetSigninProviderProviderCallbackParamsProviderWorkos    GetSigninProviderProviderCallbackParamsProvider = "workos"
 )
@@ -141,6 +144,7 @@ const (
 	Google    PostSigninProviderProviderCallbackParamsProvider = "google"
 	Linkedin  PostSigninProviderProviderCallbackParamsProvider = "linkedin"
 	Spotify   PostSigninProviderProviderCallbackParamsProvider = "spotify"
+	Strava    PostSigninProviderProviderCallbackParamsProvider = "strava"
 	Twitch    PostSigninProviderProviderCallbackParamsProvider = "twitch"
 	Workos    PostSigninProviderProviderCallbackParamsProvider = "workos"
 )
