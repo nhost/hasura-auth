@@ -25,4 +25,7 @@ var (
 
 	// DefaultGitlabScopes defines the default scopes for Gitlab OAuth2.
 	DefaultGitlabScopes = []string{"read_user"}
+
+	// DefaultBitbucketScopes defines the default scopes for Bitbucket OAuth2.
+	DefaultBitbucketScopes = []string{"account"}
 )

@@ -23,6 +23,8 @@ func getDefaultScopes(provider string) []string {
 		return oauth2.DefaultTwitchScopes
 	case "gitlab":
 		return oauth2.DefaultGitlabScopes
+	case "bitbucket":
+		return oauth2.DefaultBitbucketScopes
 	default:
 		return []string{}
 	}
@@ -135,6 +137,15 @@ func getOauth2Providers(
 			cCtx.String(flagGitlabClientSecret),
 			cCtx.String(flagServerURL),
 			getScopes("gitlab", cCtx.StringSlice(flagGitlabScope)),
+		)
+	}
+
+	if cCtx.Bool(flagBitbucketEnabled) {
+		providers["bitbucket"] = oauth2.NewBitbucketProvider(
+			cCtx.String(flagBitbucketClientID),
+			cCtx.String(flagBitbucketClientSecret),
+			cCtx.String(flagServerURL),
+			getScopes("bitbucket", cCtx.StringSlice(flagBitbucketScope)),
 		)
 	}
 

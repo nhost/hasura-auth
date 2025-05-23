@@ -1519,6 +1519,7 @@ components:
           - spotify
           - twitch
           - gitlab
+          - bitbucket
       deprecated: true
 
     TicketQuery:
