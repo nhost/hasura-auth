@@ -199,6 +199,14 @@ func getOauth2Providers(
 			getScopes("windowslive", cCtx.StringSlice(flagWindowsliveScope)),
 		)
 	}
+	if cCtx.Bool(flagStravaEnabled) {
+		providers["strava"] = oauth2.NewStravaProvider(
+			cCtx.String(flagStravaClientID),
+			cCtx.String(flagStravaClientSecret),
+			cCtx.String(flagServerURL),
+			getScopes("strava", cCtx.StringSlice(flagStravaScope)),
+		)
+	}
 
 	return oauth2.NewProviders(providers), nil
 }
