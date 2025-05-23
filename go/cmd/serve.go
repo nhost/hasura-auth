@@ -137,6 +137,10 @@ const (
 	flagGitlabClientID                   = "gitlab-client-id"
 	flagGitlabClientSecret               = "gitlab-client-secret" //nolint:gosec
 	flagGitlabScope                      = "gitlab-scope"
+	flagBitbucketEnabled                 = "bitbucket-enabled"
+	flagBitbucketClientID                = "bitbucket-client-id"
+	flagBitbucketClientSecret            = "bitbucket-client-secret"
+	flagBitbucketScope                   = "bitbucket-scope"
 )
 
 func CommandServe() *cli.Command { //nolint:funlen,maintidx
@@ -895,6 +899,34 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 				Category: "oauth-gitlab",
 				Value:    cli.NewStringSlice(oauth2.DefaultGitlabScopes...),
 				EnvVars:  []string{"AUTH_PROVIDER_GITLAB_SCOPE"},
+			},
+
+			// Bitbucket provider flags
+			&cli.BoolFlag{ //nolint: exhaustruct
+				Name:     flagBitbucketEnabled,
+				Usage:    "Enable Bitbucket OAuth provider",
+				Category: "oauth-bitbucket",
+				Value:    false,
+				EnvVars:  []string{"AUTH_PROVIDER_BITBUCKET_ENABLED"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagBitbucketClientID,
+				Usage:    "Bitbucket OAuth client ID",
+				Category: "oauth-bitbucket",
+				EnvVars:  []string{"AUTH_PROVIDER_BITBUCKET_CLIENT_ID"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagBitbucketClientSecret,
+				Usage:    "Bitbucket OAuth client secret",
+				Category: "oauth-bitbucket",
+				EnvVars:  []string{"AUTH_PROVIDER_BITBUCKET_CLIENT_SECRET"},
+			},
+			&cli.StringSliceFlag{ //nolint: exhaustruct
+				Name:     flagBitbucketScope,
+				Usage:    "Bitbucket OAuth scope",
+				Category: "oauth-gitlab",
+				Value:    cli.NewStringSlice(oauth2.DefaultBitbucketScopes...),
+				EnvVars:  []string{"AUTH_PROVIDER_BITBUCKET_SCOPE"},
 			},
 		},
 		Action: serve,
