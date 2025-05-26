@@ -8,14 +8,69 @@ import (
 	"github.com/nhost/hasura-auth/go/notifications"
 )
 
+func TestExtractEmail(t *testing.T) {
+	t.Parallel()
+
+	cases := []struct {
+		name     string
+		input    string
+		expected string
+	}{
+		{
+			name:     "simple email",
+			input:    "user@example.com",
+			expected: "user@example.com",
+		},
+		{
+			name:     "email with display name",
+			input:    "Test User <user@example.com>",
+			expected: "user@example.com",
+		},
+		{
+			name:     "malformed email - no closing bracket",
+			input:    "Test User <user@example.com",
+			expected: "Test User <user@example.com",
+		},
+		{
+			name:     "email with display name containing brackets",
+			input:    "Test (User) <user@example.com>",
+			expected: "user@example.com",
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			// Now that ExtractEmail is public, we can test it directly
+			result := notifications.ExtractEmail(tc.input)
+			if result != tc.expected {
+				t.Errorf("ExtractEmail(%q) = %q, want %q", tc.input, result, tc.expected)
+			}
+		})
+	}
+}
+
 func TestEmailSend(t *testing.T) {
 	t.Parallel()
 
 	cases := []struct {
-		name string
+		name     string
+		from     string
+		to       string
+		expected bool
 	}{
 		{
-			name: "",
+			name:     "plain email addresses",
+			from:     "admin@localhost",
+			to:       "recipient@localhost",
+			expected: true,
+		},
+		{
+			name:     "formatted email addresses",
+			from:     "Administrator <admin@localhost>",
+			to:       "Recipient <recipient@localhost>",
+			expected: true,
 		},
 	}
 
@@ -28,17 +83,21 @@ func TestEmailSend(t *testing.T) {
 				1025,
 				false,
 				smtp.PlainAuth("", "user", "password", "localhost"),
-				"admin@localhost",
+				tc.from,
 				map[string]string{
 					"x-something": "asd",
 				},
 				nil,
 			)
 			headers := map[string]string{
-				"x-another": "qwe",
+				"x-custom-header": "custom-value",
 			}
-			if err := mail.Send("user@localhost", "some email", "contents", headers); err != nil {
-				t.Fatalf("error sending email: %v", err)
+			err := mail.Send(tc.to, "test", "contents", headers)
+
+			if tc.expected && err != nil {
+				t.Fatalf("expected success but got error: %v", err)
+			} else if !tc.expected && err == nil {
+				t.Fatalf("expected error but got success")
 			}
 		})
 	}
