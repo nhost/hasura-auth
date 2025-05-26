@@ -29,16 +29,47 @@ func TestExtractEmail(t *testing.T) {
 		{
 			name:     "malformed email - no closing bracket",
 			input:    "Test User <user@example.com",
-			expected: "Test User <user@example.com",
+			expected: "user@example.com", // The regex should still match
 		},
 		{
 			name:     "email with display name containing brackets",
 			input:    "Test (User) <user@example.com>",
 			expected: "user@example.com",
 		},
+		{
+			name:     "multiple email addresses in string",
+			input:    "user1@example.com, user2@example.com",
+			expected: "user1@example.com", // Should extract the first one
+		},
+		{
+			name:     "complex display name",
+			input:    "John Doe, Jr. <john.doe.jr@example.com>",
+			expected: "john.doe.jr@example.com",
+		},
+		{
+			name:     "email with subdomain",
+			input:    "user@sub.example.com",
+			expected: "user@sub.example.com",
+		},
+		{
+			name:     "quoted display name",
+			input:    "\"John Doe\" <john@example.com>",
+			expected: "john@example.com",
+		},
+		{
+			name:     "email with + character",
+			input:    "john+test@example.com",
+			expected: "john+test@example.com",
+		},
+		{
+			name:     "invalid input without @",
+			input:    "not an email",
+			expected: "not an email", // Returns original if no email found
+		},
 	}
 
 	for _, tc := range cases {
+		tc := tc // Capture range variable
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 
