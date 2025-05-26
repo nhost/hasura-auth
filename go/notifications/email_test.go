@@ -69,7 +69,6 @@ func TestExtractEmail(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc // Capture range variable
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 
