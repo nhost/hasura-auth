@@ -141,6 +141,13 @@ const (
 	flagBitbucketClientID                = "bitbucket-client-id"
 	flagBitbucketClientSecret            = "bitbucket-client-secret"
 	flagBitbucketScope                   = "bitbucket-scope"
+	flagWorkosEnabled                    = "workos-enabled"
+	flagWorkosClientID                   = "workos-client-id"
+	flagWorkosClientSecret               = "workos-client-secret" //nolint:gosec
+	flagWorkosDefaultOrganization        = "workos-default-organization"
+	flagWorkosDefaultConnection          = "workos-default-connection"
+	flagWorkosDefaultDomain              = "workos-default-domain"
+	flagWorkosScope                      = "workos-scope"
 )
 
 func CommandServe() *cli.Command { //nolint:funlen,maintidx
@@ -924,9 +931,48 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 			&cli.StringSliceFlag{ //nolint: exhaustruct
 				Name:     flagBitbucketScope,
 				Usage:    "Bitbucket OAuth scope",
-				Category: "oauth-gitlab",
+				Category: "oauth-bitbucket",
 				Value:    cli.NewStringSlice(oauth2.DefaultBitbucketScopes...),
 				EnvVars:  []string{"AUTH_PROVIDER_BITBUCKET_SCOPE"},
+			},
+
+			// WorkOS provider flags
+			&cli.BoolFlag{ //nolint: exhaustruct
+				Name:     flagWorkosEnabled,
+				Usage:    "Enable WorkOS OAuth provider",
+				Category: "oauth-workos",
+				Value:    false,
+				EnvVars:  []string{"AUTH_PROVIDER_WORKOS_ENABLED"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagWorkosClientID,
+				Usage:    "WorkOS OAuth client ID",
+				Category: "oauth-workos",
+				EnvVars:  []string{"AUTH_PROVIDER_WORKOS_CLIENT_ID"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagWorkosClientSecret,
+				Usage:    "WorkOS OAuth client secret",
+				Category: "oauth-workos",
+				EnvVars:  []string{"AUTH_PROVIDER_WORKOS_CLIENT_SECRET"},
+			},
+			&cli.StringFlag{ //nolint:exhaustruct
+				Name:     flagWorkosDefaultOrganization,
+				Usage:    "WorkOS OAuth default organization",
+				Category: "oauth-workos",
+				EnvVars:  []string{"AUTH_PROVIDER_WORKOS_DEFAULT_ORGANIZATION"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagWorkosDefaultConnection,
+				Usage:    "WorkOS OAuth default connection",
+				Category: "oauth-workos",
+				EnvVars:  []string{"AUTH_PROVIDER_WORKOS_DEFAULT_CONNECTION"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagWorkosDefaultDomain,
+				Usage:    "WorkOS OAuth default domain",
+				Category: "oauth-workos",
+				EnvVars:  []string{"AUTH_PROVIDER_WORKOS_DEFAULT_DOMAIN"},
 			},
 		},
 		Action: serve,

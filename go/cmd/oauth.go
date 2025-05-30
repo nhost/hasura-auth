@@ -7,6 +7,7 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
+//nolint:cyclop
 func getDefaultScopes(provider string) []string {
 	switch provider {
 	case "google":
@@ -25,6 +26,8 @@ func getDefaultScopes(provider string) []string {
 		return oauth2.DefaultGitlabScopes
 	case "bitbucket":
 		return oauth2.DefaultBitbucketScopes
+	case "workos":
+		return oauth2.DefaultWorkOSScopes
 	default:
 		return []string{}
 	}
@@ -146,6 +149,18 @@ func getOauth2Providers(
 			cCtx.String(flagBitbucketClientSecret),
 			cCtx.String(flagServerURL),
 			getScopes("bitbucket", cCtx.StringSlice(flagBitbucketScope)),
+		)
+	}
+
+	if cCtx.Bool(flagWorkosEnabled) {
+		providers["workos"] = oauth2.NewWorkosProvider(
+			cCtx.String(flagWorkosClientID),
+			cCtx.String(flagWorkosClientSecret),
+			cCtx.String(flagServerURL),
+			getScopes("workos", cCtx.StringSlice(flagWorkosScope)),
+			cCtx.String(flagWorkosDefaultOrganization),
+			cCtx.String(flagWorkosDefaultConnection),
+			cCtx.String(flagWorkosDefaultDomain),
 		)
 	}
 
