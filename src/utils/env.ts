@@ -220,6 +220,17 @@ export const ENV = {
     }
   },
 
+  get AUTH_JWT_CUSTOM_CLAIMS_DEFAULTS() {
+    try {
+      return castObjectEnv<Record<string, unknown>>('AUTH_JWT_CUSTOM_CLAIMS_DEFAULTS');
+    } catch {
+      logger.warn(
+          'AUTH_JWT_CUSTOM_CLAIMS_DEFAULTS cannot be parsed. Will ignore custom claims defaults.'
+      );
+      return {};
+    }
+  },
+
   get AUTH_USER_SESSION_VARIABLE_FIELDS(): Record<string, string> {
     return this.AUTH_USER_SESSION_VARIABLE_FIELDS;
   },
