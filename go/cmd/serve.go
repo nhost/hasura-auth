@@ -148,6 +148,11 @@ const (
 	flagWorkosDefaultConnection          = "workos-default-connection"
 	flagWorkosDefaultDomain              = "workos-default-domain"
 	flagWorkosScope                      = "workos-scope"
+	flagAzureadEnabled                   = "azuread-enabled"
+	flagAzureadClientID                  = "azuread-client-id"
+	flagAzureadClientSecret              = "azuread-client-secret" //nolint:gosec
+	flagAzureadTenant                    = "azuread-tenant"
+	flagAzureadScope                     = "azuread-scope"
 )
 
 func CommandServe() *cli.Command { //nolint:funlen,maintidx
@@ -973,6 +978,39 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 				Usage:    "WorkOS OAuth default domain",
 				Category: "oauth-workos",
 				EnvVars:  []string{"AUTH_PROVIDER_WORKOS_DEFAULT_DOMAIN"},
+			},
+			// AzureAD provider flags
+			&cli.BoolFlag{ //nolint: exhaustruct
+				Name:     flagAzureadEnabled,
+				Usage:    "Enable Azuread OAuth provider",
+				Category: "oauth-azuread",
+				Value:    false,
+				EnvVars:  []string{"AUTH_PROVIDER_AZUREAD_ENABLED"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagAzureadClientID,
+				Usage:    "AzureAD OAuth client ID",
+				Category: "oauth-azuread",
+				EnvVars:  []string{"AUTH_PROVIDER_AZUREAD_CLIENT_ID"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagAzureadClientSecret,
+				Usage:    "Azuread OAuth client secret",
+				Category: "oauth-azuread",
+				EnvVars:  []string{"AUTH_PROVIDER_AZUREAD_CLIENT_SECRET"},
+			},
+			&cli.StringFlag{ //nolint:exhaustruct
+				Name:     flagAzureadTenant,
+				Usage:    "Azuread Tenant",
+				Category: "oauth-azuread",
+				EnvVars:  []string{"AUTH_PROVIDER_AZUREAD_TENANT"},
+			},
+			&cli.StringSliceFlag{ //nolint: exhaustruct
+				Name:     flagAzureadScope,
+				Usage:    "Azuread OAuth scope",
+				Category: "oauth-azuread",
+				Value:    cli.NewStringSlice(oauth2.DefaultAzureadScopes...),
+				EnvVars:  []string{"AUTH_PROVIDER_AZUREAD_SCOPE"},
 			},
 		},
 		Action: serve,
