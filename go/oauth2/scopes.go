@@ -28,4 +28,7 @@ var (
 
 	// DefaultBitbucketScopes defines the default scopes for Bitbucket OAuth2.
 	DefaultBitbucketScopes = []string{"account"}
+
+	// DefaultWorkOSScopes defines the default scopes for WorkOS OAuth2.
+	DefaultWorkOSScopes = []string{""}
 )
