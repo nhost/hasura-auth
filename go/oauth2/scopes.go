@@ -34,4 +34,7 @@ var (
 
 	// DefaultAzureadScopes defines the default scopes for AzureAd OAuth2.
 	DefaultAzureadScopes = []string{"openid", "email", "profile"}
+	
+	// DefaultWindowsliveScopes defines the default scopes for WindowsLive OAuth2.
+	DefaultWindowsliveScopes = []string{"mail.read"}
 )

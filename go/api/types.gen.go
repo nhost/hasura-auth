@@ -75,17 +75,18 @@ const (
 
 // Defines values for SigninProvider.
 const (
-	SigninProviderApple     SigninProvider = "apple"
-	SigninProviderAzuread   SigninProvider = "azuread"
-	SigninProviderBitbucket SigninProvider = "bitbucket"
-	SigninProviderDiscord   SigninProvider = "discord"
-	SigninProviderGithub    SigninProvider = "github"
-	SigninProviderGitlab    SigninProvider = "gitlab"
-	SigninProviderGoogle    SigninProvider = "google"
-	SigninProviderLinkedin  SigninProvider = "linkedin"
-	SigninProviderSpotify   SigninProvider = "spotify"
-	SigninProviderTwitch    SigninProvider = "twitch"
-	SigninProviderWorkos    SigninProvider = "workos"
+	SigninProviderApple       SigninProvider = "apple"
+	SigninProviderAzuread     SigninProvider = "azuread"
+	SigninProviderBitbucket   SigninProvider = "bitbucket"
+	SigninProviderDiscord     SigninProvider = "discord"
+	SigninProviderGithub      SigninProvider = "github"
+	SigninProviderGitlab      SigninProvider = "gitlab"
+	SigninProviderGoogle      SigninProvider = "google"
+	SigninProviderLinkedin    SigninProvider = "linkedin"
+	SigninProviderSpotify     SigninProvider = "spotify"
+	SigninProviderTwitch      SigninProvider = "twitch"
+	SigninProviderWindowslive SigninProvider = "windowslive"
+	SigninProviderWorkos      SigninProvider = "workos"
 )
 
 // Defines values for TicketTypeQuery.
@@ -98,47 +99,50 @@ const (
 
 // Defines values for GetSigninProviderProviderParamsProvider.
 const (
-	GetSigninProviderProviderParamsProviderApple     GetSigninProviderProviderParamsProvider = "apple"
-	GetSigninProviderProviderParamsProviderAzuread   GetSigninProviderProviderParamsProvider = "azuread"
-	GetSigninProviderProviderParamsProviderBitbucket GetSigninProviderProviderParamsProvider = "bitbucket"
-	GetSigninProviderProviderParamsProviderDiscord   GetSigninProviderProviderParamsProvider = "discord"
-	GetSigninProviderProviderParamsProviderGithub    GetSigninProviderProviderParamsProvider = "github"
-	GetSigninProviderProviderParamsProviderGitlab    GetSigninProviderProviderParamsProvider = "gitlab"
-	GetSigninProviderProviderParamsProviderGoogle    GetSigninProviderProviderParamsProvider = "google"
-	GetSigninProviderProviderParamsProviderLinkedin  GetSigninProviderProviderParamsProvider = "linkedin"
-	GetSigninProviderProviderParamsProviderSpotify   GetSigninProviderProviderParamsProvider = "spotify"
-	GetSigninProviderProviderParamsProviderTwitch    GetSigninProviderProviderParamsProvider = "twitch"
-	GetSigninProviderProviderParamsProviderWorkos    GetSigninProviderProviderParamsProvider = "workos"
+	GetSigninProviderProviderParamsProviderApple       GetSigninProviderProviderParamsProvider = "apple"
+	GetSigninProviderProviderParamsProviderAzuread     GetSigninProviderProviderParamsProvider = "azuread"
+	GetSigninProviderProviderParamsProviderBitbucket   GetSigninProviderProviderParamsProvider = "bitbucket"
+	GetSigninProviderProviderParamsProviderDiscord     GetSigninProviderProviderParamsProvider = "discord"
+	GetSigninProviderProviderParamsProviderGithub      GetSigninProviderProviderParamsProvider = "github"
+	GetSigninProviderProviderParamsProviderGitlab      GetSigninProviderProviderParamsProvider = "gitlab"
+	GetSigninProviderProviderParamsProviderGoogle      GetSigninProviderProviderParamsProvider = "google"
+	GetSigninProviderProviderParamsProviderLinkedin    GetSigninProviderProviderParamsProvider = "linkedin"
+	GetSigninProviderProviderParamsProviderSpotify     GetSigninProviderProviderParamsProvider = "spotify"
+	GetSigninProviderProviderParamsProviderTwitch      GetSigninProviderProviderParamsProvider = "twitch"
+	GetSigninProviderProviderParamsProviderWindowslive GetSigninProviderProviderParamsProvider = "windowslive"
+	GetSigninProviderProviderParamsProviderWorkos      GetSigninProviderProviderParamsProvider = "workos"
 )
 
 // Defines values for GetSigninProviderProviderCallbackParamsProvider.
 const (
-	GetSigninProviderProviderCallbackParamsProviderApple     GetSigninProviderProviderCallbackParamsProvider = "apple"
-	GetSigninProviderProviderCallbackParamsProviderAzuread   GetSigninProviderProviderCallbackParamsProvider = "azuread"
-	GetSigninProviderProviderCallbackParamsProviderBitbucket GetSigninProviderProviderCallbackParamsProvider = "bitbucket"
-	GetSigninProviderProviderCallbackParamsProviderDiscord   GetSigninProviderProviderCallbackParamsProvider = "discord"
-	GetSigninProviderProviderCallbackParamsProviderGithub    GetSigninProviderProviderCallbackParamsProvider = "github"
-	GetSigninProviderProviderCallbackParamsProviderGitlab    GetSigninProviderProviderCallbackParamsProvider = "gitlab"
-	GetSigninProviderProviderCallbackParamsProviderGoogle    GetSigninProviderProviderCallbackParamsProvider = "google"
-	GetSigninProviderProviderCallbackParamsProviderLinkedin  GetSigninProviderProviderCallbackParamsProvider = "linkedin"
-	GetSigninProviderProviderCallbackParamsProviderSpotify   GetSigninProviderProviderCallbackParamsProvider = "spotify"
-	GetSigninProviderProviderCallbackParamsProviderTwitch    GetSigninProviderProviderCallbackParamsProvider = "twitch"
-	GetSigninProviderProviderCallbackParamsProviderWorkos    GetSigninProviderProviderCallbackParamsProvider = "workos"
+	GetSigninProviderProviderCallbackParamsProviderApple       GetSigninProviderProviderCallbackParamsProvider = "apple"
+	GetSigninProviderProviderCallbackParamsProviderAzuread     GetSigninProviderProviderCallbackParamsProvider = "azuread"
+	GetSigninProviderProviderCallbackParamsProviderBitbucket   GetSigninProviderProviderCallbackParamsProvider = "bitbucket"
+	GetSigninProviderProviderCallbackParamsProviderDiscord     GetSigninProviderProviderCallbackParamsProvider = "discord"
+	GetSigninProviderProviderCallbackParamsProviderGithub      GetSigninProviderProviderCallbackParamsProvider = "github"
+	GetSigninProviderProviderCallbackParamsProviderGitlab      GetSigninProviderProviderCallbackParamsProvider = "gitlab"
+	GetSigninProviderProviderCallbackParamsProviderGoogle      GetSigninProviderProviderCallbackParamsProvider = "google"
+	GetSigninProviderProviderCallbackParamsProviderLinkedin    GetSigninProviderProviderCallbackParamsProvider = "linkedin"
+	GetSigninProviderProviderCallbackParamsProviderSpotify     GetSigninProviderProviderCallbackParamsProvider = "spotify"
+	GetSigninProviderProviderCallbackParamsProviderTwitch      GetSigninProviderProviderCallbackParamsProvider = "twitch"
+	GetSigninProviderProviderCallbackParamsProviderWindowslive GetSigninProviderProviderCallbackParamsProvider = "windowslive"
+	GetSigninProviderProviderCallbackParamsProviderWorkos      GetSigninProviderProviderCallbackParamsProvider = "workos"
 )
 
 // Defines values for PostSigninProviderProviderCallbackParamsProvider.
 const (
-	Apple     PostSigninProviderProviderCallbackParamsProvider = "apple"
-	Azuread   PostSigninProviderProviderCallbackParamsProvider = "azuread"
-	Bitbucket PostSigninProviderProviderCallbackParamsProvider = "bitbucket"
-	Discord   PostSigninProviderProviderCallbackParamsProvider = "discord"
-	Github    PostSigninProviderProviderCallbackParamsProvider = "github"
-	Gitlab    PostSigninProviderProviderCallbackParamsProvider = "gitlab"
-	Google    PostSigninProviderProviderCallbackParamsProvider = "google"
-	Linkedin  PostSigninProviderProviderCallbackParamsProvider = "linkedin"
-	Spotify   PostSigninProviderProviderCallbackParamsProvider = "spotify"
-	Twitch    PostSigninProviderProviderCallbackParamsProvider = "twitch"
-	Workos    PostSigninProviderProviderCallbackParamsProvider = "workos"
+	Apple       PostSigninProviderProviderCallbackParamsProvider = "apple"
+	Azuread     PostSigninProviderProviderCallbackParamsProvider = "azuread"
+	Bitbucket   PostSigninProviderProviderCallbackParamsProvider = "bitbucket"
+	Discord     PostSigninProviderProviderCallbackParamsProvider = "discord"
+	Github      PostSigninProviderProviderCallbackParamsProvider = "github"
+	Gitlab      PostSigninProviderProviderCallbackParamsProvider = "gitlab"
+	Google      PostSigninProviderProviderCallbackParamsProvider = "google"
+	Linkedin    PostSigninProviderProviderCallbackParamsProvider = "linkedin"
+	Spotify     PostSigninProviderProviderCallbackParamsProvider = "spotify"
+	Twitch      PostSigninProviderProviderCallbackParamsProvider = "twitch"
+	Windowslive PostSigninProviderProviderCallbackParamsProvider = "windowslive"
+	Workos      PostSigninProviderProviderCallbackParamsProvider = "workos"
 )
 
 // Defines values for GetVerifyParamsType.
