@@ -28,6 +28,8 @@ func getDefaultScopes(provider string) []string {
 		return oauth2.DefaultBitbucketScopes
 	case "workos":
 		return oauth2.DefaultWorkOSScopes
+	case "azuread":
+		return oauth2.DefaultAzureadScopes
 	default:
 		return []string{}
 	}
@@ -161,6 +163,16 @@ func getOauth2Providers(
 			cCtx.String(flagWorkosDefaultOrganization),
 			cCtx.String(flagWorkosDefaultConnection),
 			cCtx.String(flagWorkosDefaultDomain),
+		)
+	}
+
+	if cCtx.Bool(flagAzureadEnabled) {
+		providers["azuread"] = oauth2.NewAzureadProvider(
+			cCtx.String(flagAzureadClientID),
+			cCtx.String(flagAzureadClientSecret),
+			cCtx.String(flagServerURL),
+			cCtx.String(flagAzureadTenant),
+			getScopes("azuread", cCtx.StringSlice(flagAzureadScope)),
 		)
 	}
 

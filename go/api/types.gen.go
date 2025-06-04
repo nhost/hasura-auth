@@ -74,6 +74,7 @@ const (
 // Defines values for SigninProvider.
 const (
 	SigninProviderApple     SigninProvider = "apple"
+	SigninProviderAzuread   SigninProvider = "azuread"
 	SigninProviderBitbucket SigninProvider = "bitbucket"
 	SigninProviderDiscord   SigninProvider = "discord"
 	SigninProviderGithub    SigninProvider = "github"
@@ -96,6 +97,7 @@ const (
 // Defines values for GetSigninProviderProviderParamsProvider.
 const (
 	GetSigninProviderProviderParamsProviderApple     GetSigninProviderProviderParamsProvider = "apple"
+	GetSigninProviderProviderParamsProviderAzuread   GetSigninProviderProviderParamsProvider = "azuread"
 	GetSigninProviderProviderParamsProviderBitbucket GetSigninProviderProviderParamsProvider = "bitbucket"
 	GetSigninProviderProviderParamsProviderDiscord   GetSigninProviderProviderParamsProvider = "discord"
 	GetSigninProviderProviderParamsProviderGithub    GetSigninProviderProviderParamsProvider = "github"
@@ -110,6 +112,7 @@ const (
 // Defines values for GetSigninProviderProviderCallbackParamsProvider.
 const (
 	GetSigninProviderProviderCallbackParamsProviderApple     GetSigninProviderProviderCallbackParamsProvider = "apple"
+	GetSigninProviderProviderCallbackParamsProviderAzuread   GetSigninProviderProviderCallbackParamsProvider = "azuread"
 	GetSigninProviderProviderCallbackParamsProviderBitbucket GetSigninProviderProviderCallbackParamsProvider = "bitbucket"
 	GetSigninProviderProviderCallbackParamsProviderDiscord   GetSigninProviderProviderCallbackParamsProvider = "discord"
 	GetSigninProviderProviderCallbackParamsProviderGithub    GetSigninProviderProviderCallbackParamsProvider = "github"
@@ -124,6 +127,7 @@ const (
 // Defines values for PostSigninProviderProviderCallbackParamsProvider.
 const (
 	Apple     PostSigninProviderProviderCallbackParamsProvider = "apple"
+	Azuread   PostSigninProviderProviderCallbackParamsProvider = "azuread"
 	Bitbucket PostSigninProviderProviderCallbackParamsProvider = "bitbucket"
 	Discord   PostSigninProviderProviderCallbackParamsProvider = "discord"
 	Github    PostSigninProviderProviderCallbackParamsProvider = "github"

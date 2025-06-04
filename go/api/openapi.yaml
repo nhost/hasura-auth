@@ -1518,6 +1518,8 @@ components:
           - gitlab
           - bitbucket
           - workos
+          - azuread
+          
       deprecated: true
 
     TicketQuery:

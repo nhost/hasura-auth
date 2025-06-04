@@ -31,4 +31,7 @@ var (
 
 	// DefaultWorkOSScopes defines the default scopes for WorkOS OAuth2.
 	DefaultWorkOSScopes = []string{""}
+
+	// DefaultAzureadScopes defines the default scopes for AzureAd OAuth2.
+	DefaultAzureadScopes = []string{"openid", "email", "profile"}
 )
