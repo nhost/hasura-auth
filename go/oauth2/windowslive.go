@@ -16,7 +16,6 @@ func NewWindowsliveProvider(
 	clientID, clientSecret, authServerURL string,
 	scopes []string,
 ) *WindowsLive {
-
 	return &WindowsLive{
 		Config: &oauth2.Config{
 			ClientID:     clientID,
@@ -24,18 +23,30 @@ func NewWindowsliveProvider(
 			RedirectURL:  authServerURL + "/signin/provider/windowslive/callback",
 			Scopes:       scopes,
 			Endpoint: oauth2.Endpoint{ //nolint:exhaustruct
-				AuthURL:  "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
-				TokenURL: "https://login.microsoftonline.com/common/oauth2/v2.0/token",
+				AuthURL:  "https://login.live.com/oauth20_authorize.srf",
+				TokenURL: "https://login.live.com/oauth20_token.srf",
 			},
 		},
 	}
 }
 
-type microsoftGraphProfile struct {
-	ID                string `json:"id"`
-	DisplayName       string `json:"displayName"`
-	Mail              string `json:"mail"`
-	UserPrincipalName string `json:"userPrincipalName"`
+type microsoftProfile struct {
+	Emails          Emails `json:"emails"`
+	FirstName       string `json:"first_name"`
+	Gender          any    `json:"gender"`
+	ID              string `json:"id"`
+	LastName        string `json:"last_name"`
+	Link            string `json:"link"`
+	Locale          string `json:"locale"`
+	Name            string `json:"name"`
+	ProfileImageURL string `json:"profile_image_url"`
+}
+
+type Emails struct {
+	Account   string `json:"account"`
+	Business  any    `json:"business"`
+	Personal  any    `json:"personal"`
+	Preferred string `json:"preferred"`
 }
 
 func (w *WindowsLive) GetProfile(
@@ -44,26 +55,26 @@ func (w *WindowsLive) GetProfile(
 	_ *string,
 	_ map[string]any,
 ) (oidc.Profile, error) {
-	var profile microsoftGraphProfile
+	var profile microsoftProfile
 	if err := fetchOAuthProfile(
 		ctx,
-		"https://graph.microsoft.com/v1.0/me",
+		"https://apis.live.net/v5.0/me",
 		accessToken,
 		&profile,
 	); err != nil {
 		return oidc.Profile{}, fmt.Errorf("microsoft graph api error: %w", err)
 	}
 
-	email := profile.Mail
+	email := profile.Emails.Preferred
 	if email == "" {
-		email = profile.UserPrincipalName
+		email = profile.Emails.Account
 	}
 
 	return oidc.Profile{
 		ProviderUserID: profile.ID,
-		Name:           profile.DisplayName,
+		Name:           profile.Name + " " + profile.LastName,
 		Email:          email,
 		EmailVerified:  email != "",
-		Picture:        "", // No avatar included
+		Picture:        profile.ProfileImageURL,
 	}, nil
 }

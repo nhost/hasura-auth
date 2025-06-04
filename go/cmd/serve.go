@@ -153,17 +153,14 @@ const (
 	flagAzureadClientSecret              = "azuread-client-secret" //nolint:gosec
 	flagAzureadTenant                    = "azuread-tenant"
 	flagAzureadScope                     = "azuread-scope"
-<<<<<<< HEAD
 	flagFacebookEnabled                  = "facebook-enabled"
 	flagFacebookClientID                 = "facebook-client-id"
 	flagFacebookClientSecret             = "facebook-client-secret"
 	flagFacebookScope                    = "facebook-scope"
-=======
 	flagWindowsliveEnabled               = "windowslive-enabled"
 	flagWindowsliveClientID              = "windowslive-client-id"
 	flagWindowsliveClientSecret          = "windowslive-client-secret"
 	flagWindowsliveScope                 = "windowslive-scope"
->>>>>>> 4b86a08d (feat: oauth2: migrate windowslive to go)
 )
 
 func CommandServe() *cli.Command { //nolint:funlen,maintidx

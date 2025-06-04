@@ -182,21 +182,21 @@ func getOauth2Providers(
 		)
 	}
 
-<<<<<<< HEAD
 	if cCtx.Bool(flagFacebookEnabled) {
 		providers["facebook"] = oauth2.NewFacebookProvider(
 			cCtx.String(flagFacebookClientID),
 			cCtx.String(flagFacebookClientSecret),
 			cCtx.String(flagServerURL),
 			getScopes("facebook", cCtx.StringSlice(flagFacebookScope)),
-=======
+		)
+	}
+
 	if cCtx.Bool(flagWindowsliveEnabled) {
 		providers["windowslive"] = oauth2.NewWindowsliveProvider(
 			cCtx.String(flagWindowsliveClientID),
 			cCtx.String(flagWindowsliveClientSecret),
 			cCtx.String(flagServerURL),
 			getScopes("windowslive", cCtx.StringSlice(flagWindowsliveScope)),
->>>>>>> 4b86a08d (feat: oauth2: migrate windowslive to go)
 		)
 	}
 
