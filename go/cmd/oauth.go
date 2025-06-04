@@ -12,6 +12,8 @@ func getDefaultScopes(provider string) []string {
 	switch provider {
 	case "google":
 		return oauth2.DefaultGoogleScopes
+	case "discord":
+		return oauth2.DefaultDiscordScopes
 	case "github":
 		return oauth2.DefaultGithubScopes
 	case "apple":
@@ -31,7 +33,7 @@ func getDefaultScopes(provider string) []string {
 	case "azuread":
 		return oauth2.DefaultAzureadScopes
 	default:
-		return []string{}
+		panic("Unknown OAuth2 provider: " + provider)
 	}
 }
 
