@@ -425,7 +425,7 @@ func (wf *Workflows) UpdateSession( //nolint:funlen
 	}
 
 	accessToken, expiresIn, err := wf.jwtGetter.GetToken(
-		ctx, user.ID, user.IsAnonymous, allowedRoles, user.DefaultRole, logger,
+		ctx, user.ID, user.IsAnonymous, allowedRoles, user.DefaultRole, nil, logger,
 	)
 	if err != nil {
 		logger.Error("error getting jwt", logError(err))
@@ -466,6 +466,7 @@ func (wf *Workflows) UpdateSession( //nolint:funlen
 func (wf *Workflows) NewSession( //nolint:funlen
 	ctx context.Context,
 	user sql.AuthUser,
+	customClaims map[string]any,
 	logger *slog.Logger,
 ) (*api.Session, error) {
 	userRoles, err := wf.db.GetUserRoles(ctx, user.ID)
@@ -495,7 +496,7 @@ func (wf *Workflows) NewSession( //nolint:funlen
 	}
 
 	accessToken, expiresIn, err := wf.jwtGetter.GetToken(
-		ctx, user.ID, user.IsAnonymous, allowedRoles, user.DefaultRole, logger,
+		ctx, user.ID, user.IsAnonymous, allowedRoles, user.DefaultRole, customClaims, logger,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("error getting jwt: %w", err)
@@ -539,7 +540,7 @@ func (wf *Workflows) GetUserFromJWTInContext(
 		logger.Error(
 			"jwt token not found in context, this should not be possilble due to middleware",
 		)
-		return sql.AuthUser{}, ErrInternalServerError
+		return sql.AuthUser{}, ErrInvalidRequest
 	}
 
 	sub, err := jwtToken.Claims.GetSubject()
@@ -776,7 +777,7 @@ func (wf *Workflows) SignupUserWithSession( //nolint:funlen
 	}
 
 	accessToken, expiresIn, err := wf.jwtGetter.GetToken(
-		ctx, userID, false, deptr(options.AllowedRoles), *options.DefaultRole, logger,
+		ctx, userID, false, deptr(options.AllowedRoles), *options.DefaultRole, nil, logger,
 	)
 	if err != nil {
 		logger.Error("error getting jwt", logError(err))
@@ -912,7 +913,7 @@ func (wf *Workflows) SignupAnonymousUser( //nolint:funlen
 	}
 
 	accessToken, expiresIn, err := wf.jwtGetter.GetToken(
-		ctx, resp.ID, true, []string{anonymousRole}, anonymousRole, logger,
+		ctx, resp.ID, true, []string{anonymousRole}, anonymousRole, nil, logger,
 	)
 	if err != nil {
 		logger.Error("error getting jwt", logError(err))
