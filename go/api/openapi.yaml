@@ -819,6 +819,53 @@ paths:
               schema:
                 $ref: '#/components/schemas/TotpGenerateResponse'
 
+  /elevate/webauthn:
+    post:
+      summary: Elevate access for an already signed in user using FIDO2 Webauthn
+      tags:
+        - elevate
+        - webauthn
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ElevateWebauthnRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SignInWebauthnResponse'
+          description: >-
+            Challenge sent
+
+  /elevate/webauthn/verify:
+    post:
+      summary: Verify FIDO2 Webauthn authentication using public-key cryptography for elevation
+      tags:
+        - elevate
+        - webauthn
+        - verify
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ElevateWebauthnVerifyRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionPayload'
+          description: >-
+            Elevated successfully
+
 components:
   securitySchemes:
     BearerAuth:
@@ -1510,6 +1557,40 @@ components:
       required:
         - imageUrl
         - totpSecret
+
+    ElevateWebauthnRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        email:
+          description: A valid email. Deprecated, no longer used
+          example: john.smith@nhost.io
+          format: email
+          type: string
+          deprecated: true
+      required:
+        - email
+
+    ElevateWebauthnVerifyRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        email:
+          description: A valid email. Deprecated, no longer used
+          example: john.smith@nhost.io
+          format: email
+          type: string
+          deprecated: true
+        credential:
+          type: object
+          additionalProperties: true
+          x-go-type-import:
+            name: protocol
+            path: github.com/go-webauthn/webauthn/protocol
+          x-go-type: protocol.CredentialAssertionResponse
+      required:
+        - email
+        - credential
 
   parameters:
     SigninProvider:

@@ -28,6 +28,12 @@ type ServerInterface interface {
 	// Get public keys for JWT verification in JWK Set format
 	// (GET /.well-known/jwks.json)
 	GetWellKnownJwksJson(c *gin.Context)
+	// Elevate access for an already signed in user using FIDO2 Webauthn
+	// (POST /elevate/webauthn)
+	PostElevateWebauthn(c *gin.Context)
+	// Verify FIDO2 Webauthn authentication using public-key cryptography for elevation
+	// (POST /elevate/webauthn/verify)
+	PostElevateWebauthnVerify(c *gin.Context)
 	// Health check
 	// (GET /healthz)
 	GetHealthz(c *gin.Context)
@@ -140,6 +146,36 @@ func (siw *ServerInterfaceWrapper) GetWellKnownJwksJson(c *gin.Context) {
 	}
 
 	siw.Handler.GetWellKnownJwksJson(c)
+}
+
+// PostElevateWebauthn operation middleware
+func (siw *ServerInterfaceWrapper) PostElevateWebauthn(c *gin.Context) {
+
+	c.Set(BearerAuthScopes, []string{})
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		middleware(c)
+		if c.IsAborted() {
+			return
+		}
+	}
+
+	siw.Handler.PostElevateWebauthn(c)
+}
+
+// PostElevateWebauthnVerify operation middleware
+func (siw *ServerInterfaceWrapper) PostElevateWebauthnVerify(c *gin.Context) {
+
+	c.Set(BearerAuthScopes, []string{})
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		middleware(c)
+		if c.IsAborted() {
+			return
+		}
+	}
+
+	siw.Handler.PostElevateWebauthnVerify(c)
 }
 
 // GetHealthz operation middleware
@@ -783,6 +819,8 @@ func RegisterHandlersWithOptions(router gin.IRouter, si ServerInterface, options
 	}
 
 	router.GET(options.BaseURL+"/.well-known/jwks.json", wrapper.GetWellKnownJwksJson)
+	router.POST(options.BaseURL+"/elevate/webauthn", wrapper.PostElevateWebauthn)
+	router.POST(options.BaseURL+"/elevate/webauthn/verify", wrapper.PostElevateWebauthnVerify)
 	router.GET(options.BaseURL+"/healthz", wrapper.GetHealthz)
 	router.HEAD(options.BaseURL+"/healthz", wrapper.HeadHealthz)
 	router.POST(options.BaseURL+"/link/idtoken", wrapper.PostLinkIdtoken)
@@ -825,6 +863,40 @@ type GetWellKnownJwksJsonResponseObject interface {
 type GetWellKnownJwksJson200JSONResponse JWKSet
 
 func (response GetWellKnownJwksJson200JSONResponse) VisitGetWellKnownJwksJsonResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type PostElevateWebauthnRequestObject struct {
+	Body *PostElevateWebauthnJSONRequestBody
+}
+
+type PostElevateWebauthnResponseObject interface {
+	VisitPostElevateWebauthnResponse(w http.ResponseWriter) error
+}
+
+type PostElevateWebauthn200JSONResponse SignInWebauthnResponse
+
+func (response PostElevateWebauthn200JSONResponse) VisitPostElevateWebauthnResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type PostElevateWebauthnVerifyRequestObject struct {
+	Body *PostElevateWebauthnVerifyJSONRequestBody
+}
+
+type PostElevateWebauthnVerifyResponseObject interface {
+	VisitPostElevateWebauthnVerifyResponse(w http.ResponseWriter) error
+}
+
+type PostElevateWebauthnVerify200JSONResponse SessionPayload
+
+func (response PostElevateWebauthnVerify200JSONResponse) VisitPostElevateWebauthnVerifyResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
@@ -1384,6 +1456,12 @@ type StrictServerInterface interface {
 	// Get public keys for JWT verification in JWK Set format
 	// (GET /.well-known/jwks.json)
 	GetWellKnownJwksJson(ctx context.Context, request GetWellKnownJwksJsonRequestObject) (GetWellKnownJwksJsonResponseObject, error)
+	// Elevate access for an already signed in user using FIDO2 Webauthn
+	// (POST /elevate/webauthn)
+	PostElevateWebauthn(ctx context.Context, request PostElevateWebauthnRequestObject) (PostElevateWebauthnResponseObject, error)
+	// Verify FIDO2 Webauthn authentication using public-key cryptography for elevation
+	// (POST /elevate/webauthn/verify)
+	PostElevateWebauthnVerify(ctx context.Context, request PostElevateWebauthnVerifyRequestObject) (PostElevateWebauthnVerifyResponseObject, error)
 	// Health check
 	// (GET /healthz)
 	GetHealthz(ctx context.Context, request GetHealthzRequestObject) (GetHealthzResponseObject, error)
@@ -1506,6 +1584,72 @@ func (sh *strictHandler) GetWellKnownJwksJson(ctx *gin.Context) {
 		ctx.Status(http.StatusInternalServerError)
 	} else if validResponse, ok := response.(GetWellKnownJwksJsonResponseObject); ok {
 		if err := validResponse.VisitGetWellKnownJwksJsonResponse(ctx.Writer); err != nil {
+			ctx.Error(err)
+		}
+	} else if response != nil {
+		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PostElevateWebauthn operation middleware
+func (sh *strictHandler) PostElevateWebauthn(ctx *gin.Context) {
+	var request PostElevateWebauthnRequestObject
+
+	var body PostElevateWebauthnJSONRequestBody
+	if err := ctx.ShouldBindJSON(&body); err != nil {
+		ctx.Status(http.StatusBadRequest)
+		ctx.Error(err)
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.PostElevateWebauthn(ctx, request.(PostElevateWebauthnRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PostElevateWebauthn")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		ctx.Error(err)
+		ctx.Status(http.StatusInternalServerError)
+	} else if validResponse, ok := response.(PostElevateWebauthnResponseObject); ok {
+		if err := validResponse.VisitPostElevateWebauthnResponse(ctx.Writer); err != nil {
+			ctx.Error(err)
+		}
+	} else if response != nil {
+		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PostElevateWebauthnVerify operation middleware
+func (sh *strictHandler) PostElevateWebauthnVerify(ctx *gin.Context) {
+	var request PostElevateWebauthnVerifyRequestObject
+
+	var body PostElevateWebauthnVerifyJSONRequestBody
+	if err := ctx.ShouldBindJSON(&body); err != nil {
+		ctx.Status(http.StatusBadRequest)
+		ctx.Error(err)
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.PostElevateWebauthnVerify(ctx, request.(PostElevateWebauthnVerifyRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PostElevateWebauthnVerify")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		ctx.Error(err)
+		ctx.Status(http.StatusInternalServerError)
+	} else if validResponse, ok := response.(PostElevateWebauthnVerifyResponseObject); ok {
+		if err := validResponse.VisitPostElevateWebauthnVerifyResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {

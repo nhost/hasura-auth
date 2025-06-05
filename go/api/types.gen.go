@@ -181,6 +181,22 @@ type CreatePATResponse struct {
 	PersonalAccessToken string `json:"personalAccessToken"`
 }
 
+// ElevateWebauthnRequest defines model for ElevateWebauthnRequest.
+type ElevateWebauthnRequest struct {
+	// Email A valid email. Deprecated, no longer used
+	// Deprecated:
+	Email openapi_types.Email `json:"email"`
+}
+
+// ElevateWebauthnVerifyRequest defines model for ElevateWebauthnVerifyRequest.
+type ElevateWebauthnVerifyRequest struct {
+	Credential protocol.CredentialAssertionResponse `json:"credential"`
+
+	// Email A valid email. Deprecated, no longer used
+	// Deprecated:
+	Email openapi_types.Email `json:"email"`
+}
+
 // ErrorResponse defines model for ErrorResponse.
 type ErrorResponse struct {
 	// Error Error code that identifies the application error
@@ -603,6 +619,12 @@ type GetVerifyParams struct {
 
 // GetVerifyParamsType defines parameters for GetVerify.
 type GetVerifyParamsType string
+
+// PostElevateWebauthnJSONRequestBody defines body for PostElevateWebauthn for application/json ContentType.
+type PostElevateWebauthnJSONRequestBody = ElevateWebauthnRequest
+
+// PostElevateWebauthnVerifyJSONRequestBody defines body for PostElevateWebauthnVerify for application/json ContentType.
+type PostElevateWebauthnVerifyJSONRequestBody = ElevateWebauthnVerifyRequest
 
 // PostLinkIdtokenJSONRequestBody defines body for PostLinkIdtoken for application/json ContentType.
 type PostLinkIdtokenJSONRequestBody = LinkIdTokenRequest
