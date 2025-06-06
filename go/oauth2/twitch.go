@@ -2,20 +2,14 @@ package oauth2
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
-	"net/http"
 
 	"github.com/nhost/hasura-auth/go/oidc"
 	"golang.org/x/oauth2"
 )
 
-var (
-	errNoUserDataFound      = errors.New("no user data found")
-	errUnexpectedStatusCode = errors.New("unexpected status code")
-)
+var ErrNoUserDataFound = errors.New("no user data found")
 
 type Twitch struct {
 	*oauth2.Config
@@ -60,39 +54,21 @@ func (t *Twitch) GetProfile(
 ) (oidc.Profile, error) {
 	var response twitchUserResponse
 
-	req, err := http.NewRequestWithContext(
+	err := fetchOAuthProfile(
 		ctx,
-		http.MethodGet,
 		"https://api.twitch.tv/helix/users",
-		nil,
+		accessToken,
+		&response,
+		WithHeaders(map[string]string{
+			"Client-Id": t.ClientID,
+		}),
 	)
 	if err != nil {
-		return oidc.Profile{}, fmt.Errorf("failed to create request: %w", err)
-	}
-
-	// Twitch Helix requires the ClientID to be set.
-	req.Header.Set("Authorization", "Bearer "+accessToken)
-	req.Header.Set("Client-Id", t.ClientID)
-
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return oidc.Profile{}, fmt.Errorf("request error: %w", err)
-	}
-
-	defer resp.Body.Close()
-
-	body, _ := io.ReadAll(resp.Body)
-
-	if resp.StatusCode != http.StatusOK {
-		return oidc.Profile{}, fmt.Errorf("%w: %d", errUnexpectedStatusCode, resp.StatusCode)
-	}
-
-	if err := json.Unmarshal(body, &response); err != nil {
-		return oidc.Profile{}, fmt.Errorf("JSON unmarshal error: %w", err)
+		return oidc.Profile{}, fmt.Errorf("failed to fetch profile: %w", err)
 	}
 
 	if len(response.Data) == 0 {
-		return oidc.Profile{}, errNoUserDataFound
+		return oidc.Profile{}, ErrNoUserDataFound
 	}
 
 	userProfile := response.Data[0]
