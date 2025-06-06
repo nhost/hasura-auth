@@ -2,14 +2,18 @@ package oauth2
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/nhost/hasura-auth/go/oidc"
 	"golang.org/x/oauth2"
 )
 
+var ErrNoUserDataFound = errors.New("no user data found")
+
 type Twitch struct {
 	*oauth2.Config
+	ClientID string // This is required for Twitch Helix API requests.
 }
 
 func NewTwitchProvider(
@@ -17,6 +21,7 @@ func NewTwitchProvider(
 	scopes []string,
 ) *Twitch {
 	return &Twitch{
+		ClientID: clientID,
 		Config: &oauth2.Config{
 			ClientID:     clientID,
 			ClientSecret: clientSecret,
@@ -30,11 +35,15 @@ func NewTwitchProvider(
 	}
 }
 
-type twitchUserProfile struct {
-	ID          string `json:"id"`
-	DisplayName string `json:"display_name"`
-	Email       string `json:"email"`
-	Avatar      string `json:"avatar"`
+type twitchUser struct {
+	ID              string `json:"id"`
+	DisplayName     string `json:"display_name"`
+	Email           string `json:"email"`
+	ProfileImageURL string `json:"profile_image_url"`
+}
+
+type twitchUserResponse struct {
+	Data []twitchUser `json:"data"`
 }
 
 func (t *Twitch) GetProfile(
@@ -43,21 +52,32 @@ func (t *Twitch) GetProfile(
 	_ *string,
 	_ map[string]any,
 ) (oidc.Profile, error) {
-	var userProfile twitchUserProfile
-	if err := fetchOAuthProfile(
+	var response twitchUserResponse
+
+	err := fetchOAuthProfile(
 		ctx,
 		"https://api.twitch.tv/helix/users",
 		accessToken,
-		&userProfile,
-	); err != nil {
-		return oidc.Profile{}, fmt.Errorf("Twitch API error: %w", err)
+		&response,
+		WithHeaders(map[string]string{
+			"Client-Id": t.ClientID,
+		}),
+	)
+	if err != nil {
+		return oidc.Profile{}, fmt.Errorf("failed to fetch profile: %w", err)
 	}
+
+	if len(response.Data) == 0 {
+		return oidc.Profile{}, ErrNoUserDataFound
+	}
+
+	userProfile := response.Data[0]
 
 	return oidc.Profile{
 		ProviderUserID: userProfile.ID,
 		Name:           userProfile.DisplayName,
 		Email:          userProfile.Email,
 		EmailVerified:  userProfile.Email != "",
-		Picture:        userProfile.Avatar,
+		Picture:        userProfile.ProfileImageURL,
 	}, nil
 }
