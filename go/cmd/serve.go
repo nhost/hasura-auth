@@ -157,6 +157,10 @@ const (
 	flagFacebookClientID                 = "facebook-client-id"
 	flagFacebookClientSecret             = "facebook-client-secret"
 	flagFacebookScope                    = "facebook-scope"
+	flagStravaEnabled                    = "strava-enabled"
+	flagStravaClientID                   = "strava-client-id"
+	flagStravaClientSecret               = "strava-client-secret" //nolint:gosec
+	flagStravaScope                      = "strava-scope"
 )
 
 func CommandServe() *cli.Command { //nolint:funlen,maintidx
@@ -1042,6 +1046,33 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 				Category: "oauth-facebook",
 				Value:    cli.NewStringSlice(oauth2.DefaultFacebookScopes...),
 				EnvVars:  []string{"AUTH_PROVIDER_FACEBOOK_SCOPE"},
+			},
+			// Strava provider flags
+			&cli.BoolFlag{ //nolint: exhaustruct
+				Name:     flagStravaEnabled,
+				Usage:    "Enable Strava OAuth provider",
+				Category: "oauth-strava",
+				Value:    false,
+				EnvVars:  []string{"AUTH_PROVIDER_STRAVA_ENABLED"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagStravaClientID,
+				Usage:    "Strava OAuth client ID",
+				Category: "oauth-strava",
+				EnvVars:  []string{"AUTH_PROVIDER_STRAVA_CLIENT_ID"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagStravaClientSecret,
+				Usage:    "Strava OAuth client secret",
+				Category: "oauth-strava",
+				EnvVars:  []string{"AUTH_PROVIDER_STRAVA_CLIENT_SECRET"},
+			},
+			&cli.StringSliceFlag{ //nolint: exhaustruct
+				Name:     flagStravaScope,
+				Usage:    "Strava OAuth scope",
+				Category: "oauth-strava",
+				Value:    cli.NewStringSlice(oauth2.DefaultGitlabScopes...),
+				EnvVars:  []string{"AUTH_PROVIDER_STRAVA_SCOPE"},
 			},
 		},
 		Action: serve,
