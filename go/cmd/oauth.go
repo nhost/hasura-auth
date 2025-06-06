@@ -32,6 +32,8 @@ func getDefaultScopes(provider string) []string {
 		return oauth2.DefaultWorkOSScopes
 	case "azuread":
 		return oauth2.DefaultAzureadScopes
+	case "facebook":
+		return oauth2.DefaultFacebookScopes
 	default:
 		panic("Unknown OAuth2 provider: " + provider)
 	}
@@ -175,6 +177,15 @@ func getOauth2Providers(
 			cCtx.String(flagServerURL),
 			cCtx.String(flagAzureadTenant),
 			getScopes("azuread", cCtx.StringSlice(flagAzureadScope)),
+		)
+	}
+
+	if cCtx.Bool(flagFacebookEnabled) {
+		providers["facebook"] = oauth2.NewFacebookProvider(
+			cCtx.String(flagFacebookClientID),
+			cCtx.String(flagFacebookClientSecret),
+			cCtx.String(flagServerURL),
+			getScopes("facebook", cCtx.StringSlice(flagFacebookScope)),
 		)
 	}
 

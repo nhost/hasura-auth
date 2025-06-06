@@ -1519,7 +1519,7 @@ components:
           - bitbucket
           - workos
           - azuread
-          
+          - facebook
       deprecated: true
 
     TicketQuery:

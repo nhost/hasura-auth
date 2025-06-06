@@ -34,4 +34,7 @@ var (
 
 	// DefaultAzureadScopes defines the default scopes for AzureAd OAuth2.
 	DefaultAzureadScopes = []string{"openid", "email", "profile"}
+
+	// DefaultFacebookScopes defines the default scopes for Facebook OAuth2.
+	DefaultFacebookScopes = []string{"email"}
 )
