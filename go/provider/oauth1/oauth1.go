@@ -95,7 +95,7 @@ func (c *Config) SignedRequest(
 	return resp, nil
 }
 
-func (c *Config) RequestToken(ctx context.Context, state string) (string, error) {
+func (c *Config) AuthCodeURL(ctx context.Context, state string) (string, error) {
 	// Use the generalized SignedRequest function
 	resp, err := c.SignedRequest(ctx, SignedRequestOptions{ //nolint:exhaustruct
 		Method: http.MethodPost,
@@ -142,14 +142,6 @@ func (c *Config) RequestToken(ctx context.Context, state string) (string, error)
 	query.Set("oauth_token", oauthToken)
 	c.AuthorizeURL.RawQuery = query.Encode()
 	return c.AuthorizeURL.String(), nil
-}
-
-func (c *Config) AuthCodeURL(ctx context.Context, state string) (string, error) {
-	authURL, err := c.RequestToken(ctx, state)
-	if err != nil {
-		return "", fmt.Errorf("failed to get auth code URL: %w", err)
-	}
-	return authURL, nil
 }
 
 // AccessToken exchanges an OAuth verifier for an access token.

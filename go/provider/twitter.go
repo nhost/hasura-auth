@@ -33,7 +33,7 @@ func NewTwitterProvider(
 			ConsumerKey:     consumerKey,
 			ConsumerSecret:  consumerSecret,
 			CallbackURL:     authServerURL + "/signin/provider/twitter/callback",
-			AccessURL:       "https://api.twitter.com/oauth/authenticate",
+			AccessURL:       "https://api.twitter.com/oauth/access_token",
 			RequestTokenURL: "https://api.twitter.com/oauth/request_token",
 			AuthorizeURL:    authorizeURL,
 		},
@@ -52,26 +52,9 @@ type twitterUser struct {
 
 func (t *Twitter) GetProfile(
 	ctx context.Context,
-	_ string,
-	_ *string,
-	extras map[string]any,
+	accessTokenValue string,
+	accessTokenSecret string,
 ) (oidc.Profile, error) {
-	oauthToken, ok := extras["oauth_token"].(string)
-	if !ok || oauthToken == "" {
-		return oidc.Profile{}, fmt.Errorf("missing or invalid oauth_token in extras")
-	}
-
-	oauthVerifier, ok := extras["oauth_verifier"].(string)
-	if !ok || oauthVerifier == "" {
-		return oidc.Profile{}, fmt.Errorf("missing or invalid oauth_verifier in extras")
-	}
-
-	// Exchange oauth_token and oauth_verifier for access tokens
-	accessTokenValue, accessTokenSecret, err := t.exchangeForAccessToken(oauthToken, oauthVerifier)
-	if err != nil {
-		return oidc.Profile{}, fmt.Errorf("failed to exchange for access token: %w", err)
-	}
-
 	// Fetch user profile using OAuth 1.0a
 	var user twitterUser
 	if err := t.fetchTwitterProfile(ctx, accessTokenValue, accessTokenSecret, &user); err != nil {
@@ -158,84 +141,4 @@ func (t *Twitter) fetchTwitterProfile(
 	}
 
 	return nil
-}
-
-// exchangeForAccessToken exchanges the oauth_token and oauth_verifier for access tokens
-func (t *Twitter) exchangeForAccessToken(oauthToken, oauthVerifier string) (string, string, error) {
-	// OAuth 1.0a access token parameters
-	params := map[string]string{
-		"oauth_consumer_key":     t.ConsumerKey,
-		"oauth_nonce":            oauth1.Nonce(),
-		"oauth_signature_method": "HMAC-SHA1",
-		"oauth_timestamp":        strconv.FormatInt(time.Now().Unix(), 10),
-		"oauth_token":            oauthToken,
-		"oauth_verifier":         oauthVerifier,
-		"oauth_version":          "1.0",
-	}
-
-	// For access token exchange, we need the request token secret
-	// This should be stored from the initial request token call
-	// For now, we'll use empty string as it's not available in this context
-	params["oauth_signature"] = oauth1.CreateSignature(
-		"POST",
-		"https://api.twitter.com/oauth/access_token",
-		t.ConsumerSecret,
-		params,
-		"",
-	)
-
-	// Create authorization header
-	authHeader := oauth1.AuthHeader(params)
-
-	// Create form data for POST body
-	formData := url.Values{}
-	formData.Set("oauth_verifier", oauthVerifier)
-
-	// Make request
-	req, err := http.NewRequest(
-		"POST",
-		"https://api.twitter.com/oauth/access_token",
-		strings.NewReader(formData.Encode()),
-	)
-	if err != nil {
-		return "", "", fmt.Errorf("failed to create request: %w", err)
-	}
-	req.Header.Set("Authorization", authHeader)
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-
-	client := &http.Client{Timeout: 10 * time.Second}
-	resp, err := client.Do(req)
-	if err != nil {
-		return "", "", fmt.Errorf("failed to make request: %w", err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		body, _ := io.ReadAll(resp.Body)
-		return "", "", fmt.Errorf(
-			"access token request failed (status %d): %s",
-			resp.StatusCode,
-			string(body),
-		)
-	}
-
-	// Parse response
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return "", "", fmt.Errorf("failed to read response: %w", err)
-	}
-
-	values, err := url.ParseQuery(string(body))
-	if err != nil {
-		return "", "", fmt.Errorf("failed to parse response: %w", err)
-	}
-
-	accessToken := values.Get("oauth_token")
-	accessTokenSecret := values.Get("oauth_token_secret")
-
-	if accessToken == "" || accessTokenSecret == "" {
-		return "", "", fmt.Errorf("access token or secret not found in response")
-	}
-
-	return accessToken, accessTokenSecret, nil
 }

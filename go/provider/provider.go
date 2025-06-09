@@ -19,13 +19,12 @@ type Oauth2Provider interface {
 }
 
 type Oauth1Provider interface {
-	RequestToken(ctx context.Context, state string) (string, error)
 	AuthCodeURL(ctx context.Context, state string) (string, error)
+	AccessToken(ctx context.Context, requestToken, verifier string) (string, string, error)
 	GetProfile(
 		ctx context.Context,
-		code string,
-		idToken *string,
-		extra map[string]any,
+		accessTokenValue string,
+		accessTokenSecret string,
 	) (oidc.Profile, error)
 }
 

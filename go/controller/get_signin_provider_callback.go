@@ -16,6 +16,8 @@ type providerCallbackData struct {
 	Provider         string
 	Code             *string
 	IDToken          *string
+	OauthToken       *string
+	OauthVerifier    *string
 	Error            *string
 	ErrorDescription *string
 	ErrorURI         *string
@@ -84,13 +86,15 @@ func (ctrl *Controller) signinProviderProviderCallbackOauthFlow(
 	var profile oidc.Profile
 	switch {
 	case p.IsOauth1():
-		accessToken, err := p.Oauth1().RequestToken(ctx, req.State)
+		accessTokenValue, accessTokenSecret, err := p.Oauth1().AccessToken(
+			ctx, deptr(req.OauthToken), deptr(req.OauthVerifier),
+		)
 		if err != nil {
 			logger.Error("failed to request token", logError(err))
 			return oidc.Profile{}, ErrOauthProfileFetchFailed
 		}
 
-		profile, err = p.Oauth1().GetProfile(ctx, accessToken, nil, req.Extras)
+		profile, err = p.Oauth1().GetProfile(ctx, accessTokenValue, accessTokenSecret)
 		if err != nil {
 			logger.Error("failed to get user info", logError(err))
 			return oidc.Profile{}, ErrOauthProfileFetchFailed
@@ -160,14 +164,13 @@ func (ctrl *Controller) GetSigninProviderProviderCallback( //nolint:ireturn
 	req api.GetSigninProviderProviderCallbackRequestObject,
 ) (api.GetSigninProviderProviderCallbackResponseObject, error) {
 	providerCallbackData := providerCallbackData{
-		State:    req.Params.State,
-		Provider: string(req.Provider),
-		Code:     req.Params.Code,
-		IDToken:  req.Params.IdToken,
-		Extras: map[string]any{
-			"oauth_token":    deptr(req.Params.OauthToken),
-			"oauth_verifier": deptr(req.Params.OauthVerifier),
-		},
+		State:            req.Params.State,
+		Provider:         string(req.Provider),
+		Code:             req.Params.Code,
+		IDToken:          req.Params.IdToken,
+		OauthToken:       req.Params.OauthToken,
+		OauthVerifier:    req.Params.OauthVerifier,
+		Extras:           map[string]any{},
 		Error:            req.Params.Error,
 		ErrorDescription: req.Params.ErrorDescription,
 		ErrorURI:         req.Params.ErrorUri,
