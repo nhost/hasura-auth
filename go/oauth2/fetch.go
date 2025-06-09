@@ -11,8 +11,23 @@ import (
 
 const fetchProfileTimeout = 10 * time.Second
 
+type RequestInterceptor func(*http.Request) error
+
+func WithHeaders(headers map[string]string) RequestInterceptor {
+	return func(req *http.Request) error {
+		for key, value := range headers {
+			req.Header.Set(key, value)
+		}
+		return nil
+	}
+}
+
 func fetchOAuthProfile(
-	ctx context.Context, url string, accessToken string, result any,
+	ctx context.Context,
+	url string,
+	accessToken string,
+	result any,
+	interceptors ...RequestInterceptor,
 ) error {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
@@ -21,6 +36,13 @@ func fetchOAuthProfile(
 
 	req.Header.Set("Authorization", "Bearer "+accessToken)
 	req.Header.Set("Accept", "application/json")
+
+	// Apply request interceptors
+	for _, interceptor := range interceptors {
+		if err := interceptor(req); err != nil {
+			return fmt.Errorf("error applying request interceptor: %w", err)
+		}
+	}
 
 	client := &http.Client{ //nolint:exhaustruct
 		Timeout: fetchProfileTimeout,
