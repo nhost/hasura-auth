@@ -1,4 +1,4 @@
-package oauth2
+package provider
 
 import (
 	"context"
@@ -20,8 +20,8 @@ type Bitbucket struct {
 func NewBitbucketProvider(
 	clientID, clientSecret, authServerURL string,
 	scopes []string,
-) *Bitbucket {
-	return &Bitbucket{
+) *Provider {
+	bitbucket := &Bitbucket{
 		Config: &oauth2.Config{
 			ClientID:     clientID,
 			ClientSecret: clientSecret,
@@ -33,6 +33,8 @@ func NewBitbucketProvider(
 			},
 		},
 	}
+
+	return NewOauth2Provider(bitbucket)
 }
 
 type bitbucketAPIUser struct {

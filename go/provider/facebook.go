@@ -1,4 +1,4 @@
-package oauth2
+package provider
 
 import (
 	"context"
@@ -15,8 +15,8 @@ type Facebook struct {
 func NewFacebookProvider(
 	clientID, clientSecret, authServerURL string,
 	scopes []string,
-) *Facebook {
-	return &Facebook{
+) *Provider {
+	facebook := &Facebook{
 		Config: &oauth2.Config{
 			ClientID:     clientID,
 			ClientSecret: clientSecret,
@@ -28,6 +28,8 @@ func NewFacebookProvider(
 			},
 		},
 	}
+
+	return NewOauth2Provider(facebook)
 }
 
 type FacebookUserProfile struct {

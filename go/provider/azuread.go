@@ -1,4 +1,4 @@
-package oauth2
+package provider
 
 import (
 	"context"
@@ -18,10 +18,10 @@ type AzureAD struct {
 func NewAzureadProvider(
 	clientID, clientSecret, authServerURL, tenant string,
 	scopes []string,
-) *AzureAD {
+) *Provider {
 	baseURL := "https://login.microsoftonline.com/" + tenant + "/oauth2/v2.0"
 
-	return &AzureAD{
+	azuread := &AzureAD{
 		Config: &oauth2.Config{
 			ClientID:     clientID,
 			ClientSecret: clientSecret,
@@ -36,6 +36,8 @@ func NewAzureadProvider(
 		ProfileURL:   "https://graph.microsoft.com/oidc/userinfo",
 		CustomParams: map[string]string{"prompt": "select_account"},
 	}
+
+	return NewOauth2Provider(azuread)
 }
 
 type azureUser struct {

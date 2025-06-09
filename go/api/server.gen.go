@@ -448,6 +448,22 @@ func (siw *ServerInterfaceWrapper) GetSigninProviderProviderCallback(c *gin.Cont
 		return
 	}
 
+	// ------------- Optional query parameter "oauth_token" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "oauth_token", c.Request.URL.Query(), &params.OauthToken)
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter oauth_token: %w", err), http.StatusBadRequest)
+		return
+	}
+
+	// ------------- Optional query parameter "oauth_verifier" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "oauth_verifier", c.Request.URL.Query(), &params.OauthVerifier)
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter oauth_verifier: %w", err), http.StatusBadRequest)
+		return
+	}
+
 	// ------------- Optional query parameter "error" -------------
 
 	err = runtime.BindQueryParameter("form", true, false, "error", c.Request.URL.Query(), &params.Error)

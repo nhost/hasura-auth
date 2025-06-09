@@ -538,6 +538,12 @@ type GetSigninProviderProviderCallbackParams struct {
 	// State State parameter to avoid CSRF attacks
 	State string `form:"state" json:"state"`
 
+	// OauthToken OAuth token for the provider (e.g., X)
+	OauthToken *string `form:"oauth_token,omitempty" json:"oauth_token,omitempty"`
+
+	// OauthVerifier OAuth verifier for the provider (e.g., X)
+	OauthVerifier *string `form:"oauth_verifier,omitempty" json:"oauth_verifier,omitempty"`
+
 	// Error Error message if authentication failed
 	Error *string `form:"error,omitempty" json:"error,omitempty"`
 

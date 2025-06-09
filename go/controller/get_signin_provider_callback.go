@@ -7,8 +7,8 @@ import (
 
 	"github.com/nhost/hasura-auth/go/api"
 	"github.com/nhost/hasura-auth/go/middleware"
-	"github.com/nhost/hasura-auth/go/oauth2"
 	"github.com/nhost/hasura-auth/go/oidc"
+	"github.com/nhost/hasura-auth/go/provider"
 )
 
 type providerCallbackData struct {
@@ -34,7 +34,7 @@ func (ctrl *Controller) signinProviderProviderCallbackValidate(
 		return nil, nil, redirectTo, ErrInvalidState
 	}
 
-	stateData := &oauth2.State{} //nolint:exhaustruct
+	stateData := &provider.State{} //nolint:exhaustruct
 	if err := stateData.Decode(stateToken.Claims); err != nil {
 		logger.Error("error decoding state token", logError(err))
 		return nil, nil, redirectTo, ErrInvalidState
@@ -75,22 +75,38 @@ func (ctrl *Controller) signinProviderProviderCallbackOauthFlow(
 	req providerCallbackData,
 	logger *slog.Logger,
 ) (oidc.Profile, *APIError) {
-	provider := ctrl.Providers.Get(req.Provider)
-	if provider == nil {
+	p := ctrl.Providers.Get(req.Provider)
+	if p == nil {
 		logger.Error("provider not enabled")
 		return oidc.Profile{}, ErrDisabledEndpoint
 	}
 
-	token, err := provider.Exchange(ctx, *req.Code)
-	if err != nil {
-		logger.Error("failed to exchange token", logError(err))
-		return oidc.Profile{}, ErrOauthTokenExchangeFailed
-	}
+	var profile oidc.Profile
+	switch {
+	case p.IsOauth1():
+		accessToken, err := p.Oauth1().RequestToken(ctx, req.State)
+		if err != nil {
+			logger.Error("failed to request token", logError(err))
+			return oidc.Profile{}, ErrOauthProfileFetchFailed
+		}
 
-	profile, err := provider.GetProfile(ctx, token.AccessToken, req.IDToken, req.Extras)
-	if err != nil {
-		logger.Error("failed to get user info", logError(err))
-		return oidc.Profile{}, ErrOauthProfileFetchFailed
+		profile, err = p.Oauth1().GetProfile(ctx, accessToken, nil, req.Extras)
+		if err != nil {
+			logger.Error("failed to get user info", logError(err))
+			return oidc.Profile{}, ErrOauthProfileFetchFailed
+		}
+	default:
+		token, err := p.Oauth2().Exchange(ctx, deptr(req.Code))
+		if err != nil {
+			logger.Error("failed to exchange token", logError(err))
+			return oidc.Profile{}, ErrOauthTokenExchangeFailed
+		}
+
+		profile, err = p.Oauth2().GetProfile(ctx, token.AccessToken, req.IDToken, req.Extras)
+		if err != nil {
+			logger.Error("failed to get user info", logError(err))
+			return oidc.Profile{}, ErrOauthProfileFetchFailed
+		}
 	}
 
 	return profile, nil
@@ -144,11 +160,14 @@ func (ctrl *Controller) GetSigninProviderProviderCallback( //nolint:ireturn
 	req api.GetSigninProviderProviderCallbackRequestObject,
 ) (api.GetSigninProviderProviderCallbackResponseObject, error) {
 	providerCallbackData := providerCallbackData{
-		State:            req.Params.State,
-		Provider:         string(req.Provider),
-		Code:             req.Params.Code,
-		IDToken:          req.Params.IdToken,
-		Extras:           nil,
+		State:    req.Params.State,
+		Provider: string(req.Provider),
+		Code:     req.Params.Code,
+		IDToken:  req.Params.IdToken,
+		Extras: map[string]any{
+			"oauth_token":    deptr(req.Params.OauthToken),
+			"oauth_verifier": deptr(req.Params.OauthVerifier),
+		},
 		Error:            req.Params.Error,
 		ErrorDescription: req.Params.ErrorDescription,
 		ErrorURI:         req.Params.ErrorUri,

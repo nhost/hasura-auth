@@ -1,4 +1,4 @@
-package oauth2
+package provider
 
 import (
 	"context"
@@ -15,8 +15,8 @@ type Discord struct {
 func NewDiscordProvider(
 	clientID, clientSecret, authServerURL string,
 	scopes []string,
-) *Discord {
-	return &Discord{
+) *Provider {
+	discord := &Discord{
 		Config: &oauth2.Config{
 			ClientID:     clientID,
 			ClientSecret: clientSecret,
@@ -28,6 +28,8 @@ func NewDiscordProvider(
 			},
 		},
 	}
+
+	return NewOauth2Provider(discord)
 }
 
 type discordUserProfile struct {

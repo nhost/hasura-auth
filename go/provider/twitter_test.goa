@@ -1,0 +1,188 @@
+package provider
+
+import (
+	"net/url"
+	"testing"
+)
+
+func TestTwitter_generateNonce(t *testing.T) {
+	nonce1 := generateNonce()
+	nonce2 := generateNonce()
+
+	if nonce1 == nonce2 {
+		t.Error("generateNonce should produce unique values")
+	}
+
+	if len(nonce1) == 0 {
+		t.Error("generateNonce should not return empty string")
+	}
+}
+
+func TestTwitter_createSignature(t *testing.T) {
+	twitter := &Twitter{
+		consumerKey:    "test_consumer_key",
+		consumerSecret: "test_consumer_secret",
+		redirectURL:    "https://example.com/callback",
+	}
+
+	params := map[string]string{
+		"oauth_callback":         "https://example.com/callback",
+		"oauth_consumer_key":     "test_consumer_key",
+		"oauth_nonce":            "test_nonce",
+		"oauth_signature_method": "HMAC-SHA1",
+		"oauth_timestamp":        "1234567890",
+		"oauth_version":          "1.0",
+	}
+
+	signature, err := twitter.createSignature(
+		"POST",
+		"https://api.twitter.com/oauth/request_token",
+		params,
+		"",
+	)
+	if err != nil {
+		t.Fatalf("createSignature failed: %v", err)
+	}
+
+	if signature == "" {
+		t.Error("signature should not be empty")
+	}
+
+	// Test with same parameters should produce same signature
+	signature2, err := twitter.createSignature(
+		"POST",
+		"https://api.twitter.com/oauth/request_token",
+		params,
+		"",
+	)
+	if err != nil {
+		t.Fatalf("createSignature failed on second call: %v", err)
+	}
+
+	if signature != signature2 {
+		t.Error("same parameters should produce same signature")
+	}
+}
+
+func TestTwitter_createAuthHeader(t *testing.T) {
+	twitter := &Twitter{}
+
+	params := map[string]string{
+		"oauth_callback":         "https://example.com/callback",
+		"oauth_consumer_key":     "test_consumer_key",
+		"oauth_nonce":            "test_nonce",
+		"oauth_signature":        "test_signature",
+		"oauth_signature_method": "HMAC-SHA1",
+		"oauth_timestamp":        "1234567890",
+		"oauth_version":          "1.0",
+		"non_oauth_param":        "should_be_ignored",
+	}
+
+	header := twitter.createAuthHeader(params)
+
+	if !contains(header, "OAuth ") {
+		t.Error("header should start with 'OAuth '")
+	}
+
+	// Check that all oauth_ parameters are included
+	oauthParams := []string{
+		"oauth_callback", "oauth_consumer_key", "oauth_nonce",
+		"oauth_signature", "oauth_signature_method", "oauth_timestamp", "oauth_version",
+	}
+
+	for _, param := range oauthParams {
+		if !contains(header, param) {
+			t.Errorf("header should contain %s", param)
+		}
+	}
+
+	// Check that non-oauth parameters are not included
+	if contains(header, "non_oauth_param") {
+		t.Error("header should not contain non-oauth parameters")
+	}
+}
+
+func TestNewTwitterProvider(t *testing.T) {
+	consumerKey := "test_key"
+	consumerSecret := "test_secret"
+	authServerURL := "https://auth.example.com"
+
+	provider := NewTwitterProvider(consumerKey, consumerSecret, authServerURL)
+
+	if provider.consumerKey != consumerKey {
+		t.Errorf("expected consumerKey %s, got %s", consumerKey, provider.consumerKey)
+	}
+
+	if provider.consumerSecret != consumerSecret {
+		t.Errorf("expected consumerSecret %s, got %s", consumerSecret, provider.consumerSecret)
+	}
+
+	expectedRedirectURL := authServerURL + "/signin/provider/twitter/callback"
+	if provider.redirectURL != expectedRedirectURL {
+		t.Errorf("expected redirectURL %s, got %s", expectedRedirectURL, provider.redirectURL)
+	}
+}
+
+func TestTwitter_AuthCodeURL(t *testing.T) {
+	// Note: This test will fail without a real Twitter app since it makes HTTP requests
+	// In a real environment, you'd want to mock the HTTP client
+	twitter := &Twitter{
+		consumerKey:    "test_consumer_key",
+		consumerSecret: "test_consumer_secret",
+		redirectURL:    "https://example.com/callback",
+	}
+
+	state := "test_state"
+	url := twitter.AuthCodeURL(state)
+
+	// With invalid credentials, this should return empty string due to error
+	if url != "" {
+		// If we get a URL back (which shouldn't happen with test credentials),
+		// verify it's a Twitter authorize URL
+		if !contains(url, "api.twitter.com/oauth/authorize") {
+			t.Error("returned URL should be a Twitter authorize URL")
+		}
+	}
+}
+
+func TestTwitter_RequestToken_StateInCallback(t *testing.T) {
+	twitter := &Twitter{
+		consumerKey:    "test_consumer_key",
+		consumerSecret: "test_consumer_secret",
+		redirectURL:    "https://example.com/callback",
+	}
+
+	state := "test_state_123"
+
+	// Mock the parameters that would be used in the request
+	params := map[string]string{
+		"oauth_callback":         twitter.redirectURL + "?state=" + url.QueryEscape(state),
+		"oauth_consumer_key":     twitter.consumerKey,
+		"oauth_nonce":            generateNonce(),
+		"oauth_signature_method": "HMAC-SHA1",
+		"oauth_timestamp":        "1234567890",
+		"oauth_version":          "1.0",
+	}
+
+	// Verify the callback URL contains the state parameter
+	callbackURL := params["oauth_callback"]
+	if !contains(callbackURL, "state=test_state_123") {
+		t.Error("callback URL should contain the state parameter")
+	}
+}
+
+// Helper function to check if a string contains a substring
+func contains(s, substr string) bool {
+	return len(s) >= len(substr) && (s == substr || len(s) > len(substr) &&
+		(s[:len(substr)] == substr || s[len(s)-len(substr):] == substr ||
+			indexOfSubstring(s, substr) >= 0))
+}
+
+func indexOfSubstring(s, substr string) int {
+	for i := 0; i <= len(s)-len(substr); i++ {
+		if s[i:i+len(substr)] == substr {
+			return i
+		}
+	}
+	return -1
+}

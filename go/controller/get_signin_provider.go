@@ -72,9 +72,19 @@ func (ctrl *Controller) GetSigninProviderProvider( //nolint:ireturn
 		return ctrl.sendRedirectError(redirectTo, ErrInternalServerError), nil
 	}
 
-	url := provider.AuthCodeURL(
-		state,
-	)
+	var url string
+	switch {
+	case provider.IsOauth1():
+		url, err = provider.Oauth1().AuthCodeURL(ctx, state)
+		if err != nil {
+			logger.Error("error getting auth code URL for Oauth1 provider", logError(err))
+			return ctrl.sendRedirectError(redirectTo, ErrInternalServerError), nil
+		}
+	default:
+		url = provider.Oauth2().AuthCodeURL(
+			state,
+		)
+	}
 
 	return api.GetSigninProviderProvider302Response{
 		Headers: api.GetSigninProviderProvider302ResponseHeaders{

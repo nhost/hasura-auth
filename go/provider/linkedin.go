@@ -1,4 +1,4 @@
-package oauth2
+package provider
 
 import (
 	"context"
@@ -15,8 +15,8 @@ type LinkedIn struct {
 func NewLinkedInProvider(
 	clientID, clientSecret, authServerURL string,
 	scopes []string,
-) *LinkedIn {
-	return &LinkedIn{
+) *Provider {
+	linkedin := &LinkedIn{
 		Config: &oauth2.Config{
 			ClientID:     clientID,
 			ClientSecret: clientSecret,
@@ -28,6 +28,8 @@ func NewLinkedInProvider(
 			},
 		},
 	}
+
+	return NewOauth2Provider(linkedin)
 }
 
 type linkedInUserInfoProfile struct {
