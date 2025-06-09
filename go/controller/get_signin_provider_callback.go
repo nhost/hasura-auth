@@ -8,7 +8,7 @@ import (
 	"github.com/nhost/hasura-auth/go/api"
 	"github.com/nhost/hasura-auth/go/middleware"
 	"github.com/nhost/hasura-auth/go/oidc"
-	"github.com/nhost/hasura-auth/go/provider"
+	"github.com/nhost/hasura-auth/go/providers"
 )
 
 type providerCallbackData struct {
@@ -36,7 +36,7 @@ func (ctrl *Controller) signinProviderProviderCallbackValidate(
 		return nil, nil, redirectTo, ErrInvalidState
 	}
 
-	stateData := &provider.State{} //nolint:exhaustruct
+	stateData := &providers.State{} //nolint:exhaustruct
 	if err := stateData.Decode(stateToken.Claims); err != nil {
 		logger.Error("error decoding state token", logError(err))
 		return nil, nil, redirectTo, ErrInvalidState
@@ -237,10 +237,12 @@ func (ctrl *Controller) PostSigninProviderProviderCallback( //nolint:ireturn
 	req api.PostSigninProviderProviderCallbackRequestObject,
 ) (api.PostSigninProviderProviderCallbackResponseObject, error) {
 	providerCallbackData := providerCallbackData{
-		State:    req.Body.State,
-		Provider: string(req.Provider),
-		Code:     req.Body.Code,
-		IDToken:  req.Body.IdToken,
+		State:         req.Body.State,
+		Provider:      string(req.Provider),
+		Code:          req.Body.Code,
+		IDToken:       req.Body.IdToken,
+		OauthToken:    nil,
+		OauthVerifier: nil,
 		Extras: map[string]any{
 			"user": req.Body.User,
 		},

@@ -10,13 +10,13 @@ import (
 	"strings"
 )
 
-func Nonce() string {
+func nonce() string {
 	b := make([]byte, 16) //nolint:mnd
 	_, _ = rand.Read(b)
 	return base64.StdEncoding.EncodeToString(b)
 }
 
-func CreateSignature(
+func createSignature(
 	method, baseURL string, consumerSecret string,
 	params map[string]string,
 	tokenSecret string,
@@ -48,7 +48,7 @@ func CreateSignature(
 	return signature
 }
 
-func AuthHeader(params map[string]string) string {
+func authHeader(params map[string]string) string {
 	var pairs []string
 	for k, v := range params {
 		if strings.HasPrefix(k, "oauth_") {

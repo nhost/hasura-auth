@@ -62,11 +62,11 @@ func getScopes(provider api.SigninProvider, scopes []string) []string {
 //nolint:funlen,cyclop
 func getOauth2Providers(
 	cCtx *cli.Context,
-) (provider.Map, error) {
-	providers := make(provider.Map)
+) (providers.Map, error) {
+	providersMap := make(providers.Map)
 
 	if cCtx.Bool(flagGoogleEnabled) {
-		providers["google"] = provider.NewGoogleProvider(
+		providersMap["google"] = providers.NewGoogleProvider(
 			cCtx.String(flagGoogleClientID),
 			cCtx.String(flagGoogleClientSecret),
 			cCtx.String(flagServerURL),
@@ -75,7 +75,7 @@ func getOauth2Providers(
 	}
 
 	if cCtx.Bool(flagGithubEnabled) {
-		providers["github"] = provider.NewGithubProvider(
+		providersMap["github"] = providers.NewGithubProvider(
 			cCtx.String(flagGithubClientID),
 			cCtx.String(flagGithubClientSecret),
 			cCtx.String(flagServerURL),
@@ -87,7 +87,7 @@ func getOauth2Providers(
 	}
 
 	if cCtx.Bool(flagAppleEnabled) {
-		clientSecret, err := provider.GenerateClientSecret(
+		clientSecret, err := providers.GenerateClientSecret(
 			cCtx.String(flagAppleTeamID),
 			cCtx.String(flagAppleKeyID),
 			cCtx.String(flagAppleClientID),
@@ -97,7 +97,7 @@ func getOauth2Providers(
 			return nil, fmt.Errorf("failed to generate Apple client secret: %w", err)
 		}
 
-		providers["apple"], err = provider.NewAppleProvider(
+		providersMap["apple"], err = providers.NewAppleProvider(
 			cCtx.Context,
 			cCtx.String(flagAppleClientID),
 			clientSecret,
@@ -110,7 +110,7 @@ func getOauth2Providers(
 	}
 
 	if cCtx.Bool(flagLinkedInEnabled) {
-		providers["linkedin"] = provider.NewLinkedInProvider(
+		providersMap["linkedin"] = providers.NewLinkedInProvider(
 			cCtx.String(flagLinkedInClientID),
 			cCtx.String(flagLinkedInClientSecret),
 			cCtx.String(flagServerURL),
@@ -119,7 +119,7 @@ func getOauth2Providers(
 	}
 
 	if cCtx.Bool(flagDiscordEnabled) {
-		providers["discord"] = provider.NewDiscordProvider(
+		providersMap["discord"] = providers.NewDiscordProvider(
 			cCtx.String(flagDiscordClientID),
 			cCtx.String(flagDiscordClientSecret),
 			cCtx.String(flagServerURL),
@@ -128,7 +128,7 @@ func getOauth2Providers(
 	}
 
 	if cCtx.Bool(flagSpotifyEnabled) {
-		providers["spotify"] = provider.NewSpotifyProvider(
+		providersMap["spotify"] = providers.NewSpotifyProvider(
 			cCtx.String(flagSpotifyClientID),
 			cCtx.String(flagSpotifyClientSecret),
 			cCtx.String(flagServerURL),
@@ -137,7 +137,7 @@ func getOauth2Providers(
 	}
 
 	if cCtx.Bool(flagTwitchEnabled) {
-		providers["twitch"] = provider.NewTwitchProvider(
+		providersMap["twitch"] = providers.NewTwitchProvider(
 			cCtx.String(flagTwitchClientID),
 			cCtx.String(flagTwitchClientSecret),
 			cCtx.String(flagServerURL),
@@ -146,7 +146,7 @@ func getOauth2Providers(
 	}
 
 	if cCtx.Bool(flagGitlabEnabled) {
-		providers["gitlab"] = provider.NewGitlabProvider(
+		providersMap["gitlab"] = providers.NewGitlabProvider(
 			cCtx.String(flagGitlabClientID),
 			cCtx.String(flagGitlabClientSecret),
 			cCtx.String(flagServerURL),
@@ -155,7 +155,7 @@ func getOauth2Providers(
 	}
 
 	if cCtx.Bool(flagBitbucketEnabled) {
-		providers["bitbucket"] = provider.NewBitbucketProvider(
+		providersMap["bitbucket"] = providers.NewBitbucketProvider(
 			cCtx.String(flagBitbucketClientID),
 			cCtx.String(flagBitbucketClientSecret),
 			cCtx.String(flagServerURL),
@@ -164,7 +164,7 @@ func getOauth2Providers(
 	}
 
 	if cCtx.Bool(flagWorkosEnabled) {
-		providers["workos"] = provider.NewWorkosProvider(
+		providersMap["workos"] = providers.NewWorkosProvider(
 			cCtx.String(flagWorkosClientID),
 			cCtx.String(flagWorkosClientSecret),
 			cCtx.String(flagServerURL),
@@ -176,7 +176,7 @@ func getOauth2Providers(
 	}
 
 	if cCtx.Bool(flagAzureadEnabled) {
-		providers["azuread"] = provider.NewAzureadProvider(
+		providersMap["azuread"] = providers.NewAzureadProvider(
 			cCtx.String(flagAzureadClientID),
 			cCtx.String(flagAzureadClientSecret),
 			cCtx.String(flagServerURL),
@@ -186,7 +186,7 @@ func getOauth2Providers(
 	}
 
 	if cCtx.Bool(flagFacebookEnabled) {
-		providers["facebook"] = provider.NewFacebookProvider(
+		providersMap["facebook"] = providers.NewFacebookProvider(
 			cCtx.String(flagFacebookClientID),
 			cCtx.String(flagFacebookClientSecret),
 			cCtx.String(flagServerURL),
@@ -212,12 +212,12 @@ func getOauth2Providers(
 	}
 
 	if cCtx.Bool(flagTwitterEnabled) {
-		providers["twitter"] = provider.NewTwitterProvider(
+		providersMap["twitter"] = providers.NewTwitterProvider(
 			cCtx.String(flagTwitterConsumerKey),
 			cCtx.String(flagTwitterConsumerSecret),
 			cCtx.String(flagServerURL),
 		)
 	}
 
-	return providers, nil
+	return providersMap, nil
 }

@@ -21,7 +21,7 @@ import (
 	"github.com/nhost/hasura-auth/go/middleware"
 	"github.com/nhost/hasura-auth/go/middleware/ratelimit"
 	"github.com/nhost/hasura-auth/go/oidc"
-	"github.com/nhost/hasura-auth/go/provider"
+	"github.com/nhost/hasura-auth/go/providers"
 	"github.com/nhost/hasura-auth/go/sql"
 	ginmiddleware "github.com/oapi-codegen/gin-middleware"
 	"github.com/urfave/cli/v2"
@@ -721,7 +721,7 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 				Name:     flagGithubScope,
 				Usage:    "GitHub OAuth scope",
 				Category: "oauth-github",
-				Value:    cli.NewStringSlice(provider.DefaultGithubScopes...),
+				Value:    cli.NewStringSlice(providers.DefaultGithubScopes...),
 				EnvVars:  []string{"AUTH_PROVIDER_GITHUB_SCOPE"},
 			},
 			// Google provider flags
@@ -748,7 +748,7 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 				Name:     flagGoogleScope,
 				Usage:    "Google OAuth scope",
 				Category: "oauth-google",
-				Value:    cli.NewStringSlice(provider.DefaultGoogleScopes...),
+				Value:    cli.NewStringSlice(providers.DefaultGoogleScopes...),
 				EnvVars:  []string{"AUTH_PROVIDER_GOOGLE_SCOPE"},
 			},
 			// Apple provider flags
@@ -787,7 +787,7 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 				Name:     flagAppleScope,
 				Usage:    "Apple OAuth scope",
 				Category: "oauth-apple",
-				Value:    cli.NewStringSlice(provider.DefaultAppleScopes...),
+				Value:    cli.NewStringSlice(providers.DefaultAppleScopes...),
 				EnvVars:  []string{"AUTH_PROVIDER_APPLE_SCOPE"},
 			},
 			// LinkedIn provider flags
@@ -814,7 +814,7 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 				Name:     flagLinkedInScope,
 				Usage:    "LinkedIn OAuth scope",
 				Category: "oauth-linkedin",
-				Value:    cli.NewStringSlice(provider.DefaultLinkedInScopes...),
+				Value:    cli.NewStringSlice(providers.DefaultLinkedInScopes...),
 				EnvVars:  []string{"AUTH_PROVIDER_LINKEDIN_SCOPE"},
 			},
 			// Discord provider flags
@@ -841,7 +841,7 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 				Name:     flagDiscordScope,
 				Usage:    "Discord OAuth scope",
 				Category: "oauth-discord",
-				Value:    cli.NewStringSlice(provider.DefaultDiscordScopes...),
+				Value:    cli.NewStringSlice(providers.DefaultDiscordScopes...),
 				EnvVars:  []string{"AUTH_PROVIDER_DISCORD_SCOPE"},
 			},
 			// Spotify provider flags
@@ -868,7 +868,7 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 				Name:     flagSpotifyScope,
 				Usage:    "Spotify OAuth scope",
 				Category: "oauth-spotify",
-				Value:    cli.NewStringSlice(provider.DefaultSpotifyScopes...),
+				Value:    cli.NewStringSlice(providers.DefaultSpotifyScopes...),
 				EnvVars:  []string{"AUTH_PROVIDER_SPOTIFY_SCOPE"},
 			},
 
@@ -896,7 +896,7 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 				Name:     flagTwitchScope,
 				Usage:    "Twitch OAuth scope",
 				Category: "oauth-twitch",
-				Value:    cli.NewStringSlice(provider.DefaultTwitchScopes...),
+				Value:    cli.NewStringSlice(providers.DefaultTwitchScopes...),
 				EnvVars:  []string{"AUTH_PROVIDER_TWITCH_SCOPE"},
 			},
 
@@ -924,7 +924,7 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 				Name:     flagGitlabScope,
 				Usage:    "Gitlab OAuth scope",
 				Category: "oauth-gitlab",
-				Value:    cli.NewStringSlice(provider.DefaultGitlabScopes...),
+				Value:    cli.NewStringSlice(providers.DefaultGitlabScopes...),
 				EnvVars:  []string{"AUTH_PROVIDER_GITLAB_SCOPE"},
 			},
 
@@ -952,7 +952,7 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 				Name:     flagBitbucketScope,
 				Usage:    "Bitbucket OAuth scope",
 				Category: "oauth-bitbucket",
-				Value:    cli.NewStringSlice(provider.DefaultBitbucketScopes...),
+				Value:    cli.NewStringSlice(providers.DefaultBitbucketScopes...),
 				EnvVars:  []string{"AUTH_PROVIDER_BITBUCKET_SCOPE"},
 			},
 
@@ -1024,7 +1024,7 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 				Name:     flagAzureadScope,
 				Usage:    "Azuread OAuth scope",
 				Category: "oauth-azuread",
-				Value:    cli.NewStringSlice(provider.DefaultAzureadScopes...),
+				Value:    cli.NewStringSlice(providers.DefaultAzureadScopes...),
 				EnvVars:  []string{"AUTH_PROVIDER_AZUREAD_SCOPE"},
 			},
 			// Facebook provider flags
@@ -1051,7 +1051,7 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 				Name:     flagFacebookScope,
 				Usage:    "Facebook OAuth scope",
 				Category: "oauth-facebook",
-				Value:    cli.NewStringSlice(provider.DefaultFacebookScopes...),
+				Value:    cli.NewStringSlice(providers.DefaultFacebookScopes...),
 				EnvVars:  []string{"AUTH_PROVIDER_FACEBOOK_SCOPE"},
 			},
 			// Windowslive provider flags
