@@ -13,7 +13,6 @@ var ErrNoUserDataFound = errors.New("no user data found")
 
 type Twitch struct {
 	*oauth2.Config
-	ClientID string // This is required for Twitch Helix API requests.
 }
 
 func NewTwitchProvider(
