@@ -40,4 +40,7 @@ var (
 
 	// DefaultWindowsliveScopes defines the default scopes for WindowsLive OAuth2.
 	DefaultWindowsliveScopes = []string{"wl.basic", "wl.emails"}
+
+	// DefaultStravaScopes defines the default scopes for Strava OAuth2.
+	DefaultStravaScopes = []string{"profile:read_all"}
 )

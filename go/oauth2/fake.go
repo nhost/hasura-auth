@@ -44,6 +44,11 @@ func (f *FakeProvider) Exchange(
 			AccessToken: "valid-accesstoken-1",
 			TokenType:   "Bearer",
 		}, nil
+	case "valid-code-empty-email":
+		return &oauth2.Token{ //nolint:exhaustruct
+			AccessToken: "valid-accesstoken-empty-email",
+			TokenType:   "Bearer",
+		}, nil
 	default:
 		return nil, errors.New("invalid code") //nolint:goerr113
 	}
@@ -63,6 +68,14 @@ func (f *FakeProvider) GetProfile(
 			EmailVerified:  true,
 			Name:           "User One",
 			Picture:        "https://fake.com/images/profile/user1.jpg",
+		}, nil
+	case "valid-accesstoken-empty-email":
+		return oidc.Profile{
+			ProviderUserID: "9876543210",
+			Email:          "",
+			EmailVerified:  false,
+			Name:           "User No Email",
+			Picture:        "https://fake.com/images/profile/user2.jpg",
 		}, nil
 	default:
 		return oidc.Profile{}, errors.New("invalid access token") //nolint:goerr113
