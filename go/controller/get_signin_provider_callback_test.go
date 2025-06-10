@@ -74,7 +74,7 @@ func TestGetSigninProviderProviderCallback(t *testing.T) { //nolint:maintidx
 	jwtToken := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjEwNzExMTE4MDI0LCJodHRwczovL2hhc3VyYS5pby9qd3QvY2xhaW1zIjp7IngtaGFzdXJhLWFsbG93ZWQtcm9sZXMiOlsibWUiLCJ1c2VyIiwiZWRpdG9yIl0sIngtaGFzdXJhLWRlZmF1bHQtcm9sZSI6InVzZXIiLCJ4LWhhc3VyYS11c2VyLWlkIjoiZjkwNzgyZGUtZjBhMy00MWZlLWI3NzgtMDFlNGY4MGMyNDEzIiwieC1oYXN1cmEtdXNlci1pcy1hbm9ueW1vdXMiOiJmYWxzZSJ9LCJpYXQiOjE3MTExMTgwMjQsImlzcyI6Imhhc3VyYS1hdXRoIiwic3ViIjoiZjkwNzgyZGUtZjBhMy00MWZlLWI3NzgtMDFlNGY4MGMyNDEzIn0.wms_3kNeVVeqxQvSMcM2l7By1BTz4uteKSAGmVgafYY" //nolint:lll,gosec
 
 	cases := []testRequest[api.GetSigninProviderProviderCallbackRequestObject, api.GetSigninProviderProviderCallbackResponseObject]{ //nolint:lll
-		{
+		{ //nolint:dupl
 			name:   "signup",
 			config: getConfig,
 			db: func(ctrl *gomock.Controller) controller.DBClient { //nolint:dupl
@@ -213,7 +213,7 @@ func TestGetSigninProviderProviderCallback(t *testing.T) { //nolint:maintidx
 			getControllerOpts: nil,
 		},
 
-		{
+		{ //nolint:dupl
 			name: "signup - disabled",
 			config: func() *controller.Config {
 				c := getConfig()
@@ -1009,6 +1009,180 @@ func TestGetSigninProviderProviderCallback(t *testing.T) { //nolint:maintidx
 			expectedResponse: controller.ErrorRedirectResponse{
 				Headers: struct{ Location string }{
 					Location: `^http://localhost:3000/connect-success\?error=invalid-request&errorDescription=.*$`,
+				},
+			},
+			expectedJWT:       nil,
+			jwtTokenFn:        nil,
+			getControllerOpts: nil,
+		},
+
+		{ //nolint:dupl
+			name:   "signup - empty email",
+			config: getConfig,
+			db: func(ctrl *gomock.Controller) controller.DBClient { //nolint:dupl
+				mock := mock.NewMockDBClient(ctrl)
+
+				mock.EXPECT().GetUserByProviderID(
+					gomock.Any(),
+					sql.GetUserByProviderIDParams{
+						ProviderID:     "fake",
+						ProviderUserID: "9876543210",
+					},
+				).Return(sql.AuthUser{}, pgx.ErrNoRows) //nolint:exhaustruct
+
+				mock.EXPECT().GetUserByEmail(
+					gomock.Any(),
+					sql.Text(""),
+				).Return(sql.AuthUser{}, pgx.ErrNoRows) //nolint:exhaustruct
+
+				mock.EXPECT().InsertUserWithUserProviderAndRefreshToken(
+					gomock.Any(),
+					cmpDBParams(sql.InsertUserWithUserProviderAndRefreshTokenParams{
+						ID:                    userID,
+						Disabled:              false,
+						DisplayName:           "User No Email",
+						AvatarUrl:             "https://fake.com/images/profile/user2.jpg",
+						Email:                 sql.Text(""),
+						Ticket:                sql.Text(""),
+						TicketExpiresAt:       sql.TimestampTz(time.Now()),
+						EmailVerified:         false,
+						Locale:                "en",
+						DefaultRole:           "user",
+						Metadata:              []byte("null"),
+						Roles:                 []string{"user", "me"},
+						RefreshTokenHash:      sql.Text("asdadasdasdasd"),
+						RefreshTokenExpiresAt: sql.TimestampTz(time.Now().Add(30 * 24 * time.Hour)),
+						ProviderID:            "fake",
+						ProviderUserID:        "9876543210",
+					},
+						cmpopts.IgnoreFields(
+							sql.InsertUserWithUserProviderAndRefreshTokenParams{}, //nolint:exhaustruct
+							"ID",
+						),
+					),
+				).Return(insertResponse, nil)
+
+				return mock
+			},
+			request: api.GetSigninProviderProviderCallbackRequestObject{
+				Params: api.GetSigninProviderProviderCallbackParams{ //nolint:exhaustruct
+					Code:  ptr("valid-code-empty-email"),
+					State: getState(t, jwtGetter, nil, api.SignUpOptions{}), //nolint:exhaustruct
+				},
+				Provider: "fake",
+			},
+			expectedResponse: api.GetSigninProviderProviderCallback302Response{
+				Headers: api.GetSigninProviderProviderCallback302ResponseHeaders{
+					Location: `^http://localhost:3000\?refreshToken=.*$`,
+				},
+			},
+			expectedJWT:       nil,
+			jwtTokenFn:        nil,
+			getControllerOpts: nil,
+		},
+
+		{ //nolint:dupl
+			name: "signup - empty email with signup disabled",
+			config: func() *controller.Config {
+				c := getConfig()
+				c.DisableSignup = true
+				return c
+			},
+			db: func(ctrl *gomock.Controller) controller.DBClient {
+				mock := mock.NewMockDBClient(ctrl)
+
+				mock.EXPECT().GetUserByProviderID(
+					gomock.Any(),
+					sql.GetUserByProviderIDParams{
+						ProviderID:     "fake",
+						ProviderUserID: "9876543210",
+					},
+				).Return(sql.AuthUser{}, pgx.ErrNoRows) //nolint:exhaustruct
+
+				mock.EXPECT().GetUserByEmail(
+					gomock.Any(),
+					sql.Text(""),
+				).Return(sql.AuthUser{}, pgx.ErrNoRows) //nolint:exhaustruct
+
+				return mock
+			},
+			request: api.GetSigninProviderProviderCallbackRequestObject{
+				Params: api.GetSigninProviderProviderCallbackParams{ //nolint:exhaustruct
+					Code:  ptr("valid-code-empty-email"),
+					State: getState(t, jwtGetter, nil, api.SignUpOptions{}), //nolint:exhaustruct
+				},
+				Provider: "fake",
+			},
+			expectedResponse: controller.ErrorRedirectResponse{
+				Headers: struct{ Location string }{
+					Location: `^http://localhost:3000\?error=signup-disabled&errorDescription=.*$`,
+				},
+			},
+			expectedJWT:       nil,
+			jwtTokenFn:        nil,
+			getControllerOpts: nil,
+		},
+
+		{
+			name: "signup - empty email with new users disabled",
+			config: func() *controller.Config {
+				c := getConfig()
+				c.DisableNewUsers = true
+				return c
+			},
+			db: func(ctrl *gomock.Controller) controller.DBClient {
+				mock := mock.NewMockDBClient(ctrl)
+
+				mock.EXPECT().GetUserByProviderID(
+					gomock.Any(),
+					sql.GetUserByProviderIDParams{
+						ProviderID:     "fake",
+						ProviderUserID: "9876543210",
+					},
+				).Return(sql.AuthUser{}, pgx.ErrNoRows) //nolint:exhaustruct
+
+				mock.EXPECT().GetUserByEmail(
+					gomock.Any(),
+					sql.Text(""),
+				).Return(sql.AuthUser{}, pgx.ErrNoRows) //nolint:exhaustruct
+
+				mock.EXPECT().InsertUserWithUserProvider(
+					gomock.Any(),
+					cmpDBParams(sql.InsertUserWithUserProviderParams{
+						ID:              userID,
+						Disabled:        true,
+						DisplayName:     "User No Email",
+						AvatarUrl:       "https://fake.com/images/profile/user2.jpg",
+						Email:           pgtype.Text{}, //nolint:exhaustruct
+						Ticket:          sql.Text(""),
+						TicketExpiresAt: sql.TimestampTz(time.Now()),
+						EmailVerified:   false,
+						Locale:          "en",
+						DefaultRole:     "user",
+						Metadata:        []byte("null"),
+						Roles:           []string{"user", "me"},
+						ProviderID:      "fake",
+						ProviderUserID:  "9876543210",
+					},
+						cmpopts.IgnoreFields(
+							sql.InsertUserWithUserProviderParams{}, //nolint:exhaustruct
+							"ID",
+						),
+					),
+				).Return(userID, nil)
+
+				return mock
+			},
+			request: api.GetSigninProviderProviderCallbackRequestObject{
+				Params: api.GetSigninProviderProviderCallbackParams{ //nolint:exhaustruct
+					Code:  ptr("valid-code-empty-email"),
+					State: getState(t, jwtGetter, nil, api.SignUpOptions{}), //nolint:exhaustruct
+				},
+				Provider: "fake",
+			},
+			expectedResponse: controller.ErrorRedirectResponse{
+				Headers: struct{ Location string }{
+					Location: `^http://localhost:3000\?error=disabled-user&errorDescription=.*$`,
 				},
 			},
 			expectedJWT:       nil,

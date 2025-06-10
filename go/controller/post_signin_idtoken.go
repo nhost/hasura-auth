@@ -105,8 +105,10 @@ func (ctrl *Controller) providerFlowSignUpValidateOptions(
 		return nil, ErrSignupDisabled
 	}
 
-	if err := ctrl.wf.ValidateSignupEmail(types.Email(profile.Email), logger); err != nil {
-		return nil, err
+	if profile.Email != "" {
+		if err := ctrl.wf.ValidateSignupEmail(types.Email(profile.Email), logger); err != nil {
+			return nil, err
+		}
 	}
 
 	if options == nil {
@@ -118,7 +120,7 @@ func (ctrl *Controller) providerFlowSignUpValidateOptions(
 	}
 
 	options, err := ctrl.wf.ValidateSignUpOptions(
-		options, profile.Email, logger,
+		options, profile.ProviderUserID, logger,
 	)
 	if err != nil {
 		return nil, err
@@ -145,7 +147,7 @@ func (ctrl *Controller) providerFlowSignUp(
 		ctx,
 		profile.Email,
 		options,
-		!profile.EmailVerified,
+		profile.Email != "" && !profile.EmailVerified,
 		ctrl.providerFlowSignupWithSession(ctx, profile, provider, options),
 		ctrl.providerFlowSignupWithoutSession(ctx, profile, provider, options),
 		logger,
@@ -179,13 +181,18 @@ func (ctrl *Controller) providerFlowSignupWithSession(
 			avatarURL = profile.Picture
 		}
 
+		var email pgtype.Text
+		if profile.Email != "" {
+			email = sql.Text(profile.Email)
+		}
+
 		resp, err := ctrl.wf.db.InsertUserWithUserProviderAndRefreshToken(
 			ctx, sql.InsertUserWithUserProviderAndRefreshTokenParams{
 				ID:                    uuid.New(),
 				Disabled:              ctrl.config.DisableNewUsers,
 				DisplayName:           deptr(options.DisplayName),
 				AvatarUrl:             avatarURL,
-				Email:                 sql.Text(profile.Email),
+				Email:                 email,
 				Ticket:                pgtype.Text{}, //nolint:exhaustruct
 				TicketExpiresAt:       sql.TimestampTz(time.Now()),
 				EmailVerified:         profile.EmailVerified,
@@ -225,12 +232,17 @@ func (ctrl *Controller) providerFlowSignupWithoutSession(
 			avatarURL = profile.Picture
 		}
 
+		var email pgtype.Text
+		if profile.Email != "" {
+			email = sql.Text(profile.Email)
+		}
+
 		_, err := ctrl.wf.db.InsertUserWithUserProvider(ctx, sql.InsertUserWithUserProviderParams{
 			ID:              uuid.New(),
 			Disabled:        ctrl.config.DisableNewUsers,
 			DisplayName:     deptr(options.DisplayName),
 			AvatarUrl:       avatarURL,
-			Email:           sql.Text(profile.Email),
+			Email:           email,
 			Ticket:          ticket,
 			TicketExpiresAt: ticketExpiresAt,
 			EmailVerified:   profile.EmailVerified,

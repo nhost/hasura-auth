@@ -189,6 +189,33 @@ func (wf *Workflows) ValidateUser(
 	return nil
 }
 
+func (wf *Workflows) ValidateUserEmailOptional(
+	user sql.AuthUser,
+	logger *slog.Logger,
+) *APIError {
+	if user.Email.Valid && !user.IsAnonymous && !wf.ValidateEmail(user.Email.String) {
+		logger.Warn("email didn't pass access control checks")
+		return ErrInvalidEmailPassword
+	}
+
+	if user.Disabled {
+		logger.Warn("user is disabled")
+		return ErrDisabledUser
+	}
+
+	if user.Email.Valid && !user.EmailVerified && wf.config.RequireEmailVerification {
+		logger.Warn("user is unverified")
+		return ErrUnverifiedUser
+	}
+
+	if user.IsAnonymous {
+		logger.Warn("user is anonymous")
+		return ErrForbiddenAnonymous
+	}
+
+	return nil
+}
+
 func (wf *Workflows) ValidateOptionsRedirectTo(
 	options *api.OptionsRedirectTo,
 	logger *slog.Logger,
@@ -291,7 +318,7 @@ func (wf *Workflows) GetUserByProviderUserID(
 		return sql.AuthUser{}, ErrInternalServerError
 	}
 
-	if err := wf.ValidateUser(user, logger); err != nil {
+	if err := wf.ValidateUserEmailOptional(user, logger); err != nil {
 		return user, err
 	}
 
