@@ -199,7 +199,7 @@ func getOauth2Providers(
 			cCtx.String(flagWindowsliveClientID),
 			cCtx.String(flagWindowsliveClientSecret),
 			cCtx.String(flagServerURL),
-			getScopes("windowslive", cCtx.StringSlice(flagWindowsliveScope)),
+			getScopes(api.SigninProviderWindowslive, cCtx.StringSlice(flagWindowsliveScope)),
 		)
 	}
 	if cCtx.Bool(flagStravaEnabled) {
