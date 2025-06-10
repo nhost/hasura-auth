@@ -87,6 +87,7 @@ const (
 	SigninProviderSpotify     SigninProvider = "spotify"
 	SigninProviderStrava      SigninProvider = "strava"
 	SigninProviderTwitch      SigninProvider = "twitch"
+	SigninProviderTwitter     SigninProvider = "twitter"
 	SigninProviderWindowslive SigninProvider = "windowslive"
 	SigninProviderWorkos      SigninProvider = "workos"
 )
@@ -113,6 +114,7 @@ const (
 	GetSigninProviderProviderParamsProviderSpotify     GetSigninProviderProviderParamsProvider = "spotify"
 	GetSigninProviderProviderParamsProviderStrava      GetSigninProviderProviderParamsProvider = "strava"
 	GetSigninProviderProviderParamsProviderTwitch      GetSigninProviderProviderParamsProvider = "twitch"
+	GetSigninProviderProviderParamsProviderTwitter     GetSigninProviderProviderParamsProvider = "twitter"
 	GetSigninProviderProviderParamsProviderWindowslive GetSigninProviderProviderParamsProvider = "windowslive"
 	GetSigninProviderProviderParamsProviderWorkos      GetSigninProviderProviderParamsProvider = "workos"
 )
@@ -131,6 +133,7 @@ const (
 	GetSigninProviderProviderCallbackParamsProviderSpotify     GetSigninProviderProviderCallbackParamsProvider = "spotify"
 	GetSigninProviderProviderCallbackParamsProviderStrava      GetSigninProviderProviderCallbackParamsProvider = "strava"
 	GetSigninProviderProviderCallbackParamsProviderTwitch      GetSigninProviderProviderCallbackParamsProvider = "twitch"
+	GetSigninProviderProviderCallbackParamsProviderTwitter     GetSigninProviderProviderCallbackParamsProvider = "twitter"
 	GetSigninProviderProviderCallbackParamsProviderWindowslive GetSigninProviderProviderCallbackParamsProvider = "windowslive"
 	GetSigninProviderProviderCallbackParamsProviderWorkos      GetSigninProviderProviderCallbackParamsProvider = "workos"
 )
@@ -149,6 +152,7 @@ const (
 	Spotify     PostSigninProviderProviderCallbackParamsProvider = "spotify"
 	Strava      PostSigninProviderProviderCallbackParamsProvider = "strava"
 	Twitch      PostSigninProviderProviderCallbackParamsProvider = "twitch"
+	Twitter     PostSigninProviderProviderCallbackParamsProvider = "twitter"
 	Windowslive PostSigninProviderProviderCallbackParamsProvider = "windowslive"
 	Workos      PostSigninProviderProviderCallbackParamsProvider = "workos"
 )
@@ -537,6 +541,12 @@ type GetSigninProviderProviderCallbackParams struct {
 
 	// State State parameter to avoid CSRF attacks
 	State string `form:"state" json:"state"`
+
+	// OauthToken OAuth token for the provider (e.g., X)
+	OauthToken *string `form:"oauth_token,omitempty" json:"oauth_token,omitempty"`
+
+	// OauthVerifier OAuth verifier for the provider (e.g., X)
+	OauthVerifier *string `form:"oauth_verifier,omitempty" json:"oauth_verifier,omitempty"`
 
 	// Error Error message if authentication failed
 	Error *string `form:"error,omitempty" json:"error,omitempty"`

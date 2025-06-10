@@ -20,8 +20,8 @@ import (
 	"github.com/nhost/hasura-auth/go/hibp"
 	"github.com/nhost/hasura-auth/go/middleware"
 	"github.com/nhost/hasura-auth/go/middleware/ratelimit"
-	"github.com/nhost/hasura-auth/go/oauth2"
 	"github.com/nhost/hasura-auth/go/oidc"
+	"github.com/nhost/hasura-auth/go/providers"
 	"github.com/nhost/hasura-auth/go/sql"
 	ginmiddleware "github.com/oapi-codegen/gin-middleware"
 	"github.com/urfave/cli/v2"
@@ -165,6 +165,9 @@ const (
 	flagStravaClientID                   = "strava-client-id"
 	flagStravaClientSecret               = "strava-client-secret" //nolint:gosec
 	flagStravaScope                      = "strava-scope"
+	flagTwitterEnabled                   = "twitter-enabled"
+	flagTwitterConsumerKey               = "twitter-consumer-key"
+	flagTwitterConsumerSecret            = "twitter-consumer-secret"
 )
 
 func CommandServe() *cli.Command { //nolint:funlen,maintidx
@@ -718,7 +721,7 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 				Name:     flagGithubScope,
 				Usage:    "GitHub OAuth scope",
 				Category: "oauth-github",
-				Value:    cli.NewStringSlice(oauth2.DefaultGithubScopes...),
+				Value:    cli.NewStringSlice(providers.DefaultGithubScopes...),
 				EnvVars:  []string{"AUTH_PROVIDER_GITHUB_SCOPE"},
 			},
 			// Google provider flags
@@ -745,7 +748,7 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 				Name:     flagGoogleScope,
 				Usage:    "Google OAuth scope",
 				Category: "oauth-google",
-				Value:    cli.NewStringSlice(oauth2.DefaultGoogleScopes...),
+				Value:    cli.NewStringSlice(providers.DefaultGoogleScopes...),
 				EnvVars:  []string{"AUTH_PROVIDER_GOOGLE_SCOPE"},
 			},
 			// Apple provider flags
@@ -784,7 +787,7 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 				Name:     flagAppleScope,
 				Usage:    "Apple OAuth scope",
 				Category: "oauth-apple",
-				Value:    cli.NewStringSlice(oauth2.DefaultAppleScopes...),
+				Value:    cli.NewStringSlice(providers.DefaultAppleScopes...),
 				EnvVars:  []string{"AUTH_PROVIDER_APPLE_SCOPE"},
 			},
 			// LinkedIn provider flags
@@ -811,7 +814,7 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 				Name:     flagLinkedInScope,
 				Usage:    "LinkedIn OAuth scope",
 				Category: "oauth-linkedin",
-				Value:    cli.NewStringSlice(oauth2.DefaultLinkedInScopes...),
+				Value:    cli.NewStringSlice(providers.DefaultLinkedInScopes...),
 				EnvVars:  []string{"AUTH_PROVIDER_LINKEDIN_SCOPE"},
 			},
 			// Discord provider flags
@@ -838,7 +841,7 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 				Name:     flagDiscordScope,
 				Usage:    "Discord OAuth scope",
 				Category: "oauth-discord",
-				Value:    cli.NewStringSlice(oauth2.DefaultDiscordScopes...),
+				Value:    cli.NewStringSlice(providers.DefaultDiscordScopes...),
 				EnvVars:  []string{"AUTH_PROVIDER_DISCORD_SCOPE"},
 			},
 			// Spotify provider flags
@@ -865,7 +868,7 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 				Name:     flagSpotifyScope,
 				Usage:    "Spotify OAuth scope",
 				Category: "oauth-spotify",
-				Value:    cli.NewStringSlice(oauth2.DefaultSpotifyScopes...),
+				Value:    cli.NewStringSlice(providers.DefaultSpotifyScopes...),
 				EnvVars:  []string{"AUTH_PROVIDER_SPOTIFY_SCOPE"},
 			},
 
@@ -893,7 +896,7 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 				Name:     flagTwitchScope,
 				Usage:    "Twitch OAuth scope",
 				Category: "oauth-twitch",
-				Value:    cli.NewStringSlice(oauth2.DefaultTwitchScopes...),
+				Value:    cli.NewStringSlice(providers.DefaultTwitchScopes...),
 				EnvVars:  []string{"AUTH_PROVIDER_TWITCH_SCOPE"},
 			},
 
@@ -921,7 +924,7 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 				Name:     flagGitlabScope,
 				Usage:    "Gitlab OAuth scope",
 				Category: "oauth-gitlab",
-				Value:    cli.NewStringSlice(oauth2.DefaultGitlabScopes...),
+				Value:    cli.NewStringSlice(providers.DefaultGitlabScopes...),
 				EnvVars:  []string{"AUTH_PROVIDER_GITLAB_SCOPE"},
 			},
 
@@ -949,7 +952,7 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 				Name:     flagBitbucketScope,
 				Usage:    "Bitbucket OAuth scope",
 				Category: "oauth-bitbucket",
-				Value:    cli.NewStringSlice(oauth2.DefaultBitbucketScopes...),
+				Value:    cli.NewStringSlice(providers.DefaultBitbucketScopes...),
 				EnvVars:  []string{"AUTH_PROVIDER_BITBUCKET_SCOPE"},
 			},
 
@@ -1021,7 +1024,7 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 				Name:     flagAzureadScope,
 				Usage:    "Azuread OAuth scope",
 				Category: "oauth-azuread",
-				Value:    cli.NewStringSlice(oauth2.DefaultAzureadScopes...),
+				Value:    cli.NewStringSlice(providers.DefaultAzureadScopes...),
 				EnvVars:  []string{"AUTH_PROVIDER_AZUREAD_SCOPE"},
 			},
 			// Facebook provider flags
@@ -1048,7 +1051,7 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 				Name:     flagFacebookScope,
 				Usage:    "Facebook OAuth scope",
 				Category: "oauth-facebook",
-				Value:    cli.NewStringSlice(oauth2.DefaultFacebookScopes...),
+				Value:    cli.NewStringSlice(providers.DefaultFacebookScopes...),
 				EnvVars:  []string{"AUTH_PROVIDER_FACEBOOK_SCOPE"},
 			},
 			// Windowslive provider flags
@@ -1075,7 +1078,7 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 				Name:     flagWindowsliveScope,
 				Usage:    "Windows Live OAuth scope",
 				Category: "oauth-windowslive",
-				Value:    cli.NewStringSlice(oauth2.DefaultWindowsliveScopes...),
+				Value:    cli.NewStringSlice(providers.DefaultWindowsliveScopes...),
 				EnvVars:  []string{"AUTH_PROVIDER_WINDOWSLIVE_SCOPE"},
 			},
 
@@ -1103,8 +1106,29 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 				Name:     flagStravaScope,
 				Usage:    "Strava OAuth scope",
 				Category: "oauth-strava",
-				Value:    cli.NewStringSlice(oauth2.DefaultStravaScopes...),
+				Value:    cli.NewStringSlice(providers.DefaultStravaScopes...),
 				EnvVars:  []string{"AUTH_PROVIDER_STRAVA_SCOPE"},
+			},
+
+			// twitter
+			&cli.BoolFlag{ //nolint: exhaustruct
+				Name:     flagTwitterEnabled,
+				Usage:    "Enable Twitter OAuth provider",
+				Category: "oauth-twitter",
+				Value:    false,
+				EnvVars:  []string{"AUTH_PROVIDER_TWITTER_ENABLED"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagTwitterConsumerKey,
+				Usage:    "Twitter OAuth consumer key",
+				Category: "oauth-twitter",
+				EnvVars:  []string{"AUTH_PROVIDER_TWITTER_CONSUMER_KEY"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagTwitterConsumerSecret,
+				Usage:    "Twitter OAuth consumer secret",
+				Category: "oauth-twitter",
+				EnvVars:  []string{"AUTH_PROVIDER_TWITTER_CONSUMER_SECRET"},
 			},
 		},
 		Action: serve,

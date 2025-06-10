@@ -1,4 +1,4 @@
-package oauth2
+package providers
 
 import (
 	"context"
@@ -16,8 +16,8 @@ type Google struct {
 func NewGoogleProvider(
 	clientID, clientSecret, authServerURL string,
 	scopes []string,
-) *Google {
-	return &Google{
+) *Provider {
+	google := &Google{
 		Config: &oauth2.Config{
 			ClientID:     clientID,
 			ClientSecret: clientSecret,
@@ -26,6 +26,8 @@ func NewGoogleProvider(
 			Endpoint:     endpoints.Google,
 		},
 	}
+
+	return NewOauth2Provider(google)
 }
 
 type googleUser struct {

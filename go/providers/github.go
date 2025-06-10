@@ -1,4 +1,4 @@
-package oauth2
+package providers
 
 import (
 	"context"
@@ -18,8 +18,8 @@ func NewGithubProvider(
 	clientID, clientSecret, authServerURL string,
 	authURL, tokenURL, profileURL string,
 	scopes []string,
-) *Github {
-	return &Github{
+) *Provider {
+	github := &Github{
 		Config: &oauth2.Config{
 			ClientID:     clientID,
 			ClientSecret: clientSecret,
@@ -32,6 +32,8 @@ func NewGithubProvider(
 		},
 		profileURL: profileURL,
 	}
+
+	return NewOauth2Provider(github)
 }
 
 type gitHubUser struct {

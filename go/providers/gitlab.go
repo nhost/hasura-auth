@@ -1,4 +1,4 @@
-package oauth2
+package providers
 
 import (
 	"context"
@@ -16,8 +16,8 @@ type Gitlab struct {
 func NewGitlabProvider(
 	clientID, clientSecret, authServerURL string,
 	scopes []string,
-) *Gitlab {
-	return &Gitlab{
+) *Provider {
+	gitlab := &Gitlab{
 		Config: &oauth2.Config{
 			ClientID:     clientID,
 			ClientSecret: clientSecret,
@@ -29,6 +29,8 @@ func NewGitlabProvider(
 			},
 		},
 	}
+
+	return NewOauth2Provider(gitlab)
 }
 
 type gitlabUserProfile struct {

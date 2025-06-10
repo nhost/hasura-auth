@@ -1,4 +1,4 @@
-package oauth2
+package providers
 
 import (
 	"context"
@@ -42,7 +42,7 @@ func NewWorkosProvider(
 	clientID, clientSecret, authServerURL string,
 	scopes []string,
 	defaultOrganization, defaultConnection, defaultDomain string,
-) *WorkOS {
+) *Provider {
 	redirectURL := authServerURL + "/signin/provider/workos/callback"
 
 	baseConfig := &oauth2.Config{
@@ -67,7 +67,7 @@ func NewWorkosProvider(
 		parent: w,
 	}
 
-	return w
+	return NewOauth2Provider(w)
 }
 
 type WorkosUserProfile struct {

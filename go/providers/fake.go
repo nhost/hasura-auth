@@ -1,4 +1,4 @@
-package oauth2
+package providers
 
 import (
 	"context"
@@ -15,8 +15,8 @@ type FakeProvider struct {
 func NewFakeProvider(
 	clientID, clientSecret, authServerURL string,
 	scopes []string,
-) *FakeProvider {
-	return &FakeProvider{
+) *Provider {
+	fake := &FakeProvider{
 		Config: &oauth2.Config{
 			ClientID:     clientID,
 			ClientSecret: clientSecret,
@@ -29,6 +29,8 @@ func NewFakeProvider(
 			},
 		},
 	}
+
+	return NewOauth2Provider(fake)
 }
 
 func (f *FakeProvider) Oauth2() *oauth2.Config {

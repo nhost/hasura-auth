@@ -1,4 +1,4 @@
-package oauth2
+package providers
 
 import (
 	"context"
@@ -27,7 +27,7 @@ func NewAppleProvider(
 	ctx context.Context,
 	clientID, clientSecret, authServerURL string,
 	scopes []string,
-) (*Apple, error) {
+) (*Provider, error) {
 	idtokenProvider, err := oidc.NewIDTokenValidator(
 		ctx, api.IdTokenProviderApple, clientID,
 	)
@@ -35,7 +35,7 @@ func NewAppleProvider(
 		return nil, fmt.Errorf("failed to create ID token provider: %w", err)
 	}
 
-	return &Apple{
+	apple := &Apple{
 		Config: &oauth2.Config{
 			ClientID:     clientID,
 			ClientSecret: clientSecret,
@@ -47,7 +47,9 @@ func NewAppleProvider(
 			},
 		},
 		oidc: idtokenProvider,
-	}, nil
+	}
+
+	return NewOauth2Provider(apple), nil
 }
 
 // GenerateClientSecret creates a JWT token for Apple authentication

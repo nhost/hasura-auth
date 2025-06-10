@@ -1,4 +1,4 @@
-package oauth2
+package providers
 
 import (
 	"context"
@@ -16,8 +16,8 @@ type Strava struct {
 func NewStravaProvider(
 	clientID, clientSecret, authServerURL string,
 	scopes []string,
-) *Strava {
-	return &Strava{
+) *Provider {
+	strava := &Strava{
 		Config: &oauth2.Config{
 			ClientID:     clientID,
 			ClientSecret: clientSecret,
@@ -29,6 +29,8 @@ func NewStravaProvider(
 			},
 		},
 	}
+
+	return NewOauth2Provider(strava)
 }
 
 func (s *Strava) AuthCodeURL(state string, opts ...oauth2.AuthCodeOption) string {

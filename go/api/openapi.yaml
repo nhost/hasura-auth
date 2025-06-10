@@ -292,6 +292,18 @@ paths:
           description: State parameter to avoid CSRF attacks
           schema:
             type: string
+        - name: oauth_token
+          in: query
+          required: false
+          description: OAuth token for the provider (e.g., X)
+          schema:
+            type: string
+        - name: oauth_verifier
+          in: query
+          required: false
+          description: OAuth verifier for the provider (e.g., X)
+          schema:
+            type: string
         - name: error
           in: query
           required: false
@@ -1522,6 +1534,7 @@ components:
           - strava
           - facebook
           - windowslive
+          - twitter
       deprecated: true
 
     TicketQuery:

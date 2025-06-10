@@ -1,4 +1,4 @@
-package oauth2
+package providers
 
 import (
 	"context"
@@ -20,10 +20,10 @@ type Spotify struct {
 func NewSpotifyProvider(
 	clientID, clientSecret, authServerURL string,
 	scopes []string,
-) *Spotify {
+) *Provider {
 	redirectURL := authServerURL + "/signin/provider/spotify/callback"
 
-	return &Spotify{
+	spotify := &Spotify{
 		Config: &oauth2.Config{
 			ClientID:     clientID,
 			ClientSecret: clientSecret,
@@ -35,6 +35,8 @@ func NewSpotifyProvider(
 			},
 		},
 	}
+
+	return NewOauth2Provider(spotify)
 }
 
 type spotifyImage struct {

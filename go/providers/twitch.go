@@ -1,4 +1,4 @@
-package oauth2
+package providers
 
 import (
 	"context"
@@ -13,15 +13,13 @@ var ErrNoUserDataFound = errors.New("no user data found")
 
 type Twitch struct {
 	*oauth2.Config
-	ClientID string // This is required for Twitch Helix API requests.
 }
 
 func NewTwitchProvider(
 	clientID, clientSecret, authServerURL string,
 	scopes []string,
-) *Twitch {
-	return &Twitch{
-		ClientID: clientID,
+) *Provider {
+	twitch := &Twitch{
 		Config: &oauth2.Config{
 			ClientID:     clientID,
 			ClientSecret: clientSecret,
@@ -33,6 +31,8 @@ func NewTwitchProvider(
 			},
 		},
 	}
+
+	return NewOauth2Provider(twitch)
 }
 
 type twitchUser struct {
