@@ -37,4 +37,7 @@ var (
 
 	// DefaultFacebookScopes defines the default scopes for Facebook OAuth2.
 	DefaultFacebookScopes = []string{"email"}
+
+	// DefaultWindowsliveScopes defines the default scopes for WindowsLive OAuth2.
+	DefaultWindowsliveScopes = []string{"wl.basic", "wl.emails"}
 )

@@ -1520,6 +1520,7 @@ components:
           - workos
           - azuread
           - facebook
+          - windowslive
       deprecated: true
 
     TicketQuery:

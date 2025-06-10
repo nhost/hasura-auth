@@ -157,6 +157,10 @@ const (
 	flagFacebookClientID                 = "facebook-client-id"
 	flagFacebookClientSecret             = "facebook-client-secret"
 	flagFacebookScope                    = "facebook-scope"
+	flagWindowsliveEnabled               = "windowslive-enabled"
+	flagWindowsliveClientID              = "windowslive-client-id"
+	flagWindowsliveClientSecret          = "windowslive-client-secret"
+	flagWindowsliveScope                 = "windowslive-scope"
 )
 
 func CommandServe() *cli.Command { //nolint:funlen,maintidx
@@ -1042,6 +1046,33 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 				Category: "oauth-facebook",
 				Value:    cli.NewStringSlice(oauth2.DefaultFacebookScopes...),
 				EnvVars:  []string{"AUTH_PROVIDER_FACEBOOK_SCOPE"},
+			},
+			// Windowslive provider flags
+			&cli.BoolFlag{ //nolint: exhaustruct
+				Name:     flagWindowsliveEnabled,
+				Usage:    "Enable Windowslive OAuth provider",
+				Category: "oauth-windowslive",
+				Value:    false,
+				EnvVars:  []string{"AUTH_PROVIDER_WINDOWSLIVE_ENABLED"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagWindowsliveClientID,
+				Usage:    "Windowslive OAuth client ID",
+				Category: "oauth-windowslive",
+				EnvVars:  []string{"AUTH_PROVIDER_WINDOWSLIVE_CLIENT_ID"},
+			},
+			&cli.StringFlag{ //nolint: exhaustruct
+				Name:     flagWindowsliveClientSecret,
+				Usage:    "Windows Live OAuth client secret",
+				Category: "oauth-windowslive",
+				EnvVars:  []string{"AUTH_PROVIDER_WINDOWSLIVE_CLIENT_SECRET"},
+			},
+			&cli.StringSliceFlag{ //nolint: exhaustruct
+				Name:     flagWindowsliveScope,
+				Usage:    "Windows Live OAuth scope",
+				Category: "oauth-windowslive",
+				Value:    cli.NewStringSlice(oauth2.DefaultWindowsliveScopes...),
+				EnvVars:  []string{"AUTH_PROVIDER_WINDOWSLIVE_SCOPE"},
 			},
 		},
 		Action: serve,

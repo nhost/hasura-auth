@@ -34,6 +34,8 @@ func getDefaultScopes(provider string) []string {
 		return oauth2.DefaultAzureadScopes
 	case "facebook":
 		return oauth2.DefaultFacebookScopes
+	case "windowslive":
+		return oauth2.DefaultWindowsliveScopes
 	default:
 		panic("Unknown OAuth2 provider: " + provider)
 	}
@@ -186,6 +188,15 @@ func getOauth2Providers(
 			cCtx.String(flagFacebookClientSecret),
 			cCtx.String(flagServerURL),
 			getScopes("facebook", cCtx.StringSlice(flagFacebookScope)),
+		)
+	}
+
+	if cCtx.Bool(flagWindowsliveEnabled) {
+		providers["windowslive"] = oauth2.NewWindowsliveProvider(
+			cCtx.String(flagWindowsliveClientID),
+			cCtx.String(flagWindowsliveClientSecret),
+			cCtx.String(flagServerURL),
+			getScopes("windowslive", cCtx.StringSlice(flagWindowsliveScope)),
 		)
 	}
 
