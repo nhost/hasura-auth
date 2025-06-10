@@ -39,6 +39,8 @@ func getDefaultScopes(providerName api.SigninProvider) []string {
 		return providers.DefaultWindowsliveScopes
 	case api.SigninProviderStrava:
 		return providers.DefaultStravaScopes
+	case api.SigninProviderTwitter:
+		return []string{}
 	default:
 		panic("Unknown OAuth2 provider: " + providerName)
 	}
