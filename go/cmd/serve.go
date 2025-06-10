@@ -1078,7 +1078,7 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 				Name:     flagWindowsliveScope,
 				Usage:    "Windows Live OAuth scope",
 				Category: "oauth-windowslive",
-				Value:    cli.NewStringSlice(provider.DefaultWindowsliveScopes...),
+				Value:    cli.NewStringSlice(providers.DefaultWindowsliveScopes...),
 				EnvVars:  []string{"AUTH_PROVIDER_WINDOWSLIVE_SCOPE"},
 			},
 
@@ -1106,7 +1106,7 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 				Name:     flagStravaScope,
 				Usage:    "Strava OAuth scope",
 				Category: "oauth-strava",
-				Value:    cli.NewStringSlice(provider.DefaultStravaScopes...),
+				Value:    cli.NewStringSlice(providers.DefaultStravaScopes...),
 				EnvVars:  []string{"AUTH_PROVIDER_STRAVA_SCOPE"},
 			},
 

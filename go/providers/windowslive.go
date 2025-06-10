@@ -1,4 +1,4 @@
-package oauth2
+package providers
 
 import (
 	"context"
@@ -15,8 +15,8 @@ type WindowsLive struct {
 func NewWindowsliveProvider(
 	clientID, clientSecret, authServerURL string,
 	scopes []string,
-) *WindowsLive {
-	return &WindowsLive{
+) *Provider {
+	windowsLive := &WindowsLive{
 		Config: &oauth2.Config{
 			ClientID:     clientID,
 			ClientSecret: clientSecret,
@@ -28,6 +28,8 @@ func NewWindowsliveProvider(
 			},
 		},
 	}
+
+	return NewOauth2Provider(windowsLive)
 }
 
 type microsoftProfile struct {

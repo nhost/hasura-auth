@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/nhost/hasura-auth/go/api"
-	"github.com/nhost/hasura-auth/go/provider"
+	"github.com/nhost/hasura-auth/go/providers"
 	"github.com/urfave/cli/v2"
 )
 
@@ -12,33 +12,33 @@ import (
 func getDefaultScopes(providerName api.SigninProvider) []string {
 	switch providerName {
 	case api.SigninProviderGoogle:
-		return provider.DefaultGoogleScopes
+		return providers.DefaultGoogleScopes
 	case api.SigninProviderDiscord:
-		return provider.DefaultDiscordScopes
+		return providers.DefaultDiscordScopes
 	case api.SigninProviderGithub:
-		return provider.DefaultGithubScopes
+		return providers.DefaultGithubScopes
 	case api.SigninProviderApple:
-		return provider.DefaultAppleScopes
+		return providers.DefaultAppleScopes
 	case api.SigninProviderLinkedin:
-		return provider.DefaultLinkedInScopes
+		return providers.DefaultLinkedInScopes
 	case api.SigninProviderSpotify:
-		return provider.DefaultSpotifyScopes
+		return providers.DefaultSpotifyScopes
 	case api.SigninProviderTwitch:
-		return provider.DefaultTwitchScopes
+		return providers.DefaultTwitchScopes
 	case api.SigninProviderGitlab:
-		return provider.DefaultGitlabScopes
+		return providers.DefaultGitlabScopes
 	case api.SigninProviderBitbucket:
-		return provider.DefaultBitbucketScopes
+		return providers.DefaultBitbucketScopes
 	case api.SigninProviderWorkos:
-		return provider.DefaultWorkOSScopes
+		return providers.DefaultWorkOSScopes
 	case api.SigninProviderAzuread:
-		return provider.DefaultAzureadScopes
+		return providers.DefaultAzureadScopes
 	case api.SigninProviderFacebook:
-		return provider.DefaultFacebookScopes
+		return providers.DefaultFacebookScopes
 	case api.SigninProviderWindowslive:
-		return provider.DefaultWindowsliveScopes
+		return providers.DefaultWindowsliveScopes
 	case api.SigninProviderStrava:
-		return provider.DefaultStravaScopes
+		return providers.DefaultStravaScopes
 	default:
 		panic("Unknown OAuth2 provider: " + providerName)
 	}
@@ -195,7 +195,7 @@ func getOauth2Providers(
 	}
 
 	if cCtx.Bool(flagWindowsliveEnabled) {
-		providers["windowslive"] = oauth2.NewWindowsliveProvider(
+		providersMap["windowslive"] = providers.NewWindowsliveProvider(
 			cCtx.String(flagWindowsliveClientID),
 			cCtx.String(flagWindowsliveClientSecret),
 			cCtx.String(flagServerURL),
@@ -203,7 +203,7 @@ func getOauth2Providers(
 		)
 	}
 	if cCtx.Bool(flagStravaEnabled) {
-		providers["strava"] = oauth2.NewStravaProvider(
+		providersMap["strava"] = providers.NewStravaProvider(
 			cCtx.String(flagStravaClientID),
 			cCtx.String(flagStravaClientSecret),
 			cCtx.String(flagServerURL),
