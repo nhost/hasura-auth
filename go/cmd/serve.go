@@ -1103,7 +1103,7 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 				Name:     flagStravaScope,
 				Usage:    "Strava OAuth scope",
 				Category: "oauth-strava",
-				Value:    cli.NewStringSlice(oauth2.DefaultGitlabScopes...),
+				Value:    cli.NewStringSlice(oauth2.DefaultStravaScopes...),
 				EnvVars:  []string{"AUTH_PROVIDER_STRAVA_SCOPE"},
 			},
 		},
