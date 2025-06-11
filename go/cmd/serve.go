@@ -1079,7 +1079,7 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 				Usage:    "Windows Live OAuth scope",
 				Category: "oauth-windowslive",
 				Value:    cli.NewStringSlice(providers.DefaultWindowsliveScopes...),
-				EnvVars:  []string{"AUTH_PROVIDER_WINDOWSLIVE_SCOPE"},
+				EnvVars:  []string{"AUTH_PROVIDER_WINDOWS_LIVE_SCOPE"},
 			},
 
 			// Strava provider flags
