@@ -827,12 +827,6 @@ paths:
         - webauthn
       security:
         - BearerAuth: []
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ElevateWebauthnRequest'
-        required: true
       responses:
         '200':
           content:
@@ -855,7 +849,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ElevateWebauthnVerifyRequest'
+              $ref: '#/components/schemas/SignInWebauthnVerifyRequest'
         required: true
       responses:
         '200':
@@ -1557,40 +1551,6 @@ components:
       required:
         - imageUrl
         - totpSecret
-
-    ElevateWebauthnRequest:
-      type: object
-      additionalProperties: false
-      properties:
-        email:
-          description: A valid email. Deprecated, no longer used
-          example: john.smith@nhost.io
-          format: email
-          type: string
-          deprecated: true
-      required:
-        - email
-
-    ElevateWebauthnVerifyRequest:
-      type: object
-      additionalProperties: false
-      properties:
-        email:
-          description: A valid email. Deprecated, no longer used
-          example: john.smith@nhost.io
-          format: email
-          type: string
-          deprecated: true
-        credential:
-          type: object
-          additionalProperties: true
-          x-go-type-import:
-            name: protocol
-            path: github.com/go-webauthn/webauthn/protocol
-          x-go-type: protocol.CredentialAssertionResponse
-      required:
-        - email
-        - credential
 
   parameters:
     SigninProvider:

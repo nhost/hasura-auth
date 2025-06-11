@@ -17,10 +17,10 @@ import (
 	"go.uber.org/mock/gomock"
 )
 
-func unmarshalElevateRequest(t *testing.T, b []byte) *api.ElevateWebauthnVerifyRequest {
+func unmarshalElevateRequest(t *testing.T, b []byte) *api.SignInWebauthnVerifyRequest {
 	t.Helper()
 
-	var v *api.ElevateWebauthnVerifyRequest
+	var v *api.SignInWebauthnVerifyRequest
 	if err := json.Unmarshal(b, &v); err != nil {
 		t.Fatal(err)
 	}
@@ -70,7 +70,7 @@ func TestPostElevateWebauthnVerify(t *testing.T) { //nolint:maintidx
 
 				return config
 			},
-			db: func(ctrl *gomock.Controller) controller.DBClient {
+			db: func(ctrl *gomock.Controller) controller.DBClient { //nolint:dupl
 				mock := mock.NewMockDBClient(ctrl)
 
 				mock.EXPECT().GetUser(
@@ -260,6 +260,7 @@ func TestPostElevateWebauthnVerify(t *testing.T) { //nolint:maintidx
 			c, jwtGetter := getController(t, ctrl, tc.config, tc.db, tc.getControllerOpts...)
 
 			// Setup webauthn session data for the test
+			//nolint:lll
 			b := []byte(`{
                 "Session": {
                     "challenge": "nM6om8lzvT5oxvRCFuAqRDOj-tlAq8FdP-eRNOwsfgs",

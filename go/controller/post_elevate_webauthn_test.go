@@ -13,7 +13,6 @@ import (
 	"github.com/nhost/hasura-auth/go/controller"
 	"github.com/nhost/hasura-auth/go/controller/mock"
 	"github.com/nhost/hasura-auth/go/sql"
-	"github.com/oapi-codegen/runtime/types"
 	"go.uber.org/mock/gomock"
 )
 
@@ -62,7 +61,7 @@ func TestPostElevateWebauthn(t *testing.T) {
 
 				mock.EXPECT().GetUser(
 					gomock.Any(), userID,
-				).Return(sql.AuthUser{
+				).Return(sql.AuthUser{ //nolint:exhaustruct
 					ID:          userID,
 					Email:       sql.Text("jane@acme.com"),
 					DisplayName: "Jane Doe",
@@ -100,18 +99,14 @@ func TestPostElevateWebauthn(t *testing.T) {
 				return mock
 			},
 			jwtTokenFn: jwtTokenFn,
-			request: api.PostElevateWebauthnRequestObject{
-				Body: &api.PostElevateWebauthnJSONRequestBody{
-					Email: types.Email("jane@acme.com"), // deprecated but still required
-				},
-			},
+			request:    api.PostElevateWebauthnRequestObject{},
 			expectedResponse: api.PostElevateWebauthn200JSONResponse(
 				protocol.PublicKeyCredentialRequestOptions{
 					Challenge:      protocol.URLEncodedBase64("ignoreme"),
 					Timeout:        60000,
 					RelyingPartyID: "react-apollo.example.nhost.io",
 					AllowedCredentials: []protocol.CredentialDescriptor{
-						{
+						{ //nolint:exhaustruct
 							Type:         "public-key",
 							CredentialID: credentialID,
 						},
@@ -137,11 +132,7 @@ func TestPostElevateWebauthn(t *testing.T) {
 				return mock
 			},
 			jwtTokenFn: jwtTokenFn,
-			request: api.PostElevateWebauthnRequestObject{
-				Body: &api.PostElevateWebauthnJSONRequestBody{
-					Email: types.Email("jane@acme.com"),
-				},
-			},
+			request:    api.PostElevateWebauthnRequestObject{},
 			expectedResponse: controller.ErrorResponse{
 				Error:   "disabled-endpoint",
 				Message: "This endpoint is disabled",
@@ -159,7 +150,7 @@ func TestPostElevateWebauthn(t *testing.T) {
 
 				mock.EXPECT().GetUser(
 					gomock.Any(), userID,
-				).Return(sql.AuthUser{
+				).Return(sql.AuthUser{ //nolint:exhaustruct
 					ID:          userID,
 					Email:       sql.Text("jane@acme.com"),
 					DisplayName: "Jane Doe",
@@ -177,11 +168,7 @@ func TestPostElevateWebauthn(t *testing.T) {
 				return mock
 			},
 			jwtTokenFn: jwtTokenFn,
-			request: api.PostElevateWebauthnRequestObject{
-				Body: &api.PostElevateWebauthnJSONRequestBody{
-					Email: types.Email("jane@acme.com"),
-				},
-			},
+			request:    api.PostElevateWebauthnRequestObject{},
 			expectedResponse: controller.ErrorResponse{
 				Error:   "invalid-request",
 				Message: "The request payload is incorrect",
@@ -199,7 +186,7 @@ func TestPostElevateWebauthn(t *testing.T) {
 
 				mock.EXPECT().GetUser(
 					gomock.Any(), userID,
-				).Return(sql.AuthUser{
+				).Return(sql.AuthUser{ //nolint:exhaustruct
 					ID:          userID,
 					Email:       sql.Text("jane@acme.com"),
 					DisplayName: "Jane Doe",
@@ -209,11 +196,7 @@ func TestPostElevateWebauthn(t *testing.T) {
 				return mock
 			},
 			jwtTokenFn: jwtTokenFn,
-			request: api.PostElevateWebauthnRequestObject{
-				Body: &api.PostElevateWebauthnJSONRequestBody{
-					Email: types.Email("jane@acme.com"),
-				},
-			},
+			request:    api.PostElevateWebauthnRequestObject{},
 			expectedResponse: controller.ErrorResponse{
 				Error:   "disabled-user",
 				Message: "User is disabled",
@@ -236,7 +219,7 @@ func TestPostElevateWebauthn(t *testing.T) {
 			ctx := t.Context()
 			if tc.jwtTokenFn != nil {
 				token := tc.jwtTokenFn()
-				ctx = context.WithValue(ctx, "nhost/auth/jwt", token)
+				ctx = context.WithValue(ctx, controller.JWTContextKey, token) //nolint:staticcheck
 			}
 
 			assertRequest(

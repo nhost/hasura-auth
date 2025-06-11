@@ -20,7 +20,7 @@ import (
 	ginmiddleware "github.com/oapi-codegen/gin-middleware"
 )
 
-const jwtContextKey = "nhost/auth/jwt"
+const JWTContextKey = "nhost/auth/jwt"
 
 type JWTSecret struct {
 	KeyID           string `json:"kid"`
@@ -318,11 +318,11 @@ func (j *JWTGetter) Validate(accessToken string) (*jwt.Token, error) {
 }
 
 func (j *JWTGetter) FromContext(ctx context.Context) (*jwt.Token, bool) {
-	token, ok := ctx.Value(jwtContextKey).(*jwt.Token)
+	token, ok := ctx.Value(JWTContextKey).(*jwt.Token)
 	if !ok { //nolint:nestif
 		c := ginmiddleware.GetGinContext(ctx)
 		if c != nil {
-			a, ok := c.Get(jwtContextKey)
+			a, ok := c.Get(JWTContextKey)
 			if !ok {
 				return nil, false
 			}
@@ -338,7 +338,7 @@ func (j *JWTGetter) FromContext(ctx context.Context) (*jwt.Token, bool) {
 }
 
 func (j *JWTGetter) ToContext(ctx context.Context, jwtToken *jwt.Token) context.Context {
-	return context.WithValue(ctx, jwtContextKey, jwtToken) //nolint:revive,staticcheck
+	return context.WithValue(ctx, JWTContextKey, jwtToken) //nolint:revive,staticcheck
 }
 
 func (j *JWTGetter) verifyElevatedClaim(ctx context.Context, token *jwt.Token) (bool, error) {
@@ -400,7 +400,7 @@ func (j *JWTGetter) MiddlewareFunc(
 	}
 
 	c := ginmiddleware.GetGinContext(ctx)
-	c.Set(jwtContextKey, jwtToken)
+	c.Set(JWTContextKey, jwtToken)
 
 	return nil
 }
