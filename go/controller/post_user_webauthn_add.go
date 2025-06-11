@@ -7,10 +7,10 @@ import (
 	"github.com/nhost/hasura-auth/go/middleware"
 )
 
-func (ctrl *Controller) PostElevateWebauthn( //nolint:ireturn
+func (ctrl *Controller) PostUserWebauthnAdd(
 	ctx context.Context,
-	_ api.PostElevateWebauthnRequestObject,
-) (api.PostElevateWebauthnResponseObject, error) {
+	request api.PostUserWebauthnAddRequestObject,
+) (api.PostUserWebauthnAddResponseObject, error) {
 	logger := middleware.LoggerFromContext(ctx)
 
 	if !ctrl.config.WebauthnEnabled {
@@ -28,11 +28,6 @@ func (ctrl *Controller) PostElevateWebauthn( //nolint:ireturn
 		return ctrl.sendError(apiErr), nil
 	}
 
-	if len(keys) == 0 {
-		logger.Error("user has no security keys")
-		return ctrl.sendError(ErrInvalidRequest), nil
-	}
-
 	creds, apiErr := webauthnCredentials(keys, logger)
 	if apiErr != nil {
 		return ctrl.sendError(apiErr), nil
@@ -46,10 +41,10 @@ func (ctrl *Controller) PostElevateWebauthn( //nolint:ireturn
 		Discoverable: false,
 	}
 
-	creation, apiErr := ctrl.Webauthn.BeginLogin(waUser, logger)
+	creation, apiErr := ctrl.Webauthn.BeginRegistration(waUser, nil, logger)
 	if apiErr != nil {
 		return ctrl.sendError(apiErr), nil
 	}
 
-	return api.PostElevateWebauthn200JSONResponse(creation.Response), nil
+	return api.PostUserWebauthnAdd200JSONResponse(creation.Response), nil
 }

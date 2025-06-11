@@ -82,6 +82,7 @@ type DBClientUpdateUser interface {
 	UpdateUserVerifyEmail(ctx context.Context, id uuid.UUID) (sql.AuthUser, error)
 	UpdateUserTotpSecret(ctx context.Context, arg sql.UpdateUserTotpSecretParams) error
 	UpdateUserActiveMFAType(ctx context.Context, arg sql.UpdateUserActiveMFATypeParams) error
+	InsertSecurityKey(ctx context.Context, arg sql.InsertSecurityKeyParams) (uuid.UUID, error)
 }
 
 type DBClientUserProvider interface {
