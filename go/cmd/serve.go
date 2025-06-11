@@ -1060,19 +1060,19 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 				Usage:    "Enable Windowslive OAuth provider",
 				Category: "oauth-windowslive",
 				Value:    false,
-				EnvVars:  []string{"AUTH_PROVIDER_WINDOWSLIVE_ENABLED"},
+				EnvVars:  []string{"AUTH_PROVIDER_WINDOWS_LIVE_ENABLED"},
 			},
 			&cli.StringFlag{ //nolint: exhaustruct
 				Name:     flagWindowsliveClientID,
 				Usage:    "Windowslive OAuth client ID",
 				Category: "oauth-windowslive",
-				EnvVars:  []string{"AUTH_PROVIDER_WINDOWSLIVE_CLIENT_ID"},
+				EnvVars:  []string{"AUTH_PROVIDER_WINDOWS_LIVE_CLIENT_ID"},
 			},
 			&cli.StringFlag{ //nolint: exhaustruct
 				Name:     flagWindowsliveClientSecret,
 				Usage:    "Windows Live OAuth client secret",
 				Category: "oauth-windowslive",
-				EnvVars:  []string{"AUTH_PROVIDER_WINDOWSLIVE_CLIENT_SECRET"},
+				EnvVars:  []string{"AUTH_PROVIDER_WINDOWS_LIVE_CLIENT_SECRET"},
 			},
 			&cli.StringSliceFlag{ //nolint: exhaustruct
 				Name:     flagWindowsliveScope,
