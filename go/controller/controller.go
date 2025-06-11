@@ -64,7 +64,7 @@ type DBClientInsertUser interface {
 	) (sql.InsertUserWithSecurityKeyAndRefreshTokenRow, error)
 }
 
-type DBClientUpdateUser interface {
+type DBClientUpdateUser interface { //nolint:interfacebloat
 	UpdateUserChangeEmail(
 		ctx context.Context,
 		arg sql.UpdateUserChangeEmailParams,

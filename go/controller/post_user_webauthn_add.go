@@ -2,14 +2,17 @@ package controller
 
 import (
 	"context"
+	"errors"
 
+	"github.com/go-webauthn/webauthn/protocol"
+	"github.com/go-webauthn/webauthn/webauthn"
 	"github.com/nhost/hasura-auth/go/api"
 	"github.com/nhost/hasura-auth/go/middleware"
 )
 
-func (ctrl *Controller) PostUserWebauthnAdd(
+func (ctrl *Controller) PostUserWebauthnAdd( //nolint:ireturn
 	ctx context.Context,
-	request api.PostUserWebauthnAddRequestObject,
+	_ api.PostUserWebauthnAddRequestObject,
 ) (api.PostUserWebauthnAddResponseObject, error) {
 	logger := middleware.LoggerFromContext(ctx)
 
@@ -24,13 +27,20 @@ func (ctrl *Controller) PostUserWebauthnAdd(
 	}
 
 	keys, apiErr := ctrl.wf.GetUserSecurityKeys(ctx, user.ID, logger)
-	if apiErr != nil {
+	switch {
+	case errors.Is(apiErr, ErrSecurityKeyNotFound):
+	case apiErr != nil:
 		return ctrl.sendError(apiErr), nil
 	}
 
 	creds, apiErr := webauthnCredentials(keys, logger)
 	if apiErr != nil {
 		return ctrl.sendError(apiErr), nil
+	}
+
+	credsDescriptors := make([]protocol.CredentialDescriptor, len(creds))
+	for i, cred := range creds {
+		credsDescriptors[i] = cred.Descriptor()
 	}
 
 	waUser := WebauthnUser{
@@ -41,7 +51,10 @@ func (ctrl *Controller) PostUserWebauthnAdd(
 		Discoverable: false,
 	}
 
-	creation, apiErr := ctrl.Webauthn.BeginRegistration(waUser, nil, logger)
+	creation, apiErr := ctrl.Webauthn.BeginRegistration(
+		waUser, nil, logger,
+		webauthn.WithExclusions(credsDescriptors),
+	)
 	if apiErr != nil {
 		return ctrl.sendError(apiErr), nil
 	}
