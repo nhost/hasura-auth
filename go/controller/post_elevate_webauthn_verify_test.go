@@ -61,8 +61,15 @@ func TestPostElevateWebauthnVerify(t *testing.T) { //nolint:maintidx
 
 	cases := []testRequest[api.PostElevateWebauthnVerifyRequestObject, api.PostElevateWebauthnVerifyResponseObject]{
 		{
-			name:   "success",
-			config: getConfig,
+			name: "success",
+			config: func() *controller.Config {
+				config := getConfig()
+				config.WebauthnRPOrigins = []string{"http://localhost:3000"}
+				config.WebauthnRPID = "localhost"             //nolint:goconst
+				config.WebauthnRPName = "React pollo Example" //nolint:goconst
+
+				return config
+			},
 			db: func(ctrl *gomock.Controller) controller.DBClient { //nolint:dupl
 				mock := mock.NewMockDBClient(ctrl)
 
@@ -211,8 +218,15 @@ func TestPostElevateWebauthnVerify(t *testing.T) { //nolint:maintidx
 		},
 
 		{
-			name:   "no jwt token",
-			config: getConfig,
+			name: "no jwt token",
+			config: func() *controller.Config {
+				config := getConfig()
+				config.WebauthnRPOrigins = []string{"http://localhost:3000"}
+				config.WebauthnRPID = "localhost"
+				config.WebauthnRPName = "React pollo Example"
+
+				return config
+			},
 			db: func(ctrl *gomock.Controller) controller.DBClient {
 				mock := mock.NewMockDBClient(ctrl)
 
