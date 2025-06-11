@@ -43,7 +43,7 @@ func (ctrl *Controller) PostUserWebauthnVerify( //nolint:ireturn
 	}
 
 	var nickname pgtype.Text
-	if *request.Body.Nickname != "" {
+	if request.Body.Nickname != nil {
 		nickname = sql.Text(*request.Body.Nickname)
 	}
 
