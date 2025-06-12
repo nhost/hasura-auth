@@ -72,6 +72,7 @@ jobs:
       run: |
         make build
         zip -r result.zip result
+      timeout-minutes: 30
 
     - name: "Push artifact to artifact repository"
       uses: actions/upload-artifact@v4
