@@ -1,7 +1,7 @@
 ---
 name: "check and build"
 on:
-  pull:
+  pull_request:
   push:
     branches:
       - main
