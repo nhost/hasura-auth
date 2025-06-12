@@ -16,7 +16,10 @@ import (
 	"go.uber.org/mock/gomock"
 )
 
-func unmarshalUserWebauthnVerifyRequest(t *testing.T, b []byte) *api.PostUserWebauthnVerifyJSONRequestBody {
+func unmarshalUserWebauthnVerifyRequest(
+	t *testing.T,
+	b []byte,
+) *api.PostUserWebauthnVerifyJSONRequestBody {
 	t.Helper()
 
 	var v *api.PostUserWebauthnVerifyJSONRequestBody
