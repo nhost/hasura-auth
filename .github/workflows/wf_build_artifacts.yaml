@@ -31,7 +31,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [blacksmith-2vcpu-ubuntu-2404-arm, blacksmith-2vcpu-ubuntu-2404]
+        os: [blacksmith-8vcpu-ubuntu-2404-arm, blacksmith-8vcpu-ubuntu-2404]
       fail-fast: true
 
     runs-on: ${{ matrix.os }}
@@ -49,6 +49,7 @@ jobs:
       with:
         role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions-nhost-${{ github.event.repository.name }}
         aws-region: eu-central-1
+        role-duration-seconds: 10800
 
     - uses: cachix/install-nix-action@v31
       with:
