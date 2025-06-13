@@ -101,7 +101,8 @@ build-dry-run:  ## Run nix flake check
 .PHONY: build-docker-image
 build-docker-image:  ## Build docker container for native architecture
 	./build/nix-docker-image.sh
-	skopeo copy --insecure-policy dir:./result docker-daemon:nhost/hasura-auth:$(VERSION)
+	skopeo copy --insecure-policy dir:./result docker-daemon:hasura-auth:$(VERSION)
+	docker tag hasura-auth:$(VERSION) nhost/hasura-auth:$(VERSION)
 
 
 .PHONY: migrations-add
