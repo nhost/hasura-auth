@@ -59,6 +59,8 @@ jobs:
 
       - name: "Push docker image to EKS"
         run: |
+          find ~/artifacts
+
           export NAME=${{ inputs.NAME }}
           export VERSION=${{ steps.vars.outputs.VERSION }}
           export CONTAINER_REGISTRY=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ inputs.AWS_REGION }}.amazonaws.com
