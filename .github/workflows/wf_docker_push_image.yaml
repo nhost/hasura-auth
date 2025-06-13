@@ -66,7 +66,7 @@ jobs:
 
           for ARCH in "x86_64" "aarch64"; do
             skopeo copy --insecure-policy \
-              dir:~/artifacts/${{ inputs.NAME }}-docker-image-$ARCH-$VERSION/result \
+              dir:/home/runner/artifacts/${{ inputs.NAME }}-docker-image-$ARCH-$VERSION/result \
               docker-daemon://$CONTAINER_NAME:$VERSION-$ARCH
             docker push $CONTAINER_NAME:$VERSION-$ARCH
           done
@@ -93,7 +93,7 @@ jobs:
 
           for ARCH in "x86_64" "aarch64"; do
             skopeo copy --insecure-policy \
-              dir:~/artifacts/${{ inputs.NAME }}-docker-image-$ARCH-$VERSION/result \
+              dir:/home/runner/artifacts/${{ inputs.NAME }}-docker-image-$ARCH-$VERSION/result \
               docker-daemon://$CONTAINER_NAME:$VERSION-$ARCH
             docker push $CONTAINER_NAME:$VERSION-$ARCH
           done
