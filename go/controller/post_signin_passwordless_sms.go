@@ -44,18 +44,19 @@ func (ctrl *Controller) PostSigninPasswordlessSms( //nolint:ireturn
 	case errors.Is(apiErr, ErrUserPhoneNumberNotFound):
 		logger.Info("user does not exist, creating user")
 		if apiErr := ctrl.postSigninPasswordlessSmsSignup(
-			ctx, request.Body.PhoneNumber, options,
+			ctx, request.Body.PhoneNumber, options, logger,
 		); apiErr != nil {
 			logger.Error("error signing up user", logError(apiErr))
 			return ctrl.respondWithError(apiErr), nil
 		}
+		return api.PostSigninPasswordlessSms200JSONResponse(api.OK), nil
 	case apiErr != nil:
 		logger.Error("error getting user by phone number", logError(apiErr))
 		return ctrl.respondWithError(apiErr), nil
 	}
 
 	if apiErr := ctrl.postSigninPasswordlessSmsSignin(ctx, user, logger); apiErr != nil {
-		logger.Error("error signing up user", logError(apiErr))
+		logger.Error("error signing in user", logError(apiErr))
 		return ctrl.respondWithError(apiErr), nil
 	}
 
