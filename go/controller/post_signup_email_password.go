@@ -136,6 +136,7 @@ func (ctrl *Controller) postSignupEmailPasswordWithoutSession(
 			Disabled:        ctrl.config.DisableNewUsers,
 			DisplayName:     deptr(options.DisplayName),
 			AvatarUrl:       gravatarURL,
+			PhoneNumber:     pgtype.Text{}, //nolint:exhaustruct
 			Email:           sql.Text(email),
 			PasswordHash:    sql.Text(hashedPassword),
 			Ticket:          ticket,
