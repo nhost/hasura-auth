@@ -476,7 +476,7 @@ func TestPostSigninPasswordlessSms(t *testing.T) { //nolint:maintidx
 		{
 			name:   "signup not required - user disabled",
 			config: getConfig,
-			db: func(ctrl *gomock.Controller) controller.DBClient {
+			db: func(ctrl *gomock.Controller) controller.DBClient { //nolint:dupl
 				mock := mock.NewMockDBClient(ctrl)
 
 				mock.EXPECT().GetUserByPhoneNumber(
@@ -529,7 +529,7 @@ func TestPostSigninPasswordlessSms(t *testing.T) { //nolint:maintidx
 		{
 			name:   "sms sending fails",
 			config: getConfig,
-			db: func(ctrl *gomock.Controller) controller.DBClient {
+			db: func(ctrl *gomock.Controller) controller.DBClient { //nolint:dupl
 				mock := mock.NewMockDBClient(ctrl)
 
 				mock.EXPECT().GetUserByPhoneNumber(
@@ -583,7 +583,7 @@ func TestPostSigninPasswordlessSms(t *testing.T) { //nolint:maintidx
 					mock.EXPECT().SendVerificationCode(
 						"+1234567890",
 						"en",
-					).Return("", time.Time{}, errors.New("SMS service error"))
+					).Return("", time.Time{}, errors.New("SMS service error")) //nolint:err113
 
 					return mock
 				}),

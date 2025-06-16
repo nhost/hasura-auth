@@ -17,14 +17,6 @@ func (ctrl *Controller) PostSigninPasswordlessSms( //nolint:ireturn
 	ctx context.Context,
 	request api.PostSigninPasswordlessSmsRequestObject,
 ) (api.PostSigninPasswordlessSmsResponseObject, error) {
-	// 1. Validate the request
-	// 2. Check if user exits
-	//  a. If user exists, valdate
-	//  b. if user doesn't exist, create user
-	// 3.a. If service ID is verification service, use their verification API
-	// 3.b. If service ID is not verification service, use our own OTP generation
-	// 4. Delete user if sending SMS fails, better to just not create/update the user until this point
-
 	logger := middleware.LoggerFromContext(ctx).
 		With(slog.String("phoneNumber", request.Body.PhoneNumber))
 
