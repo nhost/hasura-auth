@@ -1200,34 +1200,3 @@ func (wf *Workflows) GetUserByPhoneNumber(
 
 	return user, nil
 }
-
-// func (wf *Workflows) GetUserByPhoneNumberAndOTP(
-// 	ctx context.Context,
-// 	phoneNumber string,
-// 	otp string,
-// 	logger *slog.Logger,
-// ) (sql.AuthUser, *APIError) {
-// 	hashedOTP := hashOTP(otp)
-// 	user, err := wf.db.GetUserByPhoneNumberAndOTP(
-// 		ctx,
-// 		sql.GetUserByPhoneNumberAndOTPParams{
-// 			PhoneNumber: sql.Text(phoneNumber),
-// 			OtpHash:     sql.Text(hashedOTP),
-// 		},
-// 	)
-// 	if errors.Is(err, pgx.ErrNoRows) {
-// 		logger.Warn("user not found by phone number and OTP")
-// 		return sql.AuthUser{}, ErrInvalidOTP
-// 	}
-// 	if err != nil {
-// 		logger.Error("error getting user by phone number and OTP", logError(err))
-// 		return sql.AuthUser{}, ErrInternalServerError
-// 	}
-
-// 	if user.Disabled {
-// 		logger.Warn("user is disabled")
-// 		return sql.AuthUser{}, ErrDisabledUser
-// 	}
-
-// 	return user, nil
-// }

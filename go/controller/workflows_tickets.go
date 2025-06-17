@@ -38,10 +38,19 @@ func GenerateOTP() (string, string, error) {
 	otp := fmt.Sprintf("%06d", n)
 	hash, err := hashPassword(otp)
 	if err != nil {
-		return "", "", fmt.Errorf("error hashing OTP: %w", err)
+		return "", "", err
 	}
 
 	return otp, hash, nil
+}
+
+func HashOTP(otp string) (string, error) {
+	hash, err := hashPassword(otp)
+	if err != nil {
+		return "", fmt.Errorf("error hashing OTP: %w", err)
+	}
+
+	return hash, nil
 }
 
 func (wf *Workflows) SetTicket(

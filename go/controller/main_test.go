@@ -199,8 +199,6 @@ func withSMS(sms func(*gomock.Controller) *mock.MockSMSer) getControllerOptsFunc
 	}
 }
 
-// TODO: Run `mockgen -package mock -destination mock/controller.go --source=controller.go` to generate MockSMSClient
-
 func withHIBP(hibp func(*gomock.Controller) *mock.MockHIBPClient) getControllerOptsFunc {
 	return func(o *getControllerOpts) {
 		o.hibp = hibp

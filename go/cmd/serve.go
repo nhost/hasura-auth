@@ -99,7 +99,7 @@ const (
 	flagOTPEmailEnabled                  = "otp-email-enabled"
 	flagSMSPasswordlessEnabled           = "sms-passwordless-enabled"
 	flagSMSTwilioAccountSid              = "sms-twilio-account-sid"
-	flagSMSTwilioAuthToken               = "sms-twilio-auth-token"
+	flagSMSTwilioAuthToken               = "sms-twilio-auth-token" //nolint:gosec
 	flagSMSTwilioMessagingServiceID      = "sms-twilio-messaging-service-id"
 	flagAnonymousUsersEnabled            = "enable-anonymous-users"
 	flagMfaEnabled                       = "mfa-enabled"
@@ -1246,7 +1246,7 @@ func getDependencies( //nolint:ireturn
 		return nil, nil, nil, nil, fmt.Errorf("problem creating emailer: %w", err)
 	}
 
-	sms, err := getSMS(cCtx, templates, logger)
+	sms, err := getSMS(cCtx, templates, db, logger)
 	if err != nil {
 		return nil, nil, nil, nil, fmt.Errorf("problem creating SMS client: %w", err)
 	}

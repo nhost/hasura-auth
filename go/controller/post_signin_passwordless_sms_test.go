@@ -68,7 +68,11 @@ func TestPostSigninPasswordlessSms(t *testing.T) { //nolint:maintidx
 							cmp.Comparer(func(x, y string) bool { return x != "" && y != "" }),
 						),
 						testhelpers.FilterPathLast(
-							[]string{".OtpHashExpiresAt", "time()"}, cmpopts.EquateApproxTime(time.Minute),
+							[]string{
+								".OtpHashExpiresAt",
+								"time()",
+							},
+							cmpopts.EquateApproxTime(time.Minute),
 						),
 					),
 				).Return(sql.InsertUserRow{
@@ -196,7 +200,11 @@ func TestPostSigninPasswordlessSms(t *testing.T) { //nolint:maintidx
 							cmp.Comparer(func(x, y string) bool { return x != "" && y != "" }),
 						),
 						testhelpers.FilterPathLast(
-							[]string{".OtpHashExpiresAt", "time()"}, cmpopts.EquateApproxTime(time.Minute),
+							[]string{
+								".OtpHashExpiresAt",
+								"time()",
+							},
+							cmpopts.EquateApproxTime(time.Minute),
 						),
 					),
 				).Return(sql.InsertUserRow{
@@ -309,7 +317,11 @@ func TestPostSigninPasswordlessSms(t *testing.T) { //nolint:maintidx
 							cmp.Comparer(func(x, y string) bool { return x != "" && y != "" }),
 						),
 						testhelpers.FilterPathLast(
-							[]string{".OtpHashExpiresAt", "time()"}, cmpopts.EquateApproxTime(time.Minute),
+							[]string{
+								".OtpHashExpiresAt",
+								"time()",
+							},
+							cmpopts.EquateApproxTime(time.Minute),
 						),
 					),
 				).Return(sql.InsertUserRow{
@@ -443,7 +455,11 @@ func TestPostSigninPasswordlessSms(t *testing.T) { //nolint:maintidx
 							cmp.Comparer(func(x, y string) bool { return x != "" && y != "" }),
 						),
 						testhelpers.FilterPathLast(
-							[]string{".OtpHashExpiresAt", "time()"}, cmpopts.EquateApproxTime(time.Minute),
+							[]string{
+								".OtpHashExpiresAt",
+								"time()",
+							},
+							cmpopts.EquateApproxTime(time.Minute),
 						),
 					),
 				).Return(userID, nil)

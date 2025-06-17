@@ -135,10 +135,10 @@ func (ctrl *Controller) postSigninPasswordlessSmsSignup(
 				OtpHash:           otpHash,
 				OtpHashExpiresAt:  sql.TimestampTz(expiresAt),
 				OtpMethodLastUsed: sql.Text("sms"),
-				Email:             pgtype.Text{},        // empty email
-				PasswordHash:      pgtype.Text{},        // no password
-				Ticket:            pgtype.Text{},        // no ticket for SMS
-				TicketExpiresAt:   pgtype.Timestamptz{}, // no ticket expiry
+				Email:             pgtype.Text{},        //nolint:exhaustruct
+				PasswordHash:      pgtype.Text{},        //nolint:exhaustruct
+				Ticket:            pgtype.Text{},        //nolint:exhaustruct
+				TicketExpiresAt:   pgtype.Timestamptz{}, //nolint:exhaustruct
 				EmailVerified:     false,
 				Locale:            deptr(options.Locale),
 				DefaultRole:       deptr(options.DefaultRole),

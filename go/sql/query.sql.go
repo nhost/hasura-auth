@@ -554,13 +554,13 @@ WITH inserted_user AS (
         default_role,
         metadata
     ) VALUES (
-      $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16
+      $1, $2, $3, $4, $5, $6, COALESCE($17, now()), $8, $9, $10, $11, $12, $13, $14, $15, $16
     )
     RETURNING id, created_at, updated_at, last_seen, disabled, display_name, avatar_url, locale, email, phone_number, password_hash, email_verified, phone_number_verified, new_email, otp_method_last_used, otp_hash, otp_hash_expires_at, default_role, is_anonymous, totp_secret, active_mfa_type, ticket, ticket_expires_at, metadata, webauthn_current_challenge
 )
 INSERT INTO auth.user_roles (user_id, role)
     SELECT inserted_user.id, roles.role
-    FROM inserted_user, unnest($17::TEXT[]) AS roles(role)
+    FROM inserted_user, unnest($7::TEXT[]) AS roles(role)
 RETURNING user_id, (SELECT created_at FROM inserted_user WHERE id = user_id)
 `
 
@@ -571,7 +571,7 @@ type InsertUserParams struct {
 	AvatarUrl         string
 	PhoneNumber       pgtype.Text
 	OtpHash           pgtype.Text
-	OtpHashExpiresAt  pgtype.Timestamptz
+	Roles             []string
 	OtpMethodLastUsed pgtype.Text
 	Email             pgtype.Text
 	PasswordHash      pgtype.Text
@@ -581,7 +581,7 @@ type InsertUserParams struct {
 	Locale            string
 	DefaultRole       string
 	Metadata          []byte
-	Roles             []string
+	OtpHashExpiresAt  pgtype.Timestamptz
 }
 
 type InsertUserRow struct {
@@ -597,7 +597,7 @@ func (q *Queries) InsertUser(ctx context.Context, arg InsertUserParams) (InsertU
 		arg.AvatarUrl,
 		arg.PhoneNumber,
 		arg.OtpHash,
-		arg.OtpHashExpiresAt,
+		arg.Roles,
 		arg.OtpMethodLastUsed,
 		arg.Email,
 		arg.PasswordHash,
@@ -607,7 +607,7 @@ func (q *Queries) InsertUser(ctx context.Context, arg InsertUserParams) (InsertU
 		arg.Locale,
 		arg.DefaultRole,
 		arg.Metadata,
-		arg.Roles,
+		arg.OtpHashExpiresAt,
 	)
 	var i InsertUserRow
 	err := row.Scan(&i.UserID, &i.CreatedAt)

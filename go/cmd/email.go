@@ -13,6 +13,7 @@ import (
 	"github.com/nhost/hasura-auth/go/notifications"
 	"github.com/nhost/hasura-auth/go/notifications/postmark"
 	"github.com/nhost/hasura-auth/go/notifications/sms"
+	"github.com/nhost/hasura-auth/go/sql"
 	"github.com/urfave/cli/v2"
 )
 
@@ -98,6 +99,7 @@ func getEmailer( //nolint:ireturn
 func getSMS( //nolint:ireturn
 	cCtx *cli.Context,
 	templates *notifications.Templates,
+	db *sql.Queries,
 	logger *slog.Logger,
 ) (controller.SMSer, error) {
 	if !cCtx.Bool(flagSMSPasswordlessEnabled) {
@@ -115,7 +117,7 @@ func getSMS( //nolint:ireturn
 	if strings.HasPrefix(accountSid, "VA") {
 		// If accountSid starts with "VA", it's a verification service
 		return sms.NewTwilioVerificationService(
-			accountSid, authToken, messagingServiceID,
+			accountSid, authToken, messagingServiceID, db,
 		), nil
 	}
 
@@ -128,5 +130,12 @@ func getSMS( //nolint:ireturn
 	}
 
 	return sms.NewTwilioSMS(
-		templates, controller.GenerateOTP, accountSid, authToken, messagingServiceID), nil
+		templates,
+		controller.GenerateOTP,
+		controller.HashOTP,
+		accountSid,
+		authToken,
+		messagingServiceID,
+		db,
+	), nil
 }
