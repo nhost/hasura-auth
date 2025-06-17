@@ -16,7 +16,7 @@ import (
 	"go.uber.org/mock/gomock"
 )
 
-func TestPostSigninPasswordlessSmsOtp(t *testing.T) {
+func TestPostSigninPasswordlessSmsOtp(t *testing.T) { //nolint:maintidx
 	t.Parallel()
 
 	getConfig := func() *controller.Config {
@@ -411,7 +411,7 @@ func TestPostSigninPasswordlessSmsOtp(t *testing.T) {
 					user := getSigninUser(userID)
 					user.PhoneNumber = sql.Text("+1234567890")
 					user.PhoneNumberVerified = true
-					user.Email = pgtype.Text{} // no email
+					user.Email = pgtype.Text{} //nolint:exhaustruct
 					user.EmailVerified = false
 
 					mock.EXPECT().CheckVerificationCode(
