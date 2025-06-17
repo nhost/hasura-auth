@@ -100,7 +100,9 @@ func extractFilterFields(filter string) []string { //nolint:cyclop,gocognit
 					// Find the end of the field name (stop at space, ), ==, !=, etc.)
 					for fieldEnd < len(filterExpr) {
 						char := filterExpr[fieldEnd]
-						if char == ' ' || char == ')' || char == '=' || char == '!' || char == '<' || char == '>' {
+						if char == ' ' || char == ')' || char == '=' || char == '!' ||
+							char == '<' ||
+							char == '>' {
 							break
 						}
 						fieldEnd++
@@ -180,7 +182,8 @@ type jsonPath struct {
 }
 
 func (j jsonPath) IsArrary() bool {
-	return strings.Contains(j.path, "[]") || strings.Contains(j.path, "[*]") || strings.Contains(j.path, "[?")
+	return strings.Contains(j.path, "[]") || strings.Contains(j.path, "[*]") ||
+		strings.Contains(j.path, "[?")
 }
 
 type CustomClaims struct {
