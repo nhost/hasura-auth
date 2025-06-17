@@ -72,7 +72,7 @@ func TestCustomClaims(t *testing.T) {
 				"nonexistent":       "nonexistent.nonexistent",
 				"filtered":          "m.d[?(@.v == 'a')].id",
 			},
-			expectedGraphql: "query GetClaims($id: uuid!) { user(id:$id) {m{d{id }k l l2 lm{id }}metadata nonexistent{nonexistent }} }", //nolint:lll
+			expectedGraphql: "query GetClaims($id: uuid!) { user(id:$id) {m{d{id v }k l l2 lm{id }}metadata nonexistent{nonexistent }} }", //nolint:lll
 			expectedData: map[string]any{
 				"root":              data["m"],
 				"key":               "v",
