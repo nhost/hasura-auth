@@ -46,6 +46,38 @@ func mergeMaps(map1, map2 map[string]any) map[string]any {
 	return result
 }
 
+func smartSplit(path string) []string {
+	var parts []string
+	var current strings.Builder
+	bracketDepth := 0
+
+	for _, char := range path {
+		switch char {
+		case '[':
+			bracketDepth++
+			current.WriteRune(char)
+		case ']':
+			bracketDepth--
+			current.WriteRune(char)
+		case '.':
+			if bracketDepth == 0 {
+				parts = append(parts, current.String())
+				current.Reset()
+			} else {
+				current.WriteRune(char)
+			}
+		default:
+			current.WriteRune(char)
+		}
+	}
+
+	if current.Len() > 0 {
+		parts = append(parts, current.String())
+	}
+
+	return parts
+}
+
 func parseClaims(parts []string) map[string]any {
 	parts[0] = strings.Split(parts[0], "[")[0]
 	switch len(parts) {
@@ -102,7 +134,7 @@ type jsonPath struct {
 }
 
 func (j jsonPath) IsArrary() bool {
-	return strings.Contains(j.path, "[]") || strings.Contains(j.path, "[*]")
+	return strings.Contains(j.path, "[]") || strings.Contains(j.path, "[*]") || strings.Contains(j.path, "[?")
 }
 
 type CustomClaims struct {
@@ -128,7 +160,7 @@ func NewCustomClaims(
 	claims := make(map[string]any)
 	jsonPaths := make(map[string]jsonPath)
 	for name, val := range rawClaims {
-		parts := strings.Split(val, ".")
+		parts := smartSplit(val)
 		claims = mergeMaps(claims, parseClaims(parts))
 
 		j := jsonpath.New(name)
