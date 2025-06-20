@@ -48,6 +48,7 @@ var (
 	ErrInvalidTicket                   = &APIError{api.InvalidTicket}
 	ErrInvalidRequest                  = &APIError{api.InvalidRequest}
 	ErrSignupDisabled                  = &APIError{api.SignupDisabled}
+	ErrUnauthenticatedUser             = &APIError{api.InvalidRequest}
 	ErrDisabledEndpoint                = &APIError{api.DisabledEndpoint}
 	ErrEmailAlreadyVerified            = &APIError{api.EmailAlreadyVerified}
 	ErrInvalidRefreshToken             = &APIError{api.InvalidRefreshToken}

@@ -27,7 +27,7 @@ describe('user password', () => {
   });
 
   it('should not get user data if not signed in', async () => {
-    await request.get('/user').expect(StatusCodes.UNAUTHORIZED);
+    await request.get('/user').expect(StatusCodes.BAD_REQUEST);
   });
 
   it('should get user data if signed in', async () => {
