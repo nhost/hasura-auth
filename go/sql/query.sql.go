@@ -24,6 +24,16 @@ func (q *Queries) CountSecurityKeysUser(ctx context.Context, userID uuid.UUID) (
 	return count, err
 }
 
+const deleteRefreshToken = `-- name: DeleteRefreshToken :exec
+DELETE FROM auth.refresh_tokens
+WHERE refresh_token_hash = $1
+`
+
+func (q *Queries) DeleteRefreshToken(ctx context.Context, refreshTokenHash pgtype.Text) error {
+	_, err := q.db.Exec(ctx, deleteRefreshToken, refreshTokenHash)
+	return err
+}
+
 const deleteRefreshTokens = `-- name: DeleteRefreshTokens :exec
 DELETE FROM auth.refresh_tokens
 WHERE user_id = $1
