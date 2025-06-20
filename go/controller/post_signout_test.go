@@ -2,7 +2,6 @@ package controller_test
 
 import (
 	"testing"
-	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
@@ -11,15 +10,13 @@ import (
 	"github.com/nhost/hasura-auth/go/api"
 	"github.com/nhost/hasura-auth/go/controller"
 	"github.com/nhost/hasura-auth/go/controller/mock"
-	"github.com/nhost/hasura-auth/go/sql"
 	"go.uber.org/mock/gomock"
 )
 
-func TestPostSignout(t *testing.T) { //nolint:maintidx
+func TestPostSignout(t *testing.T) {
 	t.Parallel()
 
 	userID := uuid.MustParse("db477732-48fa-4289-b694-2886a646b6eb")
-	createdAt := time.Date(2023, 1, 1, 0, 0, 0, 0, time.UTC)
 	token := uuid.MustParse("1fb17604-86c7-444e-b337-09a644465f2d")
 	hashedToken := `\x9698157153010b858587119503cbeef0cf288f11775e51cdb6bfd65e930d9310`
 
@@ -77,37 +74,6 @@ func TestPostSignout(t *testing.T) { //nolint:maintidx
 			config: getConfig,
 			db: func(ctrl *gomock.Controller) controller.DBClient {
 				mock := mock.NewMockDBClient(ctrl)
-
-				mock.EXPECT().GetUser( //nolint:dupl
-					gomock.Any(),
-					userID,
-				).Return(sql.AuthUser{
-					ID:                       userID,
-					CreatedAt:                sql.TimestampTz(createdAt),
-					DisplayName:              "John Doe",
-					AvatarUrl:                "https://example.com/avatar.jpg",
-					Locale:                   "en",
-					Email:                    sql.Text("john@example.com"),
-					IsAnonymous:              false,
-					DefaultRole:              "user",
-					Metadata:                 []byte(`{"firstName":"John","lastName":"Doe"}`),
-					EmailVerified:            true,
-					PhoneNumber:              pgtype.Text{String: "+1234567890", Valid: true},
-					PhoneNumberVerified:      true,
-					ActiveMfaType:            pgtype.Text{String: "totp", Valid: true},
-					UpdatedAt:                pgtype.Timestamptz{}, //nolint:exhaustruct
-					LastSeen:                 pgtype.Timestamptz{}, //nolint:exhaustruct
-					Disabled:                 false,
-					PasswordHash:             pgtype.Text{},        //nolint:exhaustruct
-					NewEmail:                 pgtype.Text{},        //nolint:exhaustruct
-					OtpMethodLastUsed:        pgtype.Text{},        //nolint:exhaustruct
-					OtpHash:                  pgtype.Text{},        //nolint:exhaustruct
-					OtpHashExpiresAt:         pgtype.Timestamptz{}, //nolint:exhaustruct
-					TotpSecret:               pgtype.Text{},        //nolint:exhaustruct
-					Ticket:                   pgtype.Text{},        //nolint:exhaustruct
-					TicketExpiresAt:          pgtype.Timestamptz{}, //nolint:exhaustruct
-					WebauthnCurrentChallenge: pgtype.Text{},        //nolint:exhaustruct
-				}, nil)
 
 				mock.EXPECT().DeleteRefreshTokens(
 					gomock.Any(),
@@ -204,37 +170,6 @@ func TestPostSignout(t *testing.T) { //nolint:maintidx
 			config: getConfig,
 			db: func(ctrl *gomock.Controller) controller.DBClient {
 				mock := mock.NewMockDBClient(ctrl)
-
-				mock.EXPECT().GetUser( //nolint:dupl
-					gomock.Any(),
-					userID,
-				).Return(sql.AuthUser{
-					ID:                       userID,
-					CreatedAt:                sql.TimestampTz(createdAt),
-					DisplayName:              "John Doe",
-					AvatarUrl:                "https://example.com/avatar.jpg",
-					Locale:                   "en",
-					Email:                    sql.Text("john@example.com"),
-					IsAnonymous:              false,
-					DefaultRole:              "user",
-					Metadata:                 []byte(`{"firstName":"John","lastName":"Doe"}`),
-					EmailVerified:            true,
-					PhoneNumber:              pgtype.Text{String: "+1234567890", Valid: true},
-					PhoneNumberVerified:      true,
-					ActiveMfaType:            pgtype.Text{String: "totp", Valid: true},
-					UpdatedAt:                pgtype.Timestamptz{}, //nolint:exhaustruct
-					LastSeen:                 pgtype.Timestamptz{}, //nolint:exhaustruct
-					Disabled:                 false,
-					PasswordHash:             pgtype.Text{},        //nolint:exhaustruct
-					NewEmail:                 pgtype.Text{},        //nolint:exhaustruct
-					OtpMethodLastUsed:        pgtype.Text{},        //nolint:exhaustruct
-					OtpHash:                  pgtype.Text{},        //nolint:exhaustruct
-					OtpHashExpiresAt:         pgtype.Timestamptz{}, //nolint:exhaustruct
-					TotpSecret:               pgtype.Text{},        //nolint:exhaustruct
-					Ticket:                   pgtype.Text{},        //nolint:exhaustruct
-					TicketExpiresAt:          pgtype.Timestamptz{}, //nolint:exhaustruct
-					WebauthnCurrentChallenge: pgtype.Text{},        //nolint:exhaustruct
-				}, nil)
 
 				mock.EXPECT().DeleteRefreshTokens(
 					gomock.Any(),

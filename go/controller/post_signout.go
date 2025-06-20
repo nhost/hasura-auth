@@ -13,24 +13,25 @@ func (ctrl *Controller) PostSignout( //nolint:ireturn
 	logger := middleware.LoggerFromContext(ctx)
 
 	if deptr(request.Body.All) {
-		// Sign out from all sessions - requires authentication
-		user, apiErr := ctrl.wf.GetUserFromJWTInContext(ctx, logger)
+		userID, apiErr := ctrl.wf.GetJWTInContext(ctx, logger)
 		if apiErr != nil {
 			return ctrl.sendError(apiErr), nil
 		}
 
-		if apiErr := ctrl.wf.DeleteUserRefreshTokens(ctx, user.ID, logger); apiErr != nil {
+		if apiErr := ctrl.wf.DeleteUserRefreshTokens(ctx, userID, logger); apiErr != nil {
 			return ctrl.sendError(apiErr), nil
 		}
-	} else {
-		if deptr(request.Body.RefreshToken) == "" {
-			return ctrl.sendError(ErrInvalidRequest), nil
-		}
-		if apiErr := ctrl.wf.DeleteRefreshToken(
-			ctx, *request.Body.RefreshToken, logger,
-		); apiErr != nil {
-			return ctrl.sendError(apiErr), nil
-		}
+		return api.PostSignout200JSONResponse(api.OK), nil
+	}
+
+	if deptr(request.Body.RefreshToken) == "" {
+		return ctrl.sendError(ErrInvalidRequest), nil
+	}
+
+	if apiErr := ctrl.wf.DeleteRefreshToken(
+		ctx, *request.Body.RefreshToken, logger,
+	); apiErr != nil {
+		return ctrl.sendError(apiErr), nil
 	}
 
 	return api.PostSignout200JSONResponse(api.OK), nil
