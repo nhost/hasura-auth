@@ -379,7 +379,7 @@ type SignOutRequest struct {
 	All *bool `json:"all,omitempty"`
 
 	// RefreshToken Refresh Token
-	RefreshToken string `json:"refreshToken"`
+	RefreshToken *string `json:"refreshToken,omitempty"`
 }
 
 // SignUpEmailPasswordRequest defines model for SignUpEmailPasswordRequest.
