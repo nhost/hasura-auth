@@ -994,6 +994,21 @@ paths:
           description: >-
             Elevated successfully
 
+  /user:
+    get:
+      summary: Get user information
+      tags:
+        - User management
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: User information
+
 components:
   securitySchemes:
     BearerAuth:
