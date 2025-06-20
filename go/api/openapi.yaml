@@ -1054,6 +1054,20 @@ components:
       required:
         - refreshToken
 
+    SignOutRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        refreshToken:
+          description: Refresh Token
+          example: 2c35b6f3-c4b9-48e3-978a-d4d0f1d42e24
+          pattern: \b[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b
+          type: string
+        all:
+          description: Sign out from all connected devices
+          type: boolean
+          default: false
+
     CreatePATRequest:
       type: object
       additionalProperties: false
@@ -1251,6 +1265,10 @@ components:
           type: string
         phoneNumberVerified:
           type: boolean
+        activeMfaType:
+          type: string
+          description: Active MFA type for the user
+          nullable: true
         roles:
           example:
             - me
@@ -1710,6 +1728,14 @@ components:
           description: Type of MFA to activate. If not set or set to empty string, disable MFA
       required:
         - code
+
+    VerifyTokenRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        token:
+          type: string
+          description: JWT token to verify
 
     TotpGenerateResponse:
       type: object
