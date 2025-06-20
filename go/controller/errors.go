@@ -210,6 +210,10 @@ func (response ErrorResponse) VisitPostSignoutResponse(w http.ResponseWriter) er
 	return response.visit(w)
 }
 
+func (response ErrorResponse) VisitPostTokenVerifyResponse(w http.ResponseWriter) error {
+	return response.visit(w)
+}
+
 func (response ErrorResponse) VisitPostSigninPasswordlessSmsOtpResponse(
 	w http.ResponseWriter,
 ) error {
