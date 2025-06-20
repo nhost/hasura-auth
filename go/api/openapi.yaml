@@ -831,6 +831,29 @@ paths:
               $ref: '#/components/headers/RedirectLocation'
           content: {}
 
+  /token/verify:
+    post:
+      summary: Verify JWT token
+      description: If request body is not passed the authorization header will be used to be verified
+      tags:
+        - General
+      security:
+        - BearerAuth: []
+        - {}
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyTokenRequest'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "OK"
+          description: Valid JWT token
+
   /version:
     get:
       summary: Get version
