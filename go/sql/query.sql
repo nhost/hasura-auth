@@ -358,6 +358,10 @@ INSERT INTO auth.user_roles (user_id, role)
 DELETE FROM auth.refresh_tokens
 WHERE user_id = $1;
 
+-- name: DeleteRefreshToken :exec
+DELETE FROM auth.refresh_tokens
+WHERE refresh_token_hash = $1;
+
 -- name: DeleteUserRoles :exec
 DELETE FROM auth.user_roles
 WHERE user_id = $1;

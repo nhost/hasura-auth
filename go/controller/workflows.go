@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log/slog"
 	"slices"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -489,6 +490,7 @@ func (wf *Workflows) UpdateSession( //nolint:funlen
 			PhoneNumber:         sql.ToPointerString(user.PhoneNumber),
 			PhoneNumberVerified: user.PhoneNumberVerified,
 			Roles:               allowedRoles,
+			ActiveMfaType:       nil,
 		},
 	}, nil
 }
@@ -557,6 +559,7 @@ func (wf *Workflows) NewSession( //nolint:funlen
 			PhoneNumber:         sql.ToPointerString(user.PhoneNumber),
 			PhoneNumberVerified: user.PhoneNumberVerified,
 			Roles:               allowedRoles,
+			ActiveMfaType:       nil,
 		},
 	}, nil
 }
@@ -833,6 +836,7 @@ func (wf *Workflows) SignupUserWithSession( //nolint:funlen
 			PhoneNumber:         nil,
 			PhoneNumberVerified: false,
 			Roles:               deptr(options.AllowedRoles),
+			ActiveMfaType:       nil,
 		},
 	}, nil
 }
@@ -969,6 +973,7 @@ func (wf *Workflows) SignupAnonymousUser( //nolint:funlen
 			PhoneNumber:         nil,
 			PhoneNumberVerified: false,
 			Roles:               []string{anonymousRole},
+			ActiveMfaType:       nil,
 		},
 	}, nil
 }
@@ -1199,4 +1204,32 @@ func (wf *Workflows) GetUserByPhoneNumber(
 	}
 
 	return user, nil
+}
+
+func (wf *Workflows) DeleteUserRefreshTokens(
+	ctx context.Context,
+	userID uuid.UUID,
+	logger *slog.Logger,
+) *APIError {
+	if err := wf.db.DeleteRefreshTokens(ctx, userID); err != nil {
+		logger.Error("error deleting user refresh tokens", logError(err))
+		return ErrInternalServerError
+	}
+
+	return nil
+}
+
+func (wf *Workflows) DeleteRefreshToken(
+	ctx context.Context,
+	refreshToken string,
+	logger *slog.Logger,
+) *APIError {
+	if err := wf.db.DeleteRefreshToken(
+		ctx, sql.Text(hashRefreshToken([]byte(refreshToken))),
+	); err != nil {
+		logger.Error("error deleting refresh token", logError(err))
+		return ErrInternalServerError
+	}
+
+	return nil
 }

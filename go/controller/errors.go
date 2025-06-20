@@ -206,6 +206,10 @@ func (response ErrorResponse) VisitPostSigninPasswordlessSmsResponse(w http.Resp
 	return response.visit(w)
 }
 
+func (response ErrorResponse) VisitPostSignoutResponse(w http.ResponseWriter) error {
+	return response.visit(w)
+}
+
 func (response ErrorResponse) VisitPostSigninPasswordlessSmsOtpResponse(
 	w http.ResponseWriter,
 ) error {

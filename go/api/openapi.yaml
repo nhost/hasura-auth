@@ -93,6 +93,29 @@ paths:
           description: >-
             Successfully refreshed the JWT access token
 
+  /signout:
+    post:
+      summary: Sign out
+      tags:
+        - signout
+      security:
+        - BearerAuth: []
+        - {}
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignOutRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OKResponse'
+          description: >-
+            Successfully signed out
+
   /signin/anonymous:
     post:
       summary: Sign in anonymously
