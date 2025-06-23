@@ -179,13 +179,18 @@
         packages = flake-utils.lib.flattenTree rec {
           hasura-auth = nixops-lib.go.package {
             inherit name submodule buildInputs description src version ldflags nativeBuildInputs;
+
+            postInstall = ''
+              mkdir $out/share
+              cp -rv ${src}/email-templates $out/share/email-templates
+            '';
           };
 
           docker-image = nixops-lib.go.docker-image {
             inherit name created version buildInputs;
 
             maxLayers = 100;
-            contents = [ ];
+            contents = [ pkgs.wget ];
 
             package = hasura-auth;
           };
