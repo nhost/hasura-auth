@@ -1395,3 +1395,30 @@ func (q *Queries) UpdateUserVerifyEmail(ctx context.Context, id uuid.UUID) (Auth
 	)
 	return i, err
 }
+
+const upsertRoles = `-- name: UpsertRoles :many
+INSERT INTO auth.roles (role)
+SELECT unnest($1::TEXT[])
+ON CONFLICT (role) DO NOTHING
+RETURNING role
+`
+
+func (q *Queries) UpsertRoles(ctx context.Context, roles []string) ([]string, error) {
+	rows, err := q.db.Query(ctx, upsertRoles, roles)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []string
+	for rows.Next() {
+		var role string
+		if err := rows.Scan(&role); err != nil {
+			return nil, err
+		}
+		items = append(items, role)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}

@@ -47,132 +47,6 @@ importers:
       '@djgrant/postgres-migrations':
         specifier: 4.1.0-rc.1
         version: 4.1.0-rc.1
-      '@simplewebauthn/server':
-        specifier: ^9.0.3
-        version: 9.0.3
-      axios:
-        specifier: '>=1.8.2'
-        version: 1.8.3
-      bcryptjs:
-        specifier: ^2.4.3
-        version: 2.4.3
-      compare-urls:
-        specifier: ^2.0.0
-        version: 2.0.0
-      cors:
-        specifier: 2.8.5
-        version: 2.8.5
-      dot-prop:
-        specifier: ^6.0.1
-        version: 6.0.1
-      dotenv:
-        specifier: 8.2.0
-        version: 8.2.0
-      email-templates:
-        specifier: ^11.1.1
-        version: 11.1.1(@babel/core@7.24.3)(mustache@4.2.0)(pug@3.0.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(underscore@1.13.6)
-      email-validator:
-        specifier: ^2.0.4
-        version: 2.0.4
-      express:
-        specifier: ^4.20.0
-        version: 4.20.0
-      express-jsdoc-swagger:
-        specifier: ^1.8.0
-        version: 1.8.0
-      express-session:
-        specifier: ^1.18.0
-        version: 1.18.0
-      express-winston:
-        specifier: ^4.2.0
-        version: 4.2.0(winston@3.13.0)
-      grant:
-        specifier: ^5.4.22
-        version: 5.4.22
-      graphql:
-        specifier: 16.2.0
-        version: 16.2.0
-      graphql-request:
-        specifier: ^3.7.0
-        version: 3.7.0(graphql@16.2.0)
-      graphql-tag:
-        specifier: 2.12.6
-        version: 2.12.6(graphql@16.2.0)
-      gravatar:
-        specifier: ^1.8.2
-        version: 1.8.2
-      hibp:
-        specifier: 9.0.0
-        version: 9.0.0
-      http-status-codes:
-        specifier: ^2.3.0
-        version: 2.3.0
-      joi:
-        specifier: ^17.12.2
-        version: 17.12.2
-      joi-to-swagger:
-        specifier: ^6.2.0
-        version: 6.2.0(joi@17.12.2)
-      jose:
-        specifier: ^5.2.3
-        version: 5.2.3
-      js-yaml:
-        specifier: 3.13.1
-        version: 3.13.1
-      json-to-graphql-query:
-        specifier: ^2.2.5
-        version: 2.2.5
-      jsonata:
-        specifier: ^1.8.7
-        version: 1.8.7
-      jsonwebtoken:
-        specifier: ^9.0.2
-        version: 9.0.2
-      jsrsasign:
-        specifier: 11.0.0
-        version: 11.0.0
-      libphonenumber-js:
-        specifier: ^1.10.59
-        version: 1.10.59
-      micromatch:
-        specifier: '>=4.0.8'
-        version: 4.0.8
-      nocache:
-        specifier: ^2.1.0
-        version: 2.1.0
-      node-fetch:
-        specifier: ^2.7.0
-        version: 2.7.0
-      nodemailer:
-        specifier: 6.9.9
-        version: 6.9.9
-      otplib:
-        specifier: 12.0.1
-        version: 12.0.1
-      pascal-case:
-        specifier: ^3.1.2
-        version: 3.1.2
-      pg:
-        specifier: ^8.11.4
-        version: 8.11.4
-      qrcode:
-        specifier: 1.4.4
-        version: 1.4.4
-      random-number-csprng:
-        specifier: ^1.0.2
-        version: 1.0.2
-      twilio:
-        specifier: ^3.84.1
-        version: 3.84.1
-      url-join:
-        specifier: ^4.0.1
-        version: 4.0.1
-      uuid:
-        specifier: 7.0.3
-        version: 7.0.3
-      winston:
-        specifier: ^3.13.0
-        version: 3.13.0
     devDependencies:
       '@changesets/cli':
         specifier: ^2.27.1
@@ -201,6 +75,9 @@ importers:
       '@react-email/components':
         specifier: ^0.0.22
         version: 0.0.22(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@simplewebauthn/server':
+        specifier: ^9.0.3
+        version: 9.0.3
       '@simplewebauthn/types':
         specifier: ^9.0.1
         version: 9.0.1
@@ -285,18 +162,39 @@ importers:
       audit-ci:
         specifier: ^6.6.1
         version: 6.6.1
+      axios:
+        specifier: '>=1.8.2'
+        version: 1.8.3
+      bcryptjs:
+        specifier: ^2.4.3
+        version: 2.4.3
       codecov:
         specifier: ^3.8.3
         version: 3.8.3
       commitizen:
         specifier: ^4.3.0
         version: 4.3.0(@types/node@17.0.45)(typescript@4.5.4)
+      compare-urls:
+        specifier: ^2.0.0
+        version: 2.0.0
+      cors:
+        specifier: 2.8.5
+        version: 2.8.5
       cz-conventional-changelog:
         specifier: 3.1.0
         version: 3.1.0(@types/node@17.0.45)(typescript@4.5.4)
+      dot-prop:
+        specifier: ^6.0.1
+        version: 6.0.1
+      dotenv:
+        specifier: 8.2.0
+        version: 8.2.0
       dotenv-cli:
         specifier: ^4.1.1
         version: 4.1.1
+      email-templates:
+        specifier: ^11.1.1
+        version: 11.1.1(@babel/core@7.24.3)(mustache@4.2.0)(pug@3.0.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(underscore@1.13.6)
       eslint:
         specifier: 6.8.0
         version: 6.8.0
@@ -309,6 +207,15 @@ importers:
       eslint-plugin-prettier:
         specifier: 3.1.3
         version: 3.1.3(eslint@6.8.0)(prettier@2.8.8)
+      express:
+        specifier: ^4.20.0
+        version: 4.20.0
+      express-session:
+        specifier: ^1.18.0
+        version: 1.18.0
+      express-winston:
+        specifier: ^4.2.0
+        version: 4.2.0(winston@3.13.0)
       faker:
         specifier: ^5.5.3
         version: 5.5.3
@@ -318,6 +225,27 @@ importers:
       git-cz:
         specifier: ^4.9.0
         version: 4.9.0
+      grant:
+        specifier: ^5.4.22
+        version: 5.4.22
+      graphql:
+        specifier: 16.2.0
+        version: 16.2.0
+      graphql-request:
+        specifier: ^3.7.0
+        version: 3.7.0(graphql@16.2.0)
+      graphql-tag:
+        specifier: 2.12.6
+        version: 2.12.6(graphql@16.2.0)
+      gravatar:
+        specifier: ^1.8.2
+        version: 1.8.2
+      hibp:
+        specifier: 9.0.0
+        version: 9.0.0
+      http-status-codes:
+        specifier: ^2.3.0
+        version: 2.3.0
       husky:
         specifier: ^7.0.4
         version: 7.0.4
@@ -327,15 +255,54 @@ importers:
       jest-extended:
         specifier: 0.11.5
         version: 0.11.5
+      joi:
+        specifier: ^17.12.2
+        version: 17.12.2
+      jose:
+        specifier: ^5.2.3
+        version: 5.2.3
+      json-to-graphql-query:
+        specifier: ^2.2.5
+        version: 2.2.5
+      jsonata:
+        specifier: ^1.8.7
+        version: 1.8.7
+      libphonenumber-js:
+        specifier: ^1.10.59
+        version: 1.10.59
       lint-staged:
         specifier: 10.1.3
         version: 10.1.3
+      micromatch:
+        specifier: '>=4.0.8'
+        version: 4.0.8
+      nocache:
+        specifier: ^2.1.0
+        version: 2.1.0
+      node-fetch:
+        specifier: ^2.7.0
+        version: 2.7.0
+      nodemailer:
+        specifier: 6.9.9
+        version: 6.9.9
       npm-run-all:
         specifier: ^4.1.5
         version: 4.1.5
+      otplib:
+        specifier: 12.0.1
+        version: 12.0.1
+      pg:
+        specifier: ^8.11.4
+        version: 8.11.4
       prettier:
         specifier: ^2.8.8
         version: 2.8.8
+      qrcode:
+        specifier: 1.4.4
+        version: 1.4.4
+      random-number-csprng:
+        specifier: ^1.0.2
+        version: 1.0.2
       react:
         specifier: 18.3.1
         version: 18.3.1
@@ -360,9 +327,21 @@ importers:
       tsconfig-paths:
         specifier: 3.12.0
         version: 3.12.0
+      twilio:
+        specifier: ^3.84.1
+        version: 3.84.1
       typescript:
         specifier: 4.5.4
         version: 4.5.4
+      url-join:
+        specifier: ^4.0.1
+        version: 4.0.1
+      uuid:
+        specifier: 7.0.3
+        version: 7.0.3
+      winston:
+        specifier: ^3.13.0
+        version: 3.13.0
 
 packages:
 
@@ -3198,10 +3177,6 @@ packages:
     resolution: {integrity: sha512-E1q5hSUG2AmYQwQJ041nvgpkODHQvB+RKlB4IYdru6uJsyFTRyZAP463M+1lINorwbqAmUggi6+WwkD8lCS/Dw==}
     engines: {node: ^10.13.0 || ^12.13.0 || ^14.15.0 || >=15.0.0}
 
-  express-jsdoc-swagger@1.8.0:
-    resolution: {integrity: sha512-1Ij+2tSRldJzduxi56Dm3zS87UKQl83VXanhy7GPmXHxChCxafPcbf0SCJTIu+NdO0kq0seSPE1fQdwaEq+Vrg==}
-    engines: {node: '>= 10.0.0'}
-
   express-session@1.18.0:
     resolution: {integrity: sha512-m93QLWr0ju+rOwApSsyso838LQwgfs44QtOP/WBiwtAgPIo/SAh1a5c6nn2BR6mFNZehTpqKDESzP+fRHVbxwQ==}
     engines: {node: '>= 0.8.0'}
@@ -4205,12 +4180,6 @@ packages:
   jju@1.4.0:
     resolution: {integrity: sha512-8wb9Yw966OSxApiCt0K3yNJL8pnNeIv+OEq2YMidz4FKP6nonSRoOXc80iXY4JaN2FC11B9qsNmDsm+ZOfMROA==}
 
-  joi-to-swagger@6.2.0:
-    resolution: {integrity: sha512-gwfIr1TsbbvZWozB/sFqiD7POFcXeaLKp6QJKGFkVgdom2ie/4f75QQAanZc/Wlbnyk66e6kTZXO28i6pN3oQA==}
-    engines: {node: '>=10.0.0'}
-    peerDependencies:
-      joi: '>=17.1.1'
-
   joi@17.12.2:
     resolution: {integrity: sha512-RonXAIzCiHLc8ss3Ibuz45u28GOsWE1UpfDXLbN/9NKbL4tCJf8TWYVKsoYuuh+sAUt7fsSNpA+r2+TBA6Wjmw==}
 
@@ -4313,9 +4282,6 @@ packages:
   jsonwebtoken@9.0.2:
     resolution: {integrity: sha512-PRp66vJ865SSqOlgqS8hujT5U4AOgMfhrwYIuIhfKaoSCZcirrmASQr8CX7cUg+RMih+hgznrjp99o+W4pJLHQ==}
     engines: {node: '>=12', npm: '>=6'}
-
-  jsrsasign@11.0.0:
-    resolution: {integrity: sha512-BtRwVKS+5dsgPpAtzJcpo5OoWjSs1/zllSBG0+8o8/aV0Ki76m6iZwHnwnsqoTdhfFZDN1XIdcaZr5ZkP+H2gg==}
 
   jssha@2.4.2:
     resolution: {integrity: sha512-/jsi/9C0S70zfkT/4UlKQa5E1xKurDnXcQizcww9JSR/Fv+uIbWM2btG+bFcL3iNoK9jIGS0ls9HWLr1iw0kFg==}
@@ -5883,15 +5849,6 @@ packages:
   supports-preserve-symlinks-flag@1.0.0:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
-
-  swagger-ui-dist@5.13.0:
-    resolution: {integrity: sha512-uaWhh6j18IIs5tOX0arvIBnVINAzpTXaQXkr7qAk8zoupegJVg0UU/5+S/FgsgVCnzVsJ9d7QLjIxkswEeTg0Q==}
-
-  swagger-ui-express@4.6.3:
-    resolution: {integrity: sha512-CDje4PndhTD2HkgyKH3pab+LKspDeB/NhPN2OF1j+piYIamQqBYwAXWESOT1Yju2xFg51bRW9sUng2WxDjzArw==}
-    engines: {node: '>= v0.10.32'}
-    peerDependencies:
-      express: '>=4.19.2'
 
   swap-case@2.0.2:
     resolution: {integrity: sha512-kc6S2YS/2yXbtkSMunBtKdah4VFETZ8Oh6ONSmSd9bRxhqTrtARUCBUiWXH3xVPpvR7tz2CSnkuXVE42EcGnMw==}
@@ -10178,17 +10135,6 @@ snapshots:
       jest-matcher-utils: 27.5.1
       jest-message-util: 27.5.1
 
-  express-jsdoc-swagger@1.8.0:
-    dependencies:
-      chalk: 4.1.2
-      doctrine: 3.0.0
-      express: 4.20.0
-      glob: 7.2.3
-      merge: 2.1.1
-      swagger-ui-express: 4.6.3(express@4.20.0)
-    transitivePeerDependencies:
-      - supports-color
-
   express-session@1.18.0:
     dependencies:
       cookie: 1.0.1
@@ -11560,11 +11506,6 @@ snapshots:
 
   jju@1.4.0: {}
 
-  joi-to-swagger@6.2.0(joi@17.12.2):
-    dependencies:
-      joi: 17.12.2
-      lodash: 4.17.21
-
   joi@17.12.2:
     dependencies:
       '@hapi/hoek': 9.3.0
@@ -11698,8 +11639,6 @@ snapshots:
       lodash.once: 4.1.1
       ms: 2.1.3
       semver: 7.6.0
-
-  jsrsasign@11.0.0: {}
 
   jssha@2.4.2: {}
 
@@ -13363,13 +13302,6 @@ snapshots:
       supports-color: 7.2.0
 
   supports-preserve-symlinks-flag@1.0.0: {}
-
-  swagger-ui-dist@5.13.0: {}
-
-  swagger-ui-express@4.6.3(express@4.20.0):
-    dependencies:
-      express: 4.20.0
-      swagger-ui-dist: 5.13.0
 
   swap-case@2.0.2:
     dependencies:

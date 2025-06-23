@@ -390,3 +390,9 @@ UPDATE auth.users
 SET (otp_hash, otp_hash_expires_at, otp_method_last_used) = ($2, $3, $4)
 WHERE id = $1
 RETURNING id;
+
+-- name: UpsertRoles :many
+INSERT INTO auth.roles (role)
+SELECT unnest(@roles::TEXT[])
+ON CONFLICT (role) DO NOTHING
+RETURNING role;
