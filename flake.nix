@@ -25,14 +25,11 @@
           root = ./.;
           include = with nix-filter.lib;[
             ./package.json
-            ./pnpm-lock.yaml
-            ./tsconfig.build.json
+            ./bun.lock
+            ./bunfig.toml
             ./tsconfig.json
             ./audit-ci.jsonc
-            ./jest.config.js
             ./.env.example
-            (inDirectory "src")
-            (inDirectory "types")
             (inDirectory "email-templates")
             (inDirectory "test")
           ];
@@ -77,7 +74,7 @@
           pname = "node_modules-builder";
 
           nativeBuildInputs = with pkgs; [
-            nodePackages.pnpm
+            bun
             cacert
           ];
 
@@ -85,13 +82,13 @@
             root = ./.;
             include = [
               ./package.json
-              ./pnpm-lock.yaml
+              ./bun.lock
+              ./bunfig.toml
             ];
           };
 
           buildPhase = ''
-            export PNPM_HOME=$TMP/.pnpm-home
-            pnpm install --frozen-lockfile
+            bun install --frozen-lockfile
           '';
 
           installPhase = ''
@@ -151,8 +148,7 @@
             {
               nativeBuildInputs = with pkgs;
                 [
-                  nodejs-slim_20
-                  nodePackages.pnpm
+                  bun
                   cacert
                 ];
             }
@@ -164,17 +160,9 @@
               cp -r ${node-src}/.* .
               ln -s ${node_modules-builder}/node_modules node_modules
 
-              export XDG_DATA_HOME=$TMPDIR/.local/share
-              export HOME=$TMPDIR
-
-              echo "➜ Running pnpm audit"
-              pnpx audit-ci --config ./audit-ci.jsonc
-              echo "➜ Running pnpm build"
-              pnpm build
-              echo "➜ Running pnpm test"
               cp .env.example .env
-              pnpm test
 
+              bun test
               mkdir -p $out
             '';
         };
@@ -183,9 +171,8 @@
           default = nixops-lib.go.devShell {
             buildInputs = with pkgs; [
               go-migrate
-              nodejs
-              nodePackages.pnpm
               skopeo
+              bun
             ] ++ checkDeps ++ buildInputs ++ nativeBuildInputs;
           };
         };

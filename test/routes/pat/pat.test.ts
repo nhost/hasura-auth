@@ -72,7 +72,7 @@ describe('personal access token', () => {
       [hash(patResponse.body?.personalAccessToken)]
     );
 
-    expect(rows[0]?.metadata).toMatchObject({ name: 'Test PAT' });
+    expect(rows[0]?.metadata).toEqual({ name: 'Test PAT' });
   });
 
   test('should authenticate using the PAT workflow', async () => {

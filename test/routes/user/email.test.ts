@@ -133,7 +133,11 @@ describe('user email', () => {
       .set('Authorization', `Bearer ${accessToken}`)
       .send({ newEmail: existingEmail })
       .expect(StatusCodes.CONFLICT);
-    expect(res.body).toMatchSnapshot();
+    expect(res.body).toEqual({
+      status: StatusCodes.CONFLICT,
+      message: 'Email already in use',
+      error: 'email-already-in-use',
+    });
   });
 
   it('should not allow changing the email to one that has been created after sending the verification link', async () => {

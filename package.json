@@ -5,35 +5,13 @@
     "url": "git://github.com/nhost/hasura-auth.git",
     "type": "git"
   },
-  "version": "0.26.0",
-  "main": "dist/start.js",
-  "scripts": {
-    "preinstall": "npx only-allow pnpm",
-    "build": "rimraf dist && tsc --project tsconfig.build.json && tsc-alias",
-    "start": "node ./dist/start.js",
-    "lint": "eslint --ext .ts .",
-    "lint:fix": "npm run lint --fix",
-    "dev": "run-p  dev:start codegen:watch",
-    "codegen": "dotenv graphql-codegen -- --config graphql.config.js",
-    "codegen:watch": "dotenv graphql-codegen -- --config graphql.config.js --watch",
-    "dev:start": "ts-node-dev -r tsconfig-paths/register --respawn --clear  --unhandled-rejections=strict src/start.ts",
-    "dev:email": "pnpx react-email dev --dir ./email-templates/generator",
-    "generate:emails": "pnpx ts-node ./email-templates/generator/render-emails.ts",
-    "test": "AUTH_LOG_LEVEL=error jest --runInBand",
-    "test:watch": "AUTH_LOG_LEVEL=error jest --runInBand --watch",
-    "ci:version": "changeset version && pnpm install --frozen-lockfile false",
-    "changeset": "changeset"
-  },
   "devDependencies": {
     "axios": "^1.6.8",
     "pg": "^8.11.4",
     "@types/pg": "^7.14.11",
     "typescript": "4.5.4",
-    "jest": "^27.5.1",
-    "jest-extended": "0.11.5",
     "ts-jest": "^27.1.5",
     "@types/jest": "^27.5.2",
-    "@types/node": "^17.0.45",
     "uuid": "7.0.3",
     "@types/uuid": "7.0.2",
     "faker": "^5.5.3",
@@ -49,61 +27,5 @@
     "otplib": "12.0.1",
     "rfc2047": "^3.0.1",
     "@types/rfc2047": "^2.0.3"
-  },
-  "engines": {
-    "node": ">=18 <21"
-  },
-  "commitlint": {
-    "extends": [
-      "@commitlint/config-conventional"
-    ],
-    "rules": {
-      "subject-case": [
-        2,
-        "never",
-        [
-          "start-case",
-          "pascal-case"
-        ]
-      ]
-    }
-  },
-  "pnpm": {
-    "overrides": {
-      "jsonwebtoken@<=8.5.1": ">=9.0.0",
-      "jsonwebtoken@<9.0.0": ">=9.0.0",
-      "jose@>=4.0.0 <=4.9.1": ">=4.9.2",
-      "qs@>=6.7.0 <6.7.3": ">=6.7.3",
-      "axios@<1.7.4": ">=1.7.4",
-      "semver@<5.7.2": ">=5.7.2",
-      "semver@>=7.0.0 <7.5.2": ">=7.5.2",
-      "jsrsasign@<11.0.0": ">=11.0.0",
-      "nodemailer@<=6.9.8": ">=6.9.9",
-      "jsonata@>=1.4.0 <1.8.7": ">=1.8.7",
-      "jose@>=3.0.0 <=4.15.4": ">=4.15.5",
-      "follow-redirects@<=1.15.5": ">=1.15.6",
-      "express@<4.19.2": ">=4.19.2",
-      "execa@<=0.10.0": ">=2.0.0",
-      "pug@<=3.0.2": ">=3.0.3",
-      "braces@<3.0.3": ">=3.0.3",
-      "ws@^2.1.0 <5.2.4": "5.2.4",
-      "ws@^6.0.0 <6.2.3": "6.2.3",
-      "ws@^7.0.0 <7.5.10": "7.5.10",
-      "ws@^8.0.0 <8.17.1": "8.17.1",
-      "elliptic@>=4.0.0 <=6.5.6": ">=6.5.7",
-      "elliptic@>=2.0.0 <=6.5.6": ">=6.5.7",
-      "elliptic@>=5.2.1 <=6.5.6": ">=6.5.7",
-      "micromatch@<4.0.8": ">=4.0.8",
-      "send@<0.19.0": ">=0.19.0",
-      "dset@<3.1.4": ">=3.1.4",
-      "cookie@<0.7.0": ">=0.7.0",
-      "elliptic@<6.6.0": ">=6.6.0",
-      "cross-spawn@<7.0.5": ">=7.0.5",
-      "path-to-regexp@<1.0.0": "=0.1.12",
-      "prismjs@<1.30.0": ">=1.30.0",
-      "axios@<1.8.2": ">=1.8.2",
-      "@babel/runtime@<7.26.10": ">=7.26.10",
-      "@babel/helpers@<7.26.10": ">=7.26.10"
-    }
   }
 }
