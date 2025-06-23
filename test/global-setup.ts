@@ -4,7 +4,7 @@ import { Client } from 'pg';
 
 import { applyMetadata } from '@/metadata';
 import { applyMigrations } from '@/migrations';
-import { ENV } from '@/utils';
+import { ENV } from '@/utils/env';
 
 export default async (): Promise<void> => {
   await applyMigrations();

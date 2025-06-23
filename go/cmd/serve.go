@@ -1180,10 +1180,6 @@ func getNodeServer(cCtx *cli.Context) *exec.Cmd {
 	env = append(env, "PWD="+cCtx.String(flagNodeServerPath))
 	env = append(env, "AUTH_VERSION="+cCtx.App.Version)
 
-	if cCtx.Bool(flagEnableChangeEnv) {
-		env = append(env, "NODE_ENV=development")
-	}
-
 	if cCtx.String(flagPostgresMigrationsConnection) != "" {
 		for i, v := range env {
 			if strings.HasPrefix(v, "HASURA_GRAPHQL_DATABASE_URL=") {
@@ -1352,14 +1348,8 @@ func getGoServer( //nolint:funlen
 		},
 	)
 
-	nodejsHandler, err := nodejsHandler()
-	if err != nil {
-		return nil, fmt.Errorf("failed to create nodejs handler: %w", err)
-	}
-	router.NoRoute(nodejsHandler)
-
 	if cCtx.Bool(flagEnableChangeEnv) {
-		router.POST(cCtx.String(flagAPIPrefix)+"/change-env", ctrl.PostChangeEnv(nodejsHandler))
+		router.POST(cCtx.String(flagAPIPrefix)+"/change-env", ctrl.PostChangeEnv)
 	}
 
 	server := &http.Server{ //nolint:exhaustruct
@@ -1380,12 +1370,11 @@ func serve(cCtx *cli.Context) error {
 	defer cancel()
 
 	nodeServer := getNodeServer(cCtx)
-	go func() {
-		defer cancel()
-		if err := nodeServer.Run(); err != nil {
-			logger.Error("node server failed", slog.String("error", err.Error()))
-		}
-	}()
+	if err := nodeServer.Run(); err != nil {
+		logger.Error("node server failed", slog.String("error", err.Error()))
+	}
+
+	logger.Info("starting server", slog.String("port", cCtx.String(flagPort)))
 
 	pool, err := getDBPool(cCtx)
 	if err != nil {
