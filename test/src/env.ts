@@ -1,12 +1,11 @@
-import { logger } from '@/logger';
-import { JwtSecret } from '@/types';
 import {
   castBooleanEnv,
   castIntEnv,
   castObjectEnv,
   castStringArrayEnv,
   castStringEnv,
-} from '../config/utils';
+} from './utils';
+import type { JwtSecret } from './types';
 
 export const ENV = {
   get PWD() {
@@ -213,9 +212,6 @@ export const ENV = {
     try {
       return castObjectEnv<Record<string, string>>('AUTH_JWT_CUSTOM_CLAIMS');
     } catch {
-      logger.warn(
-        'AUTH_JWT_CUSTOM_CLAIMS cannot be parsed. Will ignore custom claims.'
-      );
       return {};
     }
   },

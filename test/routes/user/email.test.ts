@@ -3,15 +3,15 @@ import { v4 as uuidv4 } from 'uuid';
 import { StatusCodes } from 'http-status-codes';
 import * as faker from 'faker';
 
-import { ENV } from '../../../src/utils/env';
+import { ENV } from '../../src/env';
 import { request, resetEnvironment } from '../../server';
-import { SignInResponse } from '../../../src/types';
+import { SignInResponse } from '../../src/types';
 import {
   expectUrlParameters,
   mailHogSearch,
   getUrlParameters,
 } from '../../utils';
-import { ERRORS } from '@/errors';
+import { ERRORS } from '../../src/errors';
 
 describe('user email', () => {
   let client: Client;

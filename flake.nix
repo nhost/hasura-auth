@@ -31,7 +31,6 @@
             ./audit-ci.jsonc
             ./jest.config.js
             ./.env.example
-            (inDirectory "migrations")
             (inDirectory "src")
             (inDirectory "types")
             (inDirectory "email-templates")
@@ -59,6 +58,7 @@
             ./go/sql/query.sql
             ./go/sql/auth_schema_dump.sql
             isDirectory
+            (inDirectory "go/migrations/postgres")
             (inDirectory "email-templates")
             (inDirectory "vendor")
           ];
@@ -100,16 +100,6 @@
           '';
         };
 
-        node_modules-prod = node_modules-builder.overrideAttrs (oldAttrs: {
-          name = "node_modules-prod";
-
-          buildPhase = ''
-            export PNPM_HOME=$TMP/.pnpm-home
-            pnpm install --frozen-lockfile --prod
-          '';
-        });
-
-
         name = "hasura-auth";
         description = "Nhost's Auth Service";
         version = "0.0.0-dev";
@@ -123,11 +113,9 @@
           "-X main.Version=${version}"
         ];
 
-        buildInputs = with pkgs; [ ];
+        buildInputs = [ ];
 
-        nativeBuildInputs = with pkgs; [
-          makeWrapper
-        ];
+        nativeBuildInputs = [ ];
 
         checkDeps = with pkgs; [
           nhost-cli
@@ -203,56 +191,15 @@
         };
 
         packages = flake-utils.lib.flattenTree rec {
-          node-auth = pkgs.stdenv.mkDerivation {
-            pname = "node-${name}";
-            version = "hardcoded";
-
-            buildInputs = with pkgs; [
-              pkgs.nodejs-slim_20
-            ];
-
-            nativeBuildInputs = with pkgs; [
-              nodePackages.pnpm
-            ];
-
-            src = node-src;
-
-            buildPhase = ''
-              ln -s ${node_modules-builder}/node_modules node_modules
-              pnpm build
-            '';
-
-            installPhase = ''
-              mkdir -p $out/bin
-              cp -r dist $out/dist
-              cp -r migrations $out/migrations
-              cp -r email-templates $out/email-templates
-              cp package.json $out/package.json
-              ln -s ${node_modules-prod}/node_modules $out/node_modules
-            '';
-          };
-
           hasura-auth = nixops-lib.go.package {
-            inherit name submodule description src version ldflags nativeBuildInputs;
-
-            buildInputs = with pkgs; [
-              node-auth
-            ] ++ buildInputs;
-
-            postInstall = ''
-              wrapProgram $out/bin/hasura-auth \
-                  --suffix PATH : ${pkgs.nodejs-slim_20}/bin \
-                  --prefix AUTH_NODE_SERVER_PATH : ${node-auth}
-            '';
+            inherit name submodule buildInputs description src version ldflags nativeBuildInputs;
           };
 
           docker-image = nixops-lib.go.docker-image {
             inherit name created version buildInputs;
 
             maxLayers = 100;
-            contents = with pkgs; [
-              wget
-            ];
+            contents = [ ];
 
             package = hasura-auth;
           };

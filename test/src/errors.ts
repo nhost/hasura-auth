@@ -1,7 +1,5 @@
-import { NextFunction, Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 
-import { ENV, generateRedirectUrl } from './utils';
 
 // TODO Errors must be put in a shared package that the SDK also uses
 export type ErrorPayload = {
@@ -164,63 +162,3 @@ export const ERRORS = asErrors({
     message: 'Sign up is disabled.',
   },
 });
-
-export const sendError = (
-  res: Response,
-  code: keyof typeof ERRORS,
-  {
-    customMessage,
-    redirectTo,
-  }: { customMessage?: string; redirectTo?: string } = {},
-  forwardRedirection?: boolean
-) => {
-  const isSensitive = ENV.AUTH_CONCEAL_ERRORS && !!ERRORS[code].sensitive;
-  const error = isSensitive ? ERRORS['invalid-request'] : ERRORS[code];
-  const message = (isSensitive ? null : customMessage) ?? error.message;
-  const errorCode = isSensitive ? 'invalid-request' : code;
-  const status = error.status;
-
-  if (forwardRedirection && redirectTo) {
-    const redirectUrl = generateRedirectUrl(redirectTo, {
-      error: errorCode,
-      errorDescription: message,
-    });
-    return res.redirect(redirectUrl);
-  }
-
-  return res.status(status).send({ status, message, error: errorCode });
-};
-
-/**
- * This is a custom error middleware for Express.
- * https://expressjs.com/en/guide/error-handling.html
- */
-export async function serverErrors(
-  error: Error,
-  _req: Request,
-  res: Response,
-  // * See: https://stackoverflow.com/a/61464426
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _next: NextFunction
-): Promise<unknown> {
-  return sendError(res, 'internal-error', {
-    customMessage: JSON.stringify({
-      message: error.message || 'An unknown error occurred',
-      stack: error.stack,
-    }),
-  });
-}
-
-export const sendUnspecifiedError = (res: Response, e: unknown) => {
-  const error = e as Error;
-  if (error.message in ERRORS) {
-    return sendError(res, error.message as keyof typeof ERRORS);
-  } else {
-    return sendError(res, 'internal-error', {
-      customMessage: JSON.stringify({
-        message: error.message || 'An unknown error occurred',
-        stack: error.stack,
-      }),
-    });
-  }
-};
