@@ -30,7 +30,6 @@
             ./tsconfig.json
             ./audit-ci.jsonc
             ./.env.example
-            (inDirectory "email-templates")
             (inDirectory "test")
           ];
 
