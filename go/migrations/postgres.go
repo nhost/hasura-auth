@@ -23,42 +23,51 @@ func migrateMigrationsFromNodejs(
 	logger *slog.Logger,
 ) error {
 	var exists bool
-	err := db.QueryRow(
+
+	// we check if golang's migrations table already exists, nothing to do if it does
+	if err := db.QueryRow(
+		"SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = $1 AND table_name = $2)",
+		schemaName,
+		"schema_migrations",
+	).Scan(&exists); err != nil {
+		return fmt.Errorf("error checking if migrations table exists: %w", err)
+	}
+	if exists {
+		return nil
+	}
+
+	// we check if Node.js's migrations table already exists, nothing to do if it doesn't
+	if err := db.QueryRow(
 		"SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = $1 AND table_name = $2)",
 		schemaName,
 		"migrations",
-	).Scan(&exists)
-	if err != nil {
+	).Scan(&exists); err != nil {
 		return fmt.Errorf("error checking if migrations table exists: %w", err)
 	}
-
 	if !exists {
 		return nil
 	}
 
 	logger.Info("Migrating from Node.js migrations to Golang migrations")
-
 	var highestVersion int
-	if exists {
-		err = db.QueryRow("SELECT MAX(id) FROM auth.migrations").Scan(&highestVersion)
-		if err != nil {
-			return fmt.Errorf("error getting highest migration version: %w", err)
-		}
+	if err := db.QueryRow(
+		"SELECT MAX(id) FROM auth.migrations",
+	).Scan(&highestVersion); err != nil {
+		return fmt.Errorf("error getting highest migration version: %w", err)
 	}
 
 	logger.Info("Highest migration version found", "version", highestVersion)
-
 	if err := migration.Force(highestVersion); err != nil {
 		return fmt.Errorf("error forcing migration to version %d: %w", highestVersion, err)
 	}
 
-	// drop the old migrations table
-	_, err = db.Exec("DROP TABLE auth.migrations")
-	if err != nil {
-		return fmt.Errorf("error dropping old migrations table: %w", err)
-	}
+	// drop the old migrations table - we will do after a while to support downgrades for a while
+	// _, err = db.Exec("DROP TABLE auth.migrations")
+	// if err != nil {
+	// 	return fmt.Errorf("error dropping old migrations table: %w", err)
+	// }
 
-	logger.Info("Old Node.js migrations table dropped successfully")
+	// logger.Info("Old Node.js migrations table dropped successfully")
 
 	return nil
 }

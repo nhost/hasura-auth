@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"net/smtp"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/nhost/hasura-auth/go/controller"
@@ -55,7 +56,8 @@ func getTemplates(cCtx *cli.Context, logger *slog.Logger) (*notifications.Templa
 	var templatesPath string
 	for _, p := range []string{
 		cCtx.String(flagEmailTemplatesPath),
-		"/share/email-templates",
+		"email-templates",
+		filepath.Join("share", "email-templates"),
 	} {
 		if _, err := os.Stat(p); err == nil {
 			templatesPath = p
