@@ -147,8 +147,10 @@ type DropRelationshipArgs struct {
 	Relationship string `json:"relationship"`
 }
 
-func ApplyHasuraMetadata(ctx context.Context, url, hasuraSecret string) error { //nolint: funlen
-	// Auth schema tables based on src/metadata.ts
+func ApplyHasuraMetadata( //nolint: funlen,maintidx
+	ctx context.Context,
+	url, hasuraSecret string,
+) error {
 	authTables := []TrackTable{
 		{
 			Type: "pg_track_table",
@@ -198,6 +200,10 @@ func ApplyHasuraMetadata(ctx context.Context, url, hasuraSecret string) error { 
 						UpdateByPk:      "updateAuthRefreshTokenType",
 						Delete:          "deleteAuthRefreshTokenTypes",
 						DeleteByPk:      "deleteAuthRefreshTokenType",
+					},
+					CustomColumnNames: map[string]string{
+						"value":   "value",
+						"comment": "comment",
 					},
 				},
 			},
