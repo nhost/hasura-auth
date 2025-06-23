@@ -56,5 +56,14 @@ func applyMigrations(
 		return fmt.Errorf("failed to apply migrations: %w", err)
 	}
 
+	if err := migrations.ApplyHasuraMetadata(
+		ctx,
+		strings.Replace(cCtx.String(flagGraphqlURL), "/v1/graphql", "/v1/metadata", 1),
+		cCtx.String(flagHasuraAdminSecret),
+	); err != nil {
+		logger.Error("failed to apply hasura metadata", slog.String("error", err.Error()))
+		return fmt.Errorf("failed to apply hasura metadata: %w", err)
+	}
+
 	return insertRoles(ctx, cCtx, db, logger)
 }
