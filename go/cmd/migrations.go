@@ -50,7 +50,7 @@ func applyMigrations(
 	ctx context.Context, cCtx *cli.Context, db *sql.Queries, logger *slog.Logger,
 ) error {
 	if err := migrations.ApplyPostgresMigration(
-		cCtx.String(flagPostgresConnection), logger,
+		cCtx.String(flagPostgresMigrationsConnection), logger,
 	); err != nil {
 		logger.Error("failed to apply migrations", slog.String("error", err.Error()))
 		return fmt.Errorf("failed to apply migrations: %w", err)
