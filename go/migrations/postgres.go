@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"strings"
 
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
@@ -73,6 +74,12 @@ func migrateMigrationsFromNodejs(
 }
 
 func ApplyPostgresMigration(postgresURL string, logger *slog.Logger) error {
+	// for backward compatibility, we ensure that the postgresURL contains the sslmode parameter
+	// if it doesn't, we default to "disable"
+	if !strings.Contains(postgresURL, "sslmode") {
+		postgresURL += "?sslmode=disable"
+	}
+
 	db, err := sql.Open("postgres", postgresURL)
 	if err != nil {
 		return fmt.Errorf("problem connecting to postgres: %w", err)
