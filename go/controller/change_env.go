@@ -31,40 +31,40 @@ func (ctrl *Controller) PostChangeEnv(c *gin.Context) { //nolint:funlen,cyclop
 		return
 	}
 
-		if ctrl.config.CustomClaims == "" { //nolint:nestif
-			ctrl.wf.jwtGetter.customClaimer = nil
+	if ctrl.config.CustomClaims == "" { //nolint:nestif
+		ctrl.wf.jwtGetter.customClaimer = nil
+	} else {
+		var rawClaims map[string]string
+		if err := json.Unmarshal([]byte(ctrl.config.CustomClaims), &rawClaims); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"message": "failed to unmarshal custom claims", "error": err.Error()})
+		}
+		var defaults map[string]any
+		if ctrl.config.CustomClaimsDefaults == "" {
+			defaults = nil
 		} else {
-			var rawClaims map[string]string
-			if err := json.Unmarshal([]byte(ctrl.config.CustomClaims), &rawClaims); err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{"message": "failed to unmarshal custom claims", "error": err.Error()})
-			}
-			var defaults map[string]any
-			if ctrl.config.CustomClaimsDefaults == "" {
-				defaults = nil
-			} else {
-				if err := json.Unmarshal([]byte(ctrl.config.CustomClaimsDefaults), &defaults); err != nil {
-					c.JSON(http.StatusBadRequest, gin.H{"message": "failed to unmarshal custom claims defaults", "error": err.Error()})
-				}
-			}
-
-			if len(rawClaims) > 0 {
-				cc, err := NewCustomClaims(
-					rawClaims,
-					&http.Client{}, //nolint:exhaustruct
-					ctrl.config.HasuraGraphqlURL,
-					defaults,
-					CustomClaimerAddAdminSecret(ctrl.config.HasuraAdminSecret),
-				)
-				if err != nil {
-					_ = c.Error(err)
-					c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-					return
-				}
-				ctrl.wf.jwtGetter.customClaimer = cc
-			} else {
-				ctrl.wf.jwtGetter.customClaimer = nil
+			if err := json.Unmarshal([]byte(ctrl.config.CustomClaimsDefaults), &defaults); err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"message": "failed to unmarshal custom claims defaults", "error": err.Error()})
 			}
 		}
+
+		if len(rawClaims) > 0 {
+			cc, err := NewCustomClaims(
+				rawClaims,
+				&http.Client{}, //nolint:exhaustruct
+				ctrl.config.HasuraGraphqlURL,
+				defaults,
+				CustomClaimerAddAdminSecret(ctrl.config.HasuraAdminSecret),
+			)
+			if err != nil {
+				_ = c.Error(err)
+				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				return
+			}
+			ctrl.wf.jwtGetter.customClaimer = cc
+		} else {
+			ctrl.wf.jwtGetter.customClaimer = nil
+		}
+	}
 
 	if ctrl.config.BlockedEmailDomains != nil ||
 		ctrl.config.BlockedEmails != nil ||
