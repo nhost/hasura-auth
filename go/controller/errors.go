@@ -27,6 +27,8 @@ var (
 
 	ErrAnonymousUsersDisabled          = &APIError{api.DisabledEndpoint}
 	ErrUserEmailNotFound               = &APIError{api.InvalidEmailPassword}
+	ErrUserPhoneNumberNotFound         = &APIError{api.InvalidRequest}
+	ErrInvalidOTP                      = &APIError{api.InvalidRequest}
 	ErrUserProviderNotFound            = &APIError{api.InvalidRequest}
 	ErrSecurityKeyNotFound             = &APIError{api.InvalidRequest}
 	ErrUserProviderAlreadyLinked       = &APIError{api.InvalidRequest}
@@ -46,6 +48,7 @@ var (
 	ErrInvalidTicket                   = &APIError{api.InvalidTicket}
 	ErrInvalidRequest                  = &APIError{api.InvalidRequest}
 	ErrSignupDisabled                  = &APIError{api.SignupDisabled}
+	ErrUnauthenticatedUser             = &APIError{api.InvalidRequest}
 	ErrDisabledEndpoint                = &APIError{api.DisabledEndpoint}
 	ErrEmailAlreadyVerified            = &APIError{api.EmailAlreadyVerified}
 	ErrInvalidRefreshToken             = &APIError{api.InvalidRefreshToken}
@@ -54,6 +57,11 @@ var (
 	ErrInvalidTotp                     = &APIError{api.InvalidTotp}
 	ErrMfaTypeNotFound                 = &APIError{api.MfaTypeNotFound}
 	ErrTotpAlreadyActive               = &APIError{api.TotpAlreadyActive}
+	ErrInvalidState                    = &APIError{api.InvalidState}
+	ErrOauthTokenExchangeFailed        = &APIError{api.OauthTokenEchangeFailed}
+	ErrOauthProfileFetchFailed         = &APIError{api.OauthProfileFetchFailed}
+	ErrOauthProviderError              = &APIError{api.OauthProviderError}
+	ErrCannotSendSMS                   = &APIError{api.CannotSendSms}
 )
 
 func logError(err error) slog.Attr {
@@ -99,6 +107,16 @@ func (response ErrorResponse) VisitPostSigninPasswordlessEmailResponse(
 }
 
 func (response ErrorResponse) VisitPostSigninPatResponse(w http.ResponseWriter) error {
+	return response.visit(w)
+}
+
+func (response ErrorResponse) VisitGetSigninProviderProviderResponse(w http.ResponseWriter) error {
+	return response.visit(w)
+}
+
+func (response ErrorResponse) VisitGetSigninProviderProviderCallbackResponse(
+	w http.ResponseWriter,
+) error {
 	return response.visit(w)
 }
 
@@ -168,6 +186,44 @@ func (response ErrorResponse) VisitPostSigninOtpEmailVerifyResponse(w http.Respo
 	return response.visit(w)
 }
 
+func (response ErrorResponse) VisitPostElevateWebauthnResponse(w http.ResponseWriter) error {
+	return response.visit(w)
+}
+
+func (response ErrorResponse) VisitPostElevateWebauthnVerifyResponse(w http.ResponseWriter) error {
+	return response.visit(w)
+}
+
+func (response ErrorResponse) VisitPostUserWebauthnAddResponse(w http.ResponseWriter) error {
+	return response.visit(w)
+}
+
+func (response ErrorResponse) VisitPostUserWebauthnVerifyResponse(w http.ResponseWriter) error {
+	return response.visit(w)
+}
+
+func (response ErrorResponse) VisitPostSigninPasswordlessSmsResponse(w http.ResponseWriter) error {
+	return response.visit(w)
+}
+
+func (response ErrorResponse) VisitPostSignoutResponse(w http.ResponseWriter) error {
+	return response.visit(w)
+}
+
+func (response ErrorResponse) VisitPostTokenVerifyResponse(w http.ResponseWriter) error {
+	return response.visit(w)
+}
+
+func (response ErrorResponse) VisitGetUserResponse(w http.ResponseWriter) error {
+	return response.visit(w)
+}
+
+func (response ErrorResponse) VisitPostSigninPasswordlessSmsOtpResponse(
+	w http.ResponseWriter,
+) error {
+	return response.visit(w)
+}
+
 func isSensitive(err api.ErrorResponseError) bool {
 	switch err {
 	case
@@ -184,6 +240,7 @@ func isSensitive(err api.ErrorResponseError) bool {
 		api.InvalidTicket,
 		api.DisabledMfaTotp,
 		api.InvalidTotp,
+		api.InvalidOtp,
 		api.NoTotpSecret:
 		return true
 	case
@@ -197,13 +254,18 @@ func isSensitive(err api.ErrorResponseError) bool {
 		api.RedirectToNotAllowed,
 		api.UserNotAnonymous,
 		api.MfaTypeNotFound,
-		api.TotpAlreadyActive:
+		api.TotpAlreadyActive,
+		api.InvalidState,
+		api.OauthTokenEchangeFailed,
+		api.OauthProfileFetchFailed,
+		api.CannotSendSms,
+		api.OauthProviderError:
 		return false
 	}
 	return false
 }
 
-func (ctrl *Controller) getError(err *APIError) ErrorResponse { //nolint:cyclop,funlen
+func (ctrl *Controller) getError(err *APIError) ErrorResponse { //nolint:gocyclo,cyclop,funlen
 	invalidRequest := ErrorResponse{
 		Status:  http.StatusBadRequest,
 		Error:   api.InvalidRequest,
@@ -360,6 +422,42 @@ func (ctrl *Controller) getError(err *APIError) ErrorResponse { //nolint:cyclop,
 			Error:   err.t,
 			Message: "TOTP MFA is already active",
 		}
+	case api.InvalidState:
+		return ErrorResponse{
+			Status:  http.StatusBadRequest,
+			Error:   err.t,
+			Message: "Invalid state",
+		}
+	case api.OauthTokenEchangeFailed:
+		return ErrorResponse{
+			Status:  http.StatusBadRequest,
+			Error:   err.t,
+			Message: "Failed to exchange token",
+		}
+	case api.OauthProfileFetchFailed:
+		return ErrorResponse{
+			Status:  http.StatusBadRequest,
+			Error:   err.t,
+			Message: "Failed to get user profile",
+		}
+	case api.OauthProviderError:
+		return ErrorResponse{
+			Status:  http.StatusBadRequest,
+			Error:   err.t,
+			Message: "Provider returned an error",
+		}
+	case api.CannotSendSms:
+		return ErrorResponse{
+			Status:  http.StatusBadRequest,
+			Error:   err.t,
+			Message: "Cannot send SMS, check your phone number is correct",
+		}
+	case api.InvalidOtp:
+		return ErrorResponse{
+			Status:  http.StatusBadRequest,
+			Error:   err.t,
+			Message: "Invalid or expired OTP",
+		}
 	}
 
 	return invalidRequest
@@ -384,6 +482,24 @@ func (response ErrorRedirectResponse) visit(w http.ResponseWriter) error {
 }
 
 func (response ErrorRedirectResponse) VisitGetVerifyResponse(w http.ResponseWriter) error {
+	return response.visit(w)
+}
+
+func (response ErrorRedirectResponse) VisitGetSigninProviderProviderResponse(
+	w http.ResponseWriter,
+) error {
+	return response.visit(w)
+}
+
+func (response ErrorRedirectResponse) VisitGetSigninProviderProviderCallbackResponse(
+	w http.ResponseWriter,
+) error {
+	return response.visit(w)
+}
+
+func (response ErrorRedirectResponse) VisitPostSigninProviderProviderCallbackResponse(
+	w http.ResponseWriter,
+) error {
 	return response.visit(w)
 }
 

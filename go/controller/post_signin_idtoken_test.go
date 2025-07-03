@@ -58,7 +58,7 @@ func TestPostSigninIdToken(t *testing.T) { //nolint:maintidx
 		{
 			name:   "signup - simple",
 			config: getConfig,
-			db: func(ctrl *gomock.Controller) controller.DBClient {
+			db: func(ctrl *gomock.Controller) controller.DBClient { //nolint:dupl
 				mock := mock.NewMockDBClient(ctrl)
 
 				mock.EXPECT().GetUserByProviderID(
@@ -134,6 +134,7 @@ func TestPostSigninIdToken(t *testing.T) { //nolint:maintidx
 						PhoneNumber:         nil,
 						PhoneNumberVerified: false,
 						Roles:               []string{"user", "me"},
+						ActiveMfaType:       nil,
 					},
 				},
 			},
@@ -165,7 +166,7 @@ func TestPostSigninIdToken(t *testing.T) { //nolint:maintidx
 		{
 			name:   "signup - with options",
 			config: getConfig,
-			db: func(ctrl *gomock.Controller) controller.DBClient {
+			db: func(ctrl *gomock.Controller) controller.DBClient { //nolint:dupl
 				mock := mock.NewMockDBClient(ctrl)
 
 				mock.EXPECT().GetUserByProviderID(
@@ -247,6 +248,7 @@ func TestPostSigninIdToken(t *testing.T) { //nolint:maintidx
 						PhoneNumber:         nil,
 						PhoneNumberVerified: false,
 						Roles:               []string{"me"},
+						ActiveMfaType:       nil,
 					},
 				},
 			},
@@ -330,7 +332,7 @@ func TestPostSigninIdToken(t *testing.T) { //nolint:maintidx
 				c.DisableNewUsers = true
 				return c
 			},
-			db: func(ctrl *gomock.Controller) controller.DBClient {
+			db: func(ctrl *gomock.Controller) controller.DBClient { //nolint:dupl
 				mock := mock.NewMockDBClient(ctrl)
 
 				mock.EXPECT().GetUserByProviderID(
@@ -428,7 +430,7 @@ func TestPostSigninIdToken(t *testing.T) { //nolint:maintidx
 		{
 			name:   "signin - simple - provider id found",
 			config: getConfig,
-			db: func(ctrl *gomock.Controller) controller.DBClient {
+			db: func(ctrl *gomock.Controller) controller.DBClient { //nolint:dupl
 				mock := mock.NewMockDBClient(ctrl)
 
 				mock.EXPECT().GetUserByProviderID( //nolint:dupl
@@ -526,6 +528,7 @@ func TestPostSigninIdToken(t *testing.T) { //nolint:maintidx
 						PhoneNumber:         nil,
 						PhoneNumberVerified: false,
 						Roles:               []string{"user", "me"},
+						ActiveMfaType:       nil,
 					},
 				},
 			},
@@ -557,7 +560,7 @@ func TestPostSigninIdToken(t *testing.T) { //nolint:maintidx
 		{
 			name:   "signin - simple - user id found",
 			config: getConfig,
-			db: func(ctrl *gomock.Controller) controller.DBClient {
+			db: func(ctrl *gomock.Controller) controller.DBClient { //nolint:dupl
 				mock := mock.NewMockDBClient(ctrl)
 
 				mock.EXPECT().GetUserByProviderID(
@@ -680,6 +683,7 @@ func TestPostSigninIdToken(t *testing.T) { //nolint:maintidx
 						PhoneNumber:         nil,
 						PhoneNumberVerified: false,
 						Roles:               []string{"user", "me"},
+						ActiveMfaType:       nil,
 					},
 				},
 			},
@@ -711,7 +715,7 @@ func TestPostSigninIdToken(t *testing.T) { //nolint:maintidx
 		{
 			name:   "signin - simple - user disabled",
 			config: getConfig,
-			db: func(ctrl *gomock.Controller) controller.DBClient {
+			db: func(ctrl *gomock.Controller) controller.DBClient { //nolint:dupl
 				mock := mock.NewMockDBClient(ctrl)
 
 				mock.EXPECT().GetUserByProviderID( //nolint:dupl

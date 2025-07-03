@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log/slog"
 	"slices"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -32,6 +33,7 @@ type Workflows struct {
 	db                   DBClient
 	hibp                 HIBPClient
 	email                Emailer
+	sms                  SMSer
 	idTokenValidator     *oidc.IDTokenValidatorProviders
 	redirectURLValidator func(redirectTo string) bool
 	ValidateEmail        func(email string) bool
@@ -44,6 +46,7 @@ func NewWorkflows(
 	db DBClient,
 	hibp HIBPClient,
 	email Emailer,
+	sms SMSer,
 	idTokenValidator *oidc.IDTokenValidatorProviders,
 	gravatarURL func(string) string,
 ) (*Workflows, error) {
@@ -71,6 +74,7 @@ func NewWorkflows(
 		db:                   db,
 		hibp:                 hibp,
 		email:                email,
+		sms:                  sms,
 		redirectURLValidator: redirectURLValidator,
 		ValidateEmail:        emailValidator,
 		idTokenValidator:     idTokenValidator,
@@ -117,6 +121,13 @@ func (wf *Workflows) ValidateSignUpOptions( //nolint:cyclop
 		options = &api.SignUpOptions{} //nolint:exhaustruct
 	}
 
+	if options.RedirectTo == nil {
+		options.RedirectTo = ptr(wf.config.ClientURL.String())
+	} else if !wf.redirectURLValidator(deptr(options.RedirectTo)) {
+		logger.Warn("redirect URL not allowed", slog.String("redirectTo", deptr(options.RedirectTo)))
+		return nil, ErrRedirecToNotAllowed
+	}
+
 	if options.DefaultRole == nil {
 		options.DefaultRole = ptr(wf.config.DefaultRole)
 	}
@@ -127,14 +138,14 @@ func (wf *Workflows) ValidateSignUpOptions( //nolint:cyclop
 		for _, role := range deptr(options.AllowedRoles) {
 			if !slices.Contains(wf.config.DefaultAllowedRoles, role) {
 				logger.Warn("role not allowed", slog.String("role", role))
-				return nil, ErrRoleNotAllowed
+				return options, ErrRoleNotAllowed
 			}
 		}
 	}
 
 	if !slices.Contains(deptr(options.AllowedRoles), deptr(options.DefaultRole)) {
 		logger.Warn("default role not in allowed roles")
-		return nil, ErrDefaultRoleMustBeInAllowedRoles
+		return options, ErrDefaultRoleMustBeInAllowedRoles
 	}
 
 	if options.DisplayName == nil {
@@ -150,13 +161,6 @@ func (wf *Workflows) ValidateSignUpOptions( //nolint:cyclop
 			slog.String("locale", deptr(options.Locale)),
 		)
 		options.Locale = ptr(wf.config.DefaultLocale)
-	}
-
-	if options.RedirectTo == nil {
-		options.RedirectTo = ptr(wf.config.ClientURL.String())
-	} else if !wf.redirectURLValidator(deptr(options.RedirectTo)) {
-		logger.Warn("redirect URL not allowed", slog.String("redirectTo", deptr(options.RedirectTo)))
-		return nil, ErrRedirecToNotAllowed
 	}
 
 	return options, nil
@@ -177,6 +181,33 @@ func (wf *Workflows) ValidateUser(
 	}
 
 	if !user.EmailVerified && wf.config.RequireEmailVerification {
+		logger.Warn("user is unverified")
+		return ErrUnverifiedUser
+	}
+
+	if user.IsAnonymous {
+		logger.Warn("user is anonymous")
+		return ErrForbiddenAnonymous
+	}
+
+	return nil
+}
+
+func (wf *Workflows) ValidateUserEmailOptional(
+	user sql.AuthUser,
+	logger *slog.Logger,
+) *APIError {
+	if user.Email.Valid && !user.IsAnonymous && !wf.ValidateEmail(user.Email.String) {
+		logger.Warn("email didn't pass access control checks")
+		return ErrInvalidEmailPassword
+	}
+
+	if user.Disabled {
+		logger.Warn("user is disabled")
+		return ErrDisabledUser
+	}
+
+	if user.Email.Valid && !user.EmailVerified && wf.config.RequireEmailVerification {
 		logger.Warn("user is unverified")
 		return ErrUnverifiedUser
 	}
@@ -291,7 +322,7 @@ func (wf *Workflows) GetUserByProviderUserID(
 		return sql.AuthUser{}, ErrInternalServerError
 	}
 
-	if err := wf.ValidateUser(user, logger); err != nil {
+	if err := wf.ValidateUserEmailOptional(user, logger); err != nil {
 		return user, err
 	}
 
@@ -425,7 +456,7 @@ func (wf *Workflows) UpdateSession( //nolint:funlen
 	}
 
 	accessToken, expiresIn, err := wf.jwtGetter.GetToken(
-		ctx, user.ID, user.IsAnonymous, allowedRoles, user.DefaultRole, logger,
+		ctx, user.ID, user.IsAnonymous, allowedRoles, user.DefaultRole, nil, logger,
 	)
 	if err != nil {
 		logger.Error("error getting jwt", logError(err))
@@ -459,6 +490,7 @@ func (wf *Workflows) UpdateSession( //nolint:funlen
 			PhoneNumber:         sql.ToPointerString(user.PhoneNumber),
 			PhoneNumberVerified: user.PhoneNumberVerified,
 			Roles:               allowedRoles,
+			ActiveMfaType:       nil,
 		},
 	}, nil
 }
@@ -466,6 +498,7 @@ func (wf *Workflows) UpdateSession( //nolint:funlen
 func (wf *Workflows) NewSession( //nolint:funlen
 	ctx context.Context,
 	user sql.AuthUser,
+	customClaims map[string]any,
 	logger *slog.Logger,
 ) (*api.Session, error) {
 	userRoles, err := wf.db.GetUserRoles(ctx, user.ID)
@@ -495,7 +528,7 @@ func (wf *Workflows) NewSession( //nolint:funlen
 	}
 
 	accessToken, expiresIn, err := wf.jwtGetter.GetToken(
-		ctx, user.ID, user.IsAnonymous, allowedRoles, user.DefaultRole, logger,
+		ctx, user.ID, user.IsAnonymous, allowedRoles, user.DefaultRole, customClaims, logger,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("error getting jwt: %w", err)
@@ -526,33 +559,46 @@ func (wf *Workflows) NewSession( //nolint:funlen
 			PhoneNumber:         sql.ToPointerString(user.PhoneNumber),
 			PhoneNumberVerified: user.PhoneNumberVerified,
 			Roles:               allowedRoles,
+			ActiveMfaType:       nil,
 		},
 	}, nil
 }
 
-func (wf *Workflows) GetUserFromJWTInContext(
+func (wf *Workflows) GetJWTInContext(
 	ctx context.Context,
 	logger *slog.Logger,
-) (sql.AuthUser, *APIError) {
+) (uuid.UUID, *APIError) {
 	jwtToken, ok := wf.jwtGetter.FromContext(ctx)
 	if !ok {
 		logger.Error(
 			"jwt token not found in context, this should not be possilble due to middleware",
 		)
-		return sql.AuthUser{}, ErrInternalServerError
+		return uuid.UUID{}, ErrInvalidRequest
 	}
 
 	sub, err := jwtToken.Claims.GetSubject()
 	if err != nil {
 		logger.Error("error getting user id from jwt token", logError(err))
-		return sql.AuthUser{}, ErrInvalidRequest
+		return uuid.UUID{}, ErrInvalidRequest
 	}
 	logger = logger.With(slog.String("user_id", sub))
 
 	userID, err := uuid.Parse(sub)
 	if err != nil {
 		logger.Error("error parsing user id from jwt token's subject", logError(err))
-		return sql.AuthUser{}, ErrInvalidRequest
+		return uuid.UUID{}, ErrInvalidRequest
+	}
+
+	return userID, nil
+}
+
+func (wf *Workflows) GetUserFromJWTInContext(
+	ctx context.Context,
+	logger *slog.Logger,
+) (sql.AuthUser, *APIError) {
+	userID, apiErr := wf.GetJWTInContext(ctx, logger)
+	if apiErr != nil {
+		return sql.AuthUser{}, apiErr
 	}
 
 	user, apiErr := wf.GetUser(ctx, userID, logger)
@@ -565,6 +611,27 @@ func (wf *Workflows) GetUserFromJWTInContext(
 	}
 
 	return user, nil
+}
+
+func (wf *Workflows) VerifyJWTToken(
+	_ context.Context,
+	token string,
+	logger *slog.Logger,
+) *APIError {
+	token = strings.TrimPrefix(token, "Bearer ")
+
+	jwtToken, err := wf.jwtGetter.Validate(token)
+	if err != nil {
+		logger.Warn("invalid JWT token", logError(err))
+		return ErrUnauthenticatedUser
+	}
+
+	if !jwtToken.Valid {
+		logger.Warn("JWT token is not valid")
+		return ErrUnauthenticatedUser
+	}
+
+	return nil
 }
 
 func (wf *Workflows) InsertRefreshtoken(
@@ -727,7 +794,7 @@ func (wf *Workflows) SignupUserWithFn(
 	databaseWithoutSession databaseWithoutSessionFn,
 	logger *slog.Logger,
 ) (*api.Session, *APIError) {
-	if wf.config.RequireEmailVerification || wf.config.DisableNewUsers {
+	if (sendConfirmationEmail && wf.config.RequireEmailVerification) || wf.config.DisableNewUsers {
 		return nil, wf.SignupUserWithouthSession(
 			ctx, email, options, sendConfirmationEmail, databaseWithoutSession, logger,
 		)
@@ -776,7 +843,7 @@ func (wf *Workflows) SignupUserWithSession( //nolint:funlen
 	}
 
 	accessToken, expiresIn, err := wf.jwtGetter.GetToken(
-		ctx, userID, false, deptr(options.AllowedRoles), *options.DefaultRole, logger,
+		ctx, userID, false, deptr(options.AllowedRoles), *options.DefaultRole, nil, logger,
 	)
 	if err != nil {
 		logger.Error("error getting jwt", logError(err))
@@ -802,6 +869,7 @@ func (wf *Workflows) SignupUserWithSession( //nolint:funlen
 			PhoneNumber:         nil,
 			PhoneNumberVerified: false,
 			Roles:               deptr(options.AllowedRoles),
+			ActiveMfaType:       nil,
 		},
 	}, nil
 }
@@ -912,7 +980,7 @@ func (wf *Workflows) SignupAnonymousUser( //nolint:funlen
 	}
 
 	accessToken, expiresIn, err := wf.jwtGetter.GetToken(
-		ctx, resp.ID, true, []string{anonymousRole}, anonymousRole, logger,
+		ctx, resp.ID, true, []string{anonymousRole}, anonymousRole, nil, logger,
 	)
 	if err != nil {
 		logger.Error("error getting jwt", logError(err))
@@ -938,6 +1006,7 @@ func (wf *Workflows) SignupAnonymousUser( //nolint:funlen
 			PhoneNumber:         nil,
 			PhoneNumberVerified: false,
 			Roles:               []string{anonymousRole},
+			ActiveMfaType:       nil,
 		},
 	}, nil
 }
@@ -1004,7 +1073,7 @@ func (wf *Workflows) DeanonymizeUser(
 }
 
 func (wf *Workflows) GetOIDCProfileFromIDToken(
-	providerID api.Provider,
+	providerID api.IdTokenProvider,
 	idToken string,
 	pnonce *string,
 	logger *slog.Logger,
@@ -1036,15 +1105,15 @@ func (wf *Workflows) GetOIDCProfileFromIDToken(
 }
 
 func (wf *Workflows) getIDTokenValidator(
-	provider api.Provider,
+	provider api.IdTokenProvider,
 ) (*oidc.IDTokenValidator, *APIError) {
 	var validator *oidc.IDTokenValidator
 	switch provider {
-	case api.Apple:
+	case api.IdTokenProviderApple:
 		validator = wf.idTokenValidator.AppleID
-	case api.Google:
+	case api.IdTokenProviderGoogle:
 		validator = wf.idTokenValidator.Google
-	case api.FakeProvider:
+	case api.IdTokenProviderFake:
 		validator = wf.idTokenValidator.FakeProvider
 	default:
 		return nil, ErrInvalidRequest
@@ -1140,4 +1209,60 @@ func (wf *Workflows) GetUserSecurityKeys(
 	}
 
 	return keys, nil
+}
+
+func (wf *Workflows) GetUserByPhoneNumber(
+	ctx context.Context,
+	phoneNumber string,
+	logger *slog.Logger,
+) (sql.AuthUser, *APIError) {
+	user, err := wf.db.GetUserByPhoneNumber(ctx, sql.Text(phoneNumber))
+	if errors.Is(err, pgx.ErrNoRows) {
+		logger.Warn("user not found by phone number")
+		return sql.AuthUser{}, ErrUserPhoneNumberNotFound
+	}
+	if err != nil {
+		logger.Error("error getting user by phone number", logError(err))
+		return sql.AuthUser{}, ErrInternalServerError
+	}
+
+	if user.Disabled {
+		logger.Warn("user is disabled")
+		return sql.AuthUser{}, ErrDisabledUser
+	}
+
+	if user.IsAnonymous {
+		logger.Warn("user is anonymous")
+		return sql.AuthUser{}, ErrForbiddenAnonymous
+	}
+
+	return user, nil
+}
+
+func (wf *Workflows) DeleteUserRefreshTokens(
+	ctx context.Context,
+	userID uuid.UUID,
+	logger *slog.Logger,
+) *APIError {
+	if err := wf.db.DeleteRefreshTokens(ctx, userID); err != nil {
+		logger.Error("error deleting user refresh tokens", logError(err))
+		return ErrInternalServerError
+	}
+
+	return nil
+}
+
+func (wf *Workflows) DeleteRefreshToken(
+	ctx context.Context,
+	refreshToken string,
+	logger *slog.Logger,
+) *APIError {
+	if err := wf.db.DeleteRefreshToken(
+		ctx, sql.Text(hashRefreshToken([]byte(refreshToken))),
+	); err != nil {
+		logger.Error("error deleting refresh token", logError(err))
+		return ErrInternalServerError
+	}
+
+	return nil
 }

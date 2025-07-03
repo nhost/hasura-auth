@@ -12,6 +12,7 @@ package mock
 import (
 	context "context"
 	reflect "reflect"
+	time "time"
 
 	uuid "github.com/google/uuid"
 	pgtype "github.com/jackc/pgx/v5/pgtype"
@@ -56,6 +57,61 @@ func (m *MockEmailer) SendEmail(ctx context.Context, to, locale string, template
 func (mr *MockEmailerMockRecorder) SendEmail(ctx, to, locale, templateName, data any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendEmail", reflect.TypeOf((*MockEmailer)(nil).SendEmail), ctx, to, locale, templateName, data)
+}
+
+// MockSMSer is a mock of SMSer interface.
+type MockSMSer struct {
+	ctrl     *gomock.Controller
+	recorder *MockSMSerMockRecorder
+	isgomock struct{}
+}
+
+// MockSMSerMockRecorder is the mock recorder for MockSMSer.
+type MockSMSerMockRecorder struct {
+	mock *MockSMSer
+}
+
+// NewMockSMSer creates a new mock instance.
+func NewMockSMSer(ctrl *gomock.Controller) *MockSMSer {
+	mock := &MockSMSer{ctrl: ctrl}
+	mock.recorder = &MockSMSerMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockSMSer) EXPECT() *MockSMSerMockRecorder {
+	return m.recorder
+}
+
+// CheckVerificationCode mocks base method.
+func (m *MockSMSer) CheckVerificationCode(ctx context.Context, to, code string) (sql.AuthUser, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CheckVerificationCode", ctx, to, code)
+	ret0, _ := ret[0].(sql.AuthUser)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CheckVerificationCode indicates an expected call of CheckVerificationCode.
+func (mr *MockSMSerMockRecorder) CheckVerificationCode(ctx, to, code any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckVerificationCode", reflect.TypeOf((*MockSMSer)(nil).CheckVerificationCode), ctx, to, code)
+}
+
+// SendVerificationCode mocks base method.
+func (m *MockSMSer) SendVerificationCode(to, locale string) (string, time.Time, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SendVerificationCode", to, locale)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(time.Time)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// SendVerificationCode indicates an expected call of SendVerificationCode.
+func (mr *MockSMSerMockRecorder) SendVerificationCode(to, locale any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendVerificationCode", reflect.TypeOf((*MockSMSer)(nil).SendVerificationCode), to, locale)
 }
 
 // MockDBClientGetUser is a mock of DBClientGetUser interface.
@@ -125,6 +181,36 @@ func (m *MockDBClientGetUser) GetUserByEmailAndTicket(ctx context.Context, arg s
 func (mr *MockDBClientGetUserMockRecorder) GetUserByEmailAndTicket(ctx, arg any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByEmailAndTicket", reflect.TypeOf((*MockDBClientGetUser)(nil).GetUserByEmailAndTicket), ctx, arg)
+}
+
+// GetUserByPhoneNumber mocks base method.
+func (m *MockDBClientGetUser) GetUserByPhoneNumber(ctx context.Context, phoneNumber pgtype.Text) (sql.AuthUser, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUserByPhoneNumber", ctx, phoneNumber)
+	ret0, _ := ret[0].(sql.AuthUser)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUserByPhoneNumber indicates an expected call of GetUserByPhoneNumber.
+func (mr *MockDBClientGetUserMockRecorder) GetUserByPhoneNumber(ctx, phoneNumber any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByPhoneNumber", reflect.TypeOf((*MockDBClientGetUser)(nil).GetUserByPhoneNumber), ctx, phoneNumber)
+}
+
+// GetUserByPhoneNumberAndOTP mocks base method.
+func (m *MockDBClientGetUser) GetUserByPhoneNumberAndOTP(ctx context.Context, arg sql.GetUserByPhoneNumberAndOTPParams) (sql.AuthUser, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUserByPhoneNumberAndOTP", ctx, arg)
+	ret0, _ := ret[0].(sql.AuthUser)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUserByPhoneNumberAndOTP indicates an expected call of GetUserByPhoneNumberAndOTP.
+func (mr *MockDBClientGetUserMockRecorder) GetUserByPhoneNumberAndOTP(ctx, arg any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByPhoneNumberAndOTP", reflect.TypeOf((*MockDBClientGetUser)(nil).GetUserByPhoneNumberAndOTP), ctx, arg)
 }
 
 // GetUserByRefreshTokenHash mocks base method.
@@ -250,6 +336,21 @@ func (m *MockDBClientUpdateUser) EXPECT() *MockDBClientUpdateUserMockRecorder {
 	return m.recorder
 }
 
+// InsertSecurityKey mocks base method.
+func (m *MockDBClientUpdateUser) InsertSecurityKey(ctx context.Context, arg sql.InsertSecurityKeyParams) (uuid.UUID, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "InsertSecurityKey", ctx, arg)
+	ret0, _ := ret[0].(uuid.UUID)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// InsertSecurityKey indicates an expected call of InsertSecurityKey.
+func (mr *MockDBClientUpdateUserMockRecorder) InsertSecurityKey(ctx, arg any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InsertSecurityKey", reflect.TypeOf((*MockDBClientUpdateUser)(nil).InsertSecurityKey), ctx, arg)
+}
+
 // InsertUserWithSecurityKey mocks base method.
 func (m *MockDBClientUpdateUser) InsertUserWithSecurityKey(ctx context.Context, arg sql.InsertUserWithSecurityKeyParams) (uuid.UUID, error) {
 	m.ctrl.T.Helper()
@@ -351,6 +452,21 @@ func (m *MockDBClientUpdateUser) UpdateUserLastSeen(ctx context.Context, id uuid
 func (mr *MockDBClientUpdateUserMockRecorder) UpdateUserLastSeen(ctx, id any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateUserLastSeen", reflect.TypeOf((*MockDBClientUpdateUser)(nil).UpdateUserLastSeen), ctx, id)
+}
+
+// UpdateUserOTPHash mocks base method.
+func (m *MockDBClientUpdateUser) UpdateUserOTPHash(ctx context.Context, arg sql.UpdateUserOTPHashParams) (uuid.UUID, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateUserOTPHash", ctx, arg)
+	ret0, _ := ret[0].(uuid.UUID)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateUserOTPHash indicates an expected call of UpdateUserOTPHash.
+func (mr *MockDBClientUpdateUserMockRecorder) UpdateUserOTPHash(ctx, arg any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateUserOTPHash", reflect.TypeOf((*MockDBClientUpdateUser)(nil).UpdateUserOTPHash), ctx, arg)
 }
 
 // UpdateUserTicket mocks base method.
@@ -535,6 +651,20 @@ func (mr *MockDBClientMockRecorder) CountSecurityKeysUser(ctx, userID any) *gomo
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CountSecurityKeysUser", reflect.TypeOf((*MockDBClient)(nil).CountSecurityKeysUser), ctx, userID)
 }
 
+// DeleteRefreshToken mocks base method.
+func (m *MockDBClient) DeleteRefreshToken(ctx context.Context, refreshTokenHash pgtype.Text) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteRefreshToken", ctx, refreshTokenHash)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteRefreshToken indicates an expected call of DeleteRefreshToken.
+func (mr *MockDBClientMockRecorder) DeleteRefreshToken(ctx, refreshTokenHash any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteRefreshToken", reflect.TypeOf((*MockDBClient)(nil).DeleteRefreshToken), ctx, refreshTokenHash)
+}
+
 // DeleteRefreshTokens mocks base method.
 func (m *MockDBClient) DeleteRefreshTokens(ctx context.Context, userID uuid.UUID) error {
 	m.ctrl.T.Helper()
@@ -638,6 +768,36 @@ func (mr *MockDBClientMockRecorder) GetUserByEmailAndTicket(ctx, arg any) *gomoc
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByEmailAndTicket", reflect.TypeOf((*MockDBClient)(nil).GetUserByEmailAndTicket), ctx, arg)
 }
 
+// GetUserByPhoneNumber mocks base method.
+func (m *MockDBClient) GetUserByPhoneNumber(ctx context.Context, phoneNumber pgtype.Text) (sql.AuthUser, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUserByPhoneNumber", ctx, phoneNumber)
+	ret0, _ := ret[0].(sql.AuthUser)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUserByPhoneNumber indicates an expected call of GetUserByPhoneNumber.
+func (mr *MockDBClientMockRecorder) GetUserByPhoneNumber(ctx, phoneNumber any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByPhoneNumber", reflect.TypeOf((*MockDBClient)(nil).GetUserByPhoneNumber), ctx, phoneNumber)
+}
+
+// GetUserByPhoneNumberAndOTP mocks base method.
+func (m *MockDBClient) GetUserByPhoneNumberAndOTP(ctx context.Context, arg sql.GetUserByPhoneNumberAndOTPParams) (sql.AuthUser, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUserByPhoneNumberAndOTP", ctx, arg)
+	ret0, _ := ret[0].(sql.AuthUser)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUserByPhoneNumberAndOTP indicates an expected call of GetUserByPhoneNumberAndOTP.
+func (mr *MockDBClientMockRecorder) GetUserByPhoneNumberAndOTP(ctx, arg any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByPhoneNumberAndOTP", reflect.TypeOf((*MockDBClient)(nil).GetUserByPhoneNumberAndOTP), ctx, arg)
+}
+
 // GetUserByProviderID mocks base method.
 func (m *MockDBClient) GetUserByProviderID(ctx context.Context, arg sql.GetUserByProviderIDParams) (sql.AuthUser, error) {
 	m.ctrl.T.Helper()
@@ -711,6 +871,21 @@ func (m *MockDBClient) InsertRefreshtoken(ctx context.Context, arg sql.InsertRef
 func (mr *MockDBClientMockRecorder) InsertRefreshtoken(ctx, arg any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InsertRefreshtoken", reflect.TypeOf((*MockDBClient)(nil).InsertRefreshtoken), ctx, arg)
+}
+
+// InsertSecurityKey mocks base method.
+func (m *MockDBClient) InsertSecurityKey(ctx context.Context, arg sql.InsertSecurityKeyParams) (uuid.UUID, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "InsertSecurityKey", ctx, arg)
+	ret0, _ := ret[0].(uuid.UUID)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// InsertSecurityKey indicates an expected call of InsertSecurityKey.
+func (mr *MockDBClientMockRecorder) InsertSecurityKey(ctx, arg any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InsertSecurityKey", reflect.TypeOf((*MockDBClient)(nil).InsertSecurityKey), ctx, arg)
 }
 
 // InsertUser mocks base method.
@@ -919,6 +1094,21 @@ func (m *MockDBClient) UpdateUserLastSeen(ctx context.Context, id uuid.UUID) (pg
 func (mr *MockDBClientMockRecorder) UpdateUserLastSeen(ctx, id any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateUserLastSeen", reflect.TypeOf((*MockDBClient)(nil).UpdateUserLastSeen), ctx, id)
+}
+
+// UpdateUserOTPHash mocks base method.
+func (m *MockDBClient) UpdateUserOTPHash(ctx context.Context, arg sql.UpdateUserOTPHashParams) (uuid.UUID, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateUserOTPHash", ctx, arg)
+	ret0, _ := ret[0].(uuid.UUID)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateUserOTPHash indicates an expected call of UpdateUserOTPHash.
+func (mr *MockDBClientMockRecorder) UpdateUserOTPHash(ctx, arg any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateUserOTPHash", reflect.TypeOf((*MockDBClient)(nil).UpdateUserOTPHash), ctx, arg)
 }
 
 // UpdateUserTicket mocks base method.

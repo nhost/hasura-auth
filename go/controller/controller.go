@@ -10,6 +10,7 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/nhost/hasura-auth/go/notifications"
 	"github.com/nhost/hasura-auth/go/oidc"
+	"github.com/nhost/hasura-auth/go/providers"
 	"github.com/nhost/hasura-auth/go/sql"
 )
 
@@ -40,15 +41,24 @@ type Emailer interface {
 	) error
 }
 
+type SMSer interface {
+	SendVerificationCode(to string, locale string) (string, time.Time, error)
+	CheckVerificationCode(ctx context.Context, to string, code string) (sql.AuthUser, error)
+}
+
 type DBClientGetUser interface {
 	GetUser(ctx context.Context, id uuid.UUID) (sql.AuthUser, error)
 	GetUserByEmail(ctx context.Context, email pgtype.Text) (sql.AuthUser, error)
+	GetUserByPhoneNumber(ctx context.Context, phoneNumber pgtype.Text) (sql.AuthUser, error)
 	GetUserByRefreshTokenHash(
 		ctx context.Context, arg sql.GetUserByRefreshTokenHashParams,
 	) (sql.AuthUser, error)
 	GetUserByTicket(ctx context.Context, ticket pgtype.Text) (sql.AuthUser, error)
 	GetUserByEmailAndTicket(
 		ctx context.Context, arg sql.GetUserByEmailAndTicketParams,
+	) (sql.AuthUser, error)
+	GetUserByPhoneNumberAndOTP(
+		ctx context.Context, arg sql.GetUserByPhoneNumberAndOTPParams,
 	) (sql.AuthUser, error)
 }
 
@@ -63,7 +73,7 @@ type DBClientInsertUser interface {
 	) (sql.InsertUserWithSecurityKeyAndRefreshTokenRow, error)
 }
 
-type DBClientUpdateUser interface {
+type DBClientUpdateUser interface { //nolint:interfacebloat
 	UpdateUserChangeEmail(
 		ctx context.Context,
 		arg sql.UpdateUserChangeEmailParams,
@@ -81,6 +91,8 @@ type DBClientUpdateUser interface {
 	UpdateUserVerifyEmail(ctx context.Context, id uuid.UUID) (sql.AuthUser, error)
 	UpdateUserTotpSecret(ctx context.Context, arg sql.UpdateUserTotpSecretParams) error
 	UpdateUserActiveMFAType(ctx context.Context, arg sql.UpdateUserActiveMFATypeParams) error
+	InsertSecurityKey(ctx context.Context, arg sql.InsertSecurityKeyParams) (uuid.UUID, error)
+	UpdateUserOTPHash(ctx context.Context, arg sql.UpdateUserOTPHashParams) (uuid.UUID, error)
 }
 
 type DBClientUserProvider interface {
@@ -110,6 +122,7 @@ type DBClient interface { //nolint:interfacebloat
 	CountSecurityKeysUser(ctx context.Context, userID uuid.UUID) (int64, error)
 	GetSecurityKeys(ctx context.Context, userID uuid.UUID) ([]sql.AuthUserSecurityKey, error)
 	DeleteRefreshTokens(ctx context.Context, userID uuid.UUID) error
+	DeleteRefreshToken(ctx context.Context, refreshTokenHash pgtype.Text) error
 	DeleteUserRoles(ctx context.Context, userID uuid.UUID) error
 	GetUserRoles(ctx context.Context, userID uuid.UUID) ([]sql.AuthUserRole, error)
 	InsertRefreshtoken(ctx context.Context, arg sql.InsertRefreshtokenParams) (uuid.UUID, error)
@@ -125,6 +138,7 @@ type Controller struct {
 	wf               *Workflows
 	config           Config
 	Webauthn         *Webauthn
+	Providers        providers.Map
 	version          string
 }
 
@@ -133,7 +147,9 @@ func New(
 	config Config,
 	jwtGetter *JWTGetter,
 	emailer Emailer,
+	sms SMSer,
 	hibp HIBPClient,
+	providers providers.Map,
 	idTokenValidator *oidc.IDTokenValidatorProviders,
 	totp *Totp,
 	version string,
@@ -144,6 +160,7 @@ func New(
 		db,
 		hibp,
 		emailer,
+		sms,
 		idTokenValidator,
 		GravatarURLFunc(
 			config.GravatarEnabled, config.GravatarDefault, config.GravatarRating,
@@ -168,5 +185,6 @@ func New(
 		idTokenValidator: idTokenValidator,
 		totp:             totp,
 		version:          version,
+		Providers:        providers,
 	}, nil
 }

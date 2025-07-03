@@ -19,6 +19,7 @@ const (
 
 // Defines values for ErrorResponseError.
 const (
+	CannotSendSms                   ErrorResponseError = "cannot-send-sms"
 	DefaultRoleMustBeInAllowedRoles ErrorResponseError = "default-role-must-be-in-allowed-roles"
 	DisabledEndpoint                ErrorResponseError = "disabled-endpoint"
 	DisabledMfaTotp                 ErrorResponseError = "disabled-mfa-totp"
@@ -28,14 +29,19 @@ const (
 	ForbiddenAnonymous              ErrorResponseError = "forbidden-anonymous"
 	InternalServerError             ErrorResponseError = "internal-server-error"
 	InvalidEmailPassword            ErrorResponseError = "invalid-email-password"
+	InvalidOtp                      ErrorResponseError = "invalid-otp"
 	InvalidPat                      ErrorResponseError = "invalid-pat"
 	InvalidRefreshToken             ErrorResponseError = "invalid-refresh-token"
 	InvalidRequest                  ErrorResponseError = "invalid-request"
+	InvalidState                    ErrorResponseError = "invalid-state"
 	InvalidTicket                   ErrorResponseError = "invalid-ticket"
 	InvalidTotp                     ErrorResponseError = "invalid-totp"
 	LocaleNotAllowed                ErrorResponseError = "locale-not-allowed"
 	MfaTypeNotFound                 ErrorResponseError = "mfa-type-not-found"
 	NoTotpSecret                    ErrorResponseError = "no-totp-secret"
+	OauthProfileFetchFailed         ErrorResponseError = "oauth-profile-fetch-failed"
+	OauthProviderError              ErrorResponseError = "oauth-provider-error"
+	OauthTokenEchangeFailed         ErrorResponseError = "oauth-token-echange-failed"
 	PasswordInHibpDatabase          ErrorResponseError = "password-in-hibp-database"
 	PasswordTooShort                ErrorResponseError = "password-too-short"
 	RedirectToNotAllowed            ErrorResponseError = "redirectTo-not-allowed"
@@ -46,15 +52,15 @@ const (
 	UserNotAnonymous                ErrorResponseError = "user-not-anonymous"
 )
 
+// Defines values for IdTokenProvider.
+const (
+	IdTokenProviderApple  IdTokenProvider = "apple"
+	IdTokenProviderGoogle IdTokenProvider = "google"
+)
+
 // Defines values for OKResponse.
 const (
 	OK OKResponse = "OK"
-)
-
-// Defines values for Provider.
-const (
-	Apple  Provider = "apple"
-	Google Provider = "google"
 )
 
 // Defines values for UserDeanonymizeRequestSignInMethod.
@@ -69,12 +75,88 @@ const (
 	Totp  UserMfaRequestActiveMfaType = "totp"
 )
 
+// Defines values for SigninProvider.
+const (
+	SigninProviderApple       SigninProvider = "apple"
+	SigninProviderAzuread     SigninProvider = "azuread"
+	SigninProviderBitbucket   SigninProvider = "bitbucket"
+	SigninProviderDiscord     SigninProvider = "discord"
+	SigninProviderFacebook    SigninProvider = "facebook"
+	SigninProviderGithub      SigninProvider = "github"
+	SigninProviderGitlab      SigninProvider = "gitlab"
+	SigninProviderGoogle      SigninProvider = "google"
+	SigninProviderLinkedin    SigninProvider = "linkedin"
+	SigninProviderSpotify     SigninProvider = "spotify"
+	SigninProviderStrava      SigninProvider = "strava"
+	SigninProviderTwitch      SigninProvider = "twitch"
+	SigninProviderTwitter     SigninProvider = "twitter"
+	SigninProviderWindowslive SigninProvider = "windowslive"
+	SigninProviderWorkos      SigninProvider = "workos"
+)
+
 // Defines values for TicketTypeQuery.
 const (
 	TicketTypeQueryEmailConfirmChange TicketTypeQuery = "emailConfirmChange"
 	TicketTypeQueryEmailVerify        TicketTypeQuery = "emailVerify"
 	TicketTypeQueryPasswordReset      TicketTypeQuery = "passwordReset"
 	TicketTypeQuerySigninPasswordless TicketTypeQuery = "signinPasswordless"
+)
+
+// Defines values for GetSigninProviderProviderParamsProvider.
+const (
+	GetSigninProviderProviderParamsProviderApple       GetSigninProviderProviderParamsProvider = "apple"
+	GetSigninProviderProviderParamsProviderAzuread     GetSigninProviderProviderParamsProvider = "azuread"
+	GetSigninProviderProviderParamsProviderBitbucket   GetSigninProviderProviderParamsProvider = "bitbucket"
+	GetSigninProviderProviderParamsProviderDiscord     GetSigninProviderProviderParamsProvider = "discord"
+	GetSigninProviderProviderParamsProviderFacebook    GetSigninProviderProviderParamsProvider = "facebook"
+	GetSigninProviderProviderParamsProviderGithub      GetSigninProviderProviderParamsProvider = "github"
+	GetSigninProviderProviderParamsProviderGitlab      GetSigninProviderProviderParamsProvider = "gitlab"
+	GetSigninProviderProviderParamsProviderGoogle      GetSigninProviderProviderParamsProvider = "google"
+	GetSigninProviderProviderParamsProviderLinkedin    GetSigninProviderProviderParamsProvider = "linkedin"
+	GetSigninProviderProviderParamsProviderSpotify     GetSigninProviderProviderParamsProvider = "spotify"
+	GetSigninProviderProviderParamsProviderStrava      GetSigninProviderProviderParamsProvider = "strava"
+	GetSigninProviderProviderParamsProviderTwitch      GetSigninProviderProviderParamsProvider = "twitch"
+	GetSigninProviderProviderParamsProviderTwitter     GetSigninProviderProviderParamsProvider = "twitter"
+	GetSigninProviderProviderParamsProviderWindowslive GetSigninProviderProviderParamsProvider = "windowslive"
+	GetSigninProviderProviderParamsProviderWorkos      GetSigninProviderProviderParamsProvider = "workos"
+)
+
+// Defines values for GetSigninProviderProviderCallbackParamsProvider.
+const (
+	GetSigninProviderProviderCallbackParamsProviderApple       GetSigninProviderProviderCallbackParamsProvider = "apple"
+	GetSigninProviderProviderCallbackParamsProviderAzuread     GetSigninProviderProviderCallbackParamsProvider = "azuread"
+	GetSigninProviderProviderCallbackParamsProviderBitbucket   GetSigninProviderProviderCallbackParamsProvider = "bitbucket"
+	GetSigninProviderProviderCallbackParamsProviderDiscord     GetSigninProviderProviderCallbackParamsProvider = "discord"
+	GetSigninProviderProviderCallbackParamsProviderFacebook    GetSigninProviderProviderCallbackParamsProvider = "facebook"
+	GetSigninProviderProviderCallbackParamsProviderGithub      GetSigninProviderProviderCallbackParamsProvider = "github"
+	GetSigninProviderProviderCallbackParamsProviderGitlab      GetSigninProviderProviderCallbackParamsProvider = "gitlab"
+	GetSigninProviderProviderCallbackParamsProviderGoogle      GetSigninProviderProviderCallbackParamsProvider = "google"
+	GetSigninProviderProviderCallbackParamsProviderLinkedin    GetSigninProviderProviderCallbackParamsProvider = "linkedin"
+	GetSigninProviderProviderCallbackParamsProviderSpotify     GetSigninProviderProviderCallbackParamsProvider = "spotify"
+	GetSigninProviderProviderCallbackParamsProviderStrava      GetSigninProviderProviderCallbackParamsProvider = "strava"
+	GetSigninProviderProviderCallbackParamsProviderTwitch      GetSigninProviderProviderCallbackParamsProvider = "twitch"
+	GetSigninProviderProviderCallbackParamsProviderTwitter     GetSigninProviderProviderCallbackParamsProvider = "twitter"
+	GetSigninProviderProviderCallbackParamsProviderWindowslive GetSigninProviderProviderCallbackParamsProvider = "windowslive"
+	GetSigninProviderProviderCallbackParamsProviderWorkos      GetSigninProviderProviderCallbackParamsProvider = "workos"
+)
+
+// Defines values for PostSigninProviderProviderCallbackParamsProvider.
+const (
+	Apple       PostSigninProviderProviderCallbackParamsProvider = "apple"
+	Azuread     PostSigninProviderProviderCallbackParamsProvider = "azuread"
+	Bitbucket   PostSigninProviderProviderCallbackParamsProvider = "bitbucket"
+	Discord     PostSigninProviderProviderCallbackParamsProvider = "discord"
+	Facebook    PostSigninProviderProviderCallbackParamsProvider = "facebook"
+	Github      PostSigninProviderProviderCallbackParamsProvider = "github"
+	Gitlab      PostSigninProviderProviderCallbackParamsProvider = "gitlab"
+	Google      PostSigninProviderProviderCallbackParamsProvider = "google"
+	Linkedin    PostSigninProviderProviderCallbackParamsProvider = "linkedin"
+	Spotify     PostSigninProviderProviderCallbackParamsProvider = "spotify"
+	Strava      PostSigninProviderProviderCallbackParamsProvider = "strava"
+	Twitch      PostSigninProviderProviderCallbackParamsProvider = "twitch"
+	Twitter     PostSigninProviderProviderCallbackParamsProvider = "twitter"
+	Windowslive PostSigninProviderProviderCallbackParamsProvider = "windowslive"
+	Workos      PostSigninProviderProviderCallbackParamsProvider = "workos"
 )
 
 // Defines values for GetVerifyParamsType.
@@ -116,6 +198,9 @@ type ErrorResponse struct {
 // ErrorResponseError Error code that identifies the application error
 type ErrorResponseError string
 
+// IdTokenProvider defines model for IdTokenProvider.
+type IdTokenProvider string
+
 // JWK defines model for JWK.
 type JWK struct {
 	Alg string `json:"alg"`
@@ -137,8 +222,8 @@ type LinkIdTokenRequest struct {
 	IdToken string `json:"idToken"`
 
 	// Nonce Nonce used during sign in process
-	Nonce    *string  `json:"nonce,omitempty"`
-	Provider Provider `json:"provider"`
+	Nonce    *string         `json:"nonce,omitempty"`
+	Provider IdTokenProvider `json:"provider"`
 }
 
 // MFAChallengePayload defines model for MFAChallengePayload.
@@ -153,9 +238,6 @@ type OKResponse string
 type OptionsRedirectTo struct {
 	RedirectTo *string `json:"redirectTo,omitempty"`
 }
-
-// Provider defines model for Provider.
-type Provider string
 
 // RefreshTokenRequest defines model for RefreshTokenRequest.
 type RefreshTokenRequest struct {
@@ -202,9 +284,9 @@ type SignInIdTokenRequest struct {
 	IdToken string `json:"idToken"`
 
 	// Nonce Nonce used during sign in process
-	Nonce    *string        `json:"nonce,omitempty"`
-	Options  *SignUpOptions `json:"options,omitempty"`
-	Provider Provider       `json:"provider"`
+	Nonce    *string         `json:"nonce,omitempty"`
+	Options  *SignUpOptions  `json:"options,omitempty"`
+	Provider IdTokenProvider `json:"provider"`
 }
 
 // SignInMfaTotpRequest defines model for SignInMfaTotpRequest.
@@ -250,6 +332,29 @@ type SignInPasswordlessEmailRequest struct {
 	Options *SignUpOptions      `json:"options,omitempty"`
 }
 
+// SignInPasswordlessSmsOtpRequest defines model for SignInPasswordlessSmsOtpRequest.
+type SignInPasswordlessSmsOtpRequest struct {
+	// Otp One-time password received by SMS
+	Otp string `json:"otp"`
+
+	// PhoneNumber Phone number of the user
+	PhoneNumber string `json:"phoneNumber"`
+}
+
+// SignInPasswordlessSmsOtpResponse defines model for SignInPasswordlessSmsOtpResponse.
+type SignInPasswordlessSmsOtpResponse struct {
+	Mfa     *MFAChallengePayload `json:"mfa,omitempty"`
+	Session *Session             `json:"session,omitempty"`
+}
+
+// SignInPasswordlessSmsRequest defines model for SignInPasswordlessSmsRequest.
+type SignInPasswordlessSmsRequest struct {
+	Options *SignUpOptions `json:"options,omitempty"`
+
+	// PhoneNumber Phone number of the user
+	PhoneNumber string `json:"phoneNumber"`
+}
+
 // SignInWebauthnRequest defines model for SignInWebauthnRequest.
 type SignInWebauthnRequest struct {
 	// Email A valid email
@@ -265,8 +370,16 @@ type SignInWebauthnVerifyRequest struct {
 
 	// Email A valid email. Deprecated, no longer used
 	// Deprecated:
-	Email                *openapi_types.Email   `json:"email,omitempty"`
-	AdditionalProperties map[string]interface{} `json:"-"`
+	Email *openapi_types.Email `json:"email,omitempty"`
+}
+
+// SignOutRequest defines model for SignOutRequest.
+type SignOutRequest struct {
+	// All Sign out from all connected devices
+	All *bool `json:"all,omitempty"`
+
+	// RefreshToken Refresh Token
+	RefreshToken *string `json:"refreshToken,omitempty"`
 }
 
 // SignUpEmailPasswordRequest defines model for SignUpEmailPasswordRequest.
@@ -303,19 +416,11 @@ type SignUpWebauthnResponse = protocol.PublicKeyCredentialCreationOptions
 
 // SignUpWebauthnVerifyRequest defines model for SignUpWebauthnVerifyRequest.
 type SignUpWebauthnVerifyRequest struct {
-	Credential *protocol.CredentialCreationResponse `json:"credential,omitempty"`
-	Options    *struct {
-		AllowedRoles *[]string `json:"allowedRoles,omitempty"`
-		DefaultRole  *string   `json:"defaultRole,omitempty"`
-		DisplayName  *string   `json:"displayName,omitempty"`
+	Credential protocol.CredentialCreationResponse `json:"credential"`
 
-		// Locale A two-characters locale
-		Locale     *string                 `json:"locale,omitempty"`
-		Metadata   *map[string]interface{} `json:"metadata,omitempty"`
-		Nickname   *string                 `json:"nickname,omitempty"`
-		RedirectTo *string                 `json:"redirectTo,omitempty"`
-	} `json:"options,omitempty"`
-	AdditionalProperties map[string]interface{} `json:"-"`
+	// Nickname Nickname for the security key
+	Nickname *string        `json:"nickname,omitempty"`
+	Options  *SignUpOptions `json:"options,omitempty"`
 }
 
 // SigninAnonymousRequest defines model for SigninAnonymousRequest.
@@ -338,10 +443,12 @@ type TotpGenerateResponse struct {
 
 // User defines model for User.
 type User struct {
-	AvatarUrl   string    `json:"avatarUrl"`
-	CreatedAt   time.Time `json:"createdAt"`
-	DefaultRole string    `json:"defaultRole"`
-	DisplayName string    `json:"displayName"`
+	// ActiveMfaType Active MFA type for the user
+	ActiveMfaType *string   `json:"activeMfaType"`
+	AvatarUrl     string    `json:"avatarUrl"`
+	CreatedAt     time.Time `json:"createdAt"`
+	DefaultRole   string    `json:"defaultRole"`
+	DisplayName   string    `json:"displayName"`
 
 	// Email A valid email
 	Email         *openapi_types.Email `json:"email,omitempty"`
@@ -357,6 +464,23 @@ type User struct {
 	PhoneNumber         *string                `json:"phoneNumber,omitempty"`
 	PhoneNumberVerified bool                   `json:"phoneNumberVerified"`
 	Roles               []string               `json:"roles"`
+}
+
+// UserAddSecurityKeyVerifyRequest defines model for UserAddSecurityKeyVerifyRequest.
+type UserAddSecurityKeyVerifyRequest struct {
+	Credential protocol.CredentialCreationResponse `json:"credential"`
+
+	// Nickname Optional nickname for the security key
+	Nickname *string `json:"nickname,omitempty"`
+}
+
+// UserAddSecurityKeyVerifyResponse defines model for UserAddSecurityKeyVerifyResponse.
+type UserAddSecurityKeyVerifyResponse struct {
+	// Id ID of the newly added security key
+	Id string `json:"id"`
+
+	// Nickname Nickname of the security key
+	Nickname *string `json:"nickname,omitempty"`
 }
 
 // UserDeanonymizeRequest defines model for UserDeanonymizeRequest.
@@ -421,14 +545,108 @@ type UserPasswordResetRequest struct {
 	Options *OptionsRedirectTo  `json:"options,omitempty"`
 }
 
+// VerifyTokenRequest defines model for VerifyTokenRequest.
+type VerifyTokenRequest struct {
+	// Token JWT token to verify
+	Token *string `json:"token,omitempty"`
+}
+
 // RedirectToQuery Target URL for the redirect
 type RedirectToQuery = string
+
+// SigninProvider defines model for SigninProvider.
+type SigninProvider string
 
 // TicketQuery Ticket
 type TicketQuery = string
 
 // TicketTypeQuery Type of the ticket
 type TicketTypeQuery string
+
+// GetSigninProviderProviderParams defines parameters for GetSigninProviderProvider.
+type GetSigninProviderProviderParams struct {
+	// AllowedRoles Array of allowed roles for the user
+	AllowedRoles *[]string `form:"allowedRoles,omitempty" json:"allowedRoles,omitempty"`
+
+	// DefaultRole Default role for the user
+	DefaultRole *string `form:"defaultRole,omitempty" json:"defaultRole,omitempty"`
+
+	// DisplayName Display name for the user
+	DisplayName *string `form:"displayName,omitempty" json:"displayName,omitempty"`
+
+	// Locale A two-characters locale
+	Locale *string `form:"locale,omitempty" json:"locale,omitempty"`
+
+	// Metadata Additional metadata for the user
+	Metadata *map[string]interface{} `form:"metadata,omitempty" json:"metadata,omitempty"`
+
+	// RedirectTo URI to redirect to
+	RedirectTo *string `form:"redirectTo,omitempty" json:"redirectTo,omitempty"`
+
+	// Connect If set, this means that the user is already authenticated and wants to link their account. This needs to be a valid JWT access token.
+	Connect *string `form:"connect,omitempty" json:"connect,omitempty"`
+}
+
+// GetSigninProviderProviderParamsProvider defines parameters for GetSigninProviderProvider.
+type GetSigninProviderProviderParamsProvider string
+
+// GetSigninProviderProviderCallbackParams defines parameters for GetSigninProviderProviderCallback.
+type GetSigninProviderProviderCallbackParams struct {
+	// Code Authorization code provided by the authentication provider
+	Code *string `form:"code,omitempty" json:"code,omitempty"`
+
+	// IdToken ID token provided by the authentication provider
+	IdToken *string `form:"id_token,omitempty" json:"id_token,omitempty"`
+
+	// State State parameter to avoid CSRF attacks
+	State string `form:"state" json:"state"`
+
+	// OauthToken OAuth token for the provider (e.g., X)
+	OauthToken *string `form:"oauth_token,omitempty" json:"oauth_token,omitempty"`
+
+	// OauthVerifier OAuth verifier for the provider (e.g., X)
+	OauthVerifier *string `form:"oauth_verifier,omitempty" json:"oauth_verifier,omitempty"`
+
+	// Error Error message if authentication failed
+	Error *string `form:"error,omitempty" json:"error,omitempty"`
+
+	// ErrorDescription Detailed error description if authentication failed
+	ErrorDescription *string `form:"error_description,omitempty" json:"error_description,omitempty"`
+
+	// ErrorUri URI with more information about the error
+	ErrorUri *string `form:"error_uri,omitempty" json:"error_uri,omitempty"`
+}
+
+// GetSigninProviderProviderCallbackParamsProvider defines parameters for GetSigninProviderProviderCallback.
+type GetSigninProviderProviderCallbackParamsProvider string
+
+// PostSigninProviderProviderCallbackFormdataBody defines parameters for PostSigninProviderProviderCallback.
+type PostSigninProviderProviderCallbackFormdataBody struct {
+	// Code Authorization code provided by the authentication provider
+	Code *string `form:"code" json:"code"`
+
+	// Error Error message if authentication failed
+	Error *string `form:"error" json:"error"`
+
+	// ErrorDescription Detailed error description if authentication failed
+	ErrorDescription *string `form:"error_description" json:"error_description"`
+
+	// ErrorUri URI with more information about the error
+	ErrorUri *string `form:"error_uri" json:"error_uri"`
+
+	// IdToken ID token provided by the authentication provider
+	IdToken *string `form:"id_token" json:"id_token"`
+
+	// State State parameter to avoid CSRF attacks
+	State string `form:"state" json:"state"`
+
+	// User JSON string containing user information (only provided on first authentication with Apple)
+	User                 *string                `form:"user" json:"user"`
+	AdditionalProperties map[string]interface{} `json:"-"`
+}
+
+// PostSigninProviderProviderCallbackParamsProvider defines parameters for PostSigninProviderProviderCallback.
+type PostSigninProviderProviderCallbackParamsProvider string
 
 // GetVerifyParams defines parameters for GetVerify.
 type GetVerifyParams struct {
@@ -444,6 +662,9 @@ type GetVerifyParams struct {
 
 // GetVerifyParamsType defines parameters for GetVerify.
 type GetVerifyParamsType string
+
+// PostElevateWebauthnVerifyJSONRequestBody defines body for PostElevateWebauthnVerify for application/json ContentType.
+type PostElevateWebauthnVerifyJSONRequestBody = SignInWebauthnVerifyRequest
 
 // PostLinkIdtokenJSONRequestBody defines body for PostLinkIdtoken for application/json ContentType.
 type PostLinkIdtokenJSONRequestBody = LinkIdTokenRequest
@@ -472,14 +693,26 @@ type PostSigninOtpEmailVerifyJSONRequestBody = SignInOTPEmailVerifyRequest
 // PostSigninPasswordlessEmailJSONRequestBody defines body for PostSigninPasswordlessEmail for application/json ContentType.
 type PostSigninPasswordlessEmailJSONRequestBody = SignInPasswordlessEmailRequest
 
+// PostSigninPasswordlessSmsJSONRequestBody defines body for PostSigninPasswordlessSms for application/json ContentType.
+type PostSigninPasswordlessSmsJSONRequestBody = SignInPasswordlessSmsRequest
+
+// PostSigninPasswordlessSmsOtpJSONRequestBody defines body for PostSigninPasswordlessSmsOtp for application/json ContentType.
+type PostSigninPasswordlessSmsOtpJSONRequestBody = SignInPasswordlessSmsOtpRequest
+
 // PostSigninPatJSONRequestBody defines body for PostSigninPat for application/json ContentType.
 type PostSigninPatJSONRequestBody = SignInPATRequest
+
+// PostSigninProviderProviderCallbackFormdataRequestBody defines body for PostSigninProviderProviderCallback for application/x-www-form-urlencoded ContentType.
+type PostSigninProviderProviderCallbackFormdataRequestBody PostSigninProviderProviderCallbackFormdataBody
 
 // PostSigninWebauthnJSONRequestBody defines body for PostSigninWebauthn for application/json ContentType.
 type PostSigninWebauthnJSONRequestBody = SignInWebauthnRequest
 
 // PostSigninWebauthnVerifyJSONRequestBody defines body for PostSigninWebauthnVerify for application/json ContentType.
 type PostSigninWebauthnVerifyJSONRequestBody = SignInWebauthnVerifyRequest
+
+// PostSignoutJSONRequestBody defines body for PostSignout for application/json ContentType.
+type PostSignoutJSONRequestBody = SignOutRequest
 
 // PostSignupEmailPasswordJSONRequestBody defines body for PostSignupEmailPassword for application/json ContentType.
 type PostSignupEmailPasswordJSONRequestBody = SignUpEmailPasswordRequest
@@ -492,6 +725,9 @@ type PostSignupWebauthnVerifyJSONRequestBody = SignUpWebauthnVerifyRequest
 
 // PostTokenJSONRequestBody defines body for PostToken for application/json ContentType.
 type PostTokenJSONRequestBody = RefreshTokenRequest
+
+// PostTokenVerifyJSONRequestBody defines body for PostTokenVerify for application/json ContentType.
+type PostTokenVerifyJSONRequestBody = VerifyTokenRequest
 
 // PostUserDeanonymizeJSONRequestBody defines body for PostUserDeanonymize for application/json ContentType.
 type PostUserDeanonymizeJSONRequestBody = UserDeanonymizeRequest
@@ -511,45 +747,88 @@ type PostUserPasswordJSONRequestBody = UserPasswordRequest
 // PostUserPasswordResetJSONRequestBody defines body for PostUserPasswordReset for application/json ContentType.
 type PostUserPasswordResetJSONRequestBody = UserPasswordResetRequest
 
-// Getter for additional properties for SignInWebauthnVerifyRequest. Returns the specified
+// PostUserWebauthnVerifyJSONRequestBody defines body for PostUserWebauthnVerify for application/json ContentType.
+type PostUserWebauthnVerifyJSONRequestBody = UserAddSecurityKeyVerifyRequest
+
+// Getter for additional properties for PostSigninProviderProviderCallbackFormdataBody. Returns the specified
 // element and whether it was found
-func (a SignInWebauthnVerifyRequest) Get(fieldName string) (value interface{}, found bool) {
+func (a PostSigninProviderProviderCallbackFormdataBody) Get(fieldName string) (value interface{}, found bool) {
 	if a.AdditionalProperties != nil {
 		value, found = a.AdditionalProperties[fieldName]
 	}
 	return
 }
 
-// Setter for additional properties for SignInWebauthnVerifyRequest
-func (a *SignInWebauthnVerifyRequest) Set(fieldName string, value interface{}) {
+// Setter for additional properties for PostSigninProviderProviderCallbackFormdataBody
+func (a *PostSigninProviderProviderCallbackFormdataBody) Set(fieldName string, value interface{}) {
 	if a.AdditionalProperties == nil {
 		a.AdditionalProperties = make(map[string]interface{})
 	}
 	a.AdditionalProperties[fieldName] = value
 }
 
-// Override default JSON handling for SignInWebauthnVerifyRequest to handle AdditionalProperties
-func (a *SignInWebauthnVerifyRequest) UnmarshalJSON(b []byte) error {
+// Override default JSON handling for PostSigninProviderProviderCallbackFormdataBody to handle AdditionalProperties
+func (a *PostSigninProviderProviderCallbackFormdataBody) UnmarshalJSON(b []byte) error {
 	object := make(map[string]json.RawMessage)
 	err := json.Unmarshal(b, &object)
 	if err != nil {
 		return err
 	}
 
-	if raw, found := object["credential"]; found {
-		err = json.Unmarshal(raw, &a.Credential)
+	if raw, found := object["code"]; found {
+		err = json.Unmarshal(raw, &a.Code)
 		if err != nil {
-			return fmt.Errorf("error reading 'credential': %w", err)
+			return fmt.Errorf("error reading 'code': %w", err)
 		}
-		delete(object, "credential")
+		delete(object, "code")
 	}
 
-	if raw, found := object["email"]; found {
-		err = json.Unmarshal(raw, &a.Email)
+	if raw, found := object["error"]; found {
+		err = json.Unmarshal(raw, &a.Error)
 		if err != nil {
-			return fmt.Errorf("error reading 'email': %w", err)
+			return fmt.Errorf("error reading 'error': %w", err)
 		}
-		delete(object, "email")
+		delete(object, "error")
+	}
+
+	if raw, found := object["error_description"]; found {
+		err = json.Unmarshal(raw, &a.ErrorDescription)
+		if err != nil {
+			return fmt.Errorf("error reading 'error_description': %w", err)
+		}
+		delete(object, "error_description")
+	}
+
+	if raw, found := object["error_uri"]; found {
+		err = json.Unmarshal(raw, &a.ErrorUri)
+		if err != nil {
+			return fmt.Errorf("error reading 'error_uri': %w", err)
+		}
+		delete(object, "error_uri")
+	}
+
+	if raw, found := object["id_token"]; found {
+		err = json.Unmarshal(raw, &a.IdToken)
+		if err != nil {
+			return fmt.Errorf("error reading 'id_token': %w", err)
+		}
+		delete(object, "id_token")
+	}
+
+	if raw, found := object["state"]; found {
+		err = json.Unmarshal(raw, &a.State)
+		if err != nil {
+			return fmt.Errorf("error reading 'state': %w", err)
+		}
+		delete(object, "state")
+	}
+
+	if raw, found := object["user"]; found {
+		err = json.Unmarshal(raw, &a.User)
+		if err != nil {
+			return fmt.Errorf("error reading 'user': %w", err)
+		}
+		delete(object, "user")
 	}
 
 	if len(object) != 0 {
@@ -566,103 +845,55 @@ func (a *SignInWebauthnVerifyRequest) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-// Override default JSON handling for SignInWebauthnVerifyRequest to handle AdditionalProperties
-func (a SignInWebauthnVerifyRequest) MarshalJSON() ([]byte, error) {
+// Override default JSON handling for PostSigninProviderProviderCallbackFormdataBody to handle AdditionalProperties
+func (a PostSigninProviderProviderCallbackFormdataBody) MarshalJSON() ([]byte, error) {
 	var err error
 	object := make(map[string]json.RawMessage)
 
-	object["credential"], err = json.Marshal(a.Credential)
+	if a.Code != nil {
+		object["code"], err = json.Marshal(a.Code)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'code': %w", err)
+		}
+	}
+
+	if a.Error != nil {
+		object["error"], err = json.Marshal(a.Error)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'error': %w", err)
+		}
+	}
+
+	if a.ErrorDescription != nil {
+		object["error_description"], err = json.Marshal(a.ErrorDescription)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'error_description': %w", err)
+		}
+	}
+
+	if a.ErrorUri != nil {
+		object["error_uri"], err = json.Marshal(a.ErrorUri)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'error_uri': %w", err)
+		}
+	}
+
+	if a.IdToken != nil {
+		object["id_token"], err = json.Marshal(a.IdToken)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'id_token': %w", err)
+		}
+	}
+
+	object["state"], err = json.Marshal(a.State)
 	if err != nil {
-		return nil, fmt.Errorf("error marshaling 'credential': %w", err)
+		return nil, fmt.Errorf("error marshaling 'state': %w", err)
 	}
 
-	if a.Email != nil {
-		object["email"], err = json.Marshal(a.Email)
+	if a.User != nil {
+		object["user"], err = json.Marshal(a.User)
 		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'email': %w", err)
-		}
-	}
-
-	for fieldName, field := range a.AdditionalProperties {
-		object[fieldName], err = json.Marshal(field)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling '%s': %w", fieldName, err)
-		}
-	}
-	return json.Marshal(object)
-}
-
-// Getter for additional properties for SignUpWebauthnVerifyRequest. Returns the specified
-// element and whether it was found
-func (a SignUpWebauthnVerifyRequest) Get(fieldName string) (value interface{}, found bool) {
-	if a.AdditionalProperties != nil {
-		value, found = a.AdditionalProperties[fieldName]
-	}
-	return
-}
-
-// Setter for additional properties for SignUpWebauthnVerifyRequest
-func (a *SignUpWebauthnVerifyRequest) Set(fieldName string, value interface{}) {
-	if a.AdditionalProperties == nil {
-		a.AdditionalProperties = make(map[string]interface{})
-	}
-	a.AdditionalProperties[fieldName] = value
-}
-
-// Override default JSON handling for SignUpWebauthnVerifyRequest to handle AdditionalProperties
-func (a *SignUpWebauthnVerifyRequest) UnmarshalJSON(b []byte) error {
-	object := make(map[string]json.RawMessage)
-	err := json.Unmarshal(b, &object)
-	if err != nil {
-		return err
-	}
-
-	if raw, found := object["credential"]; found {
-		err = json.Unmarshal(raw, &a.Credential)
-		if err != nil {
-			return fmt.Errorf("error reading 'credential': %w", err)
-		}
-		delete(object, "credential")
-	}
-
-	if raw, found := object["options"]; found {
-		err = json.Unmarshal(raw, &a.Options)
-		if err != nil {
-			return fmt.Errorf("error reading 'options': %w", err)
-		}
-		delete(object, "options")
-	}
-
-	if len(object) != 0 {
-		a.AdditionalProperties = make(map[string]interface{})
-		for fieldName, fieldBuf := range object {
-			var fieldVal interface{}
-			err := json.Unmarshal(fieldBuf, &fieldVal)
-			if err != nil {
-				return fmt.Errorf("error unmarshaling field %s: %w", fieldName, err)
-			}
-			a.AdditionalProperties[fieldName] = fieldVal
-		}
-	}
-	return nil
-}
-
-// Override default JSON handling for SignUpWebauthnVerifyRequest to handle AdditionalProperties
-func (a SignUpWebauthnVerifyRequest) MarshalJSON() ([]byte, error) {
-	var err error
-	object := make(map[string]json.RawMessage)
-
-	if a.Credential != nil {
-		object["credential"], err = json.Marshal(a.Credential)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'credential': %w", err)
-		}
-	}
-
-	if a.Options != nil {
-		object["options"], err = json.Marshal(a.Options)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'options': %w", err)
+			return nil, fmt.Errorf("error marshaling 'user': %w", err)
 		}
 	}
 
