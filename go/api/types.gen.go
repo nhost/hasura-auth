@@ -17,6 +17,46 @@ const (
 	BearerAuthElevatedScopes = "BearerAuthElevated.Scopes"
 )
 
+// Defines values for AttestationFormat.
+const (
+	AttestationFormatAndroidKey       AttestationFormat = "android-key"
+	AttestationFormatAndroidSafetynet AttestationFormat = "android-safetynet"
+	AttestationFormatApple            AttestationFormat = "apple"
+	AttestationFormatFidoU2f          AttestationFormat = "fido-u2f"
+	AttestationFormatNone             AttestationFormat = "none"
+	AttestationFormatPacked           AttestationFormat = "packed"
+	AttestationFormatTpm              AttestationFormat = "tpm"
+)
+
+// Defines values for AuthenticatorAttachment.
+const (
+	CrossPlatform AuthenticatorAttachment = "cross-platform"
+	Platform      AuthenticatorAttachment = "platform"
+)
+
+// Defines values for AuthenticatorTransport.
+const (
+	AuthenticatorTransportBle       AuthenticatorTransport = "ble"
+	AuthenticatorTransportHybrid    AuthenticatorTransport = "hybrid"
+	AuthenticatorTransportInternal  AuthenticatorTransport = "internal"
+	AuthenticatorTransportNfc       AuthenticatorTransport = "nfc"
+	AuthenticatorTransportSmartCard AuthenticatorTransport = "smart-card"
+	AuthenticatorTransportUsb       AuthenticatorTransport = "usb"
+)
+
+// Defines values for ConveyancePreference.
+const (
+	ConveyancePreferenceDirect     ConveyancePreference = "direct"
+	ConveyancePreferenceEnterprise ConveyancePreference = "enterprise"
+	ConveyancePreferenceIndirect   ConveyancePreference = "indirect"
+	ConveyancePreferenceNone       ConveyancePreference = "none"
+)
+
+// Defines values for CredentialType.
+const (
+	PublicKey CredentialType = "public-key"
+)
+
 // Defines values for ErrorResponseError.
 const (
 	CannotSendSms                   ErrorResponseError = "cannot-send-sms"
@@ -63,6 +103,20 @@ const (
 	OK OKResponse = "OK"
 )
 
+// Defines values for PublicKeyCredentialHints.
+const (
+	PublicKeyCredentialHintsClientDevice PublicKeyCredentialHints = "client-device"
+	PublicKeyCredentialHintsHybrid       PublicKeyCredentialHints = "hybrid"
+	PublicKeyCredentialHintsSecurityKey  PublicKeyCredentialHints = "security-key"
+)
+
+// Defines values for ResidentKeyRequirement.
+const (
+	ResidentKeyRequirementDiscouraged ResidentKeyRequirement = "discouraged"
+	ResidentKeyRequirementPreferred   ResidentKeyRequirement = "preferred"
+	ResidentKeyRequirementRequired    ResidentKeyRequirement = "required"
+)
+
 // Defines values for UserDeanonymizeRequestSignInMethod.
 const (
 	EmailPassword UserDeanonymizeRequestSignInMethod = "email-password"
@@ -75,23 +129,30 @@ const (
 	Totp  UserMfaRequestActiveMfaType = "totp"
 )
 
-// Defines values for SigninProvider.
+// Defines values for UserVerificationRequirement.
 const (
-	SigninProviderApple       SigninProvider = "apple"
-	SigninProviderAzuread     SigninProvider = "azuread"
-	SigninProviderBitbucket   SigninProvider = "bitbucket"
-	SigninProviderDiscord     SigninProvider = "discord"
-	SigninProviderFacebook    SigninProvider = "facebook"
-	SigninProviderGithub      SigninProvider = "github"
-	SigninProviderGitlab      SigninProvider = "gitlab"
-	SigninProviderGoogle      SigninProvider = "google"
-	SigninProviderLinkedin    SigninProvider = "linkedin"
-	SigninProviderSpotify     SigninProvider = "spotify"
-	SigninProviderStrava      SigninProvider = "strava"
-	SigninProviderTwitch      SigninProvider = "twitch"
-	SigninProviderTwitter     SigninProvider = "twitter"
-	SigninProviderWindowslive SigninProvider = "windowslive"
-	SigninProviderWorkos      SigninProvider = "workos"
+	UserVerificationRequirementDiscouraged UserVerificationRequirement = "discouraged"
+	UserVerificationRequirementPreferred   UserVerificationRequirement = "preferred"
+	UserVerificationRequirementRequired    UserVerificationRequirement = "required"
+)
+
+// Defines values for SignInProvider.
+const (
+	SignInProviderApple       SignInProvider = "apple"
+	SignInProviderAzuread     SignInProvider = "azuread"
+	SignInProviderBitbucket   SignInProvider = "bitbucket"
+	SignInProviderDiscord     SignInProvider = "discord"
+	SignInProviderFacebook    SignInProvider = "facebook"
+	SignInProviderGithub      SignInProvider = "github"
+	SignInProviderGitlab      SignInProvider = "gitlab"
+	SignInProviderGoogle      SignInProvider = "google"
+	SignInProviderLinkedin    SignInProvider = "linkedin"
+	SignInProviderSpotify     SignInProvider = "spotify"
+	SignInProviderStrava      SignInProvider = "strava"
+	SignInProviderTwitch      SignInProvider = "twitch"
+	SignInProviderTwitter     SignInProvider = "twitter"
+	SignInProviderWindowslive SignInProvider = "windowslive"
+	SignInProviderWorkos      SignInProvider = "workos"
 )
 
 // Defines values for TicketTypeQuery.
@@ -167,6 +228,85 @@ const (
 	GetVerifyParamsTypeSigninPasswordless GetVerifyParamsType = "signinPasswordless"
 )
 
+// AttestationFormat The attestation statement format
+type AttestationFormat string
+
+// AuthenticationExtensions Additional parameters requesting additional processing by the client and authenticator
+type AuthenticationExtensions map[string]interface{}
+
+// AuthenticationExtensionsClientOutputs Map of extension outputs from the client
+type AuthenticationExtensionsClientOutputs struct {
+	// Appid Application identifier extension output
+	Appid *bool `json:"appid,omitempty"`
+
+	// CredProps Credential properties extension output
+	CredProps *CredentialPropertiesOutput `json:"credProps,omitempty"`
+
+	// HmacCreateSecret HMAC secret extension output
+	HmacCreateSecret     *bool                  `json:"hmacCreateSecret,omitempty"`
+	AdditionalProperties map[string]interface{} `json:"-"`
+}
+
+// AuthenticatorAssertionResponse defines model for AuthenticatorAssertionResponse.
+type AuthenticatorAssertionResponse struct {
+	// AuthenticatorData Base64url encoded authenticator data
+	AuthenticatorData string `json:"authenticatorData"`
+
+	// ClientDataJSON Base64url encoded client data JSON
+	ClientDataJSON string `json:"clientDataJSON"`
+
+	// Signature Base64url encoded assertion signature
+	Signature string `json:"signature"`
+
+	// UserHandle Base64url encoded user handle
+	UserHandle *string `json:"userHandle"`
+}
+
+// AuthenticatorAttachment The authenticator attachment modality
+type AuthenticatorAttachment string
+
+// AuthenticatorAttestationResponse defines model for AuthenticatorAttestationResponse.
+type AuthenticatorAttestationResponse struct {
+	// AttestationObject Base64url-encoded binary data
+	AttestationObject URLEncodedBase64 `json:"attestationObject"`
+
+	// AuthenticatorData Base64url-encoded binary data
+	AuthenticatorData *URLEncodedBase64 `json:"authenticatorData,omitempty"`
+
+	// ClientDataJSON Base64url-encoded binary data
+	ClientDataJSON URLEncodedBase64 `json:"clientDataJSON"`
+
+	// PublicKey Base64url-encoded binary data
+	PublicKey *URLEncodedBase64 `json:"publicKey,omitempty"`
+
+	// PublicKeyAlgorithm The public key algorithm identifier
+	PublicKeyAlgorithm *int64 `json:"publicKeyAlgorithm,omitempty"`
+
+	// Transports The authenticator transports
+	Transports *[]string `json:"transports,omitempty"`
+}
+
+// AuthenticatorSelection defines model for AuthenticatorSelection.
+type AuthenticatorSelection struct {
+	// AuthenticatorAttachment The authenticator attachment modality
+	AuthenticatorAttachment *AuthenticatorAttachment `json:"authenticatorAttachment,omitempty"`
+
+	// RequireResidentKey Whether the authenticator must create a client-side-resident public key credential source
+	RequireResidentKey *bool `json:"requireResidentKey,omitempty"`
+
+	// ResidentKey The resident key requirement
+	ResidentKey *ResidentKeyRequirement `json:"residentKey,omitempty"`
+
+	// UserVerification A requirement for user verification for the operation
+	UserVerification *UserVerificationRequirement `json:"userVerification,omitempty"`
+}
+
+// AuthenticatorTransport The authenticator transports that can be used
+type AuthenticatorTransport string
+
+// ConveyancePreference The attestation conveyance preference
+type ConveyancePreference string
+
 // CreatePATRequest defines model for CreatePATRequest.
 type CreatePATRequest struct {
 	// ExpiresAt Expiration date of the PAT
@@ -183,36 +323,72 @@ type CreatePATResponse struct {
 	PersonalAccessToken string `json:"personalAccessToken"`
 }
 
-// ErrorResponse defines model for ErrorResponse.
+// CredentialAssertionResponse defines model for CredentialAssertionResponse.
+type CredentialAssertionResponse = protocol.CredentialAssertionResponse
+
+// CredentialCreationResponse defines model for CredentialCreationResponse.
+type CredentialCreationResponse = protocol.CredentialCreationResponse
+
+// CredentialParameter defines model for CredentialParameter.
+type CredentialParameter struct {
+	// Alg The cryptographic algorithm identifier
+	Alg int `json:"alg"`
+
+	// Type The valid credential types
+	Type CredentialType `json:"type"`
+}
+
+// CredentialPropertiesOutput Credential properties extension output
+type CredentialPropertiesOutput struct {
+	// Rk Indicates if the credential is a resident key
+	Rk *bool `json:"rk,omitempty"`
+}
+
+// CredentialType The valid credential types
+type CredentialType string
+
+// ErrorResponse Standardized error response
 type ErrorResponse struct {
-	// Error Error code that identifies the application error
+	// Error Error code identifying the specific application error
 	Error ErrorResponseError `json:"error"`
 
-	// Message Human friendly error message
+	// Message Human-friendly error message
 	Message string `json:"message"`
 
 	// Status HTTP status error code
 	Status int `json:"status"`
 }
 
-// ErrorResponseError Error code that identifies the application error
+// ErrorResponseError Error code identifying the specific application error
 type ErrorResponseError string
 
 // IdTokenProvider defines model for IdTokenProvider.
 type IdTokenProvider string
 
-// JWK defines model for JWK.
+// JWK JSON Web Key for JWT verification
 type JWK struct {
+	// Alg Algorithm used with this key
 	Alg string `json:"alg"`
-	E   string `json:"e"`
+
+	// E RSA public exponent
+	E string `json:"e"`
+
+	// Kid Key ID
 	Kid string `json:"kid"`
+
+	// Kty Key type
 	Kty string `json:"kty"`
-	N   string `json:"n"`
+
+	// N RSA modulus
+	N string `json:"n"`
+
+	// Use Key usage
 	Use string `json:"use"`
 }
 
-// JWKSet defines model for JWKSet.
+// JWKSet JSON Web Key Set for verifying JWT signatures
 type JWKSet struct {
+	// Keys Array of public keys
 	Keys []JWK `json:"keys"`
 }
 
@@ -226,8 +402,9 @@ type LinkIdTokenRequest struct {
 	Provider IdTokenProvider `json:"provider"`
 }
 
-// MFAChallengePayload defines model for MFAChallengePayload.
+// MFAChallengePayload Challenge payload for multi-factor authentication
 type MFAChallengePayload struct {
+	// Ticket Ticket to use when completing the MFA challenge
 	Ticket string `json:"ticket"`
 }
 
@@ -239,43 +416,94 @@ type OptionsRedirectTo struct {
 	RedirectTo *string `json:"redirectTo,omitempty"`
 }
 
-// RefreshTokenRequest defines model for RefreshTokenRequest.
+// PublicKeyCredentialCreationOptions defines model for PublicKeyCredentialCreationOptions.
+type PublicKeyCredentialCreationOptions = protocol.PublicKeyCredentialCreationOptions
+
+// PublicKeyCredentialDescriptor defines model for PublicKeyCredentialDescriptor.
+type PublicKeyCredentialDescriptor struct {
+	// Id Base64url-encoded binary data
+	Id URLEncodedBase64 `json:"id"`
+
+	// Transports The authenticator transports that can be used
+	Transports *[]AuthenticatorTransport `json:"transports,omitempty"`
+
+	// Type The valid credential types
+	Type CredentialType `json:"type"`
+}
+
+// PublicKeyCredentialHints Hints to help guide the user through the experience
+type PublicKeyCredentialHints string
+
+// PublicKeyCredentialRequestOptions defines model for PublicKeyCredentialRequestOptions.
+type PublicKeyCredentialRequestOptions = protocol.PublicKeyCredentialRequestOptions
+
+// RefreshTokenRequest Request to refresh an access token
 type RefreshTokenRequest struct {
-	// RefreshToken Refresh Token
+	// RefreshToken Refresh token used to generate a new access token
 	RefreshToken string `json:"refreshToken"`
 }
 
-// Session defines model for Session.
+// RelyingPartyEntity defines model for RelyingPartyEntity.
+type RelyingPartyEntity struct {
+	// Id A unique identifier for the Relying Party entity, which sets the RP ID
+	Id string `json:"id"`
+
+	// Name A human-palatable name for the entity
+	Name string `json:"name"`
+}
+
+// ResidentKeyRequirement The resident key requirement
+type ResidentKeyRequirement string
+
+// Session User authentication session containing tokens and user information
 type Session struct {
-	AccessToken          string `json:"accessToken"`
-	AccessTokenExpiresIn int64  `json:"accessTokenExpiresIn"`
+	// AccessToken JWT token for authenticating API requests
+	AccessToken string `json:"accessToken"`
 
-	// RefreshToken Refresh token during authentication or when refreshing the JWT
+	// AccessTokenExpiresIn Expiration time of the access token in seconds
+	AccessTokenExpiresIn int64 `json:"accessTokenExpiresIn"`
+
+	// RefreshToken Token used to refresh the access token
 	RefreshToken string `json:"refreshToken"`
 
-	// RefreshTokenId Refresh token id
+	// RefreshTokenId Identifier for the refresh token
 	RefreshTokenId string `json:"refreshTokenId"`
-	User           *User  `json:"user,omitempty"`
+
+	// User User profile and account information
+	User *User `json:"user,omitempty"`
 }
 
-// SessionPayload defines model for SessionPayload.
+// SessionPayload Container for session information
 type SessionPayload struct {
+	// Session User authentication session containing tokens and user information
 	Session *Session `json:"session,omitempty"`
 }
 
-// SignInEmailPasswordRequest defines model for SignInEmailPasswordRequest.
+// SignInAnonymousRequest defines model for SignInAnonymousRequest.
+type SignInAnonymousRequest struct {
+	DisplayName *string `json:"displayName,omitempty"`
+
+	// Locale A two-characters locale
+	Locale   *string                 `json:"locale,omitempty"`
+	Metadata *map[string]interface{} `json:"metadata,omitempty"`
+}
+
+// SignInEmailPasswordRequest Request to authenticate using email and password
 type SignInEmailPasswordRequest struct {
-	// Email A valid email
+	// Email User's email address
 	Email openapi_types.Email `json:"email"`
 
-	// Password A password of minimum 3 characters
+	// Password User's password
 	Password string `json:"password"`
 }
 
-// SignInEmailPasswordResponse defines model for SignInEmailPasswordResponse.
+// SignInEmailPasswordResponse Response for email-password authentication that may include a session or MFA challenge
 type SignInEmailPasswordResponse struct {
-	Mfa     *MFAChallengePayload `json:"mfa,omitempty"`
-	Session *Session             `json:"session,omitempty"`
+	// Mfa Challenge payload for multi-factor authentication
+	Mfa *MFAChallengePayload `json:"mfa,omitempty"`
+
+	// Session User authentication session containing tokens and user information
+	Session *Session `json:"session,omitempty"`
 }
 
 // SignInIdTokenRequest defines model for SignInIdTokenRequest.
@@ -316,6 +544,7 @@ type SignInOTPEmailVerifyRequest struct {
 
 // SignInOTPEmailVerifyResponse defines model for SignInOTPEmailVerifyResponse.
 type SignInOTPEmailVerifyResponse struct {
+	// Session User authentication session containing tokens and user information
 	Session *Session `json:"session,omitempty"`
 }
 
@@ -343,8 +572,11 @@ type SignInPasswordlessSmsOtpRequest struct {
 
 // SignInPasswordlessSmsOtpResponse defines model for SignInPasswordlessSmsOtpResponse.
 type SignInPasswordlessSmsOtpResponse struct {
-	Mfa     *MFAChallengePayload `json:"mfa,omitempty"`
-	Session *Session             `json:"session,omitempty"`
+	// Mfa Challenge payload for multi-factor authentication
+	Mfa *MFAChallengePayload `json:"mfa,omitempty"`
+
+	// Session User authentication session containing tokens and user information
+	Session *Session `json:"session,omitempty"`
 }
 
 // SignInPasswordlessSmsRequest defines model for SignInPasswordlessSmsRequest.
@@ -361,12 +593,9 @@ type SignInWebauthnRequest struct {
 	Email *openapi_types.Email `json:"email,omitempty"`
 }
 
-// SignInWebauthnResponse defines model for SignInWebauthnResponse.
-type SignInWebauthnResponse = protocol.PublicKeyCredentialRequestOptions
-
 // SignInWebauthnVerifyRequest defines model for SignInWebauthnVerifyRequest.
 type SignInWebauthnVerifyRequest struct {
-	Credential protocol.CredentialAssertionResponse `json:"credential"`
+	Credential CredentialAssertionResponse `json:"credential"`
 
 	// Email A valid email. Deprecated, no longer used
 	// Deprecated:
@@ -378,17 +607,17 @@ type SignOutRequest struct {
 	// All Sign out from all connected devices
 	All *bool `json:"all,omitempty"`
 
-	// RefreshToken Refresh Token
+	// RefreshToken Refresh token for the current session
 	RefreshToken *string `json:"refreshToken,omitempty"`
 }
 
-// SignUpEmailPasswordRequest defines model for SignUpEmailPasswordRequest.
+// SignUpEmailPasswordRequest Request to register a new user with email and password
 type SignUpEmailPasswordRequest struct {
-	// Email A valid email
+	// Email Email address for the new user account
 	Email   openapi_types.Email `json:"email"`
 	Options *SignUpOptions      `json:"options,omitempty"`
 
-	// Password A password of minimum 3 characters
+	// Password Password for the new user account
 	Password string `json:"password"`
 }
 
@@ -411,76 +640,70 @@ type SignUpWebauthnRequest struct {
 	Options *SignUpOptions      `json:"options,omitempty"`
 }
 
-// SignUpWebauthnResponse defines model for SignUpWebauthnResponse.
-type SignUpWebauthnResponse = protocol.PublicKeyCredentialCreationOptions
-
 // SignUpWebauthnVerifyRequest defines model for SignUpWebauthnVerifyRequest.
 type SignUpWebauthnVerifyRequest struct {
-	Credential protocol.CredentialCreationResponse `json:"credential"`
+	Credential CredentialCreationResponse `json:"credential"`
 
 	// Nickname Nickname for the security key
 	Nickname *string        `json:"nickname,omitempty"`
 	Options  *SignUpOptions `json:"options,omitempty"`
 }
 
-// SigninAnonymousRequest defines model for SigninAnonymousRequest.
-type SigninAnonymousRequest struct {
-	DisplayName *string `json:"displayName,omitempty"`
-
-	// Locale A two-characters locale
-	Locale   *string                 `json:"locale,omitempty"`
-	Metadata *map[string]interface{} `json:"metadata,omitempty"`
-}
-
-// TotpGenerateResponse defines model for TotpGenerateResponse.
+// TotpGenerateResponse Response containing TOTP setup information for MFA
 type TotpGenerateResponse struct {
-	// ImageUrl URL to QR code image for TOTP setup
+	// ImageUrl URL to QR code image for scanning with an authenticator app
 	ImageUrl string `json:"imageUrl"`
 
-	// TotpSecret TOTP secret for manual setup
+	// TotpSecret TOTP secret key for manual setup with an authenticator app
 	TotpSecret string `json:"totpSecret"`
 }
 
-// User defines model for User.
+// URLEncodedBase64 Base64url-encoded binary data
+type URLEncodedBase64 = []byte
+
+// User User profile and account information
 type User struct {
 	// ActiveMfaType Active MFA type for the user
-	ActiveMfaType *string   `json:"activeMfaType"`
-	AvatarUrl     string    `json:"avatarUrl"`
-	CreatedAt     time.Time `json:"createdAt"`
-	DefaultRole   string    `json:"defaultRole"`
-	DisplayName   string    `json:"displayName"`
+	ActiveMfaType *string `json:"activeMfaType"`
 
-	// Email A valid email
-	Email         *openapi_types.Email `json:"email,omitempty"`
-	EmailVerified bool                 `json:"emailVerified"`
+	// AvatarUrl URL to the user's profile picture
+	AvatarUrl string `json:"avatarUrl"`
 
-	// Id Id of the user
-	Id          string `json:"id"`
-	IsAnonymous bool   `json:"isAnonymous"`
+	// CreatedAt Timestamp when the user account was created
+	CreatedAt time.Time `json:"createdAt"`
 
-	// Locale A two-characters locale
-	Locale              string                 `json:"locale"`
-	Metadata            map[string]interface{} `json:"metadata"`
-	PhoneNumber         *string                `json:"phoneNumber,omitempty"`
-	PhoneNumberVerified bool                   `json:"phoneNumberVerified"`
-	Roles               []string               `json:"roles"`
-}
+	// DefaultRole Default authorization role for the user
+	DefaultRole string `json:"defaultRole"`
 
-// UserAddSecurityKeyVerifyRequest defines model for UserAddSecurityKeyVerifyRequest.
-type UserAddSecurityKeyVerifyRequest struct {
-	Credential protocol.CredentialCreationResponse `json:"credential"`
+	// DisplayName User's display name
+	DisplayName string `json:"displayName"`
 
-	// Nickname Optional nickname for the security key
-	Nickname *string `json:"nickname,omitempty"`
-}
+	// Email User's email address
+	Email *openapi_types.Email `json:"email,omitempty"`
 
-// UserAddSecurityKeyVerifyResponse defines model for UserAddSecurityKeyVerifyResponse.
-type UserAddSecurityKeyVerifyResponse struct {
-	// Id ID of the newly added security key
+	// EmailVerified Whether the user's email has been verified
+	EmailVerified bool `json:"emailVerified"`
+
+	// Id Unique identifier for the user
 	Id string `json:"id"`
 
-	// Nickname Nickname of the security key
-	Nickname *string `json:"nickname,omitempty"`
+	// IsAnonymous Whether this is an anonymous user account
+	IsAnonymous bool `json:"isAnonymous"`
+
+	// Locale User's preferred locale (language code)
+	Locale string `json:"locale"`
+
+	// Metadata Custom metadata associated with the user
+	Metadata map[string]interface{} `json:"metadata"`
+
+	// PhoneNumber User's phone number
+	PhoneNumber *string `json:"phoneNumber,omitempty"`
+
+	// PhoneNumberVerified Whether the user's phone number has been verified
+	PhoneNumberVerified bool `json:"phoneNumberVerified"`
+
+	// Roles List of roles assigned to the user
+	Roles []string `json:"roles"`
 }
 
 // UserDeanonymizeRequest defines model for UserDeanonymizeRequest.
@@ -517,16 +740,28 @@ type UserEmailSendVerificationEmailRequest struct {
 	Options *OptionsRedirectTo  `json:"options,omitempty"`
 }
 
-// UserMfaRequest defines model for UserMfaRequest.
+// UserEntity defines model for UserEntity.
+type UserEntity struct {
+	// DisplayName A human-palatable name for the user account, intended only for display
+	DisplayName string `json:"displayName"`
+
+	// Id The user handle of the user account entity
+	Id string `json:"id"`
+
+	// Name A human-palatable name for the entity
+	Name string `json:"name"`
+}
+
+// UserMfaRequest Request to activate or deactivate multi-factor authentication
 type UserMfaRequest struct {
-	// ActiveMfaType Type of MFA to activate. If not set or set to empty string, disable MFA
+	// ActiveMfaType Type of MFA to activate. Use empty string to disable MFA.
 	ActiveMfaType *UserMfaRequestActiveMfaType `json:"activeMfaType,omitempty"`
 
-	// Code MFA activation code
+	// Code Verification code from the authenticator app when activating MFA
 	Code string `json:"code"`
 }
 
-// UserMfaRequestActiveMfaType Type of MFA to activate. If not set or set to empty string, disable MFA
+// UserMfaRequestActiveMfaType Type of MFA to activate. Use empty string to disable MFA.
 type UserMfaRequestActiveMfaType string
 
 // UserPasswordRequest defines model for UserPasswordRequest.
@@ -545,6 +780,26 @@ type UserPasswordResetRequest struct {
 	Options *OptionsRedirectTo  `json:"options,omitempty"`
 }
 
+// UserVerificationRequirement A requirement for user verification for the operation
+type UserVerificationRequirement string
+
+// VerifyAddSecurityKeyRequest defines model for VerifyAddSecurityKeyRequest.
+type VerifyAddSecurityKeyRequest struct {
+	Credential CredentialCreationResponse `json:"credential"`
+
+	// Nickname Optional nickname for the security key
+	Nickname *string `json:"nickname,omitempty"`
+}
+
+// VerifyAddSecurityKeyResponse defines model for VerifyAddSecurityKeyResponse.
+type VerifyAddSecurityKeyResponse struct {
+	// Id The ID of the newly added security key
+	Id string `json:"id"`
+
+	// Nickname The nickname of the security key if provided
+	Nickname *string `json:"nickname,omitempty"`
+}
+
 // VerifyTokenRequest defines model for VerifyTokenRequest.
 type VerifyTokenRequest struct {
 	// Token JWT token to verify
@@ -554,8 +809,8 @@ type VerifyTokenRequest struct {
 // RedirectToQuery Target URL for the redirect
 type RedirectToQuery = string
 
-// SigninProvider defines model for SigninProvider.
-type SigninProvider string
+// SignInProvider defines model for SignInProvider.
+type SignInProvider string
 
 // TicketQuery Ticket
 type TicketQuery = string
@@ -673,7 +928,7 @@ type PostLinkIdtokenJSONRequestBody = LinkIdTokenRequest
 type PostPatJSONRequestBody = CreatePATRequest
 
 // PostSigninAnonymousJSONRequestBody defines body for PostSigninAnonymous for application/json ContentType.
-type PostSigninAnonymousJSONRequestBody = SigninAnonymousRequest
+type PostSigninAnonymousJSONRequestBody = SignInAnonymousRequest
 
 // PostSigninEmailPasswordJSONRequestBody defines body for PostSigninEmailPassword for application/json ContentType.
 type PostSigninEmailPasswordJSONRequestBody = SignInEmailPasswordRequest
@@ -748,7 +1003,7 @@ type PostUserPasswordJSONRequestBody = UserPasswordRequest
 type PostUserPasswordResetJSONRequestBody = UserPasswordResetRequest
 
 // PostUserWebauthnVerifyJSONRequestBody defines body for PostUserWebauthnVerify for application/json ContentType.
-type PostUserWebauthnVerifyJSONRequestBody = UserAddSecurityKeyVerifyRequest
+type PostUserWebauthnVerifyJSONRequestBody = VerifyAddSecurityKeyRequest
 
 // Getter for additional properties for PostSigninProviderProviderCallbackFormdataBody. Returns the specified
 // element and whether it was found
@@ -894,6 +1149,104 @@ func (a PostSigninProviderProviderCallbackFormdataBody) MarshalJSON() ([]byte, e
 		object["user"], err = json.Marshal(a.User)
 		if err != nil {
 			return nil, fmt.Errorf("error marshaling 'user': %w", err)
+		}
+	}
+
+	for fieldName, field := range a.AdditionalProperties {
+		object[fieldName], err = json.Marshal(field)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling '%s': %w", fieldName, err)
+		}
+	}
+	return json.Marshal(object)
+}
+
+// Getter for additional properties for AuthenticationExtensionsClientOutputs. Returns the specified
+// element and whether it was found
+func (a AuthenticationExtensionsClientOutputs) Get(fieldName string) (value interface{}, found bool) {
+	if a.AdditionalProperties != nil {
+		value, found = a.AdditionalProperties[fieldName]
+	}
+	return
+}
+
+// Setter for additional properties for AuthenticationExtensionsClientOutputs
+func (a *AuthenticationExtensionsClientOutputs) Set(fieldName string, value interface{}) {
+	if a.AdditionalProperties == nil {
+		a.AdditionalProperties = make(map[string]interface{})
+	}
+	a.AdditionalProperties[fieldName] = value
+}
+
+// Override default JSON handling for AuthenticationExtensionsClientOutputs to handle AdditionalProperties
+func (a *AuthenticationExtensionsClientOutputs) UnmarshalJSON(b []byte) error {
+	object := make(map[string]json.RawMessage)
+	err := json.Unmarshal(b, &object)
+	if err != nil {
+		return err
+	}
+
+	if raw, found := object["appid"]; found {
+		err = json.Unmarshal(raw, &a.Appid)
+		if err != nil {
+			return fmt.Errorf("error reading 'appid': %w", err)
+		}
+		delete(object, "appid")
+	}
+
+	if raw, found := object["credProps"]; found {
+		err = json.Unmarshal(raw, &a.CredProps)
+		if err != nil {
+			return fmt.Errorf("error reading 'credProps': %w", err)
+		}
+		delete(object, "credProps")
+	}
+
+	if raw, found := object["hmacCreateSecret"]; found {
+		err = json.Unmarshal(raw, &a.HmacCreateSecret)
+		if err != nil {
+			return fmt.Errorf("error reading 'hmacCreateSecret': %w", err)
+		}
+		delete(object, "hmacCreateSecret")
+	}
+
+	if len(object) != 0 {
+		a.AdditionalProperties = make(map[string]interface{})
+		for fieldName, fieldBuf := range object {
+			var fieldVal interface{}
+			err := json.Unmarshal(fieldBuf, &fieldVal)
+			if err != nil {
+				return fmt.Errorf("error unmarshaling field %s: %w", fieldName, err)
+			}
+			a.AdditionalProperties[fieldName] = fieldVal
+		}
+	}
+	return nil
+}
+
+// Override default JSON handling for AuthenticationExtensionsClientOutputs to handle AdditionalProperties
+func (a AuthenticationExtensionsClientOutputs) MarshalJSON() ([]byte, error) {
+	var err error
+	object := make(map[string]json.RawMessage)
+
+	if a.Appid != nil {
+		object["appid"], err = json.Marshal(a.Appid)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'appid': %w", err)
+		}
+	}
+
+	if a.CredProps != nil {
+		object["credProps"], err = json.Marshal(a.CredProps)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'credProps': %w", err)
+		}
+	}
+
+	if a.HmacCreateSecret != nil {
+		object["hmacCreateSecret"], err = json.Marshal(a.HmacCreateSecret)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'hmacCreateSecret': %w", err)
 		}
 	}
 

@@ -34,16 +34,16 @@ type ServerInterface interface {
 	// Verify FIDO2 Webauthn authentication using public-key cryptography for elevation
 	// (POST /elevate/webauthn/verify)
 	PostElevateWebauthnVerify(c *gin.Context)
-	// Health check
+	// Health check (GET)
 	// (GET /healthz)
 	GetHealthz(c *gin.Context)
-	// Health check
+	// Health check (HEAD)
 	// (HEAD /healthz)
 	HeadHealthz(c *gin.Context)
 	// Link a user account with the provider's account using an id token
 	// (POST /link/idtoken)
 	PostLinkIdtoken(c *gin.Context)
-	// Generate TOTP secret for MFA setup
+	// Generate TOTP secret
 	// (GET /mfa/totp/generate)
 	GetMfaTotpGenerate(c *gin.Context)
 	// Create a Personal Access Token (PAT)
@@ -58,7 +58,7 @@ type ServerInterface interface {
 	// Sign in with in an id token
 	// (POST /signin/idtoken)
 	PostSigninIdtoken(c *gin.Context)
-	// Verify TOTP and return a session if validation is successful
+	// Verify TOTP for MFA
 	// (POST /signin/mfa/totp)
 	PostSigninMfaTotp(c *gin.Context)
 	// Sign in with a one time password sent to user's email. If the user doesn't exist, it will be created. The options object is optional and can be used to configure the user's when signing up a new user. It is ignored if the user already exists.
@@ -67,7 +67,7 @@ type ServerInterface interface {
 	// Verify OTP and return a session if validation is successful
 	// (POST /signin/otp/email/verify)
 	PostSigninOtpEmailVerify(c *gin.Context)
-	// Sign in with magic link sent to user's email. If the user doesn't exist, it will be created. The options object is optional and can be used to configure the user's when signing up a new user. It is ignored if the user already exists.
+	// Sign in with magic link email
 	// (POST /signin/passwordless/email)
 	PostSigninPasswordlessEmail(c *gin.Context)
 	// Sign in with a one time password sent to user's phone number. If the user doesn't exist, it will be created. The options object is optional and can be used to configure the user's when signing up a new user. It is ignored if the user already exists.
@@ -88,25 +88,25 @@ type ServerInterface interface {
 	// Callback for oauth2 provider using form_post response mode
 	// (POST /signin/provider/{provider}/callback)
 	PostSigninProviderProviderCallback(c *gin.Context, provider PostSigninProviderProviderCallbackParamsProvider)
-	// Signin with webauthn
+	// Sign in with Webauthn
 	// (POST /signin/webauthn)
 	PostSigninWebauthn(c *gin.Context)
-	// Verify webauthn signin
+	// Verify Webauthn sign-in
 	// (POST /signin/webauthn/verify)
 	PostSigninWebauthnVerify(c *gin.Context)
 	// Sign out
 	// (POST /signout)
 	PostSignout(c *gin.Context)
-	// Signup with email and password
+	// Sign up with email and password
 	// (POST /signup/email-password)
 	PostSignupEmailPassword(c *gin.Context)
-	// Signup with webauthn
+	// Sign up with Webauthn
 	// (POST /signup/webauthn)
 	PostSignupWebauthn(c *gin.Context)
-	// Verify webauthn signup
+	// Verify Webauthn sign-up
 	// (POST /signup/webauthn/verify)
 	PostSignupWebauthnVerify(c *gin.Context)
-	// Refresh the JWT access token
+	// Refresh access token
 	// (POST /token)
 	PostToken(c *gin.Context)
 	// Verify JWT token
@@ -121,10 +121,10 @@ type ServerInterface interface {
 	// Change user email
 	// (POST /user/email/change)
 	PostUserEmailChange(c *gin.Context)
-	// Send email verification email
+	// Send verification email
 	// (POST /user/email/send-verification-email)
 	PostUserEmailSendVerificationEmail(c *gin.Context)
-	// Activate/deactivate Multi-factor authentication
+	// Manage multi-factor authentication
 	// (POST /user/mfa)
 	PostUserMfa(c *gin.Context)
 	// Change user password. The user must be authenticated or provide a ticket
@@ -133,16 +133,16 @@ type ServerInterface interface {
 	// Request a password reset. An email with a verification link will be sent to the user's address
 	// (POST /user/password/reset)
 	PostUserPasswordReset(c *gin.Context)
-	// Initialize adding of a new webauthn security key (device, browser)
+	// Initialize adding of a new webauthn security key
 	// (POST /user/webauthn/add)
 	PostUserWebauthnAdd(c *gin.Context)
-	// Verify adding of a new webauthn security key (device, browser)
+	// Verify adding of a new webauthn security key
 	// (POST /user/webauthn/verify)
 	PostUserWebauthnVerify(c *gin.Context)
 	// Verify tickets created by email verification, email passwordless authentication (magic link), or password reset
 	// (GET /verify)
 	GetVerify(c *gin.Context, params GetVerifyParams)
-	// Get version
+	// Get service version
 	// (GET /version)
 	GetVersion(c *gin.Context)
 }
@@ -1005,13 +1005,25 @@ type PostElevateWebauthnResponseObject interface {
 	VisitPostElevateWebauthnResponse(w http.ResponseWriter) error
 }
 
-type PostElevateWebauthn200JSONResponse SignInWebauthnResponse
+type PostElevateWebauthn200JSONResponse PublicKeyCredentialRequestOptions
 
 func (response PostElevateWebauthn200JSONResponse) VisitPostElevateWebauthnResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
+}
+
+type PostElevateWebauthndefaultJSONResponse struct {
+	Body       ErrorResponse
+	StatusCode int
+}
+
+func (response PostElevateWebauthndefaultJSONResponse) VisitPostElevateWebauthnResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+
+	return json.NewEncoder(w).Encode(response.Body)
 }
 
 type PostElevateWebauthnVerifyRequestObject struct {
@@ -1029,6 +1041,18 @@ func (response PostElevateWebauthnVerify200JSONResponse) VisitPostElevateWebauth
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
+}
+
+type PostElevateWebauthnVerifydefaultJSONResponse struct {
+	Body       ErrorResponse
+	StatusCode int
+}
+
+func (response PostElevateWebauthnVerifydefaultJSONResponse) VisitPostElevateWebauthnVerifyResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+
+	return json.NewEncoder(w).Encode(response.Body)
 }
 
 type GetHealthzRequestObject struct {
@@ -1079,6 +1103,18 @@ func (response PostLinkIdtoken200JSONResponse) VisitPostLinkIdtokenResponse(w ht
 	return json.NewEncoder(w).Encode(response)
 }
 
+type PostLinkIdtokendefaultJSONResponse struct {
+	Body       ErrorResponse
+	StatusCode int
+}
+
+func (response PostLinkIdtokendefaultJSONResponse) VisitPostLinkIdtokenResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+
+	return json.NewEncoder(w).Encode(response.Body)
+}
+
 type GetMfaTotpGenerateRequestObject struct {
 }
 
@@ -1093,6 +1129,18 @@ func (response GetMfaTotpGenerate200JSONResponse) VisitGetMfaTotpGenerateRespons
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
+}
+
+type GetMfaTotpGeneratedefaultJSONResponse struct {
+	Body       ErrorResponse
+	StatusCode int
+}
+
+func (response GetMfaTotpGeneratedefaultJSONResponse) VisitGetMfaTotpGenerateResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+
+	return json.NewEncoder(w).Encode(response.Body)
 }
 
 type PostPatRequestObject struct {
@@ -1112,6 +1160,18 @@ func (response PostPat200JSONResponse) VisitPostPatResponse(w http.ResponseWrite
 	return json.NewEncoder(w).Encode(response)
 }
 
+type PostPatdefaultJSONResponse struct {
+	Body       ErrorResponse
+	StatusCode int
+}
+
+func (response PostPatdefaultJSONResponse) VisitPostPatResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+
+	return json.NewEncoder(w).Encode(response.Body)
+}
+
 type PostSigninAnonymousRequestObject struct {
 	Body *PostSigninAnonymousJSONRequestBody
 }
@@ -1127,6 +1187,18 @@ func (response PostSigninAnonymous200JSONResponse) VisitPostSigninAnonymousRespo
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
+}
+
+type PostSigninAnonymousdefaultJSONResponse struct {
+	Body       ErrorResponse
+	StatusCode int
+}
+
+func (response PostSigninAnonymousdefaultJSONResponse) VisitPostSigninAnonymousResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+
+	return json.NewEncoder(w).Encode(response.Body)
 }
 
 type PostSigninEmailPasswordRequestObject struct {
@@ -1146,6 +1218,18 @@ func (response PostSigninEmailPassword200JSONResponse) VisitPostSigninEmailPassw
 	return json.NewEncoder(w).Encode(response)
 }
 
+type PostSigninEmailPassworddefaultJSONResponse struct {
+	Body       ErrorResponse
+	StatusCode int
+}
+
+func (response PostSigninEmailPassworddefaultJSONResponse) VisitPostSigninEmailPasswordResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+
+	return json.NewEncoder(w).Encode(response.Body)
+}
+
 type PostSigninIdtokenRequestObject struct {
 	Body *PostSigninIdtokenJSONRequestBody
 }
@@ -1161,6 +1245,18 @@ func (response PostSigninIdtoken200JSONResponse) VisitPostSigninIdtokenResponse(
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
+}
+
+type PostSigninIdtokendefaultJSONResponse struct {
+	Body       ErrorResponse
+	StatusCode int
+}
+
+func (response PostSigninIdtokendefaultJSONResponse) VisitPostSigninIdtokenResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+
+	return json.NewEncoder(w).Encode(response.Body)
 }
 
 type PostSigninMfaTotpRequestObject struct {
@@ -1180,6 +1276,18 @@ func (response PostSigninMfaTotp200JSONResponse) VisitPostSigninMfaTotpResponse(
 	return json.NewEncoder(w).Encode(response)
 }
 
+type PostSigninMfaTotpdefaultJSONResponse struct {
+	Body       ErrorResponse
+	StatusCode int
+}
+
+func (response PostSigninMfaTotpdefaultJSONResponse) VisitPostSigninMfaTotpResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+
+	return json.NewEncoder(w).Encode(response.Body)
+}
+
 type PostSigninOtpEmailRequestObject struct {
 	Body *PostSigninOtpEmailJSONRequestBody
 }
@@ -1195,6 +1303,18 @@ func (response PostSigninOtpEmail200JSONResponse) VisitPostSigninOtpEmailRespons
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
+}
+
+type PostSigninOtpEmaildefaultJSONResponse struct {
+	Body       ErrorResponse
+	StatusCode int
+}
+
+func (response PostSigninOtpEmaildefaultJSONResponse) VisitPostSigninOtpEmailResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+
+	return json.NewEncoder(w).Encode(response.Body)
 }
 
 type PostSigninOtpEmailVerifyRequestObject struct {
@@ -1214,6 +1334,18 @@ func (response PostSigninOtpEmailVerify200JSONResponse) VisitPostSigninOtpEmailV
 	return json.NewEncoder(w).Encode(response)
 }
 
+type PostSigninOtpEmailVerifydefaultJSONResponse struct {
+	Body       ErrorResponse
+	StatusCode int
+}
+
+func (response PostSigninOtpEmailVerifydefaultJSONResponse) VisitPostSigninOtpEmailVerifyResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+
+	return json.NewEncoder(w).Encode(response.Body)
+}
+
 type PostSigninPasswordlessEmailRequestObject struct {
 	Body *PostSigninPasswordlessEmailJSONRequestBody
 }
@@ -1229,6 +1361,18 @@ func (response PostSigninPasswordlessEmail200JSONResponse) VisitPostSigninPasswo
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
+}
+
+type PostSigninPasswordlessEmaildefaultJSONResponse struct {
+	Body       ErrorResponse
+	StatusCode int
+}
+
+func (response PostSigninPasswordlessEmaildefaultJSONResponse) VisitPostSigninPasswordlessEmailResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+
+	return json.NewEncoder(w).Encode(response.Body)
 }
 
 type PostSigninPasswordlessSmsRequestObject struct {
@@ -1280,6 +1424,18 @@ func (response PostSigninPat200JSONResponse) VisitPostSigninPatResponse(w http.R
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
+}
+
+type PostSigninPatdefaultJSONResponse struct {
+	Body       ErrorResponse
+	StatusCode int
+}
+
+func (response PostSigninPatdefaultJSONResponse) VisitPostSigninPatResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+
+	return json.NewEncoder(w).Encode(response.Body)
 }
 
 type GetSigninProviderProviderRequestObject struct {
@@ -1359,7 +1515,7 @@ type PostSigninWebauthnResponseObject interface {
 	VisitPostSigninWebauthnResponse(w http.ResponseWriter) error
 }
 
-type PostSigninWebauthn200JSONResponse SignInWebauthnResponse
+type PostSigninWebauthn200JSONResponse PublicKeyCredentialRequestOptions
 
 func (response PostSigninWebauthn200JSONResponse) VisitPostSigninWebauthnResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -1400,6 +1556,18 @@ func (response PostSignout200JSONResponse) VisitPostSignoutResponse(w http.Respo
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
+}
+
+type PostSignoutdefaultJSONResponse struct {
+	Body       ErrorResponse
+	StatusCode int
+}
+
+func (response PostSignoutdefaultJSONResponse) VisitPostSignoutResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+
+	return json.NewEncoder(w).Encode(response.Body)
 }
 
 type PostSignupEmailPasswordRequestObject struct {
@@ -1445,7 +1613,7 @@ type PostSignupWebauthnResponseObject interface {
 	VisitPostSignupWebauthnResponse(w http.ResponseWriter) error
 }
 
-type PostSignupWebauthn200JSONResponse SignUpWebauthnResponse
+type PostSignupWebauthn200JSONResponse PublicKeyCredentialCreationOptions
 
 func (response PostSignupWebauthn200JSONResponse) VisitPostSignupWebauthnResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -1486,6 +1654,18 @@ func (response PostToken200JSONResponse) VisitPostTokenResponse(w http.ResponseW
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
+}
+
+type PostTokendefaultJSONResponse struct {
+	Body       ErrorResponse
+	StatusCode int
+}
+
+func (response PostTokendefaultJSONResponse) VisitPostTokenResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+
+	return json.NewEncoder(w).Encode(response.Body)
 }
 
 type PostTokenVerifyRequestObject struct {
@@ -1538,6 +1718,18 @@ func (response PostUserDeanonymize200JSONResponse) VisitPostUserDeanonymizeRespo
 	return json.NewEncoder(w).Encode(response)
 }
 
+type PostUserDeanonymizedefaultJSONResponse struct {
+	Body       ErrorResponse
+	StatusCode int
+}
+
+func (response PostUserDeanonymizedefaultJSONResponse) VisitPostUserDeanonymizeResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+
+	return json.NewEncoder(w).Encode(response.Body)
+}
+
 type PostUserEmailChangeRequestObject struct {
 	Body *PostUserEmailChangeJSONRequestBody
 }
@@ -1553,6 +1745,18 @@ func (response PostUserEmailChange200JSONResponse) VisitPostUserEmailChangeRespo
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
+}
+
+type PostUserEmailChangedefaultJSONResponse struct {
+	Body       ErrorResponse
+	StatusCode int
+}
+
+func (response PostUserEmailChangedefaultJSONResponse) VisitPostUserEmailChangeResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+
+	return json.NewEncoder(w).Encode(response.Body)
 }
 
 type PostUserEmailSendVerificationEmailRequestObject struct {
@@ -1572,6 +1776,18 @@ func (response PostUserEmailSendVerificationEmail200JSONResponse) VisitPostUserE
 	return json.NewEncoder(w).Encode(response)
 }
 
+type PostUserEmailSendVerificationEmaildefaultJSONResponse struct {
+	Body       ErrorResponse
+	StatusCode int
+}
+
+func (response PostUserEmailSendVerificationEmaildefaultJSONResponse) VisitPostUserEmailSendVerificationEmailResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+
+	return json.NewEncoder(w).Encode(response.Body)
+}
+
 type PostUserMfaRequestObject struct {
 	Body *PostUserMfaJSONRequestBody
 }
@@ -1587,6 +1803,18 @@ func (response PostUserMfa200JSONResponse) VisitPostUserMfaResponse(w http.Respo
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
+}
+
+type PostUserMfadefaultJSONResponse struct {
+	Body       ErrorResponse
+	StatusCode int
+}
+
+func (response PostUserMfadefaultJSONResponse) VisitPostUserMfaResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+
+	return json.NewEncoder(w).Encode(response.Body)
 }
 
 type PostUserPasswordRequestObject struct {
@@ -1606,6 +1834,18 @@ func (response PostUserPassword200JSONResponse) VisitPostUserPasswordResponse(w 
 	return json.NewEncoder(w).Encode(response)
 }
 
+type PostUserPassworddefaultJSONResponse struct {
+	Body       ErrorResponse
+	StatusCode int
+}
+
+func (response PostUserPassworddefaultJSONResponse) VisitPostUserPasswordResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+
+	return json.NewEncoder(w).Encode(response.Body)
+}
+
 type PostUserPasswordResetRequestObject struct {
 	Body *PostUserPasswordResetJSONRequestBody
 }
@@ -1623,6 +1863,18 @@ func (response PostUserPasswordReset200JSONResponse) VisitPostUserPasswordResetR
 	return json.NewEncoder(w).Encode(response)
 }
 
+type PostUserPasswordResetdefaultJSONResponse struct {
+	Body       ErrorResponse
+	StatusCode int
+}
+
+func (response PostUserPasswordResetdefaultJSONResponse) VisitPostUserPasswordResetResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+
+	return json.NewEncoder(w).Encode(response.Body)
+}
+
 type PostUserWebauthnAddRequestObject struct {
 }
 
@@ -1630,13 +1882,25 @@ type PostUserWebauthnAddResponseObject interface {
 	VisitPostUserWebauthnAddResponse(w http.ResponseWriter) error
 }
 
-type PostUserWebauthnAdd200JSONResponse SignUpWebauthnResponse
+type PostUserWebauthnAdd200JSONResponse PublicKeyCredentialCreationOptions
 
 func (response PostUserWebauthnAdd200JSONResponse) VisitPostUserWebauthnAddResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
+}
+
+type PostUserWebauthnAdddefaultJSONResponse struct {
+	Body       ErrorResponse
+	StatusCode int
+}
+
+func (response PostUserWebauthnAdddefaultJSONResponse) VisitPostUserWebauthnAddResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+
+	return json.NewEncoder(w).Encode(response.Body)
 }
 
 type PostUserWebauthnVerifyRequestObject struct {
@@ -1647,13 +1911,25 @@ type PostUserWebauthnVerifyResponseObject interface {
 	VisitPostUserWebauthnVerifyResponse(w http.ResponseWriter) error
 }
 
-type PostUserWebauthnVerify200JSONResponse UserAddSecurityKeyVerifyResponse
+type PostUserWebauthnVerify200JSONResponse VerifyAddSecurityKeyResponse
 
 func (response PostUserWebauthnVerify200JSONResponse) VisitPostUserWebauthnVerifyResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
+}
+
+type PostUserWebauthnVerifydefaultJSONResponse struct {
+	Body       ErrorResponse
+	StatusCode int
+}
+
+func (response PostUserWebauthnVerifydefaultJSONResponse) VisitPostUserWebauthnVerifyResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+
+	return json.NewEncoder(w).Encode(response.Body)
 }
 
 type GetVerifyRequestObject struct {
@@ -1686,6 +1962,7 @@ type GetVersionResponseObject interface {
 }
 
 type GetVersion200JSONResponse struct {
+	// Version The version of the authentication service
 	Version string `json:"version"`
 }
 
@@ -1707,16 +1984,16 @@ type StrictServerInterface interface {
 	// Verify FIDO2 Webauthn authentication using public-key cryptography for elevation
 	// (POST /elevate/webauthn/verify)
 	PostElevateWebauthnVerify(ctx context.Context, request PostElevateWebauthnVerifyRequestObject) (PostElevateWebauthnVerifyResponseObject, error)
-	// Health check
+	// Health check (GET)
 	// (GET /healthz)
 	GetHealthz(ctx context.Context, request GetHealthzRequestObject) (GetHealthzResponseObject, error)
-	// Health check
+	// Health check (HEAD)
 	// (HEAD /healthz)
 	HeadHealthz(ctx context.Context, request HeadHealthzRequestObject) (HeadHealthzResponseObject, error)
 	// Link a user account with the provider's account using an id token
 	// (POST /link/idtoken)
 	PostLinkIdtoken(ctx context.Context, request PostLinkIdtokenRequestObject) (PostLinkIdtokenResponseObject, error)
-	// Generate TOTP secret for MFA setup
+	// Generate TOTP secret
 	// (GET /mfa/totp/generate)
 	GetMfaTotpGenerate(ctx context.Context, request GetMfaTotpGenerateRequestObject) (GetMfaTotpGenerateResponseObject, error)
 	// Create a Personal Access Token (PAT)
@@ -1731,7 +2008,7 @@ type StrictServerInterface interface {
 	// Sign in with in an id token
 	// (POST /signin/idtoken)
 	PostSigninIdtoken(ctx context.Context, request PostSigninIdtokenRequestObject) (PostSigninIdtokenResponseObject, error)
-	// Verify TOTP and return a session if validation is successful
+	// Verify TOTP for MFA
 	// (POST /signin/mfa/totp)
 	PostSigninMfaTotp(ctx context.Context, request PostSigninMfaTotpRequestObject) (PostSigninMfaTotpResponseObject, error)
 	// Sign in with a one time password sent to user's email. If the user doesn't exist, it will be created. The options object is optional and can be used to configure the user's when signing up a new user. It is ignored if the user already exists.
@@ -1740,7 +2017,7 @@ type StrictServerInterface interface {
 	// Verify OTP and return a session if validation is successful
 	// (POST /signin/otp/email/verify)
 	PostSigninOtpEmailVerify(ctx context.Context, request PostSigninOtpEmailVerifyRequestObject) (PostSigninOtpEmailVerifyResponseObject, error)
-	// Sign in with magic link sent to user's email. If the user doesn't exist, it will be created. The options object is optional and can be used to configure the user's when signing up a new user. It is ignored if the user already exists.
+	// Sign in with magic link email
 	// (POST /signin/passwordless/email)
 	PostSigninPasswordlessEmail(ctx context.Context, request PostSigninPasswordlessEmailRequestObject) (PostSigninPasswordlessEmailResponseObject, error)
 	// Sign in with a one time password sent to user's phone number. If the user doesn't exist, it will be created. The options object is optional and can be used to configure the user's when signing up a new user. It is ignored if the user already exists.
@@ -1761,25 +2038,25 @@ type StrictServerInterface interface {
 	// Callback for oauth2 provider using form_post response mode
 	// (POST /signin/provider/{provider}/callback)
 	PostSigninProviderProviderCallback(ctx context.Context, request PostSigninProviderProviderCallbackRequestObject) (PostSigninProviderProviderCallbackResponseObject, error)
-	// Signin with webauthn
+	// Sign in with Webauthn
 	// (POST /signin/webauthn)
 	PostSigninWebauthn(ctx context.Context, request PostSigninWebauthnRequestObject) (PostSigninWebauthnResponseObject, error)
-	// Verify webauthn signin
+	// Verify Webauthn sign-in
 	// (POST /signin/webauthn/verify)
 	PostSigninWebauthnVerify(ctx context.Context, request PostSigninWebauthnVerifyRequestObject) (PostSigninWebauthnVerifyResponseObject, error)
 	// Sign out
 	// (POST /signout)
 	PostSignout(ctx context.Context, request PostSignoutRequestObject) (PostSignoutResponseObject, error)
-	// Signup with email and password
+	// Sign up with email and password
 	// (POST /signup/email-password)
 	PostSignupEmailPassword(ctx context.Context, request PostSignupEmailPasswordRequestObject) (PostSignupEmailPasswordResponseObject, error)
-	// Signup with webauthn
+	// Sign up with Webauthn
 	// (POST /signup/webauthn)
 	PostSignupWebauthn(ctx context.Context, request PostSignupWebauthnRequestObject) (PostSignupWebauthnResponseObject, error)
-	// Verify webauthn signup
+	// Verify Webauthn sign-up
 	// (POST /signup/webauthn/verify)
 	PostSignupWebauthnVerify(ctx context.Context, request PostSignupWebauthnVerifyRequestObject) (PostSignupWebauthnVerifyResponseObject, error)
-	// Refresh the JWT access token
+	// Refresh access token
 	// (POST /token)
 	PostToken(ctx context.Context, request PostTokenRequestObject) (PostTokenResponseObject, error)
 	// Verify JWT token
@@ -1794,10 +2071,10 @@ type StrictServerInterface interface {
 	// Change user email
 	// (POST /user/email/change)
 	PostUserEmailChange(ctx context.Context, request PostUserEmailChangeRequestObject) (PostUserEmailChangeResponseObject, error)
-	// Send email verification email
+	// Send verification email
 	// (POST /user/email/send-verification-email)
 	PostUserEmailSendVerificationEmail(ctx context.Context, request PostUserEmailSendVerificationEmailRequestObject) (PostUserEmailSendVerificationEmailResponseObject, error)
-	// Activate/deactivate Multi-factor authentication
+	// Manage multi-factor authentication
 	// (POST /user/mfa)
 	PostUserMfa(ctx context.Context, request PostUserMfaRequestObject) (PostUserMfaResponseObject, error)
 	// Change user password. The user must be authenticated or provide a ticket
@@ -1806,16 +2083,16 @@ type StrictServerInterface interface {
 	// Request a password reset. An email with a verification link will be sent to the user's address
 	// (POST /user/password/reset)
 	PostUserPasswordReset(ctx context.Context, request PostUserPasswordResetRequestObject) (PostUserPasswordResetResponseObject, error)
-	// Initialize adding of a new webauthn security key (device, browser)
+	// Initialize adding of a new webauthn security key
 	// (POST /user/webauthn/add)
 	PostUserWebauthnAdd(ctx context.Context, request PostUserWebauthnAddRequestObject) (PostUserWebauthnAddResponseObject, error)
-	// Verify adding of a new webauthn security key (device, browser)
+	// Verify adding of a new webauthn security key
 	// (POST /user/webauthn/verify)
 	PostUserWebauthnVerify(ctx context.Context, request PostUserWebauthnVerifyRequestObject) (PostUserWebauthnVerifyResponseObject, error)
 	// Verify tickets created by email verification, email passwordless authentication (magic link), or password reset
 	// (GET /verify)
 	GetVerify(ctx context.Context, request GetVerifyRequestObject) (GetVerifyResponseObject, error)
-	// Get version
+	// Get service version
 	// (GET /version)
 	GetVersion(ctx context.Context, request GetVersionRequestObject) (GetVersionResponseObject, error)
 }
@@ -3086,104 +3363,151 @@ func (sh *strictHandler) GetVersion(ctx *gin.Context) {
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
-	"Rdr/CwAA//+09f0supUAAA==",
+	"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",
+	"AA==",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file
