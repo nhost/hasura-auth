@@ -119,6 +119,7 @@
           oapi-codegen
           sqlc
           postgresql_17_4-client
+          vacuum-go
         ];
 
 
