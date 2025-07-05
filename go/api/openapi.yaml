@@ -15,7 +15,7 @@ paths:
   /.well-known/jwks.json:
     get:
       summary: Get public keys for JWT verification in JWK Set format
-      # operationId: getJWKs
+      operationId: getJWKs
       tags:
         - keys
       responses:
@@ -31,7 +31,7 @@ paths:
     post:
       summary: Elevate access for an already signed in user using FIDO2 Webauthn
       description: Generate a Webauthn challenge for elevating user permissions
-      # operationId: elevateWebauthn
+      operationId: elevateWebauthn
       tags:
         - elevate
         - webauthn
@@ -56,7 +56,7 @@ paths:
     post:
       summary: Verify FIDO2 Webauthn authentication using public-key cryptography for elevation
       description: Complete Webauthn elevation by verifying the authentication response
-      # operationId: verifyElevateWebauthn
+      operationId: verifyElevateWebauthn
       tags:
         - elevate
         - webauthn
@@ -88,7 +88,7 @@ paths:
     get:
       summary: "Health check (GET)"
       description: "Verify if the authentication service is operational using GET method"
-      # operationId: healthCheckGet
+      operationId: healthCheckGet
       tags:
         - system
       responses:
@@ -102,7 +102,7 @@ paths:
     head:
       summary: "Health check (HEAD)"
       description: "Verify if the authentication service is operational using HEAD method"
-      # operationId: healthCheckHead
+      operationId: healthCheckHead
       tags:
         - system
       responses:
@@ -112,7 +112,7 @@ paths:
   /link/idtoken:
     post:
       summary: Link a user account with the provider's account using an id token
-      # operationId: linkIdToken
+      operationId: linkIdToken
       tags:
         - link
         - idtoken
@@ -143,7 +143,7 @@ paths:
     get:
       summary: "Generate TOTP secret"
       description: "Generate a Time-based One-Time Password (TOTP) secret for setting up multi-factor authentication"
-      # operationId: changeUserMfa
+      operationId: changeUserMfa
       tags:
         - mfa
         - user-management
@@ -166,7 +166,7 @@ paths:
   /pat:
     post:
       summary: Create a Personal Access Token (PAT)
-      # operationId: createPAT
+      operationId: createPAT
       tags:
         - pat
       security:
@@ -195,7 +195,7 @@ paths:
   /signin/anonymous:
     post:
       summary: Sign in anonymously
-      # operationId: signInAnonymous
+      operationId: signInAnonymous
       tags:
         - signin
         - anonymous
@@ -224,7 +224,7 @@ paths:
     post:
       summary: "Sign in with email and password"
       description: "Authenticate a user with their email and password. Returns a session object or MFA challenge if two-factor authentication is enabled."
-      # operationId: signInEmailPassword
+      operationId: signInEmailPassword
       tags:
         - authentication
         - email-and-password
@@ -251,7 +251,7 @@ paths:
   /signin/idtoken:
     post:
       summary: Sign in with in an id token
-      # operationId: signInIdToken
+      operationId: signInIdToken
       tags:
         - signin
         - idtoken
@@ -282,7 +282,7 @@ paths:
     post:
       summary: "Verify TOTP for MFA"
       description: "Complete the multi-factor authentication by verifying a Time-based One-Time Password (TOTP). Returns a session if validation is successful."
-      # operationId: verifySignInMfaTotp
+      operationId: verifySignInMfaTotp
       tags:
         - authentication
         - mfa
@@ -312,7 +312,7 @@ paths:
         Sign in with a one time password sent to user's email. If the user doesn't exist, it will
         be created. The options object is optional and can be used to configure the user's when
         signing up a new user. It is ignored if the user already exists.
-      # operationId: signInOTPEmail
+      operationId: signInOTPEmail
       tags:
         - signin
         - signup
@@ -342,7 +342,7 @@ paths:
     post:
       summary: >-
         Verify OTP and return a session if validation is successful
-      # operationId: verifySignInOTPEmail
+      operationId: verifySignInOTPEmail
       tags:
         - signin
         - signup
@@ -372,7 +372,7 @@ paths:
     post:
       summary: "Sign in with magic link email"
       description: "Initiate passwordless authentication by sending a magic link to the user's email. If the user doesn't exist, a new account will be created with the provided options."
-      # operationId: signInPasswordlessEmail
+      operationId: signInPasswordlessEmail
       tags:
         - authentication
         - passwordless
@@ -398,6 +398,7 @@ paths:
 
   /signin/passwordless/sms:
     post:
+      operationId: signInPasswordlessSms
       summary: >-
         Sign in with a one time password sent to user's phone number. If the user doesn't exist, it will be created.
         The options object is optional and can be used to configure the user's when signing up a
@@ -424,6 +425,7 @@ paths:
 
   /signin/passwordless/sms/otp:
     post:
+      operationId: verifySignInPasswordlessSms
       summary: >-
         Verify SMS OTP and return a session if validation is successful
       tags:
@@ -449,7 +451,7 @@ paths:
     post:
       summary: >-
         Sign in with Personal Access Token (PAT)
-      # operationId: signInPAT
+      operationId: signInPAT
       tags:
         - signin
         - pat
@@ -477,7 +479,7 @@ paths:
   /signin/provider/{provider}:
     get:
       summary: Sign in with an oauth2 provider
-      # operationId: signInProvider
+      operationId: signInProvider
       tags:
         - signin
         - signup
@@ -559,7 +561,7 @@ paths:
   /signin/provider/{provider}/callback:
     get:
       summary: Callback for oauth2 provider
-      # operationId: signInProviderCallbackGet
+      operationId: signInProviderCallbackGet
       tags:
         - signin
         - signup
@@ -625,7 +627,7 @@ paths:
 
     post:
       summary: Callback for oauth2 provider using form_post response mode
-      # operationId: signInProviderCallbackPost
+      operationId: signInProviderCallbackPost
       tags:
         - signin
         - signup
@@ -686,7 +688,7 @@ paths:
       description: >-
         Initiate a Webauthn sign-in process by sending a challenge to the user's device.
         The user must have previously registered a Webauthn credential.
-      # operationId: signInWebauthn
+      operationId: signInWebauthn
       requestBody:
         content:
           application/json:
@@ -712,7 +714,7 @@ paths:
       description: >-
         Complete the Webauthn sign-in process by verifying the response from the user's device.
         Returns a session if validation is successful.
-      # operationId: verifySignInWebauthn
+      operationId: verifySignInWebauthn
       requestBody:
         content:
           application/json:
@@ -736,7 +738,7 @@ paths:
   /signout:
     post:
       summary: "Sign out"
-      # operationId: signOut
+      operationId: signOut
       tags:
         - session
       security:
@@ -766,7 +768,7 @@ paths:
     post:
       summary: "Sign up with email and password"
       description: "Register a new user account with email and password. Returns a session if email verification is not required, otherwise returns null session."
-      # operationId: signUpEmailPassword
+      operationId: signUpEmailPassword
       tags:
         - authentication
         - email-and-password
@@ -802,7 +804,7 @@ paths:
       description: >-
         Initiate a Webauthn sign-up process by sending a challenge to the user's device.
         The user must not have an existing account.
-      # operationId: signUpWebauthn
+      operationId: signUpWebauthn
       requestBody:
         content:
           application/json:
@@ -828,7 +830,7 @@ paths:
       description: >-
         Complete the Webauthn sign-up process by verifying the response from the user's device.
         Returns a session if validation is successful.
-      # operationId: verifySignUpWebauthn
+      operationId: verifySignUpWebauthn
       requestBody:
         content:
           application/json:
@@ -853,7 +855,7 @@ paths:
     post:
       summary: "Refresh access token"
       description: "Generate a new JWT access token using a valid refresh token. The refresh token used will be revoked and a new one will be issued."
-      # operationId: refreshToken
+      operationId: refreshToken
       tags:
         - session
       requestBody:
@@ -879,6 +881,7 @@ paths:
   /token/verify:
     post:
       summary: Verify JWT token
+      operationId: verifyToken
       description: If request body is not passed the authorization header will be used to be verified
       tags:
         - General
@@ -902,6 +905,7 @@ paths:
   /user:
     get:
       summary: Get user information
+      operationId: getUser
       tags:
         - User management
       security:
@@ -918,7 +922,7 @@ paths:
     post:
       summary: >-
         Deanonymize an anonymous user in adding missing email or email+password, depending on the chosen authentication method. Will send a confirmation email if the server is configured to do so
-      # operationId: deanonymizeUser
+      operationId: deanonymizeUser
       tags:
         - anonymous
       security:
@@ -947,7 +951,7 @@ paths:
   /user/email/change:
     post:
       summary: Change user email
-      # operationId: changeUserEmail
+      operationId: changeUserEmail
       tags:
         - user
         - email
@@ -977,7 +981,7 @@ paths:
   /user/email/send-verification-email:
     post:
       summary: Send verification email
-      # operationId: sendVerificationEmail
+      operationId: sendVerificationEmail
       tags:
         - user
         - email
@@ -1006,7 +1010,7 @@ paths:
     post:
       summary: "Manage multi-factor authentication"
       description: "Activate or deactivate multi-factor authentication for the authenticated user"
-      # operationId: verifyChangeUserMfa
+      operationId: verifyChangeUserMfa
       tags:
         - mfa
         - user-management
@@ -1036,7 +1040,7 @@ paths:
     post:
       summary: >-
         Change user password. The user must be authenticated or provide a ticket
-      # operationId: changeUserPassword
+      operationId: changeUserPassword
       tags:
         - user
         - password
@@ -1068,7 +1072,7 @@ paths:
     post:
       summary: >-
         Request a password reset. An email with a verification link will be sent to the user's address
-      # operationId: sendPasswordResetEmail
+      operationId: sendPasswordResetEmail
       tags:
         - user
         - password
@@ -1096,7 +1100,7 @@ paths:
   /user/webauthn/add:
     post:
       summary: Initialize adding of a new webauthn security key
-      # operationId: addSecurityKey
+      operationId: addSecurityKey
       tags:
         - user-management
         - webauthn
@@ -1120,7 +1124,7 @@ paths:
   /user/webauthn/verify:
     post:
       summary: Verify adding of a new webauthn security key
-      # operationId: verifyAddSecurityKey
+      operationId: verifyAddSecurityKey
       tags:
         - user-management
         - webauthn
@@ -1152,7 +1156,7 @@ paths:
       summary: >-
         Verify tickets created by email verification, email passwordless authentication (magic link),
         or password reset
-      # operationId: verifyTicket
+      operationId: verifyTicket
       tags:
         - verify
       parameters:
@@ -1160,7 +1164,7 @@ paths:
         - $ref: "#/components/parameters/TicketTypeQuery"
         - $ref: "#/components/parameters/RedirectToQuery"
       responses:
-        302:
+        "302":
           description: Redirect response
           headers:
             Location:
@@ -1171,7 +1175,7 @@ paths:
     get:
       summary: "Get service version"
       description: "Retrieve version information about the authentication service"
-      # operationId: getVersion
+      operationId: getVersion
       tags:
         - system
       responses:

@@ -163,69 +163,69 @@ const (
 	TicketTypeQuerySigninPasswordless TicketTypeQuery = "signinPasswordless"
 )
 
-// Defines values for GetSigninProviderProviderParamsProvider.
+// Defines values for SignInProviderParamsProvider.
 const (
-	GetSigninProviderProviderParamsProviderApple       GetSigninProviderProviderParamsProvider = "apple"
-	GetSigninProviderProviderParamsProviderAzuread     GetSigninProviderProviderParamsProvider = "azuread"
-	GetSigninProviderProviderParamsProviderBitbucket   GetSigninProviderProviderParamsProvider = "bitbucket"
-	GetSigninProviderProviderParamsProviderDiscord     GetSigninProviderProviderParamsProvider = "discord"
-	GetSigninProviderProviderParamsProviderFacebook    GetSigninProviderProviderParamsProvider = "facebook"
-	GetSigninProviderProviderParamsProviderGithub      GetSigninProviderProviderParamsProvider = "github"
-	GetSigninProviderProviderParamsProviderGitlab      GetSigninProviderProviderParamsProvider = "gitlab"
-	GetSigninProviderProviderParamsProviderGoogle      GetSigninProviderProviderParamsProvider = "google"
-	GetSigninProviderProviderParamsProviderLinkedin    GetSigninProviderProviderParamsProvider = "linkedin"
-	GetSigninProviderProviderParamsProviderSpotify     GetSigninProviderProviderParamsProvider = "spotify"
-	GetSigninProviderProviderParamsProviderStrava      GetSigninProviderProviderParamsProvider = "strava"
-	GetSigninProviderProviderParamsProviderTwitch      GetSigninProviderProviderParamsProvider = "twitch"
-	GetSigninProviderProviderParamsProviderTwitter     GetSigninProviderProviderParamsProvider = "twitter"
-	GetSigninProviderProviderParamsProviderWindowslive GetSigninProviderProviderParamsProvider = "windowslive"
-	GetSigninProviderProviderParamsProviderWorkos      GetSigninProviderProviderParamsProvider = "workos"
+	SignInProviderParamsProviderApple       SignInProviderParamsProvider = "apple"
+	SignInProviderParamsProviderAzuread     SignInProviderParamsProvider = "azuread"
+	SignInProviderParamsProviderBitbucket   SignInProviderParamsProvider = "bitbucket"
+	SignInProviderParamsProviderDiscord     SignInProviderParamsProvider = "discord"
+	SignInProviderParamsProviderFacebook    SignInProviderParamsProvider = "facebook"
+	SignInProviderParamsProviderGithub      SignInProviderParamsProvider = "github"
+	SignInProviderParamsProviderGitlab      SignInProviderParamsProvider = "gitlab"
+	SignInProviderParamsProviderGoogle      SignInProviderParamsProvider = "google"
+	SignInProviderParamsProviderLinkedin    SignInProviderParamsProvider = "linkedin"
+	SignInProviderParamsProviderSpotify     SignInProviderParamsProvider = "spotify"
+	SignInProviderParamsProviderStrava      SignInProviderParamsProvider = "strava"
+	SignInProviderParamsProviderTwitch      SignInProviderParamsProvider = "twitch"
+	SignInProviderParamsProviderTwitter     SignInProviderParamsProvider = "twitter"
+	SignInProviderParamsProviderWindowslive SignInProviderParamsProvider = "windowslive"
+	SignInProviderParamsProviderWorkos      SignInProviderParamsProvider = "workos"
 )
 
-// Defines values for GetSigninProviderProviderCallbackParamsProvider.
+// Defines values for SignInProviderCallbackGetParamsProvider.
 const (
-	GetSigninProviderProviderCallbackParamsProviderApple       GetSigninProviderProviderCallbackParamsProvider = "apple"
-	GetSigninProviderProviderCallbackParamsProviderAzuread     GetSigninProviderProviderCallbackParamsProvider = "azuread"
-	GetSigninProviderProviderCallbackParamsProviderBitbucket   GetSigninProviderProviderCallbackParamsProvider = "bitbucket"
-	GetSigninProviderProviderCallbackParamsProviderDiscord     GetSigninProviderProviderCallbackParamsProvider = "discord"
-	GetSigninProviderProviderCallbackParamsProviderFacebook    GetSigninProviderProviderCallbackParamsProvider = "facebook"
-	GetSigninProviderProviderCallbackParamsProviderGithub      GetSigninProviderProviderCallbackParamsProvider = "github"
-	GetSigninProviderProviderCallbackParamsProviderGitlab      GetSigninProviderProviderCallbackParamsProvider = "gitlab"
-	GetSigninProviderProviderCallbackParamsProviderGoogle      GetSigninProviderProviderCallbackParamsProvider = "google"
-	GetSigninProviderProviderCallbackParamsProviderLinkedin    GetSigninProviderProviderCallbackParamsProvider = "linkedin"
-	GetSigninProviderProviderCallbackParamsProviderSpotify     GetSigninProviderProviderCallbackParamsProvider = "spotify"
-	GetSigninProviderProviderCallbackParamsProviderStrava      GetSigninProviderProviderCallbackParamsProvider = "strava"
-	GetSigninProviderProviderCallbackParamsProviderTwitch      GetSigninProviderProviderCallbackParamsProvider = "twitch"
-	GetSigninProviderProviderCallbackParamsProviderTwitter     GetSigninProviderProviderCallbackParamsProvider = "twitter"
-	GetSigninProviderProviderCallbackParamsProviderWindowslive GetSigninProviderProviderCallbackParamsProvider = "windowslive"
-	GetSigninProviderProviderCallbackParamsProviderWorkos      GetSigninProviderProviderCallbackParamsProvider = "workos"
+	SignInProviderCallbackGetParamsProviderApple       SignInProviderCallbackGetParamsProvider = "apple"
+	SignInProviderCallbackGetParamsProviderAzuread     SignInProviderCallbackGetParamsProvider = "azuread"
+	SignInProviderCallbackGetParamsProviderBitbucket   SignInProviderCallbackGetParamsProvider = "bitbucket"
+	SignInProviderCallbackGetParamsProviderDiscord     SignInProviderCallbackGetParamsProvider = "discord"
+	SignInProviderCallbackGetParamsProviderFacebook    SignInProviderCallbackGetParamsProvider = "facebook"
+	SignInProviderCallbackGetParamsProviderGithub      SignInProviderCallbackGetParamsProvider = "github"
+	SignInProviderCallbackGetParamsProviderGitlab      SignInProviderCallbackGetParamsProvider = "gitlab"
+	SignInProviderCallbackGetParamsProviderGoogle      SignInProviderCallbackGetParamsProvider = "google"
+	SignInProviderCallbackGetParamsProviderLinkedin    SignInProviderCallbackGetParamsProvider = "linkedin"
+	SignInProviderCallbackGetParamsProviderSpotify     SignInProviderCallbackGetParamsProvider = "spotify"
+	SignInProviderCallbackGetParamsProviderStrava      SignInProviderCallbackGetParamsProvider = "strava"
+	SignInProviderCallbackGetParamsProviderTwitch      SignInProviderCallbackGetParamsProvider = "twitch"
+	SignInProviderCallbackGetParamsProviderTwitter     SignInProviderCallbackGetParamsProvider = "twitter"
+	SignInProviderCallbackGetParamsProviderWindowslive SignInProviderCallbackGetParamsProvider = "windowslive"
+	SignInProviderCallbackGetParamsProviderWorkos      SignInProviderCallbackGetParamsProvider = "workos"
 )
 
-// Defines values for PostSigninProviderProviderCallbackParamsProvider.
+// Defines values for SignInProviderCallbackPostParamsProvider.
 const (
-	Apple       PostSigninProviderProviderCallbackParamsProvider = "apple"
-	Azuread     PostSigninProviderProviderCallbackParamsProvider = "azuread"
-	Bitbucket   PostSigninProviderProviderCallbackParamsProvider = "bitbucket"
-	Discord     PostSigninProviderProviderCallbackParamsProvider = "discord"
-	Facebook    PostSigninProviderProviderCallbackParamsProvider = "facebook"
-	Github      PostSigninProviderProviderCallbackParamsProvider = "github"
-	Gitlab      PostSigninProviderProviderCallbackParamsProvider = "gitlab"
-	Google      PostSigninProviderProviderCallbackParamsProvider = "google"
-	Linkedin    PostSigninProviderProviderCallbackParamsProvider = "linkedin"
-	Spotify     PostSigninProviderProviderCallbackParamsProvider = "spotify"
-	Strava      PostSigninProviderProviderCallbackParamsProvider = "strava"
-	Twitch      PostSigninProviderProviderCallbackParamsProvider = "twitch"
-	Twitter     PostSigninProviderProviderCallbackParamsProvider = "twitter"
-	Windowslive PostSigninProviderProviderCallbackParamsProvider = "windowslive"
-	Workos      PostSigninProviderProviderCallbackParamsProvider = "workos"
+	Apple       SignInProviderCallbackPostParamsProvider = "apple"
+	Azuread     SignInProviderCallbackPostParamsProvider = "azuread"
+	Bitbucket   SignInProviderCallbackPostParamsProvider = "bitbucket"
+	Discord     SignInProviderCallbackPostParamsProvider = "discord"
+	Facebook    SignInProviderCallbackPostParamsProvider = "facebook"
+	Github      SignInProviderCallbackPostParamsProvider = "github"
+	Gitlab      SignInProviderCallbackPostParamsProvider = "gitlab"
+	Google      SignInProviderCallbackPostParamsProvider = "google"
+	Linkedin    SignInProviderCallbackPostParamsProvider = "linkedin"
+	Spotify     SignInProviderCallbackPostParamsProvider = "spotify"
+	Strava      SignInProviderCallbackPostParamsProvider = "strava"
+	Twitch      SignInProviderCallbackPostParamsProvider = "twitch"
+	Twitter     SignInProviderCallbackPostParamsProvider = "twitter"
+	Windowslive SignInProviderCallbackPostParamsProvider = "windowslive"
+	Workos      SignInProviderCallbackPostParamsProvider = "workos"
 )
 
-// Defines values for GetVerifyParamsType.
+// Defines values for VerifyTicketParamsType.
 const (
-	GetVerifyParamsTypeEmailConfirmChange GetVerifyParamsType = "emailConfirmChange"
-	GetVerifyParamsTypeEmailVerify        GetVerifyParamsType = "emailVerify"
-	GetVerifyParamsTypePasswordReset      GetVerifyParamsType = "passwordReset"
-	GetVerifyParamsTypeSigninPasswordless GetVerifyParamsType = "signinPasswordless"
+	VerifyTicketParamsTypeEmailConfirmChange VerifyTicketParamsType = "emailConfirmChange"
+	VerifyTicketParamsTypeEmailVerify        VerifyTicketParamsType = "emailVerify"
+	VerifyTicketParamsTypePasswordReset      VerifyTicketParamsType = "passwordReset"
+	VerifyTicketParamsTypeSigninPasswordless VerifyTicketParamsType = "signinPasswordless"
 )
 
 // AttestationFormat The attestation statement format
@@ -818,8 +818,8 @@ type TicketQuery = string
 // TicketTypeQuery Type of the ticket
 type TicketTypeQuery string
 
-// GetSigninProviderProviderParams defines parameters for GetSigninProviderProvider.
-type GetSigninProviderProviderParams struct {
+// SignInProviderParams defines parameters for SignInProvider.
+type SignInProviderParams struct {
 	// AllowedRoles Array of allowed roles for the user
 	AllowedRoles *[]string `form:"allowedRoles,omitempty" json:"allowedRoles,omitempty"`
 
@@ -842,11 +842,11 @@ type GetSigninProviderProviderParams struct {
 	Connect *string `form:"connect,omitempty" json:"connect,omitempty"`
 }
 
-// GetSigninProviderProviderParamsProvider defines parameters for GetSigninProviderProvider.
-type GetSigninProviderProviderParamsProvider string
+// SignInProviderParamsProvider defines parameters for SignInProvider.
+type SignInProviderParamsProvider string
 
-// GetSigninProviderProviderCallbackParams defines parameters for GetSigninProviderProviderCallback.
-type GetSigninProviderProviderCallbackParams struct {
+// SignInProviderCallbackGetParams defines parameters for SignInProviderCallbackGet.
+type SignInProviderCallbackGetParams struct {
 	// Code Authorization code provided by the authentication provider
 	Code *string `form:"code,omitempty" json:"code,omitempty"`
 
@@ -872,11 +872,11 @@ type GetSigninProviderProviderCallbackParams struct {
 	ErrorUri *string `form:"error_uri,omitempty" json:"error_uri,omitempty"`
 }
 
-// GetSigninProviderProviderCallbackParamsProvider defines parameters for GetSigninProviderProviderCallback.
-type GetSigninProviderProviderCallbackParamsProvider string
+// SignInProviderCallbackGetParamsProvider defines parameters for SignInProviderCallbackGet.
+type SignInProviderCallbackGetParamsProvider string
 
-// PostSigninProviderProviderCallbackFormdataBody defines parameters for PostSigninProviderProviderCallback.
-type PostSigninProviderProviderCallbackFormdataBody struct {
+// SignInProviderCallbackPostFormdataBody defines parameters for SignInProviderCallbackPost.
+type SignInProviderCallbackPostFormdataBody struct {
 	// Code Authorization code provided by the authentication provider
 	Code *string `form:"code" json:"code"`
 
@@ -900,130 +900,130 @@ type PostSigninProviderProviderCallbackFormdataBody struct {
 	AdditionalProperties map[string]interface{} `json:"-"`
 }
 
-// PostSigninProviderProviderCallbackParamsProvider defines parameters for PostSigninProviderProviderCallback.
-type PostSigninProviderProviderCallbackParamsProvider string
+// SignInProviderCallbackPostParamsProvider defines parameters for SignInProviderCallbackPost.
+type SignInProviderCallbackPostParamsProvider string
 
-// GetVerifyParams defines parameters for GetVerify.
-type GetVerifyParams struct {
+// VerifyTicketParams defines parameters for VerifyTicket.
+type VerifyTicketParams struct {
 	// Ticket Ticket
 	Ticket TicketQuery `form:"ticket" json:"ticket"`
 
 	// Type Type of the ticket. Deprecated, no longer used
-	Type *GetVerifyParamsType `form:"type,omitempty" json:"type,omitempty"`
+	Type *VerifyTicketParamsType `form:"type,omitempty" json:"type,omitempty"`
 
 	// RedirectTo Target URL for the redirect
 	RedirectTo RedirectToQuery `form:"redirectTo" json:"redirectTo"`
 }
 
-// GetVerifyParamsType defines parameters for GetVerify.
-type GetVerifyParamsType string
+// VerifyTicketParamsType defines parameters for VerifyTicket.
+type VerifyTicketParamsType string
 
-// PostElevateWebauthnVerifyJSONRequestBody defines body for PostElevateWebauthnVerify for application/json ContentType.
-type PostElevateWebauthnVerifyJSONRequestBody = SignInWebauthnVerifyRequest
+// VerifyElevateWebauthnJSONRequestBody defines body for VerifyElevateWebauthn for application/json ContentType.
+type VerifyElevateWebauthnJSONRequestBody = SignInWebauthnVerifyRequest
 
-// PostLinkIdtokenJSONRequestBody defines body for PostLinkIdtoken for application/json ContentType.
-type PostLinkIdtokenJSONRequestBody = LinkIdTokenRequest
+// LinkIdTokenJSONRequestBody defines body for LinkIdToken for application/json ContentType.
+type LinkIdTokenJSONRequestBody = LinkIdTokenRequest
 
-// PostPatJSONRequestBody defines body for PostPat for application/json ContentType.
-type PostPatJSONRequestBody = CreatePATRequest
+// CreatePATJSONRequestBody defines body for CreatePAT for application/json ContentType.
+type CreatePATJSONRequestBody = CreatePATRequest
 
-// PostSigninAnonymousJSONRequestBody defines body for PostSigninAnonymous for application/json ContentType.
-type PostSigninAnonymousJSONRequestBody = SignInAnonymousRequest
+// SignInAnonymousJSONRequestBody defines body for SignInAnonymous for application/json ContentType.
+type SignInAnonymousJSONRequestBody = SignInAnonymousRequest
 
-// PostSigninEmailPasswordJSONRequestBody defines body for PostSigninEmailPassword for application/json ContentType.
-type PostSigninEmailPasswordJSONRequestBody = SignInEmailPasswordRequest
+// SignInEmailPasswordJSONRequestBody defines body for SignInEmailPassword for application/json ContentType.
+type SignInEmailPasswordJSONRequestBody = SignInEmailPasswordRequest
 
-// PostSigninIdtokenJSONRequestBody defines body for PostSigninIdtoken for application/json ContentType.
-type PostSigninIdtokenJSONRequestBody = SignInIdTokenRequest
+// SignInIdTokenJSONRequestBody defines body for SignInIdToken for application/json ContentType.
+type SignInIdTokenJSONRequestBody = SignInIdTokenRequest
 
-// PostSigninMfaTotpJSONRequestBody defines body for PostSigninMfaTotp for application/json ContentType.
-type PostSigninMfaTotpJSONRequestBody = SignInMfaTotpRequest
+// VerifySignInMfaTotpJSONRequestBody defines body for VerifySignInMfaTotp for application/json ContentType.
+type VerifySignInMfaTotpJSONRequestBody = SignInMfaTotpRequest
 
-// PostSigninOtpEmailJSONRequestBody defines body for PostSigninOtpEmail for application/json ContentType.
-type PostSigninOtpEmailJSONRequestBody = SignInOTPEmailRequest
+// SignInOTPEmailJSONRequestBody defines body for SignInOTPEmail for application/json ContentType.
+type SignInOTPEmailJSONRequestBody = SignInOTPEmailRequest
 
-// PostSigninOtpEmailVerifyJSONRequestBody defines body for PostSigninOtpEmailVerify for application/json ContentType.
-type PostSigninOtpEmailVerifyJSONRequestBody = SignInOTPEmailVerifyRequest
+// VerifySignInOTPEmailJSONRequestBody defines body for VerifySignInOTPEmail for application/json ContentType.
+type VerifySignInOTPEmailJSONRequestBody = SignInOTPEmailVerifyRequest
 
-// PostSigninPasswordlessEmailJSONRequestBody defines body for PostSigninPasswordlessEmail for application/json ContentType.
-type PostSigninPasswordlessEmailJSONRequestBody = SignInPasswordlessEmailRequest
+// SignInPasswordlessEmailJSONRequestBody defines body for SignInPasswordlessEmail for application/json ContentType.
+type SignInPasswordlessEmailJSONRequestBody = SignInPasswordlessEmailRequest
 
-// PostSigninPasswordlessSmsJSONRequestBody defines body for PostSigninPasswordlessSms for application/json ContentType.
-type PostSigninPasswordlessSmsJSONRequestBody = SignInPasswordlessSmsRequest
+// SignInPasswordlessSmsJSONRequestBody defines body for SignInPasswordlessSms for application/json ContentType.
+type SignInPasswordlessSmsJSONRequestBody = SignInPasswordlessSmsRequest
 
-// PostSigninPasswordlessSmsOtpJSONRequestBody defines body for PostSigninPasswordlessSmsOtp for application/json ContentType.
-type PostSigninPasswordlessSmsOtpJSONRequestBody = SignInPasswordlessSmsOtpRequest
+// VerifySignInPasswordlessSmsJSONRequestBody defines body for VerifySignInPasswordlessSms for application/json ContentType.
+type VerifySignInPasswordlessSmsJSONRequestBody = SignInPasswordlessSmsOtpRequest
 
-// PostSigninPatJSONRequestBody defines body for PostSigninPat for application/json ContentType.
-type PostSigninPatJSONRequestBody = SignInPATRequest
+// SignInPATJSONRequestBody defines body for SignInPAT for application/json ContentType.
+type SignInPATJSONRequestBody = SignInPATRequest
 
-// PostSigninProviderProviderCallbackFormdataRequestBody defines body for PostSigninProviderProviderCallback for application/x-www-form-urlencoded ContentType.
-type PostSigninProviderProviderCallbackFormdataRequestBody PostSigninProviderProviderCallbackFormdataBody
+// SignInProviderCallbackPostFormdataRequestBody defines body for SignInProviderCallbackPost for application/x-www-form-urlencoded ContentType.
+type SignInProviderCallbackPostFormdataRequestBody SignInProviderCallbackPostFormdataBody
 
-// PostSigninWebauthnJSONRequestBody defines body for PostSigninWebauthn for application/json ContentType.
-type PostSigninWebauthnJSONRequestBody = SignInWebauthnRequest
+// SignInWebauthnJSONRequestBody defines body for SignInWebauthn for application/json ContentType.
+type SignInWebauthnJSONRequestBody = SignInWebauthnRequest
 
-// PostSigninWebauthnVerifyJSONRequestBody defines body for PostSigninWebauthnVerify for application/json ContentType.
-type PostSigninWebauthnVerifyJSONRequestBody = SignInWebauthnVerifyRequest
+// VerifySignInWebauthnJSONRequestBody defines body for VerifySignInWebauthn for application/json ContentType.
+type VerifySignInWebauthnJSONRequestBody = SignInWebauthnVerifyRequest
 
-// PostSignoutJSONRequestBody defines body for PostSignout for application/json ContentType.
-type PostSignoutJSONRequestBody = SignOutRequest
+// SignOutJSONRequestBody defines body for SignOut for application/json ContentType.
+type SignOutJSONRequestBody = SignOutRequest
 
-// PostSignupEmailPasswordJSONRequestBody defines body for PostSignupEmailPassword for application/json ContentType.
-type PostSignupEmailPasswordJSONRequestBody = SignUpEmailPasswordRequest
+// SignUpEmailPasswordJSONRequestBody defines body for SignUpEmailPassword for application/json ContentType.
+type SignUpEmailPasswordJSONRequestBody = SignUpEmailPasswordRequest
 
-// PostSignupWebauthnJSONRequestBody defines body for PostSignupWebauthn for application/json ContentType.
-type PostSignupWebauthnJSONRequestBody = SignUpWebauthnRequest
+// SignUpWebauthnJSONRequestBody defines body for SignUpWebauthn for application/json ContentType.
+type SignUpWebauthnJSONRequestBody = SignUpWebauthnRequest
 
-// PostSignupWebauthnVerifyJSONRequestBody defines body for PostSignupWebauthnVerify for application/json ContentType.
-type PostSignupWebauthnVerifyJSONRequestBody = SignUpWebauthnVerifyRequest
+// VerifySignUpWebauthnJSONRequestBody defines body for VerifySignUpWebauthn for application/json ContentType.
+type VerifySignUpWebauthnJSONRequestBody = SignUpWebauthnVerifyRequest
 
-// PostTokenJSONRequestBody defines body for PostToken for application/json ContentType.
-type PostTokenJSONRequestBody = RefreshTokenRequest
+// RefreshTokenJSONRequestBody defines body for RefreshToken for application/json ContentType.
+type RefreshTokenJSONRequestBody = RefreshTokenRequest
 
-// PostTokenVerifyJSONRequestBody defines body for PostTokenVerify for application/json ContentType.
-type PostTokenVerifyJSONRequestBody = VerifyTokenRequest
+// VerifyTokenJSONRequestBody defines body for VerifyToken for application/json ContentType.
+type VerifyTokenJSONRequestBody = VerifyTokenRequest
 
-// PostUserDeanonymizeJSONRequestBody defines body for PostUserDeanonymize for application/json ContentType.
-type PostUserDeanonymizeJSONRequestBody = UserDeanonymizeRequest
+// DeanonymizeUserJSONRequestBody defines body for DeanonymizeUser for application/json ContentType.
+type DeanonymizeUserJSONRequestBody = UserDeanonymizeRequest
 
-// PostUserEmailChangeJSONRequestBody defines body for PostUserEmailChange for application/json ContentType.
-type PostUserEmailChangeJSONRequestBody = UserEmailChangeRequest
+// ChangeUserEmailJSONRequestBody defines body for ChangeUserEmail for application/json ContentType.
+type ChangeUserEmailJSONRequestBody = UserEmailChangeRequest
 
-// PostUserEmailSendVerificationEmailJSONRequestBody defines body for PostUserEmailSendVerificationEmail for application/json ContentType.
-type PostUserEmailSendVerificationEmailJSONRequestBody = UserEmailSendVerificationEmailRequest
+// SendVerificationEmailJSONRequestBody defines body for SendVerificationEmail for application/json ContentType.
+type SendVerificationEmailJSONRequestBody = UserEmailSendVerificationEmailRequest
 
-// PostUserMfaJSONRequestBody defines body for PostUserMfa for application/json ContentType.
-type PostUserMfaJSONRequestBody = UserMfaRequest
+// VerifyChangeUserMfaJSONRequestBody defines body for VerifyChangeUserMfa for application/json ContentType.
+type VerifyChangeUserMfaJSONRequestBody = UserMfaRequest
 
-// PostUserPasswordJSONRequestBody defines body for PostUserPassword for application/json ContentType.
-type PostUserPasswordJSONRequestBody = UserPasswordRequest
+// ChangeUserPasswordJSONRequestBody defines body for ChangeUserPassword for application/json ContentType.
+type ChangeUserPasswordJSONRequestBody = UserPasswordRequest
 
-// PostUserPasswordResetJSONRequestBody defines body for PostUserPasswordReset for application/json ContentType.
-type PostUserPasswordResetJSONRequestBody = UserPasswordResetRequest
+// SendPasswordResetEmailJSONRequestBody defines body for SendPasswordResetEmail for application/json ContentType.
+type SendPasswordResetEmailJSONRequestBody = UserPasswordResetRequest
 
-// PostUserWebauthnVerifyJSONRequestBody defines body for PostUserWebauthnVerify for application/json ContentType.
-type PostUserWebauthnVerifyJSONRequestBody = VerifyAddSecurityKeyRequest
+// VerifyAddSecurityKeyJSONRequestBody defines body for VerifyAddSecurityKey for application/json ContentType.
+type VerifyAddSecurityKeyJSONRequestBody = VerifyAddSecurityKeyRequest
 
-// Getter for additional properties for PostSigninProviderProviderCallbackFormdataBody. Returns the specified
+// Getter for additional properties for SignInProviderCallbackPostFormdataBody. Returns the specified
 // element and whether it was found
-func (a PostSigninProviderProviderCallbackFormdataBody) Get(fieldName string) (value interface{}, found bool) {
+func (a SignInProviderCallbackPostFormdataBody) Get(fieldName string) (value interface{}, found bool) {
 	if a.AdditionalProperties != nil {
 		value, found = a.AdditionalProperties[fieldName]
 	}
 	return
 }
 
-// Setter for additional properties for PostSigninProviderProviderCallbackFormdataBody
-func (a *PostSigninProviderProviderCallbackFormdataBody) Set(fieldName string, value interface{}) {
+// Setter for additional properties for SignInProviderCallbackPostFormdataBody
+func (a *SignInProviderCallbackPostFormdataBody) Set(fieldName string, value interface{}) {
 	if a.AdditionalProperties == nil {
 		a.AdditionalProperties = make(map[string]interface{})
 	}
 	a.AdditionalProperties[fieldName] = value
 }
 
-// Override default JSON handling for PostSigninProviderProviderCallbackFormdataBody to handle AdditionalProperties
-func (a *PostSigninProviderProviderCallbackFormdataBody) UnmarshalJSON(b []byte) error {
+// Override default JSON handling for SignInProviderCallbackPostFormdataBody to handle AdditionalProperties
+func (a *SignInProviderCallbackPostFormdataBody) UnmarshalJSON(b []byte) error {
 	object := make(map[string]json.RawMessage)
 	err := json.Unmarshal(b, &object)
 	if err != nil {
@@ -1100,8 +1100,8 @@ func (a *PostSigninProviderProviderCallbackFormdataBody) UnmarshalJSON(b []byte)
 	return nil
 }
 
-// Override default JSON handling for PostSigninProviderProviderCallbackFormdataBody to handle AdditionalProperties
-func (a PostSigninProviderProviderCallbackFormdataBody) MarshalJSON() ([]byte, error) {
+// Override default JSON handling for SignInProviderCallbackPostFormdataBody to handle AdditionalProperties
+func (a SignInProviderCallbackPostFormdataBody) MarshalJSON() ([]byte, error) {
 	var err error
 	object := make(map[string]json.RawMessage)
 

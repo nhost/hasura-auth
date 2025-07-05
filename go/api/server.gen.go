@@ -27,121 +27,121 @@ import (
 type ServerInterface interface {
 	// Get public keys for JWT verification in JWK Set format
 	// (GET /.well-known/jwks.json)
-	GetWellKnownJwksJson(c *gin.Context)
+	GetJWKs(c *gin.Context)
 	// Elevate access for an already signed in user using FIDO2 Webauthn
 	// (POST /elevate/webauthn)
-	PostElevateWebauthn(c *gin.Context)
+	ElevateWebauthn(c *gin.Context)
 	// Verify FIDO2 Webauthn authentication using public-key cryptography for elevation
 	// (POST /elevate/webauthn/verify)
-	PostElevateWebauthnVerify(c *gin.Context)
+	VerifyElevateWebauthn(c *gin.Context)
 	// Health check (GET)
 	// (GET /healthz)
-	GetHealthz(c *gin.Context)
+	HealthCheckGet(c *gin.Context)
 	// Health check (HEAD)
 	// (HEAD /healthz)
-	HeadHealthz(c *gin.Context)
+	HealthCheckHead(c *gin.Context)
 	// Link a user account with the provider's account using an id token
 	// (POST /link/idtoken)
-	PostLinkIdtoken(c *gin.Context)
+	LinkIdToken(c *gin.Context)
 	// Generate TOTP secret
 	// (GET /mfa/totp/generate)
-	GetMfaTotpGenerate(c *gin.Context)
+	ChangeUserMfa(c *gin.Context)
 	// Create a Personal Access Token (PAT)
 	// (POST /pat)
-	PostPat(c *gin.Context)
+	CreatePAT(c *gin.Context)
 	// Sign in anonymously
 	// (POST /signin/anonymous)
-	PostSigninAnonymous(c *gin.Context)
+	SignInAnonymous(c *gin.Context)
 	// Sign in with email and password
 	// (POST /signin/email-password)
-	PostSigninEmailPassword(c *gin.Context)
+	SignInEmailPassword(c *gin.Context)
 	// Sign in with in an id token
 	// (POST /signin/idtoken)
-	PostSigninIdtoken(c *gin.Context)
+	SignInIdToken(c *gin.Context)
 	// Verify TOTP for MFA
 	// (POST /signin/mfa/totp)
-	PostSigninMfaTotp(c *gin.Context)
+	VerifySignInMfaTotp(c *gin.Context)
 	// Sign in with a one time password sent to user's email. If the user doesn't exist, it will be created. The options object is optional and can be used to configure the user's when signing up a new user. It is ignored if the user already exists.
 	// (POST /signin/otp/email)
-	PostSigninOtpEmail(c *gin.Context)
+	SignInOTPEmail(c *gin.Context)
 	// Verify OTP and return a session if validation is successful
 	// (POST /signin/otp/email/verify)
-	PostSigninOtpEmailVerify(c *gin.Context)
+	VerifySignInOTPEmail(c *gin.Context)
 	// Sign in with magic link email
 	// (POST /signin/passwordless/email)
-	PostSigninPasswordlessEmail(c *gin.Context)
+	SignInPasswordlessEmail(c *gin.Context)
 	// Sign in with a one time password sent to user's phone number. If the user doesn't exist, it will be created. The options object is optional and can be used to configure the user's when signing up a new user. It is ignored if the user already exists.
 	// (POST /signin/passwordless/sms)
-	PostSigninPasswordlessSms(c *gin.Context)
+	SignInPasswordlessSms(c *gin.Context)
 	// Verify SMS OTP and return a session if validation is successful
 	// (POST /signin/passwordless/sms/otp)
-	PostSigninPasswordlessSmsOtp(c *gin.Context)
+	VerifySignInPasswordlessSms(c *gin.Context)
 	// Sign in with Personal Access Token (PAT)
 	// (POST /signin/pat)
-	PostSigninPat(c *gin.Context)
+	SignInPAT(c *gin.Context)
 	// Sign in with an oauth2 provider
 	// (GET /signin/provider/{provider})
-	GetSigninProviderProvider(c *gin.Context, provider GetSigninProviderProviderParamsProvider, params GetSigninProviderProviderParams)
+	SignInProvider(c *gin.Context, provider SignInProviderParamsProvider, params SignInProviderParams)
 	// Callback for oauth2 provider
 	// (GET /signin/provider/{provider}/callback)
-	GetSigninProviderProviderCallback(c *gin.Context, provider GetSigninProviderProviderCallbackParamsProvider, params GetSigninProviderProviderCallbackParams)
+	SignInProviderCallbackGet(c *gin.Context, provider SignInProviderCallbackGetParamsProvider, params SignInProviderCallbackGetParams)
 	// Callback for oauth2 provider using form_post response mode
 	// (POST /signin/provider/{provider}/callback)
-	PostSigninProviderProviderCallback(c *gin.Context, provider PostSigninProviderProviderCallbackParamsProvider)
+	SignInProviderCallbackPost(c *gin.Context, provider SignInProviderCallbackPostParamsProvider)
 	// Sign in with Webauthn
 	// (POST /signin/webauthn)
-	PostSigninWebauthn(c *gin.Context)
+	SignInWebauthn(c *gin.Context)
 	// Verify Webauthn sign-in
 	// (POST /signin/webauthn/verify)
-	PostSigninWebauthnVerify(c *gin.Context)
+	VerifySignInWebauthn(c *gin.Context)
 	// Sign out
 	// (POST /signout)
-	PostSignout(c *gin.Context)
+	SignOut(c *gin.Context)
 	// Sign up with email and password
 	// (POST /signup/email-password)
-	PostSignupEmailPassword(c *gin.Context)
+	SignUpEmailPassword(c *gin.Context)
 	// Sign up with Webauthn
 	// (POST /signup/webauthn)
-	PostSignupWebauthn(c *gin.Context)
+	SignUpWebauthn(c *gin.Context)
 	// Verify Webauthn sign-up
 	// (POST /signup/webauthn/verify)
-	PostSignupWebauthnVerify(c *gin.Context)
+	VerifySignUpWebauthn(c *gin.Context)
 	// Refresh access token
 	// (POST /token)
-	PostToken(c *gin.Context)
+	RefreshToken(c *gin.Context)
 	// Verify JWT token
 	// (POST /token/verify)
-	PostTokenVerify(c *gin.Context)
+	VerifyToken(c *gin.Context)
 	// Get user information
 	// (GET /user)
 	GetUser(c *gin.Context)
 	// Deanonymize an anonymous user in adding missing email or email+password, depending on the chosen authentication method. Will send a confirmation email if the server is configured to do so
 	// (POST /user/deanonymize)
-	PostUserDeanonymize(c *gin.Context)
+	DeanonymizeUser(c *gin.Context)
 	// Change user email
 	// (POST /user/email/change)
-	PostUserEmailChange(c *gin.Context)
+	ChangeUserEmail(c *gin.Context)
 	// Send verification email
 	// (POST /user/email/send-verification-email)
-	PostUserEmailSendVerificationEmail(c *gin.Context)
+	SendVerificationEmail(c *gin.Context)
 	// Manage multi-factor authentication
 	// (POST /user/mfa)
-	PostUserMfa(c *gin.Context)
+	VerifyChangeUserMfa(c *gin.Context)
 	// Change user password. The user must be authenticated or provide a ticket
 	// (POST /user/password)
-	PostUserPassword(c *gin.Context)
+	ChangeUserPassword(c *gin.Context)
 	// Request a password reset. An email with a verification link will be sent to the user's address
 	// (POST /user/password/reset)
-	PostUserPasswordReset(c *gin.Context)
+	SendPasswordResetEmail(c *gin.Context)
 	// Initialize adding of a new webauthn security key
 	// (POST /user/webauthn/add)
-	PostUserWebauthnAdd(c *gin.Context)
+	AddSecurityKey(c *gin.Context)
 	// Verify adding of a new webauthn security key
 	// (POST /user/webauthn/verify)
-	PostUserWebauthnVerify(c *gin.Context)
+	VerifyAddSecurityKey(c *gin.Context)
 	// Verify tickets created by email verification, email passwordless authentication (magic link), or password reset
 	// (GET /verify)
-	GetVerify(c *gin.Context, params GetVerifyParams)
+	VerifyTicket(c *gin.Context, params VerifyTicketParams)
 	// Get service version
 	// (GET /version)
 	GetVersion(c *gin.Context)
@@ -156,8 +156,8 @@ type ServerInterfaceWrapper struct {
 
 type MiddlewareFunc func(c *gin.Context)
 
-// GetWellKnownJwksJson operation middleware
-func (siw *ServerInterfaceWrapper) GetWellKnownJwksJson(c *gin.Context) {
+// GetJWKs operation middleware
+func (siw *ServerInterfaceWrapper) GetJWKs(c *gin.Context) {
 
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
@@ -166,11 +166,11 @@ func (siw *ServerInterfaceWrapper) GetWellKnownJwksJson(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.GetWellKnownJwksJson(c)
+	siw.Handler.GetJWKs(c)
 }
 
-// PostElevateWebauthn operation middleware
-func (siw *ServerInterfaceWrapper) PostElevateWebauthn(c *gin.Context) {
+// ElevateWebauthn operation middleware
+func (siw *ServerInterfaceWrapper) ElevateWebauthn(c *gin.Context) {
 
 	c.Set(BearerAuthScopes, []string{})
 
@@ -181,11 +181,11 @@ func (siw *ServerInterfaceWrapper) PostElevateWebauthn(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.PostElevateWebauthn(c)
+	siw.Handler.ElevateWebauthn(c)
 }
 
-// PostElevateWebauthnVerify operation middleware
-func (siw *ServerInterfaceWrapper) PostElevateWebauthnVerify(c *gin.Context) {
+// VerifyElevateWebauthn operation middleware
+func (siw *ServerInterfaceWrapper) VerifyElevateWebauthn(c *gin.Context) {
 
 	c.Set(BearerAuthScopes, []string{})
 
@@ -196,11 +196,11 @@ func (siw *ServerInterfaceWrapper) PostElevateWebauthnVerify(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.PostElevateWebauthnVerify(c)
+	siw.Handler.VerifyElevateWebauthn(c)
 }
 
-// GetHealthz operation middleware
-func (siw *ServerInterfaceWrapper) GetHealthz(c *gin.Context) {
+// HealthCheckGet operation middleware
+func (siw *ServerInterfaceWrapper) HealthCheckGet(c *gin.Context) {
 
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
@@ -209,11 +209,11 @@ func (siw *ServerInterfaceWrapper) GetHealthz(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.GetHealthz(c)
+	siw.Handler.HealthCheckGet(c)
 }
 
-// HeadHealthz operation middleware
-func (siw *ServerInterfaceWrapper) HeadHealthz(c *gin.Context) {
+// HealthCheckHead operation middleware
+func (siw *ServerInterfaceWrapper) HealthCheckHead(c *gin.Context) {
 
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
@@ -222,11 +222,11 @@ func (siw *ServerInterfaceWrapper) HeadHealthz(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.HeadHealthz(c)
+	siw.Handler.HealthCheckHead(c)
 }
 
-// PostLinkIdtoken operation middleware
-func (siw *ServerInterfaceWrapper) PostLinkIdtoken(c *gin.Context) {
+// LinkIdToken operation middleware
+func (siw *ServerInterfaceWrapper) LinkIdToken(c *gin.Context) {
 
 	c.Set(BearerAuthElevatedScopes, []string{})
 
@@ -237,11 +237,11 @@ func (siw *ServerInterfaceWrapper) PostLinkIdtoken(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.PostLinkIdtoken(c)
+	siw.Handler.LinkIdToken(c)
 }
 
-// GetMfaTotpGenerate operation middleware
-func (siw *ServerInterfaceWrapper) GetMfaTotpGenerate(c *gin.Context) {
+// ChangeUserMfa operation middleware
+func (siw *ServerInterfaceWrapper) ChangeUserMfa(c *gin.Context) {
 
 	c.Set(BearerAuthScopes, []string{})
 
@@ -252,11 +252,11 @@ func (siw *ServerInterfaceWrapper) GetMfaTotpGenerate(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.GetMfaTotpGenerate(c)
+	siw.Handler.ChangeUserMfa(c)
 }
 
-// PostPat operation middleware
-func (siw *ServerInterfaceWrapper) PostPat(c *gin.Context) {
+// CreatePAT operation middleware
+func (siw *ServerInterfaceWrapper) CreatePAT(c *gin.Context) {
 
 	c.Set(BearerAuthElevatedScopes, []string{})
 
@@ -267,11 +267,11 @@ func (siw *ServerInterfaceWrapper) PostPat(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.PostPat(c)
+	siw.Handler.CreatePAT(c)
 }
 
-// PostSigninAnonymous operation middleware
-func (siw *ServerInterfaceWrapper) PostSigninAnonymous(c *gin.Context) {
+// SignInAnonymous operation middleware
+func (siw *ServerInterfaceWrapper) SignInAnonymous(c *gin.Context) {
 
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
@@ -280,11 +280,11 @@ func (siw *ServerInterfaceWrapper) PostSigninAnonymous(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.PostSigninAnonymous(c)
+	siw.Handler.SignInAnonymous(c)
 }
 
-// PostSigninEmailPassword operation middleware
-func (siw *ServerInterfaceWrapper) PostSigninEmailPassword(c *gin.Context) {
+// SignInEmailPassword operation middleware
+func (siw *ServerInterfaceWrapper) SignInEmailPassword(c *gin.Context) {
 
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
@@ -293,11 +293,11 @@ func (siw *ServerInterfaceWrapper) PostSigninEmailPassword(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.PostSigninEmailPassword(c)
+	siw.Handler.SignInEmailPassword(c)
 }
 
-// PostSigninIdtoken operation middleware
-func (siw *ServerInterfaceWrapper) PostSigninIdtoken(c *gin.Context) {
+// SignInIdToken operation middleware
+func (siw *ServerInterfaceWrapper) SignInIdToken(c *gin.Context) {
 
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
@@ -306,11 +306,11 @@ func (siw *ServerInterfaceWrapper) PostSigninIdtoken(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.PostSigninIdtoken(c)
+	siw.Handler.SignInIdToken(c)
 }
 
-// PostSigninMfaTotp operation middleware
-func (siw *ServerInterfaceWrapper) PostSigninMfaTotp(c *gin.Context) {
+// VerifySignInMfaTotp operation middleware
+func (siw *ServerInterfaceWrapper) VerifySignInMfaTotp(c *gin.Context) {
 
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
@@ -319,11 +319,11 @@ func (siw *ServerInterfaceWrapper) PostSigninMfaTotp(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.PostSigninMfaTotp(c)
+	siw.Handler.VerifySignInMfaTotp(c)
 }
 
-// PostSigninOtpEmail operation middleware
-func (siw *ServerInterfaceWrapper) PostSigninOtpEmail(c *gin.Context) {
+// SignInOTPEmail operation middleware
+func (siw *ServerInterfaceWrapper) SignInOTPEmail(c *gin.Context) {
 
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
@@ -332,11 +332,11 @@ func (siw *ServerInterfaceWrapper) PostSigninOtpEmail(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.PostSigninOtpEmail(c)
+	siw.Handler.SignInOTPEmail(c)
 }
 
-// PostSigninOtpEmailVerify operation middleware
-func (siw *ServerInterfaceWrapper) PostSigninOtpEmailVerify(c *gin.Context) {
+// VerifySignInOTPEmail operation middleware
+func (siw *ServerInterfaceWrapper) VerifySignInOTPEmail(c *gin.Context) {
 
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
@@ -345,11 +345,11 @@ func (siw *ServerInterfaceWrapper) PostSigninOtpEmailVerify(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.PostSigninOtpEmailVerify(c)
+	siw.Handler.VerifySignInOTPEmail(c)
 }
 
-// PostSigninPasswordlessEmail operation middleware
-func (siw *ServerInterfaceWrapper) PostSigninPasswordlessEmail(c *gin.Context) {
+// SignInPasswordlessEmail operation middleware
+func (siw *ServerInterfaceWrapper) SignInPasswordlessEmail(c *gin.Context) {
 
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
@@ -358,11 +358,11 @@ func (siw *ServerInterfaceWrapper) PostSigninPasswordlessEmail(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.PostSigninPasswordlessEmail(c)
+	siw.Handler.SignInPasswordlessEmail(c)
 }
 
-// PostSigninPasswordlessSms operation middleware
-func (siw *ServerInterfaceWrapper) PostSigninPasswordlessSms(c *gin.Context) {
+// SignInPasswordlessSms operation middleware
+func (siw *ServerInterfaceWrapper) SignInPasswordlessSms(c *gin.Context) {
 
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
@@ -371,11 +371,11 @@ func (siw *ServerInterfaceWrapper) PostSigninPasswordlessSms(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.PostSigninPasswordlessSms(c)
+	siw.Handler.SignInPasswordlessSms(c)
 }
 
-// PostSigninPasswordlessSmsOtp operation middleware
-func (siw *ServerInterfaceWrapper) PostSigninPasswordlessSmsOtp(c *gin.Context) {
+// VerifySignInPasswordlessSms operation middleware
+func (siw *ServerInterfaceWrapper) VerifySignInPasswordlessSms(c *gin.Context) {
 
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
@@ -384,11 +384,11 @@ func (siw *ServerInterfaceWrapper) PostSigninPasswordlessSmsOtp(c *gin.Context) 
 		}
 	}
 
-	siw.Handler.PostSigninPasswordlessSmsOtp(c)
+	siw.Handler.VerifySignInPasswordlessSms(c)
 }
 
-// PostSigninPat operation middleware
-func (siw *ServerInterfaceWrapper) PostSigninPat(c *gin.Context) {
+// SignInPAT operation middleware
+func (siw *ServerInterfaceWrapper) SignInPAT(c *gin.Context) {
 
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
@@ -397,16 +397,16 @@ func (siw *ServerInterfaceWrapper) PostSigninPat(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.PostSigninPat(c)
+	siw.Handler.SignInPAT(c)
 }
 
-// GetSigninProviderProvider operation middleware
-func (siw *ServerInterfaceWrapper) GetSigninProviderProvider(c *gin.Context) {
+// SignInProvider operation middleware
+func (siw *ServerInterfaceWrapper) SignInProvider(c *gin.Context) {
 
 	var err error
 
 	// ------------- Path parameter "provider" -------------
-	var provider GetSigninProviderProviderParamsProvider
+	var provider SignInProviderParamsProvider
 
 	err = runtime.BindStyledParameterWithOptions("simple", "provider", c.Param("provider"), &provider, runtime.BindStyledParameterOptions{Explode: false, Required: true})
 	if err != nil {
@@ -415,7 +415,7 @@ func (siw *ServerInterfaceWrapper) GetSigninProviderProvider(c *gin.Context) {
 	}
 
 	// Parameter object where we will unmarshal all parameters from the context
-	var params GetSigninProviderProviderParams
+	var params SignInProviderParams
 
 	// ------------- Optional query parameter "allowedRoles" -------------
 
@@ -480,16 +480,16 @@ func (siw *ServerInterfaceWrapper) GetSigninProviderProvider(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.GetSigninProviderProvider(c, provider, params)
+	siw.Handler.SignInProvider(c, provider, params)
 }
 
-// GetSigninProviderProviderCallback operation middleware
-func (siw *ServerInterfaceWrapper) GetSigninProviderProviderCallback(c *gin.Context) {
+// SignInProviderCallbackGet operation middleware
+func (siw *ServerInterfaceWrapper) SignInProviderCallbackGet(c *gin.Context) {
 
 	var err error
 
 	// ------------- Path parameter "provider" -------------
-	var provider GetSigninProviderProviderCallbackParamsProvider
+	var provider SignInProviderCallbackGetParamsProvider
 
 	err = runtime.BindStyledParameterWithOptions("simple", "provider", c.Param("provider"), &provider, runtime.BindStyledParameterOptions{Explode: false, Required: true})
 	if err != nil {
@@ -498,7 +498,7 @@ func (siw *ServerInterfaceWrapper) GetSigninProviderProviderCallback(c *gin.Cont
 	}
 
 	// Parameter object where we will unmarshal all parameters from the context
-	var params GetSigninProviderProviderCallbackParams
+	var params SignInProviderCallbackGetParams
 
 	// ------------- Optional query parameter "code" -------------
 
@@ -578,16 +578,16 @@ func (siw *ServerInterfaceWrapper) GetSigninProviderProviderCallback(c *gin.Cont
 		}
 	}
 
-	siw.Handler.GetSigninProviderProviderCallback(c, provider, params)
+	siw.Handler.SignInProviderCallbackGet(c, provider, params)
 }
 
-// PostSigninProviderProviderCallback operation middleware
-func (siw *ServerInterfaceWrapper) PostSigninProviderProviderCallback(c *gin.Context) {
+// SignInProviderCallbackPost operation middleware
+func (siw *ServerInterfaceWrapper) SignInProviderCallbackPost(c *gin.Context) {
 
 	var err error
 
 	// ------------- Path parameter "provider" -------------
-	var provider PostSigninProviderProviderCallbackParamsProvider
+	var provider SignInProviderCallbackPostParamsProvider
 
 	err = runtime.BindStyledParameterWithOptions("simple", "provider", c.Param("provider"), &provider, runtime.BindStyledParameterOptions{Explode: false, Required: true})
 	if err != nil {
@@ -602,11 +602,11 @@ func (siw *ServerInterfaceWrapper) PostSigninProviderProviderCallback(c *gin.Con
 		}
 	}
 
-	siw.Handler.PostSigninProviderProviderCallback(c, provider)
+	siw.Handler.SignInProviderCallbackPost(c, provider)
 }
 
-// PostSigninWebauthn operation middleware
-func (siw *ServerInterfaceWrapper) PostSigninWebauthn(c *gin.Context) {
+// SignInWebauthn operation middleware
+func (siw *ServerInterfaceWrapper) SignInWebauthn(c *gin.Context) {
 
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
@@ -615,11 +615,11 @@ func (siw *ServerInterfaceWrapper) PostSigninWebauthn(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.PostSigninWebauthn(c)
+	siw.Handler.SignInWebauthn(c)
 }
 
-// PostSigninWebauthnVerify operation middleware
-func (siw *ServerInterfaceWrapper) PostSigninWebauthnVerify(c *gin.Context) {
+// VerifySignInWebauthn operation middleware
+func (siw *ServerInterfaceWrapper) VerifySignInWebauthn(c *gin.Context) {
 
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
@@ -628,11 +628,11 @@ func (siw *ServerInterfaceWrapper) PostSigninWebauthnVerify(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.PostSigninWebauthnVerify(c)
+	siw.Handler.VerifySignInWebauthn(c)
 }
 
-// PostSignout operation middleware
-func (siw *ServerInterfaceWrapper) PostSignout(c *gin.Context) {
+// SignOut operation middleware
+func (siw *ServerInterfaceWrapper) SignOut(c *gin.Context) {
 
 	c.Set(BearerAuthScopes, []string{})
 
@@ -643,11 +643,11 @@ func (siw *ServerInterfaceWrapper) PostSignout(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.PostSignout(c)
+	siw.Handler.SignOut(c)
 }
 
-// PostSignupEmailPassword operation middleware
-func (siw *ServerInterfaceWrapper) PostSignupEmailPassword(c *gin.Context) {
+// SignUpEmailPassword operation middleware
+func (siw *ServerInterfaceWrapper) SignUpEmailPassword(c *gin.Context) {
 
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
@@ -656,11 +656,11 @@ func (siw *ServerInterfaceWrapper) PostSignupEmailPassword(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.PostSignupEmailPassword(c)
+	siw.Handler.SignUpEmailPassword(c)
 }
 
-// PostSignupWebauthn operation middleware
-func (siw *ServerInterfaceWrapper) PostSignupWebauthn(c *gin.Context) {
+// SignUpWebauthn operation middleware
+func (siw *ServerInterfaceWrapper) SignUpWebauthn(c *gin.Context) {
 
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
@@ -669,11 +669,11 @@ func (siw *ServerInterfaceWrapper) PostSignupWebauthn(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.PostSignupWebauthn(c)
+	siw.Handler.SignUpWebauthn(c)
 }
 
-// PostSignupWebauthnVerify operation middleware
-func (siw *ServerInterfaceWrapper) PostSignupWebauthnVerify(c *gin.Context) {
+// VerifySignUpWebauthn operation middleware
+func (siw *ServerInterfaceWrapper) VerifySignUpWebauthn(c *gin.Context) {
 
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
@@ -682,11 +682,11 @@ func (siw *ServerInterfaceWrapper) PostSignupWebauthnVerify(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.PostSignupWebauthnVerify(c)
+	siw.Handler.VerifySignUpWebauthn(c)
 }
 
-// PostToken operation middleware
-func (siw *ServerInterfaceWrapper) PostToken(c *gin.Context) {
+// RefreshToken operation middleware
+func (siw *ServerInterfaceWrapper) RefreshToken(c *gin.Context) {
 
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
@@ -695,11 +695,11 @@ func (siw *ServerInterfaceWrapper) PostToken(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.PostToken(c)
+	siw.Handler.RefreshToken(c)
 }
 
-// PostTokenVerify operation middleware
-func (siw *ServerInterfaceWrapper) PostTokenVerify(c *gin.Context) {
+// VerifyToken operation middleware
+func (siw *ServerInterfaceWrapper) VerifyToken(c *gin.Context) {
 
 	c.Set(BearerAuthScopes, []string{})
 
@@ -710,7 +710,7 @@ func (siw *ServerInterfaceWrapper) PostTokenVerify(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.PostTokenVerify(c)
+	siw.Handler.VerifyToken(c)
 }
 
 // GetUser operation middleware
@@ -728,8 +728,8 @@ func (siw *ServerInterfaceWrapper) GetUser(c *gin.Context) {
 	siw.Handler.GetUser(c)
 }
 
-// PostUserDeanonymize operation middleware
-func (siw *ServerInterfaceWrapper) PostUserDeanonymize(c *gin.Context) {
+// DeanonymizeUser operation middleware
+func (siw *ServerInterfaceWrapper) DeanonymizeUser(c *gin.Context) {
 
 	c.Set(BearerAuthScopes, []string{})
 
@@ -740,11 +740,11 @@ func (siw *ServerInterfaceWrapper) PostUserDeanonymize(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.PostUserDeanonymize(c)
+	siw.Handler.DeanonymizeUser(c)
 }
 
-// PostUserEmailChange operation middleware
-func (siw *ServerInterfaceWrapper) PostUserEmailChange(c *gin.Context) {
+// ChangeUserEmail operation middleware
+func (siw *ServerInterfaceWrapper) ChangeUserEmail(c *gin.Context) {
 
 	c.Set(BearerAuthElevatedScopes, []string{})
 
@@ -755,11 +755,11 @@ func (siw *ServerInterfaceWrapper) PostUserEmailChange(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.PostUserEmailChange(c)
+	siw.Handler.ChangeUserEmail(c)
 }
 
-// PostUserEmailSendVerificationEmail operation middleware
-func (siw *ServerInterfaceWrapper) PostUserEmailSendVerificationEmail(c *gin.Context) {
+// SendVerificationEmail operation middleware
+func (siw *ServerInterfaceWrapper) SendVerificationEmail(c *gin.Context) {
 
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
@@ -768,11 +768,11 @@ func (siw *ServerInterfaceWrapper) PostUserEmailSendVerificationEmail(c *gin.Con
 		}
 	}
 
-	siw.Handler.PostUserEmailSendVerificationEmail(c)
+	siw.Handler.SendVerificationEmail(c)
 }
 
-// PostUserMfa operation middleware
-func (siw *ServerInterfaceWrapper) PostUserMfa(c *gin.Context) {
+// VerifyChangeUserMfa operation middleware
+func (siw *ServerInterfaceWrapper) VerifyChangeUserMfa(c *gin.Context) {
 
 	c.Set(BearerAuthScopes, []string{})
 
@@ -783,11 +783,11 @@ func (siw *ServerInterfaceWrapper) PostUserMfa(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.PostUserMfa(c)
+	siw.Handler.VerifyChangeUserMfa(c)
 }
 
-// PostUserPassword operation middleware
-func (siw *ServerInterfaceWrapper) PostUserPassword(c *gin.Context) {
+// ChangeUserPassword operation middleware
+func (siw *ServerInterfaceWrapper) ChangeUserPassword(c *gin.Context) {
 
 	c.Set(BearerAuthElevatedScopes, []string{})
 
@@ -798,11 +798,11 @@ func (siw *ServerInterfaceWrapper) PostUserPassword(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.PostUserPassword(c)
+	siw.Handler.ChangeUserPassword(c)
 }
 
-// PostUserPasswordReset operation middleware
-func (siw *ServerInterfaceWrapper) PostUserPasswordReset(c *gin.Context) {
+// SendPasswordResetEmail operation middleware
+func (siw *ServerInterfaceWrapper) SendPasswordResetEmail(c *gin.Context) {
 
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
@@ -811,11 +811,11 @@ func (siw *ServerInterfaceWrapper) PostUserPasswordReset(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.PostUserPasswordReset(c)
+	siw.Handler.SendPasswordResetEmail(c)
 }
 
-// PostUserWebauthnAdd operation middleware
-func (siw *ServerInterfaceWrapper) PostUserWebauthnAdd(c *gin.Context) {
+// AddSecurityKey operation middleware
+func (siw *ServerInterfaceWrapper) AddSecurityKey(c *gin.Context) {
 
 	c.Set(BearerAuthElevatedScopes, []string{})
 
@@ -826,11 +826,11 @@ func (siw *ServerInterfaceWrapper) PostUserWebauthnAdd(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.PostUserWebauthnAdd(c)
+	siw.Handler.AddSecurityKey(c)
 }
 
-// PostUserWebauthnVerify operation middleware
-func (siw *ServerInterfaceWrapper) PostUserWebauthnVerify(c *gin.Context) {
+// VerifyAddSecurityKey operation middleware
+func (siw *ServerInterfaceWrapper) VerifyAddSecurityKey(c *gin.Context) {
 
 	c.Set(BearerAuthElevatedScopes, []string{})
 
@@ -841,16 +841,16 @@ func (siw *ServerInterfaceWrapper) PostUserWebauthnVerify(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.PostUserWebauthnVerify(c)
+	siw.Handler.VerifyAddSecurityKey(c)
 }
 
-// GetVerify operation middleware
-func (siw *ServerInterfaceWrapper) GetVerify(c *gin.Context) {
+// VerifyTicket operation middleware
+func (siw *ServerInterfaceWrapper) VerifyTicket(c *gin.Context) {
 
 	var err error
 
 	// Parameter object where we will unmarshal all parameters from the context
-	var params GetVerifyParams
+	var params VerifyTicketParams
 
 	// ------------- Required query parameter "ticket" -------------
 
@@ -897,7 +897,7 @@ func (siw *ServerInterfaceWrapper) GetVerify(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.GetVerify(c, params)
+	siw.Handler.VerifyTicket(c, params)
 }
 
 // GetVersion operation middleware
@@ -940,745 +940,745 @@ func RegisterHandlersWithOptions(router gin.IRouter, si ServerInterface, options
 		ErrorHandler:       errorHandler,
 	}
 
-	router.GET(options.BaseURL+"/.well-known/jwks.json", wrapper.GetWellKnownJwksJson)
-	router.POST(options.BaseURL+"/elevate/webauthn", wrapper.PostElevateWebauthn)
-	router.POST(options.BaseURL+"/elevate/webauthn/verify", wrapper.PostElevateWebauthnVerify)
-	router.GET(options.BaseURL+"/healthz", wrapper.GetHealthz)
-	router.HEAD(options.BaseURL+"/healthz", wrapper.HeadHealthz)
-	router.POST(options.BaseURL+"/link/idtoken", wrapper.PostLinkIdtoken)
-	router.GET(options.BaseURL+"/mfa/totp/generate", wrapper.GetMfaTotpGenerate)
-	router.POST(options.BaseURL+"/pat", wrapper.PostPat)
-	router.POST(options.BaseURL+"/signin/anonymous", wrapper.PostSigninAnonymous)
-	router.POST(options.BaseURL+"/signin/email-password", wrapper.PostSigninEmailPassword)
-	router.POST(options.BaseURL+"/signin/idtoken", wrapper.PostSigninIdtoken)
-	router.POST(options.BaseURL+"/signin/mfa/totp", wrapper.PostSigninMfaTotp)
-	router.POST(options.BaseURL+"/signin/otp/email", wrapper.PostSigninOtpEmail)
-	router.POST(options.BaseURL+"/signin/otp/email/verify", wrapper.PostSigninOtpEmailVerify)
-	router.POST(options.BaseURL+"/signin/passwordless/email", wrapper.PostSigninPasswordlessEmail)
-	router.POST(options.BaseURL+"/signin/passwordless/sms", wrapper.PostSigninPasswordlessSms)
-	router.POST(options.BaseURL+"/signin/passwordless/sms/otp", wrapper.PostSigninPasswordlessSmsOtp)
-	router.POST(options.BaseURL+"/signin/pat", wrapper.PostSigninPat)
-	router.GET(options.BaseURL+"/signin/provider/:provider", wrapper.GetSigninProviderProvider)
-	router.GET(options.BaseURL+"/signin/provider/:provider/callback", wrapper.GetSigninProviderProviderCallback)
-	router.POST(options.BaseURL+"/signin/provider/:provider/callback", wrapper.PostSigninProviderProviderCallback)
-	router.POST(options.BaseURL+"/signin/webauthn", wrapper.PostSigninWebauthn)
-	router.POST(options.BaseURL+"/signin/webauthn/verify", wrapper.PostSigninWebauthnVerify)
-	router.POST(options.BaseURL+"/signout", wrapper.PostSignout)
-	router.POST(options.BaseURL+"/signup/email-password", wrapper.PostSignupEmailPassword)
-	router.POST(options.BaseURL+"/signup/webauthn", wrapper.PostSignupWebauthn)
-	router.POST(options.BaseURL+"/signup/webauthn/verify", wrapper.PostSignupWebauthnVerify)
-	router.POST(options.BaseURL+"/token", wrapper.PostToken)
-	router.POST(options.BaseURL+"/token/verify", wrapper.PostTokenVerify)
+	router.GET(options.BaseURL+"/.well-known/jwks.json", wrapper.GetJWKs)
+	router.POST(options.BaseURL+"/elevate/webauthn", wrapper.ElevateWebauthn)
+	router.POST(options.BaseURL+"/elevate/webauthn/verify", wrapper.VerifyElevateWebauthn)
+	router.GET(options.BaseURL+"/healthz", wrapper.HealthCheckGet)
+	router.HEAD(options.BaseURL+"/healthz", wrapper.HealthCheckHead)
+	router.POST(options.BaseURL+"/link/idtoken", wrapper.LinkIdToken)
+	router.GET(options.BaseURL+"/mfa/totp/generate", wrapper.ChangeUserMfa)
+	router.POST(options.BaseURL+"/pat", wrapper.CreatePAT)
+	router.POST(options.BaseURL+"/signin/anonymous", wrapper.SignInAnonymous)
+	router.POST(options.BaseURL+"/signin/email-password", wrapper.SignInEmailPassword)
+	router.POST(options.BaseURL+"/signin/idtoken", wrapper.SignInIdToken)
+	router.POST(options.BaseURL+"/signin/mfa/totp", wrapper.VerifySignInMfaTotp)
+	router.POST(options.BaseURL+"/signin/otp/email", wrapper.SignInOTPEmail)
+	router.POST(options.BaseURL+"/signin/otp/email/verify", wrapper.VerifySignInOTPEmail)
+	router.POST(options.BaseURL+"/signin/passwordless/email", wrapper.SignInPasswordlessEmail)
+	router.POST(options.BaseURL+"/signin/passwordless/sms", wrapper.SignInPasswordlessSms)
+	router.POST(options.BaseURL+"/signin/passwordless/sms/otp", wrapper.VerifySignInPasswordlessSms)
+	router.POST(options.BaseURL+"/signin/pat", wrapper.SignInPAT)
+	router.GET(options.BaseURL+"/signin/provider/:provider", wrapper.SignInProvider)
+	router.GET(options.BaseURL+"/signin/provider/:provider/callback", wrapper.SignInProviderCallbackGet)
+	router.POST(options.BaseURL+"/signin/provider/:provider/callback", wrapper.SignInProviderCallbackPost)
+	router.POST(options.BaseURL+"/signin/webauthn", wrapper.SignInWebauthn)
+	router.POST(options.BaseURL+"/signin/webauthn/verify", wrapper.VerifySignInWebauthn)
+	router.POST(options.BaseURL+"/signout", wrapper.SignOut)
+	router.POST(options.BaseURL+"/signup/email-password", wrapper.SignUpEmailPassword)
+	router.POST(options.BaseURL+"/signup/webauthn", wrapper.SignUpWebauthn)
+	router.POST(options.BaseURL+"/signup/webauthn/verify", wrapper.VerifySignUpWebauthn)
+	router.POST(options.BaseURL+"/token", wrapper.RefreshToken)
+	router.POST(options.BaseURL+"/token/verify", wrapper.VerifyToken)
 	router.GET(options.BaseURL+"/user", wrapper.GetUser)
-	router.POST(options.BaseURL+"/user/deanonymize", wrapper.PostUserDeanonymize)
-	router.POST(options.BaseURL+"/user/email/change", wrapper.PostUserEmailChange)
-	router.POST(options.BaseURL+"/user/email/send-verification-email", wrapper.PostUserEmailSendVerificationEmail)
-	router.POST(options.BaseURL+"/user/mfa", wrapper.PostUserMfa)
-	router.POST(options.BaseURL+"/user/password", wrapper.PostUserPassword)
-	router.POST(options.BaseURL+"/user/password/reset", wrapper.PostUserPasswordReset)
-	router.POST(options.BaseURL+"/user/webauthn/add", wrapper.PostUserWebauthnAdd)
-	router.POST(options.BaseURL+"/user/webauthn/verify", wrapper.PostUserWebauthnVerify)
-	router.GET(options.BaseURL+"/verify", wrapper.GetVerify)
+	router.POST(options.BaseURL+"/user/deanonymize", wrapper.DeanonymizeUser)
+	router.POST(options.BaseURL+"/user/email/change", wrapper.ChangeUserEmail)
+	router.POST(options.BaseURL+"/user/email/send-verification-email", wrapper.SendVerificationEmail)
+	router.POST(options.BaseURL+"/user/mfa", wrapper.VerifyChangeUserMfa)
+	router.POST(options.BaseURL+"/user/password", wrapper.ChangeUserPassword)
+	router.POST(options.BaseURL+"/user/password/reset", wrapper.SendPasswordResetEmail)
+	router.POST(options.BaseURL+"/user/webauthn/add", wrapper.AddSecurityKey)
+	router.POST(options.BaseURL+"/user/webauthn/verify", wrapper.VerifyAddSecurityKey)
+	router.GET(options.BaseURL+"/verify", wrapper.VerifyTicket)
 	router.GET(options.BaseURL+"/version", wrapper.GetVersion)
 }
 
-type GetWellKnownJwksJsonRequestObject struct {
+type GetJWKsRequestObject struct {
 }
 
-type GetWellKnownJwksJsonResponseObject interface {
-	VisitGetWellKnownJwksJsonResponse(w http.ResponseWriter) error
+type GetJWKsResponseObject interface {
+	VisitGetJWKsResponse(w http.ResponseWriter) error
 }
 
-type GetWellKnownJwksJson200JSONResponse JWKSet
+type GetJWKs200JSONResponse JWKSet
 
-func (response GetWellKnownJwksJson200JSONResponse) VisitGetWellKnownJwksJsonResponse(w http.ResponseWriter) error {
+func (response GetJWKs200JSONResponse) VisitGetJWKsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type PostElevateWebauthnRequestObject struct {
+type ElevateWebauthnRequestObject struct {
 }
 
-type PostElevateWebauthnResponseObject interface {
-	VisitPostElevateWebauthnResponse(w http.ResponseWriter) error
+type ElevateWebauthnResponseObject interface {
+	VisitElevateWebauthnResponse(w http.ResponseWriter) error
 }
 
-type PostElevateWebauthn200JSONResponse PublicKeyCredentialRequestOptions
+type ElevateWebauthn200JSONResponse PublicKeyCredentialRequestOptions
 
-func (response PostElevateWebauthn200JSONResponse) VisitPostElevateWebauthnResponse(w http.ResponseWriter) error {
+func (response ElevateWebauthn200JSONResponse) VisitElevateWebauthnResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type PostElevateWebauthndefaultJSONResponse struct {
+type ElevateWebauthndefaultJSONResponse struct {
 	Body       ErrorResponse
 	StatusCode int
 }
 
-func (response PostElevateWebauthndefaultJSONResponse) VisitPostElevateWebauthnResponse(w http.ResponseWriter) error {
+func (response ElevateWebauthndefaultJSONResponse) VisitElevateWebauthnResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(response.StatusCode)
 
 	return json.NewEncoder(w).Encode(response.Body)
 }
 
-type PostElevateWebauthnVerifyRequestObject struct {
-	Body *PostElevateWebauthnVerifyJSONRequestBody
+type VerifyElevateWebauthnRequestObject struct {
+	Body *VerifyElevateWebauthnJSONRequestBody
 }
 
-type PostElevateWebauthnVerifyResponseObject interface {
-	VisitPostElevateWebauthnVerifyResponse(w http.ResponseWriter) error
+type VerifyElevateWebauthnResponseObject interface {
+	VisitVerifyElevateWebauthnResponse(w http.ResponseWriter) error
 }
 
-type PostElevateWebauthnVerify200JSONResponse SessionPayload
+type VerifyElevateWebauthn200JSONResponse SessionPayload
 
-func (response PostElevateWebauthnVerify200JSONResponse) VisitPostElevateWebauthnVerifyResponse(w http.ResponseWriter) error {
+func (response VerifyElevateWebauthn200JSONResponse) VisitVerifyElevateWebauthnResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type PostElevateWebauthnVerifydefaultJSONResponse struct {
+type VerifyElevateWebauthndefaultJSONResponse struct {
 	Body       ErrorResponse
 	StatusCode int
 }
 
-func (response PostElevateWebauthnVerifydefaultJSONResponse) VisitPostElevateWebauthnVerifyResponse(w http.ResponseWriter) error {
+func (response VerifyElevateWebauthndefaultJSONResponse) VisitVerifyElevateWebauthnResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(response.StatusCode)
 
 	return json.NewEncoder(w).Encode(response.Body)
 }
 
-type GetHealthzRequestObject struct {
+type HealthCheckGetRequestObject struct {
 }
 
-type GetHealthzResponseObject interface {
-	VisitGetHealthzResponse(w http.ResponseWriter) error
+type HealthCheckGetResponseObject interface {
+	VisitHealthCheckGetResponse(w http.ResponseWriter) error
 }
 
-type GetHealthz200JSONResponse OKResponse
+type HealthCheckGet200JSONResponse OKResponse
 
-func (response GetHealthz200JSONResponse) VisitGetHealthzResponse(w http.ResponseWriter) error {
+func (response HealthCheckGet200JSONResponse) VisitHealthCheckGetResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type HeadHealthzRequestObject struct {
+type HealthCheckHeadRequestObject struct {
 }
 
-type HeadHealthzResponseObject interface {
-	VisitHeadHealthzResponse(w http.ResponseWriter) error
+type HealthCheckHeadResponseObject interface {
+	VisitHealthCheckHeadResponse(w http.ResponseWriter) error
 }
 
-type HeadHealthz200Response struct {
+type HealthCheckHead200Response struct {
 }
 
-func (response HeadHealthz200Response) VisitHeadHealthzResponse(w http.ResponseWriter) error {
+func (response HealthCheckHead200Response) VisitHealthCheckHeadResponse(w http.ResponseWriter) error {
 	w.WriteHeader(200)
 	return nil
 }
 
-type PostLinkIdtokenRequestObject struct {
-	Body *PostLinkIdtokenJSONRequestBody
+type LinkIdTokenRequestObject struct {
+	Body *LinkIdTokenJSONRequestBody
 }
 
-type PostLinkIdtokenResponseObject interface {
-	VisitPostLinkIdtokenResponse(w http.ResponseWriter) error
+type LinkIdTokenResponseObject interface {
+	VisitLinkIdTokenResponse(w http.ResponseWriter) error
 }
 
-type PostLinkIdtoken200JSONResponse OKResponse
+type LinkIdToken200JSONResponse OKResponse
 
-func (response PostLinkIdtoken200JSONResponse) VisitPostLinkIdtokenResponse(w http.ResponseWriter) error {
+func (response LinkIdToken200JSONResponse) VisitLinkIdTokenResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type PostLinkIdtokendefaultJSONResponse struct {
+type LinkIdTokendefaultJSONResponse struct {
 	Body       ErrorResponse
 	StatusCode int
 }
 
-func (response PostLinkIdtokendefaultJSONResponse) VisitPostLinkIdtokenResponse(w http.ResponseWriter) error {
+func (response LinkIdTokendefaultJSONResponse) VisitLinkIdTokenResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(response.StatusCode)
 
 	return json.NewEncoder(w).Encode(response.Body)
 }
 
-type GetMfaTotpGenerateRequestObject struct {
+type ChangeUserMfaRequestObject struct {
 }
 
-type GetMfaTotpGenerateResponseObject interface {
-	VisitGetMfaTotpGenerateResponse(w http.ResponseWriter) error
+type ChangeUserMfaResponseObject interface {
+	VisitChangeUserMfaResponse(w http.ResponseWriter) error
 }
 
-type GetMfaTotpGenerate200JSONResponse TotpGenerateResponse
+type ChangeUserMfa200JSONResponse TotpGenerateResponse
 
-func (response GetMfaTotpGenerate200JSONResponse) VisitGetMfaTotpGenerateResponse(w http.ResponseWriter) error {
+func (response ChangeUserMfa200JSONResponse) VisitChangeUserMfaResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type GetMfaTotpGeneratedefaultJSONResponse struct {
+type ChangeUserMfadefaultJSONResponse struct {
 	Body       ErrorResponse
 	StatusCode int
 }
 
-func (response GetMfaTotpGeneratedefaultJSONResponse) VisitGetMfaTotpGenerateResponse(w http.ResponseWriter) error {
+func (response ChangeUserMfadefaultJSONResponse) VisitChangeUserMfaResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(response.StatusCode)
 
 	return json.NewEncoder(w).Encode(response.Body)
 }
 
-type PostPatRequestObject struct {
-	Body *PostPatJSONRequestBody
+type CreatePATRequestObject struct {
+	Body *CreatePATJSONRequestBody
 }
 
-type PostPatResponseObject interface {
-	VisitPostPatResponse(w http.ResponseWriter) error
+type CreatePATResponseObject interface {
+	VisitCreatePATResponse(w http.ResponseWriter) error
 }
 
-type PostPat200JSONResponse CreatePATResponse
+type CreatePAT200JSONResponse CreatePATResponse
 
-func (response PostPat200JSONResponse) VisitPostPatResponse(w http.ResponseWriter) error {
+func (response CreatePAT200JSONResponse) VisitCreatePATResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type PostPatdefaultJSONResponse struct {
+type CreatePATdefaultJSONResponse struct {
 	Body       ErrorResponse
 	StatusCode int
 }
 
-func (response PostPatdefaultJSONResponse) VisitPostPatResponse(w http.ResponseWriter) error {
+func (response CreatePATdefaultJSONResponse) VisitCreatePATResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(response.StatusCode)
 
 	return json.NewEncoder(w).Encode(response.Body)
 }
 
-type PostSigninAnonymousRequestObject struct {
-	Body *PostSigninAnonymousJSONRequestBody
+type SignInAnonymousRequestObject struct {
+	Body *SignInAnonymousJSONRequestBody
 }
 
-type PostSigninAnonymousResponseObject interface {
-	VisitPostSigninAnonymousResponse(w http.ResponseWriter) error
+type SignInAnonymousResponseObject interface {
+	VisitSignInAnonymousResponse(w http.ResponseWriter) error
 }
 
-type PostSigninAnonymous200JSONResponse SessionPayload
+type SignInAnonymous200JSONResponse SessionPayload
 
-func (response PostSigninAnonymous200JSONResponse) VisitPostSigninAnonymousResponse(w http.ResponseWriter) error {
+func (response SignInAnonymous200JSONResponse) VisitSignInAnonymousResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type PostSigninAnonymousdefaultJSONResponse struct {
+type SignInAnonymousdefaultJSONResponse struct {
 	Body       ErrorResponse
 	StatusCode int
 }
 
-func (response PostSigninAnonymousdefaultJSONResponse) VisitPostSigninAnonymousResponse(w http.ResponseWriter) error {
+func (response SignInAnonymousdefaultJSONResponse) VisitSignInAnonymousResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(response.StatusCode)
 
 	return json.NewEncoder(w).Encode(response.Body)
 }
 
-type PostSigninEmailPasswordRequestObject struct {
-	Body *PostSigninEmailPasswordJSONRequestBody
+type SignInEmailPasswordRequestObject struct {
+	Body *SignInEmailPasswordJSONRequestBody
 }
 
-type PostSigninEmailPasswordResponseObject interface {
-	VisitPostSigninEmailPasswordResponse(w http.ResponseWriter) error
+type SignInEmailPasswordResponseObject interface {
+	VisitSignInEmailPasswordResponse(w http.ResponseWriter) error
 }
 
-type PostSigninEmailPassword200JSONResponse SignInEmailPasswordResponse
+type SignInEmailPassword200JSONResponse SignInEmailPasswordResponse
 
-func (response PostSigninEmailPassword200JSONResponse) VisitPostSigninEmailPasswordResponse(w http.ResponseWriter) error {
+func (response SignInEmailPassword200JSONResponse) VisitSignInEmailPasswordResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type PostSigninEmailPassworddefaultJSONResponse struct {
+type SignInEmailPassworddefaultJSONResponse struct {
 	Body       ErrorResponse
 	StatusCode int
 }
 
-func (response PostSigninEmailPassworddefaultJSONResponse) VisitPostSigninEmailPasswordResponse(w http.ResponseWriter) error {
+func (response SignInEmailPassworddefaultJSONResponse) VisitSignInEmailPasswordResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(response.StatusCode)
 
 	return json.NewEncoder(w).Encode(response.Body)
 }
 
-type PostSigninIdtokenRequestObject struct {
-	Body *PostSigninIdtokenJSONRequestBody
+type SignInIdTokenRequestObject struct {
+	Body *SignInIdTokenJSONRequestBody
 }
 
-type PostSigninIdtokenResponseObject interface {
-	VisitPostSigninIdtokenResponse(w http.ResponseWriter) error
+type SignInIdTokenResponseObject interface {
+	VisitSignInIdTokenResponse(w http.ResponseWriter) error
 }
 
-type PostSigninIdtoken200JSONResponse SessionPayload
+type SignInIdToken200JSONResponse SessionPayload
 
-func (response PostSigninIdtoken200JSONResponse) VisitPostSigninIdtokenResponse(w http.ResponseWriter) error {
+func (response SignInIdToken200JSONResponse) VisitSignInIdTokenResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type PostSigninIdtokendefaultJSONResponse struct {
+type SignInIdTokendefaultJSONResponse struct {
 	Body       ErrorResponse
 	StatusCode int
 }
 
-func (response PostSigninIdtokendefaultJSONResponse) VisitPostSigninIdtokenResponse(w http.ResponseWriter) error {
+func (response SignInIdTokendefaultJSONResponse) VisitSignInIdTokenResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(response.StatusCode)
 
 	return json.NewEncoder(w).Encode(response.Body)
 }
 
-type PostSigninMfaTotpRequestObject struct {
-	Body *PostSigninMfaTotpJSONRequestBody
+type VerifySignInMfaTotpRequestObject struct {
+	Body *VerifySignInMfaTotpJSONRequestBody
 }
 
-type PostSigninMfaTotpResponseObject interface {
-	VisitPostSigninMfaTotpResponse(w http.ResponseWriter) error
+type VerifySignInMfaTotpResponseObject interface {
+	VisitVerifySignInMfaTotpResponse(w http.ResponseWriter) error
 }
 
-type PostSigninMfaTotp200JSONResponse SessionPayload
+type VerifySignInMfaTotp200JSONResponse SessionPayload
 
-func (response PostSigninMfaTotp200JSONResponse) VisitPostSigninMfaTotpResponse(w http.ResponseWriter) error {
+func (response VerifySignInMfaTotp200JSONResponse) VisitVerifySignInMfaTotpResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type PostSigninMfaTotpdefaultJSONResponse struct {
+type VerifySignInMfaTotpdefaultJSONResponse struct {
 	Body       ErrorResponse
 	StatusCode int
 }
 
-func (response PostSigninMfaTotpdefaultJSONResponse) VisitPostSigninMfaTotpResponse(w http.ResponseWriter) error {
+func (response VerifySignInMfaTotpdefaultJSONResponse) VisitVerifySignInMfaTotpResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(response.StatusCode)
 
 	return json.NewEncoder(w).Encode(response.Body)
 }
 
-type PostSigninOtpEmailRequestObject struct {
-	Body *PostSigninOtpEmailJSONRequestBody
+type SignInOTPEmailRequestObject struct {
+	Body *SignInOTPEmailJSONRequestBody
 }
 
-type PostSigninOtpEmailResponseObject interface {
-	VisitPostSigninOtpEmailResponse(w http.ResponseWriter) error
+type SignInOTPEmailResponseObject interface {
+	VisitSignInOTPEmailResponse(w http.ResponseWriter) error
 }
 
-type PostSigninOtpEmail200JSONResponse OKResponse
+type SignInOTPEmail200JSONResponse OKResponse
 
-func (response PostSigninOtpEmail200JSONResponse) VisitPostSigninOtpEmailResponse(w http.ResponseWriter) error {
+func (response SignInOTPEmail200JSONResponse) VisitSignInOTPEmailResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type PostSigninOtpEmaildefaultJSONResponse struct {
+type SignInOTPEmaildefaultJSONResponse struct {
 	Body       ErrorResponse
 	StatusCode int
 }
 
-func (response PostSigninOtpEmaildefaultJSONResponse) VisitPostSigninOtpEmailResponse(w http.ResponseWriter) error {
+func (response SignInOTPEmaildefaultJSONResponse) VisitSignInOTPEmailResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(response.StatusCode)
 
 	return json.NewEncoder(w).Encode(response.Body)
 }
 
-type PostSigninOtpEmailVerifyRequestObject struct {
-	Body *PostSigninOtpEmailVerifyJSONRequestBody
+type VerifySignInOTPEmailRequestObject struct {
+	Body *VerifySignInOTPEmailJSONRequestBody
 }
 
-type PostSigninOtpEmailVerifyResponseObject interface {
-	VisitPostSigninOtpEmailVerifyResponse(w http.ResponseWriter) error
+type VerifySignInOTPEmailResponseObject interface {
+	VisitVerifySignInOTPEmailResponse(w http.ResponseWriter) error
 }
 
-type PostSigninOtpEmailVerify200JSONResponse SignInOTPEmailVerifyResponse
+type VerifySignInOTPEmail200JSONResponse SignInOTPEmailVerifyResponse
 
-func (response PostSigninOtpEmailVerify200JSONResponse) VisitPostSigninOtpEmailVerifyResponse(w http.ResponseWriter) error {
+func (response VerifySignInOTPEmail200JSONResponse) VisitVerifySignInOTPEmailResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type PostSigninOtpEmailVerifydefaultJSONResponse struct {
+type VerifySignInOTPEmaildefaultJSONResponse struct {
 	Body       ErrorResponse
 	StatusCode int
 }
 
-func (response PostSigninOtpEmailVerifydefaultJSONResponse) VisitPostSigninOtpEmailVerifyResponse(w http.ResponseWriter) error {
+func (response VerifySignInOTPEmaildefaultJSONResponse) VisitVerifySignInOTPEmailResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(response.StatusCode)
 
 	return json.NewEncoder(w).Encode(response.Body)
 }
 
-type PostSigninPasswordlessEmailRequestObject struct {
-	Body *PostSigninPasswordlessEmailJSONRequestBody
+type SignInPasswordlessEmailRequestObject struct {
+	Body *SignInPasswordlessEmailJSONRequestBody
 }
 
-type PostSigninPasswordlessEmailResponseObject interface {
-	VisitPostSigninPasswordlessEmailResponse(w http.ResponseWriter) error
+type SignInPasswordlessEmailResponseObject interface {
+	VisitSignInPasswordlessEmailResponse(w http.ResponseWriter) error
 }
 
-type PostSigninPasswordlessEmail200JSONResponse OKResponse
+type SignInPasswordlessEmail200JSONResponse OKResponse
 
-func (response PostSigninPasswordlessEmail200JSONResponse) VisitPostSigninPasswordlessEmailResponse(w http.ResponseWriter) error {
+func (response SignInPasswordlessEmail200JSONResponse) VisitSignInPasswordlessEmailResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type PostSigninPasswordlessEmaildefaultJSONResponse struct {
+type SignInPasswordlessEmaildefaultJSONResponse struct {
 	Body       ErrorResponse
 	StatusCode int
 }
 
-func (response PostSigninPasswordlessEmaildefaultJSONResponse) VisitPostSigninPasswordlessEmailResponse(w http.ResponseWriter) error {
+func (response SignInPasswordlessEmaildefaultJSONResponse) VisitSignInPasswordlessEmailResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(response.StatusCode)
 
 	return json.NewEncoder(w).Encode(response.Body)
 }
 
-type PostSigninPasswordlessSmsRequestObject struct {
-	Body *PostSigninPasswordlessSmsJSONRequestBody
+type SignInPasswordlessSmsRequestObject struct {
+	Body *SignInPasswordlessSmsJSONRequestBody
 }
 
-type PostSigninPasswordlessSmsResponseObject interface {
-	VisitPostSigninPasswordlessSmsResponse(w http.ResponseWriter) error
+type SignInPasswordlessSmsResponseObject interface {
+	VisitSignInPasswordlessSmsResponse(w http.ResponseWriter) error
 }
 
-type PostSigninPasswordlessSms200JSONResponse OKResponse
+type SignInPasswordlessSms200JSONResponse OKResponse
 
-func (response PostSigninPasswordlessSms200JSONResponse) VisitPostSigninPasswordlessSmsResponse(w http.ResponseWriter) error {
+func (response SignInPasswordlessSms200JSONResponse) VisitSignInPasswordlessSmsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type PostSigninPasswordlessSmsOtpRequestObject struct {
-	Body *PostSigninPasswordlessSmsOtpJSONRequestBody
+type VerifySignInPasswordlessSmsRequestObject struct {
+	Body *VerifySignInPasswordlessSmsJSONRequestBody
 }
 
-type PostSigninPasswordlessSmsOtpResponseObject interface {
-	VisitPostSigninPasswordlessSmsOtpResponse(w http.ResponseWriter) error
+type VerifySignInPasswordlessSmsResponseObject interface {
+	VisitVerifySignInPasswordlessSmsResponse(w http.ResponseWriter) error
 }
 
-type PostSigninPasswordlessSmsOtp200JSONResponse SignInPasswordlessSmsOtpResponse
+type VerifySignInPasswordlessSms200JSONResponse SignInPasswordlessSmsOtpResponse
 
-func (response PostSigninPasswordlessSmsOtp200JSONResponse) VisitPostSigninPasswordlessSmsOtpResponse(w http.ResponseWriter) error {
+func (response VerifySignInPasswordlessSms200JSONResponse) VisitVerifySignInPasswordlessSmsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type PostSigninPatRequestObject struct {
-	Body *PostSigninPatJSONRequestBody
+type SignInPATRequestObject struct {
+	Body *SignInPATJSONRequestBody
 }
 
-type PostSigninPatResponseObject interface {
-	VisitPostSigninPatResponse(w http.ResponseWriter) error
+type SignInPATResponseObject interface {
+	VisitSignInPATResponse(w http.ResponseWriter) error
 }
 
-type PostSigninPat200JSONResponse SessionPayload
+type SignInPAT200JSONResponse SessionPayload
 
-func (response PostSigninPat200JSONResponse) VisitPostSigninPatResponse(w http.ResponseWriter) error {
+func (response SignInPAT200JSONResponse) VisitSignInPATResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type PostSigninPatdefaultJSONResponse struct {
+type SignInPATdefaultJSONResponse struct {
 	Body       ErrorResponse
 	StatusCode int
 }
 
-func (response PostSigninPatdefaultJSONResponse) VisitPostSigninPatResponse(w http.ResponseWriter) error {
+func (response SignInPATdefaultJSONResponse) VisitSignInPATResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(response.StatusCode)
 
 	return json.NewEncoder(w).Encode(response.Body)
 }
 
-type GetSigninProviderProviderRequestObject struct {
-	Provider GetSigninProviderProviderParamsProvider `json:"provider"`
-	Params   GetSigninProviderProviderParams
+type SignInProviderRequestObject struct {
+	Provider SignInProviderParamsProvider `json:"provider"`
+	Params   SignInProviderParams
 }
 
-type GetSigninProviderProviderResponseObject interface {
-	VisitGetSigninProviderProviderResponse(w http.ResponseWriter) error
+type SignInProviderResponseObject interface {
+	VisitSignInProviderResponse(w http.ResponseWriter) error
 }
 
-type GetSigninProviderProvider302ResponseHeaders struct {
+type SignInProvider302ResponseHeaders struct {
 	Location string
 }
 
-type GetSigninProviderProvider302Response struct {
-	Headers GetSigninProviderProvider302ResponseHeaders
+type SignInProvider302Response struct {
+	Headers SignInProvider302ResponseHeaders
 }
 
-func (response GetSigninProviderProvider302Response) VisitGetSigninProviderProviderResponse(w http.ResponseWriter) error {
+func (response SignInProvider302Response) VisitSignInProviderResponse(w http.ResponseWriter) error {
 	w.Header().Set("Location", fmt.Sprint(response.Headers.Location))
 	w.WriteHeader(302)
 	return nil
 }
 
-type GetSigninProviderProviderCallbackRequestObject struct {
-	Provider GetSigninProviderProviderCallbackParamsProvider `json:"provider"`
-	Params   GetSigninProviderProviderCallbackParams
+type SignInProviderCallbackGetRequestObject struct {
+	Provider SignInProviderCallbackGetParamsProvider `json:"provider"`
+	Params   SignInProviderCallbackGetParams
 }
 
-type GetSigninProviderProviderCallbackResponseObject interface {
-	VisitGetSigninProviderProviderCallbackResponse(w http.ResponseWriter) error
+type SignInProviderCallbackGetResponseObject interface {
+	VisitSignInProviderCallbackGetResponse(w http.ResponseWriter) error
 }
 
-type GetSigninProviderProviderCallback302ResponseHeaders struct {
+type SignInProviderCallbackGet302ResponseHeaders struct {
 	Location string
 }
 
-type GetSigninProviderProviderCallback302Response struct {
-	Headers GetSigninProviderProviderCallback302ResponseHeaders
+type SignInProviderCallbackGet302Response struct {
+	Headers SignInProviderCallbackGet302ResponseHeaders
 }
 
-func (response GetSigninProviderProviderCallback302Response) VisitGetSigninProviderProviderCallbackResponse(w http.ResponseWriter) error {
+func (response SignInProviderCallbackGet302Response) VisitSignInProviderCallbackGetResponse(w http.ResponseWriter) error {
 	w.Header().Set("Location", fmt.Sprint(response.Headers.Location))
 	w.WriteHeader(302)
 	return nil
 }
 
-type PostSigninProviderProviderCallbackRequestObject struct {
-	Provider PostSigninProviderProviderCallbackParamsProvider `json:"provider"`
-	Body     *PostSigninProviderProviderCallbackFormdataRequestBody
+type SignInProviderCallbackPostRequestObject struct {
+	Provider SignInProviderCallbackPostParamsProvider `json:"provider"`
+	Body     *SignInProviderCallbackPostFormdataRequestBody
 }
 
-type PostSigninProviderProviderCallbackResponseObject interface {
-	VisitPostSigninProviderProviderCallbackResponse(w http.ResponseWriter) error
+type SignInProviderCallbackPostResponseObject interface {
+	VisitSignInProviderCallbackPostResponse(w http.ResponseWriter) error
 }
 
-type PostSigninProviderProviderCallback302ResponseHeaders struct {
+type SignInProviderCallbackPost302ResponseHeaders struct {
 	Location string
 }
 
-type PostSigninProviderProviderCallback302Response struct {
-	Headers PostSigninProviderProviderCallback302ResponseHeaders
+type SignInProviderCallbackPost302Response struct {
+	Headers SignInProviderCallbackPost302ResponseHeaders
 }
 
-func (response PostSigninProviderProviderCallback302Response) VisitPostSigninProviderProviderCallbackResponse(w http.ResponseWriter) error {
+func (response SignInProviderCallbackPost302Response) VisitSignInProviderCallbackPostResponse(w http.ResponseWriter) error {
 	w.Header().Set("Location", fmt.Sprint(response.Headers.Location))
 	w.WriteHeader(302)
 	return nil
 }
 
-type PostSigninWebauthnRequestObject struct {
-	Body *PostSigninWebauthnJSONRequestBody
+type SignInWebauthnRequestObject struct {
+	Body *SignInWebauthnJSONRequestBody
 }
 
-type PostSigninWebauthnResponseObject interface {
-	VisitPostSigninWebauthnResponse(w http.ResponseWriter) error
+type SignInWebauthnResponseObject interface {
+	VisitSignInWebauthnResponse(w http.ResponseWriter) error
 }
 
-type PostSigninWebauthn200JSONResponse PublicKeyCredentialRequestOptions
+type SignInWebauthn200JSONResponse PublicKeyCredentialRequestOptions
 
-func (response PostSigninWebauthn200JSONResponse) VisitPostSigninWebauthnResponse(w http.ResponseWriter) error {
+func (response SignInWebauthn200JSONResponse) VisitSignInWebauthnResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type PostSigninWebauthnVerifyRequestObject struct {
-	Body *PostSigninWebauthnVerifyJSONRequestBody
+type VerifySignInWebauthnRequestObject struct {
+	Body *VerifySignInWebauthnJSONRequestBody
 }
 
-type PostSigninWebauthnVerifyResponseObject interface {
-	VisitPostSigninWebauthnVerifyResponse(w http.ResponseWriter) error
+type VerifySignInWebauthnResponseObject interface {
+	VisitVerifySignInWebauthnResponse(w http.ResponseWriter) error
 }
 
-type PostSigninWebauthnVerify200JSONResponse SessionPayload
+type VerifySignInWebauthn200JSONResponse SessionPayload
 
-func (response PostSigninWebauthnVerify200JSONResponse) VisitPostSigninWebauthnVerifyResponse(w http.ResponseWriter) error {
+func (response VerifySignInWebauthn200JSONResponse) VisitVerifySignInWebauthnResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type PostSignoutRequestObject struct {
-	Body *PostSignoutJSONRequestBody
+type SignOutRequestObject struct {
+	Body *SignOutJSONRequestBody
 }
 
-type PostSignoutResponseObject interface {
-	VisitPostSignoutResponse(w http.ResponseWriter) error
+type SignOutResponseObject interface {
+	VisitSignOutResponse(w http.ResponseWriter) error
 }
 
-type PostSignout200JSONResponse OKResponse
+type SignOut200JSONResponse OKResponse
 
-func (response PostSignout200JSONResponse) VisitPostSignoutResponse(w http.ResponseWriter) error {
+func (response SignOut200JSONResponse) VisitSignOutResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type PostSignoutdefaultJSONResponse struct {
+type SignOutdefaultJSONResponse struct {
 	Body       ErrorResponse
 	StatusCode int
 }
 
-func (response PostSignoutdefaultJSONResponse) VisitPostSignoutResponse(w http.ResponseWriter) error {
+func (response SignOutdefaultJSONResponse) VisitSignOutResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(response.StatusCode)
 
 	return json.NewEncoder(w).Encode(response.Body)
 }
 
-type PostSignupEmailPasswordRequestObject struct {
-	Body *PostSignupEmailPasswordJSONRequestBody
+type SignUpEmailPasswordRequestObject struct {
+	Body *SignUpEmailPasswordJSONRequestBody
 }
 
-type PostSignupEmailPasswordResponseObject interface {
-	VisitPostSignupEmailPasswordResponse(w http.ResponseWriter) error
+type SignUpEmailPasswordResponseObject interface {
+	VisitSignUpEmailPasswordResponse(w http.ResponseWriter) error
 }
 
-type PostSignupEmailPassword200JSONResponse SessionPayload
+type SignUpEmailPassword200JSONResponse SessionPayload
 
-func (response PostSignupEmailPassword200JSONResponse) VisitPostSignupEmailPasswordResponse(w http.ResponseWriter) error {
+func (response SignUpEmailPassword200JSONResponse) VisitSignUpEmailPasswordResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type PostSignupEmailPassword403JSONResponse ErrorResponse
+type SignUpEmailPassword403JSONResponse ErrorResponse
 
-func (response PostSignupEmailPassword403JSONResponse) VisitPostSignupEmailPasswordResponse(w http.ResponseWriter) error {
+func (response SignUpEmailPassword403JSONResponse) VisitSignUpEmailPasswordResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(403)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type PostSignupEmailPassword409JSONResponse ErrorResponse
+type SignUpEmailPassword409JSONResponse ErrorResponse
 
-func (response PostSignupEmailPassword409JSONResponse) VisitPostSignupEmailPasswordResponse(w http.ResponseWriter) error {
+func (response SignUpEmailPassword409JSONResponse) VisitSignUpEmailPasswordResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(409)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type PostSignupWebauthnRequestObject struct {
-	Body *PostSignupWebauthnJSONRequestBody
+type SignUpWebauthnRequestObject struct {
+	Body *SignUpWebauthnJSONRequestBody
 }
 
-type PostSignupWebauthnResponseObject interface {
-	VisitPostSignupWebauthnResponse(w http.ResponseWriter) error
+type SignUpWebauthnResponseObject interface {
+	VisitSignUpWebauthnResponse(w http.ResponseWriter) error
 }
 
-type PostSignupWebauthn200JSONResponse PublicKeyCredentialCreationOptions
+type SignUpWebauthn200JSONResponse PublicKeyCredentialCreationOptions
 
-func (response PostSignupWebauthn200JSONResponse) VisitPostSignupWebauthnResponse(w http.ResponseWriter) error {
+func (response SignUpWebauthn200JSONResponse) VisitSignUpWebauthnResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type PostSignupWebauthnVerifyRequestObject struct {
-	Body *PostSignupWebauthnVerifyJSONRequestBody
+type VerifySignUpWebauthnRequestObject struct {
+	Body *VerifySignUpWebauthnJSONRequestBody
 }
 
-type PostSignupWebauthnVerifyResponseObject interface {
-	VisitPostSignupWebauthnVerifyResponse(w http.ResponseWriter) error
+type VerifySignUpWebauthnResponseObject interface {
+	VisitVerifySignUpWebauthnResponse(w http.ResponseWriter) error
 }
 
-type PostSignupWebauthnVerify200JSONResponse SessionPayload
+type VerifySignUpWebauthn200JSONResponse SessionPayload
 
-func (response PostSignupWebauthnVerify200JSONResponse) VisitPostSignupWebauthnVerifyResponse(w http.ResponseWriter) error {
+func (response VerifySignUpWebauthn200JSONResponse) VisitVerifySignUpWebauthnResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type PostTokenRequestObject struct {
-	Body *PostTokenJSONRequestBody
+type RefreshTokenRequestObject struct {
+	Body *RefreshTokenJSONRequestBody
 }
 
-type PostTokenResponseObject interface {
-	VisitPostTokenResponse(w http.ResponseWriter) error
+type RefreshTokenResponseObject interface {
+	VisitRefreshTokenResponse(w http.ResponseWriter) error
 }
 
-type PostToken200JSONResponse Session
+type RefreshToken200JSONResponse Session
 
-func (response PostToken200JSONResponse) VisitPostTokenResponse(w http.ResponseWriter) error {
+func (response RefreshToken200JSONResponse) VisitRefreshTokenResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type PostTokendefaultJSONResponse struct {
+type RefreshTokendefaultJSONResponse struct {
 	Body       ErrorResponse
 	StatusCode int
 }
 
-func (response PostTokendefaultJSONResponse) VisitPostTokenResponse(w http.ResponseWriter) error {
+func (response RefreshTokendefaultJSONResponse) VisitRefreshTokenResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(response.StatusCode)
 
 	return json.NewEncoder(w).Encode(response.Body)
 }
 
-type PostTokenVerifyRequestObject struct {
-	Body *PostTokenVerifyJSONRequestBody
+type VerifyTokenRequestObject struct {
+	Body *VerifyTokenJSONRequestBody
 }
 
-type PostTokenVerifyResponseObject interface {
-	VisitPostTokenVerifyResponse(w http.ResponseWriter) error
+type VerifyTokenResponseObject interface {
+	VisitVerifyTokenResponse(w http.ResponseWriter) error
 }
 
-type PostTokenVerify200JSONResponse string
+type VerifyToken200JSONResponse string
 
-func (response PostTokenVerify200JSONResponse) VisitPostTokenVerifyResponse(w http.ResponseWriter) error {
+func (response VerifyToken200JSONResponse) VisitVerifyTokenResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
@@ -1701,254 +1701,254 @@ func (response GetUser200JSONResponse) VisitGetUserResponse(w http.ResponseWrite
 	return json.NewEncoder(w).Encode(response)
 }
 
-type PostUserDeanonymizeRequestObject struct {
-	Body *PostUserDeanonymizeJSONRequestBody
+type DeanonymizeUserRequestObject struct {
+	Body *DeanonymizeUserJSONRequestBody
 }
 
-type PostUserDeanonymizeResponseObject interface {
-	VisitPostUserDeanonymizeResponse(w http.ResponseWriter) error
+type DeanonymizeUserResponseObject interface {
+	VisitDeanonymizeUserResponse(w http.ResponseWriter) error
 }
 
-type PostUserDeanonymize200JSONResponse OKResponse
+type DeanonymizeUser200JSONResponse OKResponse
 
-func (response PostUserDeanonymize200JSONResponse) VisitPostUserDeanonymizeResponse(w http.ResponseWriter) error {
+func (response DeanonymizeUser200JSONResponse) VisitDeanonymizeUserResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type PostUserDeanonymizedefaultJSONResponse struct {
+type DeanonymizeUserdefaultJSONResponse struct {
 	Body       ErrorResponse
 	StatusCode int
 }
 
-func (response PostUserDeanonymizedefaultJSONResponse) VisitPostUserDeanonymizeResponse(w http.ResponseWriter) error {
+func (response DeanonymizeUserdefaultJSONResponse) VisitDeanonymizeUserResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(response.StatusCode)
 
 	return json.NewEncoder(w).Encode(response.Body)
 }
 
-type PostUserEmailChangeRequestObject struct {
-	Body *PostUserEmailChangeJSONRequestBody
+type ChangeUserEmailRequestObject struct {
+	Body *ChangeUserEmailJSONRequestBody
 }
 
-type PostUserEmailChangeResponseObject interface {
-	VisitPostUserEmailChangeResponse(w http.ResponseWriter) error
+type ChangeUserEmailResponseObject interface {
+	VisitChangeUserEmailResponse(w http.ResponseWriter) error
 }
 
-type PostUserEmailChange200JSONResponse OKResponse
+type ChangeUserEmail200JSONResponse OKResponse
 
-func (response PostUserEmailChange200JSONResponse) VisitPostUserEmailChangeResponse(w http.ResponseWriter) error {
+func (response ChangeUserEmail200JSONResponse) VisitChangeUserEmailResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type PostUserEmailChangedefaultJSONResponse struct {
+type ChangeUserEmaildefaultJSONResponse struct {
 	Body       ErrorResponse
 	StatusCode int
 }
 
-func (response PostUserEmailChangedefaultJSONResponse) VisitPostUserEmailChangeResponse(w http.ResponseWriter) error {
+func (response ChangeUserEmaildefaultJSONResponse) VisitChangeUserEmailResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(response.StatusCode)
 
 	return json.NewEncoder(w).Encode(response.Body)
 }
 
-type PostUserEmailSendVerificationEmailRequestObject struct {
-	Body *PostUserEmailSendVerificationEmailJSONRequestBody
+type SendVerificationEmailRequestObject struct {
+	Body *SendVerificationEmailJSONRequestBody
 }
 
-type PostUserEmailSendVerificationEmailResponseObject interface {
-	VisitPostUserEmailSendVerificationEmailResponse(w http.ResponseWriter) error
+type SendVerificationEmailResponseObject interface {
+	VisitSendVerificationEmailResponse(w http.ResponseWriter) error
 }
 
-type PostUserEmailSendVerificationEmail200JSONResponse OKResponse
+type SendVerificationEmail200JSONResponse OKResponse
 
-func (response PostUserEmailSendVerificationEmail200JSONResponse) VisitPostUserEmailSendVerificationEmailResponse(w http.ResponseWriter) error {
+func (response SendVerificationEmail200JSONResponse) VisitSendVerificationEmailResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type PostUserEmailSendVerificationEmaildefaultJSONResponse struct {
+type SendVerificationEmaildefaultJSONResponse struct {
 	Body       ErrorResponse
 	StatusCode int
 }
 
-func (response PostUserEmailSendVerificationEmaildefaultJSONResponse) VisitPostUserEmailSendVerificationEmailResponse(w http.ResponseWriter) error {
+func (response SendVerificationEmaildefaultJSONResponse) VisitSendVerificationEmailResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(response.StatusCode)
 
 	return json.NewEncoder(w).Encode(response.Body)
 }
 
-type PostUserMfaRequestObject struct {
-	Body *PostUserMfaJSONRequestBody
+type VerifyChangeUserMfaRequestObject struct {
+	Body *VerifyChangeUserMfaJSONRequestBody
 }
 
-type PostUserMfaResponseObject interface {
-	VisitPostUserMfaResponse(w http.ResponseWriter) error
+type VerifyChangeUserMfaResponseObject interface {
+	VisitVerifyChangeUserMfaResponse(w http.ResponseWriter) error
 }
 
-type PostUserMfa200JSONResponse OKResponse
+type VerifyChangeUserMfa200JSONResponse OKResponse
 
-func (response PostUserMfa200JSONResponse) VisitPostUserMfaResponse(w http.ResponseWriter) error {
+func (response VerifyChangeUserMfa200JSONResponse) VisitVerifyChangeUserMfaResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type PostUserMfadefaultJSONResponse struct {
+type VerifyChangeUserMfadefaultJSONResponse struct {
 	Body       ErrorResponse
 	StatusCode int
 }
 
-func (response PostUserMfadefaultJSONResponse) VisitPostUserMfaResponse(w http.ResponseWriter) error {
+func (response VerifyChangeUserMfadefaultJSONResponse) VisitVerifyChangeUserMfaResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(response.StatusCode)
 
 	return json.NewEncoder(w).Encode(response.Body)
 }
 
-type PostUserPasswordRequestObject struct {
-	Body *PostUserPasswordJSONRequestBody
+type ChangeUserPasswordRequestObject struct {
+	Body *ChangeUserPasswordJSONRequestBody
 }
 
-type PostUserPasswordResponseObject interface {
-	VisitPostUserPasswordResponse(w http.ResponseWriter) error
+type ChangeUserPasswordResponseObject interface {
+	VisitChangeUserPasswordResponse(w http.ResponseWriter) error
 }
 
-type PostUserPassword200JSONResponse OKResponse
+type ChangeUserPassword200JSONResponse OKResponse
 
-func (response PostUserPassword200JSONResponse) VisitPostUserPasswordResponse(w http.ResponseWriter) error {
+func (response ChangeUserPassword200JSONResponse) VisitChangeUserPasswordResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type PostUserPassworddefaultJSONResponse struct {
+type ChangeUserPassworddefaultJSONResponse struct {
 	Body       ErrorResponse
 	StatusCode int
 }
 
-func (response PostUserPassworddefaultJSONResponse) VisitPostUserPasswordResponse(w http.ResponseWriter) error {
+func (response ChangeUserPassworddefaultJSONResponse) VisitChangeUserPasswordResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(response.StatusCode)
 
 	return json.NewEncoder(w).Encode(response.Body)
 }
 
-type PostUserPasswordResetRequestObject struct {
-	Body *PostUserPasswordResetJSONRequestBody
+type SendPasswordResetEmailRequestObject struct {
+	Body *SendPasswordResetEmailJSONRequestBody
 }
 
-type PostUserPasswordResetResponseObject interface {
-	VisitPostUserPasswordResetResponse(w http.ResponseWriter) error
+type SendPasswordResetEmailResponseObject interface {
+	VisitSendPasswordResetEmailResponse(w http.ResponseWriter) error
 }
 
-type PostUserPasswordReset200JSONResponse OKResponse
+type SendPasswordResetEmail200JSONResponse OKResponse
 
-func (response PostUserPasswordReset200JSONResponse) VisitPostUserPasswordResetResponse(w http.ResponseWriter) error {
+func (response SendPasswordResetEmail200JSONResponse) VisitSendPasswordResetEmailResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type PostUserPasswordResetdefaultJSONResponse struct {
+type SendPasswordResetEmaildefaultJSONResponse struct {
 	Body       ErrorResponse
 	StatusCode int
 }
 
-func (response PostUserPasswordResetdefaultJSONResponse) VisitPostUserPasswordResetResponse(w http.ResponseWriter) error {
+func (response SendPasswordResetEmaildefaultJSONResponse) VisitSendPasswordResetEmailResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(response.StatusCode)
 
 	return json.NewEncoder(w).Encode(response.Body)
 }
 
-type PostUserWebauthnAddRequestObject struct {
+type AddSecurityKeyRequestObject struct {
 }
 
-type PostUserWebauthnAddResponseObject interface {
-	VisitPostUserWebauthnAddResponse(w http.ResponseWriter) error
+type AddSecurityKeyResponseObject interface {
+	VisitAddSecurityKeyResponse(w http.ResponseWriter) error
 }
 
-type PostUserWebauthnAdd200JSONResponse PublicKeyCredentialCreationOptions
+type AddSecurityKey200JSONResponse PublicKeyCredentialCreationOptions
 
-func (response PostUserWebauthnAdd200JSONResponse) VisitPostUserWebauthnAddResponse(w http.ResponseWriter) error {
+func (response AddSecurityKey200JSONResponse) VisitAddSecurityKeyResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type PostUserWebauthnAdddefaultJSONResponse struct {
+type AddSecurityKeydefaultJSONResponse struct {
 	Body       ErrorResponse
 	StatusCode int
 }
 
-func (response PostUserWebauthnAdddefaultJSONResponse) VisitPostUserWebauthnAddResponse(w http.ResponseWriter) error {
+func (response AddSecurityKeydefaultJSONResponse) VisitAddSecurityKeyResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(response.StatusCode)
 
 	return json.NewEncoder(w).Encode(response.Body)
 }
 
-type PostUserWebauthnVerifyRequestObject struct {
-	Body *PostUserWebauthnVerifyJSONRequestBody
+type VerifyAddSecurityKeyRequestObject struct {
+	Body *VerifyAddSecurityKeyJSONRequestBody
 }
 
-type PostUserWebauthnVerifyResponseObject interface {
-	VisitPostUserWebauthnVerifyResponse(w http.ResponseWriter) error
+type VerifyAddSecurityKeyResponseObject interface {
+	VisitVerifyAddSecurityKeyResponse(w http.ResponseWriter) error
 }
 
-type PostUserWebauthnVerify200JSONResponse VerifyAddSecurityKeyResponse
+type VerifyAddSecurityKey200JSONResponse VerifyAddSecurityKeyResponse
 
-func (response PostUserWebauthnVerify200JSONResponse) VisitPostUserWebauthnVerifyResponse(w http.ResponseWriter) error {
+func (response VerifyAddSecurityKey200JSONResponse) VisitVerifyAddSecurityKeyResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type PostUserWebauthnVerifydefaultJSONResponse struct {
+type VerifyAddSecurityKeydefaultJSONResponse struct {
 	Body       ErrorResponse
 	StatusCode int
 }
 
-func (response PostUserWebauthnVerifydefaultJSONResponse) VisitPostUserWebauthnVerifyResponse(w http.ResponseWriter) error {
+func (response VerifyAddSecurityKeydefaultJSONResponse) VisitVerifyAddSecurityKeyResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(response.StatusCode)
 
 	return json.NewEncoder(w).Encode(response.Body)
 }
 
-type GetVerifyRequestObject struct {
-	Params GetVerifyParams
+type VerifyTicketRequestObject struct {
+	Params VerifyTicketParams
 }
 
-type GetVerifyResponseObject interface {
-	VisitGetVerifyResponse(w http.ResponseWriter) error
+type VerifyTicketResponseObject interface {
+	VisitVerifyTicketResponse(w http.ResponseWriter) error
 }
 
-type GetVerify302ResponseHeaders struct {
+type VerifyTicket302ResponseHeaders struct {
 	Location string
 }
 
-type GetVerify302Response struct {
-	Headers GetVerify302ResponseHeaders
+type VerifyTicket302Response struct {
+	Headers VerifyTicket302ResponseHeaders
 }
 
-func (response GetVerify302Response) VisitGetVerifyResponse(w http.ResponseWriter) error {
+func (response VerifyTicket302Response) VisitVerifyTicketResponse(w http.ResponseWriter) error {
 	w.Header().Set("Location", fmt.Sprint(response.Headers.Location))
 	w.WriteHeader(302)
 	return nil
@@ -1977,121 +1977,121 @@ func (response GetVersion200JSONResponse) VisitGetVersionResponse(w http.Respons
 type StrictServerInterface interface {
 	// Get public keys for JWT verification in JWK Set format
 	// (GET /.well-known/jwks.json)
-	GetWellKnownJwksJson(ctx context.Context, request GetWellKnownJwksJsonRequestObject) (GetWellKnownJwksJsonResponseObject, error)
+	GetJWKs(ctx context.Context, request GetJWKsRequestObject) (GetJWKsResponseObject, error)
 	// Elevate access for an already signed in user using FIDO2 Webauthn
 	// (POST /elevate/webauthn)
-	PostElevateWebauthn(ctx context.Context, request PostElevateWebauthnRequestObject) (PostElevateWebauthnResponseObject, error)
+	ElevateWebauthn(ctx context.Context, request ElevateWebauthnRequestObject) (ElevateWebauthnResponseObject, error)
 	// Verify FIDO2 Webauthn authentication using public-key cryptography for elevation
 	// (POST /elevate/webauthn/verify)
-	PostElevateWebauthnVerify(ctx context.Context, request PostElevateWebauthnVerifyRequestObject) (PostElevateWebauthnVerifyResponseObject, error)
+	VerifyElevateWebauthn(ctx context.Context, request VerifyElevateWebauthnRequestObject) (VerifyElevateWebauthnResponseObject, error)
 	// Health check (GET)
 	// (GET /healthz)
-	GetHealthz(ctx context.Context, request GetHealthzRequestObject) (GetHealthzResponseObject, error)
+	HealthCheckGet(ctx context.Context, request HealthCheckGetRequestObject) (HealthCheckGetResponseObject, error)
 	// Health check (HEAD)
 	// (HEAD /healthz)
-	HeadHealthz(ctx context.Context, request HeadHealthzRequestObject) (HeadHealthzResponseObject, error)
+	HealthCheckHead(ctx context.Context, request HealthCheckHeadRequestObject) (HealthCheckHeadResponseObject, error)
 	// Link a user account with the provider's account using an id token
 	// (POST /link/idtoken)
-	PostLinkIdtoken(ctx context.Context, request PostLinkIdtokenRequestObject) (PostLinkIdtokenResponseObject, error)
+	LinkIdToken(ctx context.Context, request LinkIdTokenRequestObject) (LinkIdTokenResponseObject, error)
 	// Generate TOTP secret
 	// (GET /mfa/totp/generate)
-	GetMfaTotpGenerate(ctx context.Context, request GetMfaTotpGenerateRequestObject) (GetMfaTotpGenerateResponseObject, error)
+	ChangeUserMfa(ctx context.Context, request ChangeUserMfaRequestObject) (ChangeUserMfaResponseObject, error)
 	// Create a Personal Access Token (PAT)
 	// (POST /pat)
-	PostPat(ctx context.Context, request PostPatRequestObject) (PostPatResponseObject, error)
+	CreatePAT(ctx context.Context, request CreatePATRequestObject) (CreatePATResponseObject, error)
 	// Sign in anonymously
 	// (POST /signin/anonymous)
-	PostSigninAnonymous(ctx context.Context, request PostSigninAnonymousRequestObject) (PostSigninAnonymousResponseObject, error)
+	SignInAnonymous(ctx context.Context, request SignInAnonymousRequestObject) (SignInAnonymousResponseObject, error)
 	// Sign in with email and password
 	// (POST /signin/email-password)
-	PostSigninEmailPassword(ctx context.Context, request PostSigninEmailPasswordRequestObject) (PostSigninEmailPasswordResponseObject, error)
+	SignInEmailPassword(ctx context.Context, request SignInEmailPasswordRequestObject) (SignInEmailPasswordResponseObject, error)
 	// Sign in with in an id token
 	// (POST /signin/idtoken)
-	PostSigninIdtoken(ctx context.Context, request PostSigninIdtokenRequestObject) (PostSigninIdtokenResponseObject, error)
+	SignInIdToken(ctx context.Context, request SignInIdTokenRequestObject) (SignInIdTokenResponseObject, error)
 	// Verify TOTP for MFA
 	// (POST /signin/mfa/totp)
-	PostSigninMfaTotp(ctx context.Context, request PostSigninMfaTotpRequestObject) (PostSigninMfaTotpResponseObject, error)
+	VerifySignInMfaTotp(ctx context.Context, request VerifySignInMfaTotpRequestObject) (VerifySignInMfaTotpResponseObject, error)
 	// Sign in with a one time password sent to user's email. If the user doesn't exist, it will be created. The options object is optional and can be used to configure the user's when signing up a new user. It is ignored if the user already exists.
 	// (POST /signin/otp/email)
-	PostSigninOtpEmail(ctx context.Context, request PostSigninOtpEmailRequestObject) (PostSigninOtpEmailResponseObject, error)
+	SignInOTPEmail(ctx context.Context, request SignInOTPEmailRequestObject) (SignInOTPEmailResponseObject, error)
 	// Verify OTP and return a session if validation is successful
 	// (POST /signin/otp/email/verify)
-	PostSigninOtpEmailVerify(ctx context.Context, request PostSigninOtpEmailVerifyRequestObject) (PostSigninOtpEmailVerifyResponseObject, error)
+	VerifySignInOTPEmail(ctx context.Context, request VerifySignInOTPEmailRequestObject) (VerifySignInOTPEmailResponseObject, error)
 	// Sign in with magic link email
 	// (POST /signin/passwordless/email)
-	PostSigninPasswordlessEmail(ctx context.Context, request PostSigninPasswordlessEmailRequestObject) (PostSigninPasswordlessEmailResponseObject, error)
+	SignInPasswordlessEmail(ctx context.Context, request SignInPasswordlessEmailRequestObject) (SignInPasswordlessEmailResponseObject, error)
 	// Sign in with a one time password sent to user's phone number. If the user doesn't exist, it will be created. The options object is optional and can be used to configure the user's when signing up a new user. It is ignored if the user already exists.
 	// (POST /signin/passwordless/sms)
-	PostSigninPasswordlessSms(ctx context.Context, request PostSigninPasswordlessSmsRequestObject) (PostSigninPasswordlessSmsResponseObject, error)
+	SignInPasswordlessSms(ctx context.Context, request SignInPasswordlessSmsRequestObject) (SignInPasswordlessSmsResponseObject, error)
 	// Verify SMS OTP and return a session if validation is successful
 	// (POST /signin/passwordless/sms/otp)
-	PostSigninPasswordlessSmsOtp(ctx context.Context, request PostSigninPasswordlessSmsOtpRequestObject) (PostSigninPasswordlessSmsOtpResponseObject, error)
+	VerifySignInPasswordlessSms(ctx context.Context, request VerifySignInPasswordlessSmsRequestObject) (VerifySignInPasswordlessSmsResponseObject, error)
 	// Sign in with Personal Access Token (PAT)
 	// (POST /signin/pat)
-	PostSigninPat(ctx context.Context, request PostSigninPatRequestObject) (PostSigninPatResponseObject, error)
+	SignInPAT(ctx context.Context, request SignInPATRequestObject) (SignInPATResponseObject, error)
 	// Sign in with an oauth2 provider
 	// (GET /signin/provider/{provider})
-	GetSigninProviderProvider(ctx context.Context, request GetSigninProviderProviderRequestObject) (GetSigninProviderProviderResponseObject, error)
+	SignInProvider(ctx context.Context, request SignInProviderRequestObject) (SignInProviderResponseObject, error)
 	// Callback for oauth2 provider
 	// (GET /signin/provider/{provider}/callback)
-	GetSigninProviderProviderCallback(ctx context.Context, request GetSigninProviderProviderCallbackRequestObject) (GetSigninProviderProviderCallbackResponseObject, error)
+	SignInProviderCallbackGet(ctx context.Context, request SignInProviderCallbackGetRequestObject) (SignInProviderCallbackGetResponseObject, error)
 	// Callback for oauth2 provider using form_post response mode
 	// (POST /signin/provider/{provider}/callback)
-	PostSigninProviderProviderCallback(ctx context.Context, request PostSigninProviderProviderCallbackRequestObject) (PostSigninProviderProviderCallbackResponseObject, error)
+	SignInProviderCallbackPost(ctx context.Context, request SignInProviderCallbackPostRequestObject) (SignInProviderCallbackPostResponseObject, error)
 	// Sign in with Webauthn
 	// (POST /signin/webauthn)
-	PostSigninWebauthn(ctx context.Context, request PostSigninWebauthnRequestObject) (PostSigninWebauthnResponseObject, error)
+	SignInWebauthn(ctx context.Context, request SignInWebauthnRequestObject) (SignInWebauthnResponseObject, error)
 	// Verify Webauthn sign-in
 	// (POST /signin/webauthn/verify)
-	PostSigninWebauthnVerify(ctx context.Context, request PostSigninWebauthnVerifyRequestObject) (PostSigninWebauthnVerifyResponseObject, error)
+	VerifySignInWebauthn(ctx context.Context, request VerifySignInWebauthnRequestObject) (VerifySignInWebauthnResponseObject, error)
 	// Sign out
 	// (POST /signout)
-	PostSignout(ctx context.Context, request PostSignoutRequestObject) (PostSignoutResponseObject, error)
+	SignOut(ctx context.Context, request SignOutRequestObject) (SignOutResponseObject, error)
 	// Sign up with email and password
 	// (POST /signup/email-password)
-	PostSignupEmailPassword(ctx context.Context, request PostSignupEmailPasswordRequestObject) (PostSignupEmailPasswordResponseObject, error)
+	SignUpEmailPassword(ctx context.Context, request SignUpEmailPasswordRequestObject) (SignUpEmailPasswordResponseObject, error)
 	// Sign up with Webauthn
 	// (POST /signup/webauthn)
-	PostSignupWebauthn(ctx context.Context, request PostSignupWebauthnRequestObject) (PostSignupWebauthnResponseObject, error)
+	SignUpWebauthn(ctx context.Context, request SignUpWebauthnRequestObject) (SignUpWebauthnResponseObject, error)
 	// Verify Webauthn sign-up
 	// (POST /signup/webauthn/verify)
-	PostSignupWebauthnVerify(ctx context.Context, request PostSignupWebauthnVerifyRequestObject) (PostSignupWebauthnVerifyResponseObject, error)
+	VerifySignUpWebauthn(ctx context.Context, request VerifySignUpWebauthnRequestObject) (VerifySignUpWebauthnResponseObject, error)
 	// Refresh access token
 	// (POST /token)
-	PostToken(ctx context.Context, request PostTokenRequestObject) (PostTokenResponseObject, error)
+	RefreshToken(ctx context.Context, request RefreshTokenRequestObject) (RefreshTokenResponseObject, error)
 	// Verify JWT token
 	// (POST /token/verify)
-	PostTokenVerify(ctx context.Context, request PostTokenVerifyRequestObject) (PostTokenVerifyResponseObject, error)
+	VerifyToken(ctx context.Context, request VerifyTokenRequestObject) (VerifyTokenResponseObject, error)
 	// Get user information
 	// (GET /user)
 	GetUser(ctx context.Context, request GetUserRequestObject) (GetUserResponseObject, error)
 	// Deanonymize an anonymous user in adding missing email or email+password, depending on the chosen authentication method. Will send a confirmation email if the server is configured to do so
 	// (POST /user/deanonymize)
-	PostUserDeanonymize(ctx context.Context, request PostUserDeanonymizeRequestObject) (PostUserDeanonymizeResponseObject, error)
+	DeanonymizeUser(ctx context.Context, request DeanonymizeUserRequestObject) (DeanonymizeUserResponseObject, error)
 	// Change user email
 	// (POST /user/email/change)
-	PostUserEmailChange(ctx context.Context, request PostUserEmailChangeRequestObject) (PostUserEmailChangeResponseObject, error)
+	ChangeUserEmail(ctx context.Context, request ChangeUserEmailRequestObject) (ChangeUserEmailResponseObject, error)
 	// Send verification email
 	// (POST /user/email/send-verification-email)
-	PostUserEmailSendVerificationEmail(ctx context.Context, request PostUserEmailSendVerificationEmailRequestObject) (PostUserEmailSendVerificationEmailResponseObject, error)
+	SendVerificationEmail(ctx context.Context, request SendVerificationEmailRequestObject) (SendVerificationEmailResponseObject, error)
 	// Manage multi-factor authentication
 	// (POST /user/mfa)
-	PostUserMfa(ctx context.Context, request PostUserMfaRequestObject) (PostUserMfaResponseObject, error)
+	VerifyChangeUserMfa(ctx context.Context, request VerifyChangeUserMfaRequestObject) (VerifyChangeUserMfaResponseObject, error)
 	// Change user password. The user must be authenticated or provide a ticket
 	// (POST /user/password)
-	PostUserPassword(ctx context.Context, request PostUserPasswordRequestObject) (PostUserPasswordResponseObject, error)
+	ChangeUserPassword(ctx context.Context, request ChangeUserPasswordRequestObject) (ChangeUserPasswordResponseObject, error)
 	// Request a password reset. An email with a verification link will be sent to the user's address
 	// (POST /user/password/reset)
-	PostUserPasswordReset(ctx context.Context, request PostUserPasswordResetRequestObject) (PostUserPasswordResetResponseObject, error)
+	SendPasswordResetEmail(ctx context.Context, request SendPasswordResetEmailRequestObject) (SendPasswordResetEmailResponseObject, error)
 	// Initialize adding of a new webauthn security key
 	// (POST /user/webauthn/add)
-	PostUserWebauthnAdd(ctx context.Context, request PostUserWebauthnAddRequestObject) (PostUserWebauthnAddResponseObject, error)
+	AddSecurityKey(ctx context.Context, request AddSecurityKeyRequestObject) (AddSecurityKeyResponseObject, error)
 	// Verify adding of a new webauthn security key
 	// (POST /user/webauthn/verify)
-	PostUserWebauthnVerify(ctx context.Context, request PostUserWebauthnVerifyRequestObject) (PostUserWebauthnVerifyResponseObject, error)
+	VerifyAddSecurityKey(ctx context.Context, request VerifyAddSecurityKeyRequestObject) (VerifyAddSecurityKeyResponseObject, error)
 	// Verify tickets created by email verification, email passwordless authentication (magic link), or password reset
 	// (GET /verify)
-	GetVerify(ctx context.Context, request GetVerifyRequestObject) (GetVerifyResponseObject, error)
+	VerifyTicket(ctx context.Context, request VerifyTicketRequestObject) (VerifyTicketResponseObject, error)
 	// Get service version
 	// (GET /version)
 	GetVersion(ctx context.Context, request GetVersionRequestObject) (GetVersionResponseObject, error)
@@ -2109,15 +2109,15 @@ type strictHandler struct {
 	middlewares []StrictMiddlewareFunc
 }
 
-// GetWellKnownJwksJson operation middleware
-func (sh *strictHandler) GetWellKnownJwksJson(ctx *gin.Context) {
-	var request GetWellKnownJwksJsonRequestObject
+// GetJWKs operation middleware
+func (sh *strictHandler) GetJWKs(ctx *gin.Context) {
+	var request GetJWKsRequestObject
 
 	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.GetWellKnownJwksJson(ctx, request.(GetWellKnownJwksJsonRequestObject))
+		return sh.ssi.GetJWKs(ctx, request.(GetJWKsRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "GetWellKnownJwksJson")
+		handler = middleware(handler, "GetJWKs")
 	}
 
 	response, err := handler(ctx, request)
@@ -2125,8 +2125,8 @@ func (sh *strictHandler) GetWellKnownJwksJson(ctx *gin.Context) {
 	if err != nil {
 		ctx.Error(err)
 		ctx.Status(http.StatusInternalServerError)
-	} else if validResponse, ok := response.(GetWellKnownJwksJsonResponseObject); ok {
-		if err := validResponse.VisitGetWellKnownJwksJsonResponse(ctx.Writer); err != nil {
+	} else if validResponse, ok := response.(GetJWKsResponseObject); ok {
+		if err := validResponse.VisitGetJWKsResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {
@@ -2134,15 +2134,15 @@ func (sh *strictHandler) GetWellKnownJwksJson(ctx *gin.Context) {
 	}
 }
 
-// PostElevateWebauthn operation middleware
-func (sh *strictHandler) PostElevateWebauthn(ctx *gin.Context) {
-	var request PostElevateWebauthnRequestObject
+// ElevateWebauthn operation middleware
+func (sh *strictHandler) ElevateWebauthn(ctx *gin.Context) {
+	var request ElevateWebauthnRequestObject
 
 	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.PostElevateWebauthn(ctx, request.(PostElevateWebauthnRequestObject))
+		return sh.ssi.ElevateWebauthn(ctx, request.(ElevateWebauthnRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "PostElevateWebauthn")
+		handler = middleware(handler, "ElevateWebauthn")
 	}
 
 	response, err := handler(ctx, request)
@@ -2150,8 +2150,8 @@ func (sh *strictHandler) PostElevateWebauthn(ctx *gin.Context) {
 	if err != nil {
 		ctx.Error(err)
 		ctx.Status(http.StatusInternalServerError)
-	} else if validResponse, ok := response.(PostElevateWebauthnResponseObject); ok {
-		if err := validResponse.VisitPostElevateWebauthnResponse(ctx.Writer); err != nil {
+	} else if validResponse, ok := response.(ElevateWebauthnResponseObject); ok {
+		if err := validResponse.VisitElevateWebauthnResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {
@@ -2159,11 +2159,11 @@ func (sh *strictHandler) PostElevateWebauthn(ctx *gin.Context) {
 	}
 }
 
-// PostElevateWebauthnVerify operation middleware
-func (sh *strictHandler) PostElevateWebauthnVerify(ctx *gin.Context) {
-	var request PostElevateWebauthnVerifyRequestObject
+// VerifyElevateWebauthn operation middleware
+func (sh *strictHandler) VerifyElevateWebauthn(ctx *gin.Context) {
+	var request VerifyElevateWebauthnRequestObject
 
-	var body PostElevateWebauthnVerifyJSONRequestBody
+	var body VerifyElevateWebauthnJSONRequestBody
 	if err := ctx.ShouldBindJSON(&body); err != nil {
 		ctx.Status(http.StatusBadRequest)
 		ctx.Error(err)
@@ -2172,10 +2172,10 @@ func (sh *strictHandler) PostElevateWebauthnVerify(ctx *gin.Context) {
 	request.Body = &body
 
 	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.PostElevateWebauthnVerify(ctx, request.(PostElevateWebauthnVerifyRequestObject))
+		return sh.ssi.VerifyElevateWebauthn(ctx, request.(VerifyElevateWebauthnRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "PostElevateWebauthnVerify")
+		handler = middleware(handler, "VerifyElevateWebauthn")
 	}
 
 	response, err := handler(ctx, request)
@@ -2183,8 +2183,8 @@ func (sh *strictHandler) PostElevateWebauthnVerify(ctx *gin.Context) {
 	if err != nil {
 		ctx.Error(err)
 		ctx.Status(http.StatusInternalServerError)
-	} else if validResponse, ok := response.(PostElevateWebauthnVerifyResponseObject); ok {
-		if err := validResponse.VisitPostElevateWebauthnVerifyResponse(ctx.Writer); err != nil {
+	} else if validResponse, ok := response.(VerifyElevateWebauthnResponseObject); ok {
+		if err := validResponse.VisitVerifyElevateWebauthnResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {
@@ -2192,15 +2192,15 @@ func (sh *strictHandler) PostElevateWebauthnVerify(ctx *gin.Context) {
 	}
 }
 
-// GetHealthz operation middleware
-func (sh *strictHandler) GetHealthz(ctx *gin.Context) {
-	var request GetHealthzRequestObject
+// HealthCheckGet operation middleware
+func (sh *strictHandler) HealthCheckGet(ctx *gin.Context) {
+	var request HealthCheckGetRequestObject
 
 	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.GetHealthz(ctx, request.(GetHealthzRequestObject))
+		return sh.ssi.HealthCheckGet(ctx, request.(HealthCheckGetRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "GetHealthz")
+		handler = middleware(handler, "HealthCheckGet")
 	}
 
 	response, err := handler(ctx, request)
@@ -2208,8 +2208,8 @@ func (sh *strictHandler) GetHealthz(ctx *gin.Context) {
 	if err != nil {
 		ctx.Error(err)
 		ctx.Status(http.StatusInternalServerError)
-	} else if validResponse, ok := response.(GetHealthzResponseObject); ok {
-		if err := validResponse.VisitGetHealthzResponse(ctx.Writer); err != nil {
+	} else if validResponse, ok := response.(HealthCheckGetResponseObject); ok {
+		if err := validResponse.VisitHealthCheckGetResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {
@@ -2217,15 +2217,15 @@ func (sh *strictHandler) GetHealthz(ctx *gin.Context) {
 	}
 }
 
-// HeadHealthz operation middleware
-func (sh *strictHandler) HeadHealthz(ctx *gin.Context) {
-	var request HeadHealthzRequestObject
+// HealthCheckHead operation middleware
+func (sh *strictHandler) HealthCheckHead(ctx *gin.Context) {
+	var request HealthCheckHeadRequestObject
 
 	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.HeadHealthz(ctx, request.(HeadHealthzRequestObject))
+		return sh.ssi.HealthCheckHead(ctx, request.(HealthCheckHeadRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "HeadHealthz")
+		handler = middleware(handler, "HealthCheckHead")
 	}
 
 	response, err := handler(ctx, request)
@@ -2233,8 +2233,8 @@ func (sh *strictHandler) HeadHealthz(ctx *gin.Context) {
 	if err != nil {
 		ctx.Error(err)
 		ctx.Status(http.StatusInternalServerError)
-	} else if validResponse, ok := response.(HeadHealthzResponseObject); ok {
-		if err := validResponse.VisitHeadHealthzResponse(ctx.Writer); err != nil {
+	} else if validResponse, ok := response.(HealthCheckHeadResponseObject); ok {
+		if err := validResponse.VisitHealthCheckHeadResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {
@@ -2242,11 +2242,11 @@ func (sh *strictHandler) HeadHealthz(ctx *gin.Context) {
 	}
 }
 
-// PostLinkIdtoken operation middleware
-func (sh *strictHandler) PostLinkIdtoken(ctx *gin.Context) {
-	var request PostLinkIdtokenRequestObject
+// LinkIdToken operation middleware
+func (sh *strictHandler) LinkIdToken(ctx *gin.Context) {
+	var request LinkIdTokenRequestObject
 
-	var body PostLinkIdtokenJSONRequestBody
+	var body LinkIdTokenJSONRequestBody
 	if err := ctx.ShouldBindJSON(&body); err != nil {
 		ctx.Status(http.StatusBadRequest)
 		ctx.Error(err)
@@ -2255,10 +2255,10 @@ func (sh *strictHandler) PostLinkIdtoken(ctx *gin.Context) {
 	request.Body = &body
 
 	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.PostLinkIdtoken(ctx, request.(PostLinkIdtokenRequestObject))
+		return sh.ssi.LinkIdToken(ctx, request.(LinkIdTokenRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "PostLinkIdtoken")
+		handler = middleware(handler, "LinkIdToken")
 	}
 
 	response, err := handler(ctx, request)
@@ -2266,8 +2266,8 @@ func (sh *strictHandler) PostLinkIdtoken(ctx *gin.Context) {
 	if err != nil {
 		ctx.Error(err)
 		ctx.Status(http.StatusInternalServerError)
-	} else if validResponse, ok := response.(PostLinkIdtokenResponseObject); ok {
-		if err := validResponse.VisitPostLinkIdtokenResponse(ctx.Writer); err != nil {
+	} else if validResponse, ok := response.(LinkIdTokenResponseObject); ok {
+		if err := validResponse.VisitLinkIdTokenResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {
@@ -2275,15 +2275,15 @@ func (sh *strictHandler) PostLinkIdtoken(ctx *gin.Context) {
 	}
 }
 
-// GetMfaTotpGenerate operation middleware
-func (sh *strictHandler) GetMfaTotpGenerate(ctx *gin.Context) {
-	var request GetMfaTotpGenerateRequestObject
+// ChangeUserMfa operation middleware
+func (sh *strictHandler) ChangeUserMfa(ctx *gin.Context) {
+	var request ChangeUserMfaRequestObject
 
 	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.GetMfaTotpGenerate(ctx, request.(GetMfaTotpGenerateRequestObject))
+		return sh.ssi.ChangeUserMfa(ctx, request.(ChangeUserMfaRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "GetMfaTotpGenerate")
+		handler = middleware(handler, "ChangeUserMfa")
 	}
 
 	response, err := handler(ctx, request)
@@ -2291,8 +2291,8 @@ func (sh *strictHandler) GetMfaTotpGenerate(ctx *gin.Context) {
 	if err != nil {
 		ctx.Error(err)
 		ctx.Status(http.StatusInternalServerError)
-	} else if validResponse, ok := response.(GetMfaTotpGenerateResponseObject); ok {
-		if err := validResponse.VisitGetMfaTotpGenerateResponse(ctx.Writer); err != nil {
+	} else if validResponse, ok := response.(ChangeUserMfaResponseObject); ok {
+		if err := validResponse.VisitChangeUserMfaResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {
@@ -2300,11 +2300,11 @@ func (sh *strictHandler) GetMfaTotpGenerate(ctx *gin.Context) {
 	}
 }
 
-// PostPat operation middleware
-func (sh *strictHandler) PostPat(ctx *gin.Context) {
-	var request PostPatRequestObject
+// CreatePAT operation middleware
+func (sh *strictHandler) CreatePAT(ctx *gin.Context) {
+	var request CreatePATRequestObject
 
-	var body PostPatJSONRequestBody
+	var body CreatePATJSONRequestBody
 	if err := ctx.ShouldBindJSON(&body); err != nil {
 		ctx.Status(http.StatusBadRequest)
 		ctx.Error(err)
@@ -2313,10 +2313,10 @@ func (sh *strictHandler) PostPat(ctx *gin.Context) {
 	request.Body = &body
 
 	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.PostPat(ctx, request.(PostPatRequestObject))
+		return sh.ssi.CreatePAT(ctx, request.(CreatePATRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "PostPat")
+		handler = middleware(handler, "CreatePAT")
 	}
 
 	response, err := handler(ctx, request)
@@ -2324,8 +2324,8 @@ func (sh *strictHandler) PostPat(ctx *gin.Context) {
 	if err != nil {
 		ctx.Error(err)
 		ctx.Status(http.StatusInternalServerError)
-	} else if validResponse, ok := response.(PostPatResponseObject); ok {
-		if err := validResponse.VisitPostPatResponse(ctx.Writer); err != nil {
+	} else if validResponse, ok := response.(CreatePATResponseObject); ok {
+		if err := validResponse.VisitCreatePATResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {
@@ -2333,11 +2333,11 @@ func (sh *strictHandler) PostPat(ctx *gin.Context) {
 	}
 }
 
-// PostSigninAnonymous operation middleware
-func (sh *strictHandler) PostSigninAnonymous(ctx *gin.Context) {
-	var request PostSigninAnonymousRequestObject
+// SignInAnonymous operation middleware
+func (sh *strictHandler) SignInAnonymous(ctx *gin.Context) {
+	var request SignInAnonymousRequestObject
 
-	var body PostSigninAnonymousJSONRequestBody
+	var body SignInAnonymousJSONRequestBody
 	if err := ctx.ShouldBindJSON(&body); err != nil {
 		if !errors.Is(err, io.EOF) {
 			ctx.Status(http.StatusBadRequest)
@@ -2348,10 +2348,10 @@ func (sh *strictHandler) PostSigninAnonymous(ctx *gin.Context) {
 	request.Body = &body
 
 	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.PostSigninAnonymous(ctx, request.(PostSigninAnonymousRequestObject))
+		return sh.ssi.SignInAnonymous(ctx, request.(SignInAnonymousRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "PostSigninAnonymous")
+		handler = middleware(handler, "SignInAnonymous")
 	}
 
 	response, err := handler(ctx, request)
@@ -2359,8 +2359,8 @@ func (sh *strictHandler) PostSigninAnonymous(ctx *gin.Context) {
 	if err != nil {
 		ctx.Error(err)
 		ctx.Status(http.StatusInternalServerError)
-	} else if validResponse, ok := response.(PostSigninAnonymousResponseObject); ok {
-		if err := validResponse.VisitPostSigninAnonymousResponse(ctx.Writer); err != nil {
+	} else if validResponse, ok := response.(SignInAnonymousResponseObject); ok {
+		if err := validResponse.VisitSignInAnonymousResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {
@@ -2368,11 +2368,11 @@ func (sh *strictHandler) PostSigninAnonymous(ctx *gin.Context) {
 	}
 }
 
-// PostSigninEmailPassword operation middleware
-func (sh *strictHandler) PostSigninEmailPassword(ctx *gin.Context) {
-	var request PostSigninEmailPasswordRequestObject
+// SignInEmailPassword operation middleware
+func (sh *strictHandler) SignInEmailPassword(ctx *gin.Context) {
+	var request SignInEmailPasswordRequestObject
 
-	var body PostSigninEmailPasswordJSONRequestBody
+	var body SignInEmailPasswordJSONRequestBody
 	if err := ctx.ShouldBindJSON(&body); err != nil {
 		ctx.Status(http.StatusBadRequest)
 		ctx.Error(err)
@@ -2381,10 +2381,10 @@ func (sh *strictHandler) PostSigninEmailPassword(ctx *gin.Context) {
 	request.Body = &body
 
 	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.PostSigninEmailPassword(ctx, request.(PostSigninEmailPasswordRequestObject))
+		return sh.ssi.SignInEmailPassword(ctx, request.(SignInEmailPasswordRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "PostSigninEmailPassword")
+		handler = middleware(handler, "SignInEmailPassword")
 	}
 
 	response, err := handler(ctx, request)
@@ -2392,8 +2392,8 @@ func (sh *strictHandler) PostSigninEmailPassword(ctx *gin.Context) {
 	if err != nil {
 		ctx.Error(err)
 		ctx.Status(http.StatusInternalServerError)
-	} else if validResponse, ok := response.(PostSigninEmailPasswordResponseObject); ok {
-		if err := validResponse.VisitPostSigninEmailPasswordResponse(ctx.Writer); err != nil {
+	} else if validResponse, ok := response.(SignInEmailPasswordResponseObject); ok {
+		if err := validResponse.VisitSignInEmailPasswordResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {
@@ -2401,11 +2401,11 @@ func (sh *strictHandler) PostSigninEmailPassword(ctx *gin.Context) {
 	}
 }
 
-// PostSigninIdtoken operation middleware
-func (sh *strictHandler) PostSigninIdtoken(ctx *gin.Context) {
-	var request PostSigninIdtokenRequestObject
+// SignInIdToken operation middleware
+func (sh *strictHandler) SignInIdToken(ctx *gin.Context) {
+	var request SignInIdTokenRequestObject
 
-	var body PostSigninIdtokenJSONRequestBody
+	var body SignInIdTokenJSONRequestBody
 	if err := ctx.ShouldBindJSON(&body); err != nil {
 		ctx.Status(http.StatusBadRequest)
 		ctx.Error(err)
@@ -2414,10 +2414,10 @@ func (sh *strictHandler) PostSigninIdtoken(ctx *gin.Context) {
 	request.Body = &body
 
 	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.PostSigninIdtoken(ctx, request.(PostSigninIdtokenRequestObject))
+		return sh.ssi.SignInIdToken(ctx, request.(SignInIdTokenRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "PostSigninIdtoken")
+		handler = middleware(handler, "SignInIdToken")
 	}
 
 	response, err := handler(ctx, request)
@@ -2425,8 +2425,8 @@ func (sh *strictHandler) PostSigninIdtoken(ctx *gin.Context) {
 	if err != nil {
 		ctx.Error(err)
 		ctx.Status(http.StatusInternalServerError)
-	} else if validResponse, ok := response.(PostSigninIdtokenResponseObject); ok {
-		if err := validResponse.VisitPostSigninIdtokenResponse(ctx.Writer); err != nil {
+	} else if validResponse, ok := response.(SignInIdTokenResponseObject); ok {
+		if err := validResponse.VisitSignInIdTokenResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {
@@ -2434,11 +2434,11 @@ func (sh *strictHandler) PostSigninIdtoken(ctx *gin.Context) {
 	}
 }
 
-// PostSigninMfaTotp operation middleware
-func (sh *strictHandler) PostSigninMfaTotp(ctx *gin.Context) {
-	var request PostSigninMfaTotpRequestObject
+// VerifySignInMfaTotp operation middleware
+func (sh *strictHandler) VerifySignInMfaTotp(ctx *gin.Context) {
+	var request VerifySignInMfaTotpRequestObject
 
-	var body PostSigninMfaTotpJSONRequestBody
+	var body VerifySignInMfaTotpJSONRequestBody
 	if err := ctx.ShouldBindJSON(&body); err != nil {
 		ctx.Status(http.StatusBadRequest)
 		ctx.Error(err)
@@ -2447,10 +2447,10 @@ func (sh *strictHandler) PostSigninMfaTotp(ctx *gin.Context) {
 	request.Body = &body
 
 	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.PostSigninMfaTotp(ctx, request.(PostSigninMfaTotpRequestObject))
+		return sh.ssi.VerifySignInMfaTotp(ctx, request.(VerifySignInMfaTotpRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "PostSigninMfaTotp")
+		handler = middleware(handler, "VerifySignInMfaTotp")
 	}
 
 	response, err := handler(ctx, request)
@@ -2458,8 +2458,8 @@ func (sh *strictHandler) PostSigninMfaTotp(ctx *gin.Context) {
 	if err != nil {
 		ctx.Error(err)
 		ctx.Status(http.StatusInternalServerError)
-	} else if validResponse, ok := response.(PostSigninMfaTotpResponseObject); ok {
-		if err := validResponse.VisitPostSigninMfaTotpResponse(ctx.Writer); err != nil {
+	} else if validResponse, ok := response.(VerifySignInMfaTotpResponseObject); ok {
+		if err := validResponse.VisitVerifySignInMfaTotpResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {
@@ -2467,11 +2467,11 @@ func (sh *strictHandler) PostSigninMfaTotp(ctx *gin.Context) {
 	}
 }
 
-// PostSigninOtpEmail operation middleware
-func (sh *strictHandler) PostSigninOtpEmail(ctx *gin.Context) {
-	var request PostSigninOtpEmailRequestObject
+// SignInOTPEmail operation middleware
+func (sh *strictHandler) SignInOTPEmail(ctx *gin.Context) {
+	var request SignInOTPEmailRequestObject
 
-	var body PostSigninOtpEmailJSONRequestBody
+	var body SignInOTPEmailJSONRequestBody
 	if err := ctx.ShouldBindJSON(&body); err != nil {
 		ctx.Status(http.StatusBadRequest)
 		ctx.Error(err)
@@ -2480,10 +2480,10 @@ func (sh *strictHandler) PostSigninOtpEmail(ctx *gin.Context) {
 	request.Body = &body
 
 	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.PostSigninOtpEmail(ctx, request.(PostSigninOtpEmailRequestObject))
+		return sh.ssi.SignInOTPEmail(ctx, request.(SignInOTPEmailRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "PostSigninOtpEmail")
+		handler = middleware(handler, "SignInOTPEmail")
 	}
 
 	response, err := handler(ctx, request)
@@ -2491,8 +2491,8 @@ func (sh *strictHandler) PostSigninOtpEmail(ctx *gin.Context) {
 	if err != nil {
 		ctx.Error(err)
 		ctx.Status(http.StatusInternalServerError)
-	} else if validResponse, ok := response.(PostSigninOtpEmailResponseObject); ok {
-		if err := validResponse.VisitPostSigninOtpEmailResponse(ctx.Writer); err != nil {
+	} else if validResponse, ok := response.(SignInOTPEmailResponseObject); ok {
+		if err := validResponse.VisitSignInOTPEmailResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {
@@ -2500,11 +2500,11 @@ func (sh *strictHandler) PostSigninOtpEmail(ctx *gin.Context) {
 	}
 }
 
-// PostSigninOtpEmailVerify operation middleware
-func (sh *strictHandler) PostSigninOtpEmailVerify(ctx *gin.Context) {
-	var request PostSigninOtpEmailVerifyRequestObject
+// VerifySignInOTPEmail operation middleware
+func (sh *strictHandler) VerifySignInOTPEmail(ctx *gin.Context) {
+	var request VerifySignInOTPEmailRequestObject
 
-	var body PostSigninOtpEmailVerifyJSONRequestBody
+	var body VerifySignInOTPEmailJSONRequestBody
 	if err := ctx.ShouldBindJSON(&body); err != nil {
 		ctx.Status(http.StatusBadRequest)
 		ctx.Error(err)
@@ -2513,10 +2513,10 @@ func (sh *strictHandler) PostSigninOtpEmailVerify(ctx *gin.Context) {
 	request.Body = &body
 
 	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.PostSigninOtpEmailVerify(ctx, request.(PostSigninOtpEmailVerifyRequestObject))
+		return sh.ssi.VerifySignInOTPEmail(ctx, request.(VerifySignInOTPEmailRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "PostSigninOtpEmailVerify")
+		handler = middleware(handler, "VerifySignInOTPEmail")
 	}
 
 	response, err := handler(ctx, request)
@@ -2524,8 +2524,8 @@ func (sh *strictHandler) PostSigninOtpEmailVerify(ctx *gin.Context) {
 	if err != nil {
 		ctx.Error(err)
 		ctx.Status(http.StatusInternalServerError)
-	} else if validResponse, ok := response.(PostSigninOtpEmailVerifyResponseObject); ok {
-		if err := validResponse.VisitPostSigninOtpEmailVerifyResponse(ctx.Writer); err != nil {
+	} else if validResponse, ok := response.(VerifySignInOTPEmailResponseObject); ok {
+		if err := validResponse.VisitVerifySignInOTPEmailResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {
@@ -2533,11 +2533,11 @@ func (sh *strictHandler) PostSigninOtpEmailVerify(ctx *gin.Context) {
 	}
 }
 
-// PostSigninPasswordlessEmail operation middleware
-func (sh *strictHandler) PostSigninPasswordlessEmail(ctx *gin.Context) {
-	var request PostSigninPasswordlessEmailRequestObject
+// SignInPasswordlessEmail operation middleware
+func (sh *strictHandler) SignInPasswordlessEmail(ctx *gin.Context) {
+	var request SignInPasswordlessEmailRequestObject
 
-	var body PostSigninPasswordlessEmailJSONRequestBody
+	var body SignInPasswordlessEmailJSONRequestBody
 	if err := ctx.ShouldBindJSON(&body); err != nil {
 		ctx.Status(http.StatusBadRequest)
 		ctx.Error(err)
@@ -2546,10 +2546,10 @@ func (sh *strictHandler) PostSigninPasswordlessEmail(ctx *gin.Context) {
 	request.Body = &body
 
 	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.PostSigninPasswordlessEmail(ctx, request.(PostSigninPasswordlessEmailRequestObject))
+		return sh.ssi.SignInPasswordlessEmail(ctx, request.(SignInPasswordlessEmailRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "PostSigninPasswordlessEmail")
+		handler = middleware(handler, "SignInPasswordlessEmail")
 	}
 
 	response, err := handler(ctx, request)
@@ -2557,8 +2557,8 @@ func (sh *strictHandler) PostSigninPasswordlessEmail(ctx *gin.Context) {
 	if err != nil {
 		ctx.Error(err)
 		ctx.Status(http.StatusInternalServerError)
-	} else if validResponse, ok := response.(PostSigninPasswordlessEmailResponseObject); ok {
-		if err := validResponse.VisitPostSigninPasswordlessEmailResponse(ctx.Writer); err != nil {
+	} else if validResponse, ok := response.(SignInPasswordlessEmailResponseObject); ok {
+		if err := validResponse.VisitSignInPasswordlessEmailResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {
@@ -2566,11 +2566,11 @@ func (sh *strictHandler) PostSigninPasswordlessEmail(ctx *gin.Context) {
 	}
 }
 
-// PostSigninPasswordlessSms operation middleware
-func (sh *strictHandler) PostSigninPasswordlessSms(ctx *gin.Context) {
-	var request PostSigninPasswordlessSmsRequestObject
+// SignInPasswordlessSms operation middleware
+func (sh *strictHandler) SignInPasswordlessSms(ctx *gin.Context) {
+	var request SignInPasswordlessSmsRequestObject
 
-	var body PostSigninPasswordlessSmsJSONRequestBody
+	var body SignInPasswordlessSmsJSONRequestBody
 	if err := ctx.ShouldBindJSON(&body); err != nil {
 		ctx.Status(http.StatusBadRequest)
 		ctx.Error(err)
@@ -2579,10 +2579,10 @@ func (sh *strictHandler) PostSigninPasswordlessSms(ctx *gin.Context) {
 	request.Body = &body
 
 	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.PostSigninPasswordlessSms(ctx, request.(PostSigninPasswordlessSmsRequestObject))
+		return sh.ssi.SignInPasswordlessSms(ctx, request.(SignInPasswordlessSmsRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "PostSigninPasswordlessSms")
+		handler = middleware(handler, "SignInPasswordlessSms")
 	}
 
 	response, err := handler(ctx, request)
@@ -2590,8 +2590,8 @@ func (sh *strictHandler) PostSigninPasswordlessSms(ctx *gin.Context) {
 	if err != nil {
 		ctx.Error(err)
 		ctx.Status(http.StatusInternalServerError)
-	} else if validResponse, ok := response.(PostSigninPasswordlessSmsResponseObject); ok {
-		if err := validResponse.VisitPostSigninPasswordlessSmsResponse(ctx.Writer); err != nil {
+	} else if validResponse, ok := response.(SignInPasswordlessSmsResponseObject); ok {
+		if err := validResponse.VisitSignInPasswordlessSmsResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {
@@ -2599,11 +2599,11 @@ func (sh *strictHandler) PostSigninPasswordlessSms(ctx *gin.Context) {
 	}
 }
 
-// PostSigninPasswordlessSmsOtp operation middleware
-func (sh *strictHandler) PostSigninPasswordlessSmsOtp(ctx *gin.Context) {
-	var request PostSigninPasswordlessSmsOtpRequestObject
+// VerifySignInPasswordlessSms operation middleware
+func (sh *strictHandler) VerifySignInPasswordlessSms(ctx *gin.Context) {
+	var request VerifySignInPasswordlessSmsRequestObject
 
-	var body PostSigninPasswordlessSmsOtpJSONRequestBody
+	var body VerifySignInPasswordlessSmsJSONRequestBody
 	if err := ctx.ShouldBindJSON(&body); err != nil {
 		ctx.Status(http.StatusBadRequest)
 		ctx.Error(err)
@@ -2612,10 +2612,10 @@ func (sh *strictHandler) PostSigninPasswordlessSmsOtp(ctx *gin.Context) {
 	request.Body = &body
 
 	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.PostSigninPasswordlessSmsOtp(ctx, request.(PostSigninPasswordlessSmsOtpRequestObject))
+		return sh.ssi.VerifySignInPasswordlessSms(ctx, request.(VerifySignInPasswordlessSmsRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "PostSigninPasswordlessSmsOtp")
+		handler = middleware(handler, "VerifySignInPasswordlessSms")
 	}
 
 	response, err := handler(ctx, request)
@@ -2623,8 +2623,8 @@ func (sh *strictHandler) PostSigninPasswordlessSmsOtp(ctx *gin.Context) {
 	if err != nil {
 		ctx.Error(err)
 		ctx.Status(http.StatusInternalServerError)
-	} else if validResponse, ok := response.(PostSigninPasswordlessSmsOtpResponseObject); ok {
-		if err := validResponse.VisitPostSigninPasswordlessSmsOtpResponse(ctx.Writer); err != nil {
+	} else if validResponse, ok := response.(VerifySignInPasswordlessSmsResponseObject); ok {
+		if err := validResponse.VisitVerifySignInPasswordlessSmsResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {
@@ -2632,11 +2632,11 @@ func (sh *strictHandler) PostSigninPasswordlessSmsOtp(ctx *gin.Context) {
 	}
 }
 
-// PostSigninPat operation middleware
-func (sh *strictHandler) PostSigninPat(ctx *gin.Context) {
-	var request PostSigninPatRequestObject
+// SignInPAT operation middleware
+func (sh *strictHandler) SignInPAT(ctx *gin.Context) {
+	var request SignInPATRequestObject
 
-	var body PostSigninPatJSONRequestBody
+	var body SignInPATJSONRequestBody
 	if err := ctx.ShouldBindJSON(&body); err != nil {
 		ctx.Status(http.StatusBadRequest)
 		ctx.Error(err)
@@ -2645,10 +2645,10 @@ func (sh *strictHandler) PostSigninPat(ctx *gin.Context) {
 	request.Body = &body
 
 	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.PostSigninPat(ctx, request.(PostSigninPatRequestObject))
+		return sh.ssi.SignInPAT(ctx, request.(SignInPATRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "PostSigninPat")
+		handler = middleware(handler, "SignInPAT")
 	}
 
 	response, err := handler(ctx, request)
@@ -2656,8 +2656,8 @@ func (sh *strictHandler) PostSigninPat(ctx *gin.Context) {
 	if err != nil {
 		ctx.Error(err)
 		ctx.Status(http.StatusInternalServerError)
-	} else if validResponse, ok := response.(PostSigninPatResponseObject); ok {
-		if err := validResponse.VisitPostSigninPatResponse(ctx.Writer); err != nil {
+	} else if validResponse, ok := response.(SignInPATResponseObject); ok {
+		if err := validResponse.VisitSignInPATResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {
@@ -2665,18 +2665,18 @@ func (sh *strictHandler) PostSigninPat(ctx *gin.Context) {
 	}
 }
 
-// GetSigninProviderProvider operation middleware
-func (sh *strictHandler) GetSigninProviderProvider(ctx *gin.Context, provider GetSigninProviderProviderParamsProvider, params GetSigninProviderProviderParams) {
-	var request GetSigninProviderProviderRequestObject
+// SignInProvider operation middleware
+func (sh *strictHandler) SignInProvider(ctx *gin.Context, provider SignInProviderParamsProvider, params SignInProviderParams) {
+	var request SignInProviderRequestObject
 
 	request.Provider = provider
 	request.Params = params
 
 	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.GetSigninProviderProvider(ctx, request.(GetSigninProviderProviderRequestObject))
+		return sh.ssi.SignInProvider(ctx, request.(SignInProviderRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "GetSigninProviderProvider")
+		handler = middleware(handler, "SignInProvider")
 	}
 
 	response, err := handler(ctx, request)
@@ -2684,8 +2684,8 @@ func (sh *strictHandler) GetSigninProviderProvider(ctx *gin.Context, provider Ge
 	if err != nil {
 		ctx.Error(err)
 		ctx.Status(http.StatusInternalServerError)
-	} else if validResponse, ok := response.(GetSigninProviderProviderResponseObject); ok {
-		if err := validResponse.VisitGetSigninProviderProviderResponse(ctx.Writer); err != nil {
+	} else if validResponse, ok := response.(SignInProviderResponseObject); ok {
+		if err := validResponse.VisitSignInProviderResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {
@@ -2693,18 +2693,18 @@ func (sh *strictHandler) GetSigninProviderProvider(ctx *gin.Context, provider Ge
 	}
 }
 
-// GetSigninProviderProviderCallback operation middleware
-func (sh *strictHandler) GetSigninProviderProviderCallback(ctx *gin.Context, provider GetSigninProviderProviderCallbackParamsProvider, params GetSigninProviderProviderCallbackParams) {
-	var request GetSigninProviderProviderCallbackRequestObject
+// SignInProviderCallbackGet operation middleware
+func (sh *strictHandler) SignInProviderCallbackGet(ctx *gin.Context, provider SignInProviderCallbackGetParamsProvider, params SignInProviderCallbackGetParams) {
+	var request SignInProviderCallbackGetRequestObject
 
 	request.Provider = provider
 	request.Params = params
 
 	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.GetSigninProviderProviderCallback(ctx, request.(GetSigninProviderProviderCallbackRequestObject))
+		return sh.ssi.SignInProviderCallbackGet(ctx, request.(SignInProviderCallbackGetRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "GetSigninProviderProviderCallback")
+		handler = middleware(handler, "SignInProviderCallbackGet")
 	}
 
 	response, err := handler(ctx, request)
@@ -2712,8 +2712,8 @@ func (sh *strictHandler) GetSigninProviderProviderCallback(ctx *gin.Context, pro
 	if err != nil {
 		ctx.Error(err)
 		ctx.Status(http.StatusInternalServerError)
-	} else if validResponse, ok := response.(GetSigninProviderProviderCallbackResponseObject); ok {
-		if err := validResponse.VisitGetSigninProviderProviderCallbackResponse(ctx.Writer); err != nil {
+	} else if validResponse, ok := response.(SignInProviderCallbackGetResponseObject); ok {
+		if err := validResponse.VisitSignInProviderCallbackGetResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {
@@ -2721,9 +2721,9 @@ func (sh *strictHandler) GetSigninProviderProviderCallback(ctx *gin.Context, pro
 	}
 }
 
-// PostSigninProviderProviderCallback operation middleware
-func (sh *strictHandler) PostSigninProviderProviderCallback(ctx *gin.Context, provider PostSigninProviderProviderCallbackParamsProvider) {
-	var request PostSigninProviderProviderCallbackRequestObject
+// SignInProviderCallbackPost operation middleware
+func (sh *strictHandler) SignInProviderCallbackPost(ctx *gin.Context, provider SignInProviderCallbackPostParamsProvider) {
+	var request SignInProviderCallbackPostRequestObject
 
 	request.Provider = provider
 
@@ -2731,7 +2731,7 @@ func (sh *strictHandler) PostSigninProviderProviderCallback(ctx *gin.Context, pr
 		ctx.Error(err)
 		return
 	}
-	var body PostSigninProviderProviderCallbackFormdataRequestBody
+	var body SignInProviderCallbackPostFormdataRequestBody
 	if err := runtime.BindForm(&body, ctx.Request.Form, nil, nil); err != nil {
 		ctx.Error(err)
 		return
@@ -2739,10 +2739,10 @@ func (sh *strictHandler) PostSigninProviderProviderCallback(ctx *gin.Context, pr
 	request.Body = &body
 
 	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.PostSigninProviderProviderCallback(ctx, request.(PostSigninProviderProviderCallbackRequestObject))
+		return sh.ssi.SignInProviderCallbackPost(ctx, request.(SignInProviderCallbackPostRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "PostSigninProviderProviderCallback")
+		handler = middleware(handler, "SignInProviderCallbackPost")
 	}
 
 	response, err := handler(ctx, request)
@@ -2750,8 +2750,8 @@ func (sh *strictHandler) PostSigninProviderProviderCallback(ctx *gin.Context, pr
 	if err != nil {
 		ctx.Error(err)
 		ctx.Status(http.StatusInternalServerError)
-	} else if validResponse, ok := response.(PostSigninProviderProviderCallbackResponseObject); ok {
-		if err := validResponse.VisitPostSigninProviderProviderCallbackResponse(ctx.Writer); err != nil {
+	} else if validResponse, ok := response.(SignInProviderCallbackPostResponseObject); ok {
+		if err := validResponse.VisitSignInProviderCallbackPostResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {
@@ -2759,11 +2759,11 @@ func (sh *strictHandler) PostSigninProviderProviderCallback(ctx *gin.Context, pr
 	}
 }
 
-// PostSigninWebauthn operation middleware
-func (sh *strictHandler) PostSigninWebauthn(ctx *gin.Context) {
-	var request PostSigninWebauthnRequestObject
+// SignInWebauthn operation middleware
+func (sh *strictHandler) SignInWebauthn(ctx *gin.Context) {
+	var request SignInWebauthnRequestObject
 
-	var body PostSigninWebauthnJSONRequestBody
+	var body SignInWebauthnJSONRequestBody
 	if err := ctx.ShouldBindJSON(&body); err != nil {
 		if !errors.Is(err, io.EOF) {
 			ctx.Status(http.StatusBadRequest)
@@ -2774,10 +2774,10 @@ func (sh *strictHandler) PostSigninWebauthn(ctx *gin.Context) {
 	request.Body = &body
 
 	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.PostSigninWebauthn(ctx, request.(PostSigninWebauthnRequestObject))
+		return sh.ssi.SignInWebauthn(ctx, request.(SignInWebauthnRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "PostSigninWebauthn")
+		handler = middleware(handler, "SignInWebauthn")
 	}
 
 	response, err := handler(ctx, request)
@@ -2785,8 +2785,8 @@ func (sh *strictHandler) PostSigninWebauthn(ctx *gin.Context) {
 	if err != nil {
 		ctx.Error(err)
 		ctx.Status(http.StatusInternalServerError)
-	} else if validResponse, ok := response.(PostSigninWebauthnResponseObject); ok {
-		if err := validResponse.VisitPostSigninWebauthnResponse(ctx.Writer); err != nil {
+	} else if validResponse, ok := response.(SignInWebauthnResponseObject); ok {
+		if err := validResponse.VisitSignInWebauthnResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {
@@ -2794,11 +2794,11 @@ func (sh *strictHandler) PostSigninWebauthn(ctx *gin.Context) {
 	}
 }
 
-// PostSigninWebauthnVerify operation middleware
-func (sh *strictHandler) PostSigninWebauthnVerify(ctx *gin.Context) {
-	var request PostSigninWebauthnVerifyRequestObject
+// VerifySignInWebauthn operation middleware
+func (sh *strictHandler) VerifySignInWebauthn(ctx *gin.Context) {
+	var request VerifySignInWebauthnRequestObject
 
-	var body PostSigninWebauthnVerifyJSONRequestBody
+	var body VerifySignInWebauthnJSONRequestBody
 	if err := ctx.ShouldBindJSON(&body); err != nil {
 		ctx.Status(http.StatusBadRequest)
 		ctx.Error(err)
@@ -2807,10 +2807,10 @@ func (sh *strictHandler) PostSigninWebauthnVerify(ctx *gin.Context) {
 	request.Body = &body
 
 	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.PostSigninWebauthnVerify(ctx, request.(PostSigninWebauthnVerifyRequestObject))
+		return sh.ssi.VerifySignInWebauthn(ctx, request.(VerifySignInWebauthnRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "PostSigninWebauthnVerify")
+		handler = middleware(handler, "VerifySignInWebauthn")
 	}
 
 	response, err := handler(ctx, request)
@@ -2818,8 +2818,8 @@ func (sh *strictHandler) PostSigninWebauthnVerify(ctx *gin.Context) {
 	if err != nil {
 		ctx.Error(err)
 		ctx.Status(http.StatusInternalServerError)
-	} else if validResponse, ok := response.(PostSigninWebauthnVerifyResponseObject); ok {
-		if err := validResponse.VisitPostSigninWebauthnVerifyResponse(ctx.Writer); err != nil {
+	} else if validResponse, ok := response.(VerifySignInWebauthnResponseObject); ok {
+		if err := validResponse.VisitVerifySignInWebauthnResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {
@@ -2827,11 +2827,11 @@ func (sh *strictHandler) PostSigninWebauthnVerify(ctx *gin.Context) {
 	}
 }
 
-// PostSignout operation middleware
-func (sh *strictHandler) PostSignout(ctx *gin.Context) {
-	var request PostSignoutRequestObject
+// SignOut operation middleware
+func (sh *strictHandler) SignOut(ctx *gin.Context) {
+	var request SignOutRequestObject
 
-	var body PostSignoutJSONRequestBody
+	var body SignOutJSONRequestBody
 	if err := ctx.ShouldBindJSON(&body); err != nil {
 		ctx.Status(http.StatusBadRequest)
 		ctx.Error(err)
@@ -2840,10 +2840,10 @@ func (sh *strictHandler) PostSignout(ctx *gin.Context) {
 	request.Body = &body
 
 	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.PostSignout(ctx, request.(PostSignoutRequestObject))
+		return sh.ssi.SignOut(ctx, request.(SignOutRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "PostSignout")
+		handler = middleware(handler, "SignOut")
 	}
 
 	response, err := handler(ctx, request)
@@ -2851,8 +2851,8 @@ func (sh *strictHandler) PostSignout(ctx *gin.Context) {
 	if err != nil {
 		ctx.Error(err)
 		ctx.Status(http.StatusInternalServerError)
-	} else if validResponse, ok := response.(PostSignoutResponseObject); ok {
-		if err := validResponse.VisitPostSignoutResponse(ctx.Writer); err != nil {
+	} else if validResponse, ok := response.(SignOutResponseObject); ok {
+		if err := validResponse.VisitSignOutResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {
@@ -2860,11 +2860,11 @@ func (sh *strictHandler) PostSignout(ctx *gin.Context) {
 	}
 }
 
-// PostSignupEmailPassword operation middleware
-func (sh *strictHandler) PostSignupEmailPassword(ctx *gin.Context) {
-	var request PostSignupEmailPasswordRequestObject
+// SignUpEmailPassword operation middleware
+func (sh *strictHandler) SignUpEmailPassword(ctx *gin.Context) {
+	var request SignUpEmailPasswordRequestObject
 
-	var body PostSignupEmailPasswordJSONRequestBody
+	var body SignUpEmailPasswordJSONRequestBody
 	if err := ctx.ShouldBindJSON(&body); err != nil {
 		ctx.Status(http.StatusBadRequest)
 		ctx.Error(err)
@@ -2873,10 +2873,10 @@ func (sh *strictHandler) PostSignupEmailPassword(ctx *gin.Context) {
 	request.Body = &body
 
 	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.PostSignupEmailPassword(ctx, request.(PostSignupEmailPasswordRequestObject))
+		return sh.ssi.SignUpEmailPassword(ctx, request.(SignUpEmailPasswordRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "PostSignupEmailPassword")
+		handler = middleware(handler, "SignUpEmailPassword")
 	}
 
 	response, err := handler(ctx, request)
@@ -2884,8 +2884,8 @@ func (sh *strictHandler) PostSignupEmailPassword(ctx *gin.Context) {
 	if err != nil {
 		ctx.Error(err)
 		ctx.Status(http.StatusInternalServerError)
-	} else if validResponse, ok := response.(PostSignupEmailPasswordResponseObject); ok {
-		if err := validResponse.VisitPostSignupEmailPasswordResponse(ctx.Writer); err != nil {
+	} else if validResponse, ok := response.(SignUpEmailPasswordResponseObject); ok {
+		if err := validResponse.VisitSignUpEmailPasswordResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {
@@ -2893,11 +2893,11 @@ func (sh *strictHandler) PostSignupEmailPassword(ctx *gin.Context) {
 	}
 }
 
-// PostSignupWebauthn operation middleware
-func (sh *strictHandler) PostSignupWebauthn(ctx *gin.Context) {
-	var request PostSignupWebauthnRequestObject
+// SignUpWebauthn operation middleware
+func (sh *strictHandler) SignUpWebauthn(ctx *gin.Context) {
+	var request SignUpWebauthnRequestObject
 
-	var body PostSignupWebauthnJSONRequestBody
+	var body SignUpWebauthnJSONRequestBody
 	if err := ctx.ShouldBindJSON(&body); err != nil {
 		ctx.Status(http.StatusBadRequest)
 		ctx.Error(err)
@@ -2906,10 +2906,10 @@ func (sh *strictHandler) PostSignupWebauthn(ctx *gin.Context) {
 	request.Body = &body
 
 	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.PostSignupWebauthn(ctx, request.(PostSignupWebauthnRequestObject))
+		return sh.ssi.SignUpWebauthn(ctx, request.(SignUpWebauthnRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "PostSignupWebauthn")
+		handler = middleware(handler, "SignUpWebauthn")
 	}
 
 	response, err := handler(ctx, request)
@@ -2917,8 +2917,8 @@ func (sh *strictHandler) PostSignupWebauthn(ctx *gin.Context) {
 	if err != nil {
 		ctx.Error(err)
 		ctx.Status(http.StatusInternalServerError)
-	} else if validResponse, ok := response.(PostSignupWebauthnResponseObject); ok {
-		if err := validResponse.VisitPostSignupWebauthnResponse(ctx.Writer); err != nil {
+	} else if validResponse, ok := response.(SignUpWebauthnResponseObject); ok {
+		if err := validResponse.VisitSignUpWebauthnResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {
@@ -2926,11 +2926,11 @@ func (sh *strictHandler) PostSignupWebauthn(ctx *gin.Context) {
 	}
 }
 
-// PostSignupWebauthnVerify operation middleware
-func (sh *strictHandler) PostSignupWebauthnVerify(ctx *gin.Context) {
-	var request PostSignupWebauthnVerifyRequestObject
+// VerifySignUpWebauthn operation middleware
+func (sh *strictHandler) VerifySignUpWebauthn(ctx *gin.Context) {
+	var request VerifySignUpWebauthnRequestObject
 
-	var body PostSignupWebauthnVerifyJSONRequestBody
+	var body VerifySignUpWebauthnJSONRequestBody
 	if err := ctx.ShouldBindJSON(&body); err != nil {
 		ctx.Status(http.StatusBadRequest)
 		ctx.Error(err)
@@ -2939,10 +2939,10 @@ func (sh *strictHandler) PostSignupWebauthnVerify(ctx *gin.Context) {
 	request.Body = &body
 
 	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.PostSignupWebauthnVerify(ctx, request.(PostSignupWebauthnVerifyRequestObject))
+		return sh.ssi.VerifySignUpWebauthn(ctx, request.(VerifySignUpWebauthnRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "PostSignupWebauthnVerify")
+		handler = middleware(handler, "VerifySignUpWebauthn")
 	}
 
 	response, err := handler(ctx, request)
@@ -2950,8 +2950,8 @@ func (sh *strictHandler) PostSignupWebauthnVerify(ctx *gin.Context) {
 	if err != nil {
 		ctx.Error(err)
 		ctx.Status(http.StatusInternalServerError)
-	} else if validResponse, ok := response.(PostSignupWebauthnVerifyResponseObject); ok {
-		if err := validResponse.VisitPostSignupWebauthnVerifyResponse(ctx.Writer); err != nil {
+	} else if validResponse, ok := response.(VerifySignUpWebauthnResponseObject); ok {
+		if err := validResponse.VisitVerifySignUpWebauthnResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {
@@ -2959,11 +2959,11 @@ func (sh *strictHandler) PostSignupWebauthnVerify(ctx *gin.Context) {
 	}
 }
 
-// PostToken operation middleware
-func (sh *strictHandler) PostToken(ctx *gin.Context) {
-	var request PostTokenRequestObject
+// RefreshToken operation middleware
+func (sh *strictHandler) RefreshToken(ctx *gin.Context) {
+	var request RefreshTokenRequestObject
 
-	var body PostTokenJSONRequestBody
+	var body RefreshTokenJSONRequestBody
 	if err := ctx.ShouldBindJSON(&body); err != nil {
 		ctx.Status(http.StatusBadRequest)
 		ctx.Error(err)
@@ -2972,10 +2972,10 @@ func (sh *strictHandler) PostToken(ctx *gin.Context) {
 	request.Body = &body
 
 	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.PostToken(ctx, request.(PostTokenRequestObject))
+		return sh.ssi.RefreshToken(ctx, request.(RefreshTokenRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "PostToken")
+		handler = middleware(handler, "RefreshToken")
 	}
 
 	response, err := handler(ctx, request)
@@ -2983,8 +2983,8 @@ func (sh *strictHandler) PostToken(ctx *gin.Context) {
 	if err != nil {
 		ctx.Error(err)
 		ctx.Status(http.StatusInternalServerError)
-	} else if validResponse, ok := response.(PostTokenResponseObject); ok {
-		if err := validResponse.VisitPostTokenResponse(ctx.Writer); err != nil {
+	} else if validResponse, ok := response.(RefreshTokenResponseObject); ok {
+		if err := validResponse.VisitRefreshTokenResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {
@@ -2992,11 +2992,11 @@ func (sh *strictHandler) PostToken(ctx *gin.Context) {
 	}
 }
 
-// PostTokenVerify operation middleware
-func (sh *strictHandler) PostTokenVerify(ctx *gin.Context) {
-	var request PostTokenVerifyRequestObject
+// VerifyToken operation middleware
+func (sh *strictHandler) VerifyToken(ctx *gin.Context) {
+	var request VerifyTokenRequestObject
 
-	var body PostTokenVerifyJSONRequestBody
+	var body VerifyTokenJSONRequestBody
 	if err := ctx.ShouldBindJSON(&body); err != nil {
 		if !errors.Is(err, io.EOF) {
 			ctx.Status(http.StatusBadRequest)
@@ -3007,10 +3007,10 @@ func (sh *strictHandler) PostTokenVerify(ctx *gin.Context) {
 	request.Body = &body
 
 	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.PostTokenVerify(ctx, request.(PostTokenVerifyRequestObject))
+		return sh.ssi.VerifyToken(ctx, request.(VerifyTokenRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "PostTokenVerify")
+		handler = middleware(handler, "VerifyToken")
 	}
 
 	response, err := handler(ctx, request)
@@ -3018,8 +3018,8 @@ func (sh *strictHandler) PostTokenVerify(ctx *gin.Context) {
 	if err != nil {
 		ctx.Error(err)
 		ctx.Status(http.StatusInternalServerError)
-	} else if validResponse, ok := response.(PostTokenVerifyResponseObject); ok {
-		if err := validResponse.VisitPostTokenVerifyResponse(ctx.Writer); err != nil {
+	} else if validResponse, ok := response.(VerifyTokenResponseObject); ok {
+		if err := validResponse.VisitVerifyTokenResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {
@@ -3052,11 +3052,11 @@ func (sh *strictHandler) GetUser(ctx *gin.Context) {
 	}
 }
 
-// PostUserDeanonymize operation middleware
-func (sh *strictHandler) PostUserDeanonymize(ctx *gin.Context) {
-	var request PostUserDeanonymizeRequestObject
+// DeanonymizeUser operation middleware
+func (sh *strictHandler) DeanonymizeUser(ctx *gin.Context) {
+	var request DeanonymizeUserRequestObject
 
-	var body PostUserDeanonymizeJSONRequestBody
+	var body DeanonymizeUserJSONRequestBody
 	if err := ctx.ShouldBindJSON(&body); err != nil {
 		ctx.Status(http.StatusBadRequest)
 		ctx.Error(err)
@@ -3065,10 +3065,10 @@ func (sh *strictHandler) PostUserDeanonymize(ctx *gin.Context) {
 	request.Body = &body
 
 	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.PostUserDeanonymize(ctx, request.(PostUserDeanonymizeRequestObject))
+		return sh.ssi.DeanonymizeUser(ctx, request.(DeanonymizeUserRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "PostUserDeanonymize")
+		handler = middleware(handler, "DeanonymizeUser")
 	}
 
 	response, err := handler(ctx, request)
@@ -3076,8 +3076,8 @@ func (sh *strictHandler) PostUserDeanonymize(ctx *gin.Context) {
 	if err != nil {
 		ctx.Error(err)
 		ctx.Status(http.StatusInternalServerError)
-	} else if validResponse, ok := response.(PostUserDeanonymizeResponseObject); ok {
-		if err := validResponse.VisitPostUserDeanonymizeResponse(ctx.Writer); err != nil {
+	} else if validResponse, ok := response.(DeanonymizeUserResponseObject); ok {
+		if err := validResponse.VisitDeanonymizeUserResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {
@@ -3085,11 +3085,11 @@ func (sh *strictHandler) PostUserDeanonymize(ctx *gin.Context) {
 	}
 }
 
-// PostUserEmailChange operation middleware
-func (sh *strictHandler) PostUserEmailChange(ctx *gin.Context) {
-	var request PostUserEmailChangeRequestObject
+// ChangeUserEmail operation middleware
+func (sh *strictHandler) ChangeUserEmail(ctx *gin.Context) {
+	var request ChangeUserEmailRequestObject
 
-	var body PostUserEmailChangeJSONRequestBody
+	var body ChangeUserEmailJSONRequestBody
 	if err := ctx.ShouldBindJSON(&body); err != nil {
 		ctx.Status(http.StatusBadRequest)
 		ctx.Error(err)
@@ -3098,10 +3098,10 @@ func (sh *strictHandler) PostUserEmailChange(ctx *gin.Context) {
 	request.Body = &body
 
 	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.PostUserEmailChange(ctx, request.(PostUserEmailChangeRequestObject))
+		return sh.ssi.ChangeUserEmail(ctx, request.(ChangeUserEmailRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "PostUserEmailChange")
+		handler = middleware(handler, "ChangeUserEmail")
 	}
 
 	response, err := handler(ctx, request)
@@ -3109,8 +3109,8 @@ func (sh *strictHandler) PostUserEmailChange(ctx *gin.Context) {
 	if err != nil {
 		ctx.Error(err)
 		ctx.Status(http.StatusInternalServerError)
-	} else if validResponse, ok := response.(PostUserEmailChangeResponseObject); ok {
-		if err := validResponse.VisitPostUserEmailChangeResponse(ctx.Writer); err != nil {
+	} else if validResponse, ok := response.(ChangeUserEmailResponseObject); ok {
+		if err := validResponse.VisitChangeUserEmailResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {
@@ -3118,11 +3118,11 @@ func (sh *strictHandler) PostUserEmailChange(ctx *gin.Context) {
 	}
 }
 
-// PostUserEmailSendVerificationEmail operation middleware
-func (sh *strictHandler) PostUserEmailSendVerificationEmail(ctx *gin.Context) {
-	var request PostUserEmailSendVerificationEmailRequestObject
+// SendVerificationEmail operation middleware
+func (sh *strictHandler) SendVerificationEmail(ctx *gin.Context) {
+	var request SendVerificationEmailRequestObject
 
-	var body PostUserEmailSendVerificationEmailJSONRequestBody
+	var body SendVerificationEmailJSONRequestBody
 	if err := ctx.ShouldBindJSON(&body); err != nil {
 		ctx.Status(http.StatusBadRequest)
 		ctx.Error(err)
@@ -3131,10 +3131,10 @@ func (sh *strictHandler) PostUserEmailSendVerificationEmail(ctx *gin.Context) {
 	request.Body = &body
 
 	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.PostUserEmailSendVerificationEmail(ctx, request.(PostUserEmailSendVerificationEmailRequestObject))
+		return sh.ssi.SendVerificationEmail(ctx, request.(SendVerificationEmailRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "PostUserEmailSendVerificationEmail")
+		handler = middleware(handler, "SendVerificationEmail")
 	}
 
 	response, err := handler(ctx, request)
@@ -3142,8 +3142,8 @@ func (sh *strictHandler) PostUserEmailSendVerificationEmail(ctx *gin.Context) {
 	if err != nil {
 		ctx.Error(err)
 		ctx.Status(http.StatusInternalServerError)
-	} else if validResponse, ok := response.(PostUserEmailSendVerificationEmailResponseObject); ok {
-		if err := validResponse.VisitPostUserEmailSendVerificationEmailResponse(ctx.Writer); err != nil {
+	} else if validResponse, ok := response.(SendVerificationEmailResponseObject); ok {
+		if err := validResponse.VisitSendVerificationEmailResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {
@@ -3151,11 +3151,11 @@ func (sh *strictHandler) PostUserEmailSendVerificationEmail(ctx *gin.Context) {
 	}
 }
 
-// PostUserMfa operation middleware
-func (sh *strictHandler) PostUserMfa(ctx *gin.Context) {
-	var request PostUserMfaRequestObject
+// VerifyChangeUserMfa operation middleware
+func (sh *strictHandler) VerifyChangeUserMfa(ctx *gin.Context) {
+	var request VerifyChangeUserMfaRequestObject
 
-	var body PostUserMfaJSONRequestBody
+	var body VerifyChangeUserMfaJSONRequestBody
 	if err := ctx.ShouldBindJSON(&body); err != nil {
 		ctx.Status(http.StatusBadRequest)
 		ctx.Error(err)
@@ -3164,10 +3164,10 @@ func (sh *strictHandler) PostUserMfa(ctx *gin.Context) {
 	request.Body = &body
 
 	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.PostUserMfa(ctx, request.(PostUserMfaRequestObject))
+		return sh.ssi.VerifyChangeUserMfa(ctx, request.(VerifyChangeUserMfaRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "PostUserMfa")
+		handler = middleware(handler, "VerifyChangeUserMfa")
 	}
 
 	response, err := handler(ctx, request)
@@ -3175,8 +3175,8 @@ func (sh *strictHandler) PostUserMfa(ctx *gin.Context) {
 	if err != nil {
 		ctx.Error(err)
 		ctx.Status(http.StatusInternalServerError)
-	} else if validResponse, ok := response.(PostUserMfaResponseObject); ok {
-		if err := validResponse.VisitPostUserMfaResponse(ctx.Writer); err != nil {
+	} else if validResponse, ok := response.(VerifyChangeUserMfaResponseObject); ok {
+		if err := validResponse.VisitVerifyChangeUserMfaResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {
@@ -3184,11 +3184,11 @@ func (sh *strictHandler) PostUserMfa(ctx *gin.Context) {
 	}
 }
 
-// PostUserPassword operation middleware
-func (sh *strictHandler) PostUserPassword(ctx *gin.Context) {
-	var request PostUserPasswordRequestObject
+// ChangeUserPassword operation middleware
+func (sh *strictHandler) ChangeUserPassword(ctx *gin.Context) {
+	var request ChangeUserPasswordRequestObject
 
-	var body PostUserPasswordJSONRequestBody
+	var body ChangeUserPasswordJSONRequestBody
 	if err := ctx.ShouldBindJSON(&body); err != nil {
 		ctx.Status(http.StatusBadRequest)
 		ctx.Error(err)
@@ -3197,10 +3197,10 @@ func (sh *strictHandler) PostUserPassword(ctx *gin.Context) {
 	request.Body = &body
 
 	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.PostUserPassword(ctx, request.(PostUserPasswordRequestObject))
+		return sh.ssi.ChangeUserPassword(ctx, request.(ChangeUserPasswordRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "PostUserPassword")
+		handler = middleware(handler, "ChangeUserPassword")
 	}
 
 	response, err := handler(ctx, request)
@@ -3208,8 +3208,8 @@ func (sh *strictHandler) PostUserPassword(ctx *gin.Context) {
 	if err != nil {
 		ctx.Error(err)
 		ctx.Status(http.StatusInternalServerError)
-	} else if validResponse, ok := response.(PostUserPasswordResponseObject); ok {
-		if err := validResponse.VisitPostUserPasswordResponse(ctx.Writer); err != nil {
+	} else if validResponse, ok := response.(ChangeUserPasswordResponseObject); ok {
+		if err := validResponse.VisitChangeUserPasswordResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {
@@ -3217,11 +3217,11 @@ func (sh *strictHandler) PostUserPassword(ctx *gin.Context) {
 	}
 }
 
-// PostUserPasswordReset operation middleware
-func (sh *strictHandler) PostUserPasswordReset(ctx *gin.Context) {
-	var request PostUserPasswordResetRequestObject
+// SendPasswordResetEmail operation middleware
+func (sh *strictHandler) SendPasswordResetEmail(ctx *gin.Context) {
+	var request SendPasswordResetEmailRequestObject
 
-	var body PostUserPasswordResetJSONRequestBody
+	var body SendPasswordResetEmailJSONRequestBody
 	if err := ctx.ShouldBindJSON(&body); err != nil {
 		ctx.Status(http.StatusBadRequest)
 		ctx.Error(err)
@@ -3230,10 +3230,10 @@ func (sh *strictHandler) PostUserPasswordReset(ctx *gin.Context) {
 	request.Body = &body
 
 	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.PostUserPasswordReset(ctx, request.(PostUserPasswordResetRequestObject))
+		return sh.ssi.SendPasswordResetEmail(ctx, request.(SendPasswordResetEmailRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "PostUserPasswordReset")
+		handler = middleware(handler, "SendPasswordResetEmail")
 	}
 
 	response, err := handler(ctx, request)
@@ -3241,8 +3241,8 @@ func (sh *strictHandler) PostUserPasswordReset(ctx *gin.Context) {
 	if err != nil {
 		ctx.Error(err)
 		ctx.Status(http.StatusInternalServerError)
-	} else if validResponse, ok := response.(PostUserPasswordResetResponseObject); ok {
-		if err := validResponse.VisitPostUserPasswordResetResponse(ctx.Writer); err != nil {
+	} else if validResponse, ok := response.(SendPasswordResetEmailResponseObject); ok {
+		if err := validResponse.VisitSendPasswordResetEmailResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {
@@ -3250,15 +3250,15 @@ func (sh *strictHandler) PostUserPasswordReset(ctx *gin.Context) {
 	}
 }
 
-// PostUserWebauthnAdd operation middleware
-func (sh *strictHandler) PostUserWebauthnAdd(ctx *gin.Context) {
-	var request PostUserWebauthnAddRequestObject
+// AddSecurityKey operation middleware
+func (sh *strictHandler) AddSecurityKey(ctx *gin.Context) {
+	var request AddSecurityKeyRequestObject
 
 	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.PostUserWebauthnAdd(ctx, request.(PostUserWebauthnAddRequestObject))
+		return sh.ssi.AddSecurityKey(ctx, request.(AddSecurityKeyRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "PostUserWebauthnAdd")
+		handler = middleware(handler, "AddSecurityKey")
 	}
 
 	response, err := handler(ctx, request)
@@ -3266,8 +3266,8 @@ func (sh *strictHandler) PostUserWebauthnAdd(ctx *gin.Context) {
 	if err != nil {
 		ctx.Error(err)
 		ctx.Status(http.StatusInternalServerError)
-	} else if validResponse, ok := response.(PostUserWebauthnAddResponseObject); ok {
-		if err := validResponse.VisitPostUserWebauthnAddResponse(ctx.Writer); err != nil {
+	} else if validResponse, ok := response.(AddSecurityKeyResponseObject); ok {
+		if err := validResponse.VisitAddSecurityKeyResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {
@@ -3275,11 +3275,11 @@ func (sh *strictHandler) PostUserWebauthnAdd(ctx *gin.Context) {
 	}
 }
 
-// PostUserWebauthnVerify operation middleware
-func (sh *strictHandler) PostUserWebauthnVerify(ctx *gin.Context) {
-	var request PostUserWebauthnVerifyRequestObject
+// VerifyAddSecurityKey operation middleware
+func (sh *strictHandler) VerifyAddSecurityKey(ctx *gin.Context) {
+	var request VerifyAddSecurityKeyRequestObject
 
-	var body PostUserWebauthnVerifyJSONRequestBody
+	var body VerifyAddSecurityKeyJSONRequestBody
 	if err := ctx.ShouldBindJSON(&body); err != nil {
 		ctx.Status(http.StatusBadRequest)
 		ctx.Error(err)
@@ -3288,10 +3288,10 @@ func (sh *strictHandler) PostUserWebauthnVerify(ctx *gin.Context) {
 	request.Body = &body
 
 	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.PostUserWebauthnVerify(ctx, request.(PostUserWebauthnVerifyRequestObject))
+		return sh.ssi.VerifyAddSecurityKey(ctx, request.(VerifyAddSecurityKeyRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "PostUserWebauthnVerify")
+		handler = middleware(handler, "VerifyAddSecurityKey")
 	}
 
 	response, err := handler(ctx, request)
@@ -3299,8 +3299,8 @@ func (sh *strictHandler) PostUserWebauthnVerify(ctx *gin.Context) {
 	if err != nil {
 		ctx.Error(err)
 		ctx.Status(http.StatusInternalServerError)
-	} else if validResponse, ok := response.(PostUserWebauthnVerifyResponseObject); ok {
-		if err := validResponse.VisitPostUserWebauthnVerifyResponse(ctx.Writer); err != nil {
+	} else if validResponse, ok := response.(VerifyAddSecurityKeyResponseObject); ok {
+		if err := validResponse.VisitVerifyAddSecurityKeyResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {
@@ -3308,17 +3308,17 @@ func (sh *strictHandler) PostUserWebauthnVerify(ctx *gin.Context) {
 	}
 }
 
-// GetVerify operation middleware
-func (sh *strictHandler) GetVerify(ctx *gin.Context, params GetVerifyParams) {
-	var request GetVerifyRequestObject
+// VerifyTicket operation middleware
+func (sh *strictHandler) VerifyTicket(ctx *gin.Context, params VerifyTicketParams) {
+	var request VerifyTicketRequestObject
 
 	request.Params = params
 
 	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.GetVerify(ctx, request.(GetVerifyRequestObject))
+		return sh.ssi.VerifyTicket(ctx, request.(VerifyTicketRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "GetVerify")
+		handler = middleware(handler, "VerifyTicket")
 	}
 
 	response, err := handler(ctx, request)
@@ -3326,8 +3326,8 @@ func (sh *strictHandler) GetVerify(ctx *gin.Context, params GetVerifyParams) {
 	if err != nil {
 		ctx.Error(err)
 		ctx.Status(http.StatusInternalServerError)
-	} else if validResponse, ok := response.(GetVerifyResponseObject); ok {
-		if err := validResponse.VisitGetVerifyResponse(ctx.Writer); err != nil {
+	} else if validResponse, ok := response.(VerifyTicketResponseObject); ok {
+		if err := validResponse.VisitVerifyTicketResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {
@@ -3363,151 +3363,150 @@ func (sh *strictHandler) GetVersion(ctx *gin.Context) {
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
-	"AA==",
+	"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",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file
