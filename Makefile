@@ -43,7 +43,7 @@ get-version:  ## Return version
 
 .PHONY: check
 check:   ## Run nix flake check
-	./build/nix.sh flake check --print-build-logs
+	./build/nix.sh flake check --print-build-logs --max-jobs 1
 
 
 .PHONY: check-dry-run-node
