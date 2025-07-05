@@ -166,11 +166,15 @@ func (response ErrorResponse) VisitRefreshTokenResponse(w http.ResponseWriter) e
 	return response.visit(w)
 }
 
-func (response ErrorResponse) VisitSignInIdTokenResponse(w http.ResponseWriter) error { //nolint:revive,stylecheck
+func (response ErrorResponse) VisitSignInIdTokenResponse( //nolint:revive,stylecheck
+	w http.ResponseWriter,
+) error {
 	return response.visit(w)
 }
 
-func (response ErrorResponse) VisitLinkIdTokenResponse(w http.ResponseWriter) error { //nolint:revive,stylecheck
+func (response ErrorResponse) VisitLinkIdTokenResponse( //nolint:revive,stylecheck
+	w http.ResponseWriter,
+) error {
 	return response.visit(w)
 }
 

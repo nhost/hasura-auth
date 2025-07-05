@@ -305,8 +305,16 @@ func TestRefreshToken(t *testing.T) { //nolint:maintidx
 
 			//nolint:exhaustruct
 			resp := assertRequest(
-				t.Context(), t, c.RefreshToken, tc.request, tc.expectedResponse,
-				cmpopts.IgnoreFields(api.RefreshToken200JSONResponse{}, "RefreshToken", "AccessToken"),
+				t.Context(),
+				t,
+				c.RefreshToken,
+				tc.request,
+				tc.expectedResponse,
+				cmpopts.IgnoreFields(
+					api.RefreshToken200JSONResponse{},
+					"RefreshToken",
+					"AccessToken",
+				),
 			)
 
 			resp200, ok := resp.(api.RefreshToken200JSONResponse)
