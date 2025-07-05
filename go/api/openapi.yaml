@@ -1,4 +1,5 @@
 openapi: "3.0.0"
+
 info:
   version: 1.0.0
   title: "Nhost Authentication API"
@@ -11,13 +12,33 @@ info:
     email: "support@nhost.io"
     url: "https://nhost.io"
 
+servers:
+  - url: "https://{subdomain}.auth.{region}.nhost.run/v1"
+    description: "Nhost Authentication API Server"
+
+tags:
+  - name: authentication
+    description: "User authentication operations including sign-in, sign-up, and various authentication methods (email/password, passwordless, OAuth, WebAuthn, MFA)"
+  - name: security
+    description: "Security-related operations including Personal Access Tokens, WebAuthn management, account elevation, and account linking"
+  - name: session
+    description: "Session management operations including token refresh, verification, and sign-out"
+  - name: user
+    description: "User profile and account management operations including email/password changes, MFA configuration, and profile updates"
+  - name: system
+    description: "System operations including health checks, service version, and public key endpoints"
+  - name: verification
+    description: "Email and ticket verification operations for confirming user actions"
+  - name: excludeme
+    description: "These operations are not intended to be used directly by clients and should be excluded from client SDKs"
+
 paths:
   /.well-known/jwks.json:
     get:
       summary: Get public keys for JWT verification in JWK Set format
       operationId: getJWKs
       tags:
-        - keys
+        - system
       responses:
         "200":
           content:
@@ -33,8 +54,7 @@ paths:
       description: Generate a Webauthn challenge for elevating user permissions
       operationId: elevateWebauthn
       tags:
-        - elevate
-        - webauthn
+        - security
       security:
         - BearerAuth: []
       responses:
@@ -58,9 +78,7 @@ paths:
       description: Complete Webauthn elevation by verifying the authentication response
       operationId: verifyElevateWebauthn
       tags:
-        - elevate
-        - webauthn
-        - verify
+        - security
       security:
         - BearerAuth: []
       requestBody:
@@ -114,8 +132,7 @@ paths:
       summary: Link a user account with the provider's account using an id token
       operationId: linkIdToken
       tags:
-        - link
-        - idtoken
+        - security
       security:
         - BearerAuthElevated: []
       requestBody:
@@ -145,8 +162,7 @@ paths:
       description: "Generate a Time-based One-Time Password (TOTP) secret for setting up multi-factor authentication"
       operationId: changeUserMfa
       tags:
-        - mfa
-        - user-management
+        - user
       security:
         - BearerAuth: []
       responses:
@@ -168,7 +184,7 @@ paths:
       summary: Create a Personal Access Token (PAT)
       operationId: createPAT
       tags:
-        - pat
+        - security
       security:
         - BearerAuthElevated: []
       requestBody:
@@ -197,8 +213,7 @@ paths:
       summary: Sign in anonymously
       operationId: signInAnonymous
       tags:
-        - signin
-        - anonymous
+        - authentication
       requestBody:
         content:
           application/json:
@@ -227,7 +242,6 @@ paths:
       operationId: signInEmailPassword
       tags:
         - authentication
-        - email-and-password
       requestBody:
         content:
           application/json:
@@ -253,10 +267,7 @@ paths:
       summary: Sign in with in an id token
       operationId: signInIdToken
       tags:
-        - signin
-        - idtoken
-        - apple
-        - google
+        - authentication
       requestBody:
         content:
           application/json:
@@ -285,7 +296,6 @@ paths:
       operationId: verifySignInMfaTotp
       tags:
         - authentication
-        - mfa
       requestBody:
         content:
           application/json:
@@ -314,9 +324,7 @@ paths:
         signing up a new user. It is ignored if the user already exists.
       operationId: signInOTPEmail
       tags:
-        - signin
-        - signup
-        - otp
+        - authentication
       requestBody:
         content:
           application/json:
@@ -344,9 +352,7 @@ paths:
         Verify OTP and return a session if validation is successful
       operationId: verifySignInOTPEmail
       tags:
-        - signin
-        - signup
-        - otp
+        - authentication
       requestBody:
         content:
           application/json:
@@ -375,7 +381,6 @@ paths:
       operationId: signInPasswordlessEmail
       tags:
         - authentication
-        - passwordless
       requestBody:
         content:
           application/json:
@@ -404,10 +409,7 @@ paths:
         The options object is optional and can be used to configure the user's when signing up a
         new user. It is ignored if the user already exists.
       tags:
-        - signin
-        - signup
-        - passwordless
-        - sms
+        - authentication
       requestBody:
         content:
           application/json:
@@ -429,10 +431,7 @@ paths:
       summary: >-
         Verify SMS OTP and return a session if validation is successful
       tags:
-        - signin
-        - signup
-        - passwordless
-        - sms
+        - authentication
       requestBody:
         content:
           application/json:
@@ -453,8 +452,7 @@ paths:
         Sign in with Personal Access Token (PAT)
       operationId: signInPAT
       tags:
-        - signin
-        - pat
+        - authentication
       requestBody:
         content:
           application/json:
@@ -481,11 +479,7 @@ paths:
       summary: Sign in with an oauth2 provider
       operationId: signInProvider
       tags:
-        - signin
-        - signup
-        - link
-        - social
-        - oauth
+        - authentication
       parameters:
         - $ref: "#/components/parameters/SignInProvider"
         - name: allowedRoles
@@ -563,11 +557,7 @@ paths:
       summary: Callback for oauth2 provider
       operationId: signInProviderCallbackGet
       tags:
-        - signin
-        - signup
-        - link
-        - social
-        - oauth
+        - authentication
         - excludeme
       parameters:
         - $ref: "#/components/parameters/SignInProvider"
@@ -629,11 +619,7 @@ paths:
       summary: Callback for oauth2 provider using form_post response mode
       operationId: signInProviderCallbackPost
       tags:
-        - signin
-        - signup
-        - link
-        - social
-        - oauth
+        - authentication
         - excludeme
       parameters:
         - $ref: "#/components/parameters/SignInProvider"
@@ -705,8 +691,7 @@ paths:
             Challenge sent
 
       tags:
-        - signin
-        - webauthn
+        - authentication
 
   /signin/webauthn/verify:
     post:
@@ -731,9 +716,7 @@ paths:
             Sign in successful
 
       tags:
-        - signin
-        - webauthn
-        - verify
+        - authentication
 
   /signout:
     post:
@@ -771,7 +754,6 @@ paths:
       operationId: signUpEmailPassword
       tags:
         - authentication
-        - email-and-password
       requestBody:
         content:
           application/json:
@@ -821,8 +803,7 @@ paths:
             Challenge sent
 
       tags:
-        - signup
-        - webauthn
+        - authentication
 
   /signup/webauthn/verify:
     post:
@@ -847,9 +828,8 @@ paths:
             Sign up successful
 
       tags:
-        - signup
-        - webauthn
-        - verify
+        - authentication
+        - verification
 
   /token:
     post:
@@ -884,7 +864,7 @@ paths:
       operationId: verifyToken
       description: If request body is not passed the authorization header will be used to be verified
       tags:
-        - General
+        - session
       security:
         - BearerAuth: []
         - {}
@@ -907,7 +887,7 @@ paths:
       summary: Get user information
       operationId: getUser
       tags:
-        - User management
+        - user
       security:
         - BearerAuth: []
       responses:
@@ -924,7 +904,7 @@ paths:
         Deanonymize an anonymous user in adding missing email or email+password, depending on the chosen authentication method. Will send a confirmation email if the server is configured to do so
       operationId: deanonymizeUser
       tags:
-        - anonymous
+        - authentication
       security:
         - BearerAuth: []
       requestBody:
@@ -954,7 +934,6 @@ paths:
       operationId: changeUserEmail
       tags:
         - user
-        - email
       security:
         - BearerAuthElevated: []
       requestBody:
@@ -984,7 +963,6 @@ paths:
       operationId: sendVerificationEmail
       tags:
         - user
-        - email
       requestBody:
         content:
           application/json:
@@ -1012,8 +990,7 @@ paths:
       description: "Activate or deactivate multi-factor authentication for the authenticated user"
       operationId: verifyChangeUserMfa
       tags:
-        - mfa
-        - user-management
+        - security
       security:
         - BearerAuth: []
       requestBody:
@@ -1043,7 +1020,6 @@ paths:
       operationId: changeUserPassword
       tags:
         - user
-        - password
       security:
         - BearerAuthElevated: []
         - {}
@@ -1075,7 +1051,6 @@ paths:
       operationId: sendPasswordResetEmail
       tags:
         - user
-        - password
       requestBody:
         content:
           application/json:
@@ -1102,8 +1077,7 @@ paths:
       summary: Initialize adding of a new webauthn security key
       operationId: addSecurityKey
       tags:
-        - user-management
-        - webauthn
+        - security
       security:
         - BearerAuthElevated: []
       responses:
@@ -1126,8 +1100,7 @@ paths:
       summary: Verify adding of a new webauthn security key
       operationId: verifyAddSecurityKey
       tags:
-        - user-management
-        - webauthn
+        - security
       security:
         - BearerAuthElevated: []
       requestBody:
@@ -1158,7 +1131,7 @@ paths:
         or password reset
       operationId: verifyTicket
       tags:
-        - verify
+        - verification
       parameters:
         - $ref: "#/components/parameters/TicketQuery"
         - $ref: "#/components/parameters/TicketTypeQuery"
@@ -1233,7 +1206,6 @@ components:
           description: Application identifier extension output
         credProps:
           $ref: "#/components/schemas/CredentialPropertiesOutput"
-          description: Credential properties extension output
         hmacCreateSecret:
           type: boolean
           description: HMAC secret extension output
@@ -1273,7 +1245,6 @@ components:
       properties:
         clientDataJSON:
           $ref: "#/components/schemas/URLEncodedBase64"
-          description: The client data JSON
         transports:
           type: array
           items:
@@ -1281,17 +1252,14 @@ components:
           description: The authenticator transports
         authenticatorData:
           $ref: "#/components/schemas/URLEncodedBase64"
-          description: The authenticator data
         publicKey:
           $ref: "#/components/schemas/URLEncodedBase64"
-          description: The credential public key
         publicKeyAlgorithm:
           type: integer
           format: int64
           description: The public key algorithm identifier
         attestationObject:
           $ref: "#/components/schemas/URLEncodedBase64"
-          description: The attestation object containing authenticator data and attestation statement
       required:
         - clientDataJSON
         - attestationObject
@@ -1302,16 +1270,13 @@ components:
       properties:
         authenticatorAttachment:
           $ref: "#/components/schemas/AuthenticatorAttachment"
-          description: The authenticator attachment preference
         requireResidentKey:
           type: boolean
           description: Whether the authenticator must create a client-side-resident public key credential source
         residentKey:
           $ref: "#/components/schemas/ResidentKeyRequirement"
-          description: The resident key requirement
         userVerification:
           $ref: "#/components/schemas/UserVerificationRequirement"
-          description: The user verification requirement
 
     AuthenticatorTransport:
       type: string
@@ -1387,16 +1352,13 @@ components:
           description: The credential type represented by this object
         rawId:
           $ref: "#/components/schemas/URLEncodedBase64"
-          description: The raw credential ID
         clientExtensionResults:
           $ref: "#/components/schemas/AuthenticationExtensionsClientOutputs"
-          description: The client extension results
         authenticatorAttachment:
           type: string
           description: The authenticator attachment
         response:
           $ref: "#/components/schemas/AuthenticatorAssertionResponse"
-          description: The authenticator assertion response
       required:
         - id
         - type
@@ -1419,16 +1381,13 @@ components:
           description: The credential type represented by this object
         rawId:
           $ref: "#/components/schemas/URLEncodedBase64"
-          description: The raw credential ID
         clientExtensionResults:
           $ref: "#/components/schemas/AuthenticationExtensionsClientOutputs"
-          description: The client extension results
         authenticatorAttachment:
           type: string
           description: The authenticator attachment
         response:
           $ref: "#/components/schemas/AuthenticatorAttestationResponse"
-          description: The authenticator attestation response
       required:
         - id
         - type
@@ -1441,7 +1400,6 @@ components:
       properties:
         type:
           $ref: "#/components/schemas/CredentialType"
-          description: The credential type
         alg:
           type: integer
           description: The cryptographic algorithm identifier
@@ -1627,13 +1585,10 @@ components:
       properties:
         rp:
           $ref: "#/components/schemas/RelyingPartyEntity"
-          description: The relying party entity
         user:
           $ref: "#/components/schemas/UserEntity"
-          description: The user entity
         challenge:
           $ref: "#/components/schemas/URLEncodedBase64"
-          description: A challenge intended to be used for generating the newly created credential's attestation object
         pubKeyCredParams:
           type: array
           items:
@@ -1649,7 +1604,6 @@ components:
           description: A list of PublicKeyCredentialDescriptor objects representing public key credentials that are not acceptable to the caller
         authenticatorSelection:
           $ref: "#/components/schemas/AuthenticatorSelection"
-          description: The authenticator selection criteria
         hints:
           type: array
           items:
@@ -1657,7 +1611,6 @@ components:
           description: Hints to help guide the user through the experience
         attestation:
           $ref: "#/components/schemas/ConveyancePreference"
-          description: The preferred attestation conveyance preference
         attestationFormats:
           type: array
           items:
@@ -1665,7 +1618,6 @@ components:
           description: The preferred attestation statement formats
         extensions:
           $ref: "#/components/schemas/AuthenticationExtensions"
-          description: Additional parameters requesting additional processing by the client and authenticator
       required:
         - rp
         - user
@@ -1678,10 +1630,8 @@ components:
       properties:
         type:
           $ref: "#/components/schemas/CredentialType"
-          description: The valid credential types
         id:
           $ref: "#/components/schemas/URLEncodedBase64"
-          description: CredentialID The ID of a credential to allow/disallow
         transports:
           type: array
           items:
@@ -1709,7 +1659,6 @@ components:
       properties:
         challenge:
           $ref: "#/components/schemas/URLEncodedBase64"
-          description: A challenge intended to be used for generating the newly created credential's attestation object
         timeout:
           type: integer
           description: A time, in milliseconds, that the caller is willing to wait for the call to complete
@@ -1723,7 +1672,6 @@ components:
           description: A list of CredentialDescriptor objects representing public key credentials acceptable to the caller
         userVerification:
           $ref: "#/components/schemas/UserVerificationRequirement"
-          description: A requirement for user verification for the operation
         hints:
           type: array
           items:
@@ -1731,7 +1679,6 @@ components:
           description: Hints to help guide the user through the experience
         extensions:
           $ref: "#/components/schemas/AuthenticationExtensions"
-          description: Additional parameters requesting additional processing by the client and authenticator
       required:
         - challenge
 
@@ -1797,7 +1744,6 @@ components:
           type: string
         user:
           $ref: "#/components/schemas/User"
-          description: "Information about the authenticated user"
       required:
         - accessToken
         - accessTokenExpiresIn
@@ -1811,7 +1757,6 @@ components:
       properties:
         session:
           $ref: "#/components/schemas/Session"
-          description: "User session data. Null if authentication requires additional steps."
 
     SignInAnonymousRequest:
       type: object
@@ -1861,10 +1806,8 @@ components:
       properties:
         session:
           $ref: "#/components/schemas/Session"
-          description: "User session if authentication was successful. Null if MFA challenge is required."
         mfa:
           $ref: "#/components/schemas/MFAChallengePayload"
-          description: "MFA challenge if two-factor authentication is required"
 
     SignInIdTokenRequest:
       type: object
@@ -2053,7 +1996,6 @@ components:
           type: string
         options:
           $ref: "#/components/schemas/SignUpOptions"
-          description: "Optional configuration for the new user account"
       required:
         - email
         - password
@@ -2234,36 +2176,6 @@ components:
         - phoneNumberVerified
         - roles
 
-    UserAddSecurityKeyVerifyRequest:
-      type: object
-      additionalProperties: false
-      properties:
-        credential:
-          type: object
-          additionalProperties: true
-          x-go-type-import:
-            name: protocol
-            path: github.com/go-webauthn/webauthn/protocol
-          x-go-type: protocol.CredentialCreationResponse
-        nickname:
-          type: string
-          description: Optional nickname for the security key
-      required:
-        - credential
-
-    UserAddSecurityKeyVerifyResponse:
-      type: object
-      additionalProperties: false
-      properties:
-        id:
-          type: string
-          description: ID of the newly added security key
-        nickname:
-          type: string
-          description: Nickname of the security key
-      required:
-        - id
-
     UserDeanonymizeRequest:
       type: object
       additionalProperties: false
@@ -2404,7 +2316,6 @@ components:
       properties:
         credential:
           $ref: "#/components/schemas/CredentialCreationResponse"
-          description: The credential created during registration
         nickname:
           type: string
           description: Optional nickname for the security key
@@ -2493,7 +2404,7 @@ components:
           - signinPasswordless
           - passwordReset
         description: Type of the ticket
-        example: email-verification
+        example: emailVerify
       deprecated: true
 
   headers:

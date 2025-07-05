@@ -140,6 +140,18 @@
               nixpkgs-fmt --check ${nix-src}
             '';
 
+          openapi = pkgs.runCommand "check-openapi"
+            {
+              nativeBuildInputs = with pkgs;
+                [
+                  vacuum-go
+                ];
+            }
+            ''
+              vacuum lint -dqb --ruleset vacuum.yaml -n info go/api/openapi.yaml
+              mkdir -p $out
+            '';
+
           go-checks = nixops-lib.go.check {
             inherit src submodule ldflags tags buildInputs nativeBuildInputs checkDeps;
           };

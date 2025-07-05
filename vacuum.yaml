@@ -1,0 +1,8 @@
+extends: [[spectral:oas, all]]
+rules:
+  description-duplication: false
+  oas3-missing-example: false
+  operation-description: false
+  component-description: false
+  operation-4xx-response: false
+  operation-singular-tag: false
