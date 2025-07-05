@@ -46,7 +46,7 @@
             ./go.mod
             ./go.sum
             ./.golangci.yaml
-            ./go/api/openapi.yaml
+            ./docs/openapi.yaml
             ./go/api/server.cfg.yaml
             ./go/api/types.cfg.yaml
             ./go/sql/schema.sh
@@ -57,6 +57,14 @@
             (inDirectory "go/migrations/postgres")
             (inDirectory "email-templates")
             (inDirectory "vendor")
+          ];
+        };
+
+        openapi-src = nix-filter.lib.filter {
+          root = ./.;
+          include = [
+            ./docs/openapi.yaml
+            ./vacuum.yaml
           ];
         };
 
@@ -148,7 +156,10 @@
                 ];
             }
             ''
-              vacuum lint -dqb --ruleset vacuum.yaml -n info go/api/openapi.yaml
+              vacuum lint \
+                -dqb -n info \
+                --ruleset ${openapi-src}/vacuum.yaml \
+                ${openapi-src}/docs/openapi.yaml
               mkdir -p $out
             '';
 
