@@ -833,7 +833,7 @@ type SignInProviderParams struct {
 	Locale *string `form:"locale,omitempty" json:"locale,omitempty"`
 
 	// Metadata Additional metadata for the user (JSON encoded string)
-	Metadata *string `form:"metadata,omitempty" json:"metadata,omitempty"`
+	Metadata *map[string]interface{} `form:"metadata,omitempty" json:"metadata,omitempty"`
 
 	// RedirectTo URI to redirect to
 	RedirectTo *string `form:"redirectTo,omitempty" json:"redirectTo,omitempty"`

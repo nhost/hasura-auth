@@ -2,8 +2,6 @@ package controller
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
 	"log/slog"
 	"net/url"
 	"time"
@@ -37,23 +35,6 @@ func (ctrl *Controller) getSigninProviderValidateRequest(
 	return redirectTo, nil
 }
 
-func getMetadaFromQueryParam(
-	rawMetadata *string,
-	logger *slog.Logger,
-) (map[string]any, *APIError) {
-	if rawMetadata == nil {
-		return nil, nil
-	}
-
-	var metadata map[string]any
-	if err := json.Unmarshal([]byte(*rawMetadata), &metadata); err != nil {
-		logger.Error("error unmarshalling metadata", logError(err))
-		return nil, ErrInvalidRequest
-	}
-
-	return metadata, nil
-}
-
 func (ctrl *Controller) SignInProvider( //nolint:ireturn
 	ctx context.Context,
 	req api.SignInProviderRequestObject,
@@ -72,13 +53,6 @@ func (ctrl *Controller) SignInProvider( //nolint:ireturn
 		return ctrl.sendRedirectError(redirectTo, ErrDisabledEndpoint), nil
 	}
 
-	metadata, apiErr := getMetadaFromQueryParam(req.Params.Metadata, logger)
-	if apiErr != nil {
-		return ctrl.sendRedirectError(redirectTo, apiErr), nil
-	}
-
-	fmt.Println("roles", *req.Params.AllowedRoles)
-
 	state, err := ctrl.wf.jwtGetter.SignTokenWithClaims(
 		jwt.MapClaims{
 			"connect": req.Params.Connect,
@@ -87,7 +61,7 @@ func (ctrl *Controller) SignInProvider( //nolint:ireturn
 				DefaultRole:  req.Params.DefaultRole,
 				DisplayName:  req.Params.DisplayName,
 				Locale:       req.Params.Locale,
-				Metadata:     ptr(metadata),
+				Metadata:     req.Params.Metadata,
 				RedirectTo:   req.Params.RedirectTo,
 			},
 		},
