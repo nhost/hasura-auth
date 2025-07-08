@@ -50,7 +50,7 @@ func TestSignInProvider(t *testing.T) {
 					DefaultRole:  ptr("admin"),
 					DisplayName:  ptr("Test User"),
 					Locale:       ptr("es"),
-					Metadata:     &map[string]any{"key": "value"},
+					Metadata:     ptr(`{"key":"value"}`),
 					RedirectTo:   ptr("http://localhost:3000/redirect"),
 					Connect:      ptr("asdasd"),
 				},
