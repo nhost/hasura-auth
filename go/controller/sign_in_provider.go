@@ -3,6 +3,7 @@ package controller
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log/slog"
 	"net/url"
 	"time"
@@ -75,6 +76,8 @@ func (ctrl *Controller) SignInProvider( //nolint:ireturn
 	if apiErr != nil {
 		return ctrl.sendRedirectError(redirectTo, apiErr), nil
 	}
+
+	fmt.Println("roles", *req.Params.AllowedRoles)
 
 	state, err := ctrl.wf.jwtGetter.SignTokenWithClaims(
 		jwt.MapClaims{

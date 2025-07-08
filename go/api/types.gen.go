@@ -832,7 +832,7 @@ type SignInProviderParams struct {
 	// Locale A two-characters locale
 	Locale *string `form:"locale,omitempty" json:"locale,omitempty"`
 
-	// Metadata Additional metadata for the user (url encoded json map)
+	// Metadata Additional metadata for the user (JSON encoded string)
 	Metadata *string `form:"metadata,omitempty" json:"metadata,omitempty"`
 
 	// RedirectTo URI to redirect to
