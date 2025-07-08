@@ -566,7 +566,7 @@ paths:
         - name: metadata
           in: query
           required: false
-          description: Additional metadata for the user (URL-encoded JSON string)
+          description: Additional metadata for the user (JSON encoded string)
           schema:
             type: string
             example: "%7B%22firstName%22%3A%22John%22%2C%22lastName%22%3A%22Smith%22%7D"
