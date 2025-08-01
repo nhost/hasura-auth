@@ -2,7 +2,7 @@
   description = "Nhost Hasura Auth";
 
   inputs = {
-    nixops.url = "github:nhost/nixops";
+    nixops.url = "github:nhost/nixops?ref=oapi";
     nixpkgs.follows = "nixops/nixpkgs";
     flake-utils.follows = "nixops/flake-utils";
     nix-filter.follows = "nixops/nix-filter";
