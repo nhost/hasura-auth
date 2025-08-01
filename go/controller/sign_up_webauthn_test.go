@@ -89,7 +89,7 @@ func TestSignUpWebauthn(t *testing.T) { //nolint:maintidx
 				getControllerOpts: []getControllerOptsFunc{},
 			},
 			savedChallenge: controller.WebauthnChallenge{
-				Session: webauthn.SessionData{ //nolint:exhaustruct
+				Session: webauthn.SessionData{
 					Challenge:            "xxx",
 					UserID:               []byte{},
 					AllowedCredentialIDs: nil,
@@ -186,7 +186,7 @@ func TestSignUpWebauthn(t *testing.T) { //nolint:maintidx
 				getControllerOpts: []getControllerOptsFunc{},
 			},
 			savedChallenge: controller.WebauthnChallenge{
-				Session: webauthn.SessionData{ //nolint:exhaustruct
+				Session: webauthn.SessionData{
 					Challenge:            "xxx",
 					UserID:               []byte{},
 					AllowedCredentialIDs: nil,
@@ -334,7 +334,7 @@ func TestSignUpWebauthn(t *testing.T) { //nolint:maintidx
 				getControllerOpts: []getControllerOptsFunc{},
 			},
 			savedChallenge: controller.WebauthnChallenge{
-				Session: webauthn.SessionData{ //nolint:exhaustruct
+				Session: webauthn.SessionData{
 					Challenge:            "xxx",
 					UserID:               []byte{},
 					AllowedCredentialIDs: nil,

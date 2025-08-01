@@ -209,8 +209,6 @@ type SessionData struct {
 	AllowedCredentialIDs [][]byte  `json:"allowed_credentials,omitempty"`
 	Expires              time.Time `json:"expires"`
 
-	UserVerification protocol.UserVerificationRequirement    `json:"userVerification"`
-	Extensions       protocol.AuthenticationExtensions       `json:"extensions,omitempty"`
-	CredParams       []protocol.CredentialParameter          `json:"credParams,omitempty"`
-	Mediation        protocol.CredentialMediationRequirement `json:"mediation,omitempty"`
+	UserVerification protocol.UserVerificationRequirement `json:"userVerification"`
+	Extensions       protocol.AuthenticationExtensions    `json:"extensions,omitempty"`
 }

@@ -96,6 +96,7 @@
 
           buildPhase = ''
             bun install --frozen-lockfile
+            rm -r node_modules/.cache
           '';
 
           installPhase = ''

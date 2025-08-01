@@ -109,7 +109,7 @@ github.com/go-playground/universal-translator
 # github.com/go-playground/validator/v10 v10.27.0
 ## explicit; go 1.20
 github.com/go-playground/validator/v10
-# github.com/go-webauthn/webauthn v0.13.4
+# github.com/go-webauthn/webauthn v0.12.3
 ## explicit; go 1.23.0
 github.com/go-webauthn/webauthn/metadata
 github.com/go-webauthn/webauthn/protocol
