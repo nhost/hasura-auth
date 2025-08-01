@@ -184,9 +184,8 @@
               cp -r ${node-src}/.* .
               ln -s ${node_modules-builder}/node_modules node_modules
 
-              cp .env.example .env
+              bun test --env-file .env.example
 
-              bun test
               mkdir -p $out
             '';
         };
