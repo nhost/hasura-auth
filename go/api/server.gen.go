@@ -9,9 +9,7 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
-	"errors"
 	"fmt"
-	"io"
 	"net/http"
 	"net/url"
 	"path"
@@ -2532,11 +2530,9 @@ func (sh *strictHandler) SignInAnonymous(ctx *gin.Context) {
 
 	var body SignInAnonymousJSONRequestBody
 	if err := ctx.ShouldBindJSON(&body); err != nil {
-		if !errors.Is(err, io.EOF) {
-			ctx.Status(http.StatusBadRequest)
-			ctx.Error(err)
-			return
-		}
+		ctx.Status(http.StatusBadRequest)
+		ctx.Error(err)
+		return
 	}
 	request.Body = &body
 
@@ -2958,11 +2954,9 @@ func (sh *strictHandler) SignInWebauthn(ctx *gin.Context) {
 
 	var body SignInWebauthnJSONRequestBody
 	if err := ctx.ShouldBindJSON(&body); err != nil {
-		if !errors.Is(err, io.EOF) {
-			ctx.Status(http.StatusBadRequest)
-			ctx.Error(err)
-			return
-		}
+		ctx.Status(http.StatusBadRequest)
+		ctx.Error(err)
+		return
 	}
 	request.Body = &body
 
@@ -3191,11 +3185,9 @@ func (sh *strictHandler) VerifyToken(ctx *gin.Context) {
 
 	var body VerifyTokenJSONRequestBody
 	if err := ctx.ShouldBindJSON(&body); err != nil {
-		if !errors.Is(err, io.EOF) {
-			ctx.Status(http.StatusBadRequest)
-			ctx.Error(err)
-			return
-		}
+		ctx.Status(http.StatusBadRequest)
+		ctx.Error(err)
+		return
 	}
 	request.Body = &body
 

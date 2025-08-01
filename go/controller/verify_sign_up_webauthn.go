@@ -17,28 +17,29 @@ import (
 )
 
 func (ctrl *Controller) postSignupWebauthnVerifyValidateRequest( //nolint:cyclop
+	ctx context.Context,
 	request api.VerifySignUpWebauthnRequestObject,
 	logger *slog.Logger,
 ) (*protocol.ParsedCredentialCreationData, *api.SignUpOptions, string, *APIError) {
 	if !ctrl.config.WebauthnEnabled {
-		logger.Error("webauthn is disabled")
+		logger.ErrorContext(ctx, "webauthn is disabled")
 		return nil, nil, "", ErrDisabledEndpoint
 	}
 
 	if ctrl.config.DisableSignup {
-		logger.Error("signup is disabled")
+		logger.ErrorContext(ctx, "signup is disabled")
 		return nil, nil, "", ErrSignupDisabled
 	}
 
 	credData, err := request.Body.Credential.Parse()
 	if err != nil {
-		logger.Error("error parsing credential data", logError(err))
+		logger.ErrorContext(ctx, "error parsing credential data", logError(err))
 		return nil, nil, "", ErrInvalidRequest
 	}
 
 	ch, ok := ctrl.Webauthn.Storage[credData.Response.CollectedClientData.Challenge]
 	if !ok {
-		logger.Error("challenge not found")
+		logger.ErrorContext(ctx, "challenge not found")
 		return nil, nil, "", ErrInvalidRequest
 	}
 
@@ -71,7 +72,7 @@ func (ctrl *Controller) postSignupWebauthnVerifyValidateRequest( //nolint:cyclop
 			options.RedirectTo = request.Body.Options.RedirectTo
 		}
 
-		options, apiErr = ctrl.wf.ValidateSignUpOptions(options, ch.User.Email, logger)
+		options, apiErr = ctrl.wf.ValidateSignUpOptions(ctx, options, ch.User.Email, logger)
 		if apiErr != nil {
 			return nil, nil, "", apiErr
 		}
@@ -87,6 +88,7 @@ func (ctrl *Controller) VerifySignUpWebauthn( //nolint:ireturn
 	logger := middleware.LoggerFromContext(ctx)
 
 	credData, options, nickname, apiErr := ctrl.postSignupWebauthnVerifyValidateRequest(
+		ctx,
 		request,
 		logger,
 	)

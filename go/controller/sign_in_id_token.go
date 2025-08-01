@@ -23,7 +23,7 @@ func (ctrl *Controller) postSigninIdtokenCheckUserExists(
 	switch {
 	case errors.Is(apiError, ErrUserProviderNotFound):
 	case apiError != nil:
-		logger.Error("error getting user by provider user id", logError(apiError))
+		logger.ErrorContext(ctx, "error getting user by provider user id", logError(apiError))
 		return user, false, false, apiError
 	default:
 		return user, true, true, nil
@@ -33,7 +33,7 @@ func (ctrl *Controller) postSigninIdtokenCheckUserExists(
 	switch {
 	case errors.Is(apiError, ErrUserEmailNotFound):
 	case apiError != nil:
-		logger.Error("error getting user by email", logError(apiError))
+		logger.ErrorContext(ctx, "error getting user by email", logError(apiError))
 		return sql.AuthUser{}, false, false, ErrInternalServerError
 	default:
 		return user, true, false, nil
@@ -48,6 +48,7 @@ func (ctrl *Controller) SignInIdToken( //nolint:ireturn,revive,stylecheck
 	logger := middleware.LoggerFromContext(ctx)
 
 	profile, apiError := ctrl.wf.GetOIDCProfileFromIDToken(
+		ctx,
 		req.Body.Provider,
 		req.Body.IdToken,
 		req.Body.Nonce,
@@ -58,7 +59,7 @@ func (ctrl *Controller) SignInIdToken( //nolint:ireturn,revive,stylecheck
 	}
 
 	if !ctrl.wf.ValidateEmail(profile.Email) {
-		logger.Error("invalid email", slog.String("email", profile.Email))
+		logger.ErrorContext(ctx, "invalid email", slog.String("email", profile.Email))
 		return ctrl.respondWithError(ErrInvalidEmailPassword), nil
 	}
 
@@ -106,7 +107,7 @@ func (ctrl *Controller) providerFlowSignUpValidateOptions(
 	}
 
 	if profile.Email != "" {
-		if err := ctrl.wf.ValidateSignupEmail(types.Email(profile.Email), logger); err != nil {
+		if err := ctrl.wf.ValidateSignupEmail(ctx, types.Email(profile.Email), logger); err != nil {
 			return nil, err
 		}
 	}
@@ -120,7 +121,7 @@ func (ctrl *Controller) providerFlowSignUpValidateOptions(
 	}
 
 	options, err := ctrl.wf.ValidateSignUpOptions(
-		options, profile.ProviderUserID, logger,
+		ctx, options, profile.ProviderUserID, logger,
 	)
 	if err != nil {
 		return nil, err
@@ -285,7 +286,7 @@ func (ctrl *Controller) providerFlowSignIn(
 
 	session, err := ctrl.wf.NewSession(ctx, user, nil, logger)
 	if err != nil {
-		logger.Error("error getting new session", logError(err))
+		logger.ErrorContext(ctx, "error getting new session", logError(err))
 		return nil, ErrInternalServerError
 	}
 

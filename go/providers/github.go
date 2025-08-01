@@ -11,8 +11,9 @@ import (
 )
 
 type Github struct {
-	profileURL string
 	*oauth2.Config
+
+	profileURL string
 }
 
 func NewGithubProvider(

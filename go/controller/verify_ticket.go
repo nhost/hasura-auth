@@ -12,7 +12,9 @@ import (
 	"github.com/nhost/hasura-auth/go/sql"
 )
 
-func getTicketType(ticket string, logger *slog.Logger) (TicketType, *APIError) {
+func getTicketType(
+	ctx context.Context, ticket string, logger *slog.Logger) (TicketType, *APIError,
+) {
 	switch {
 	case strings.HasPrefix(ticket, "emailConfirmChange:"):
 		return TicketTypeEmailConfirmChange, nil
@@ -25,7 +27,7 @@ func getTicketType(ticket string, logger *slog.Logger) (TicketType, *APIError) {
 	case strings.HasPrefix(ticket, "otp:"):
 		return TicketTypeOTP, nil
 	default:
-		logger.Error("unknown ticket type", slog.String("ticket", ticket))
+		logger.ErrorContext(ctx, "unknown ticket type", slog.String("ticket", ticket))
 		return "", ErrInvalidTicket
 	}
 }
@@ -46,7 +48,7 @@ func (ctrl *Controller) getVerifyHandleTicketType(
 	case TicketTypeVerifyEmail:
 		apiErr = ctrl.getVerifyEmail(ctx, user, logger)
 	case TicketTypeOTP:
-		logger.Error("OTP verification is not supported in this context")
+		logger.ErrorContext(ctx, "OTP verification is not supported in this context")
 
 		apiErr = ErrInvalidRequest
 	}
@@ -74,7 +76,7 @@ func (ctrl *Controller) VerifyTicket( //nolint:ireturn
 
 	session, err := ctrl.wf.NewSession(ctx, user, nil, logger)
 	if err != nil {
-		logger.Error("error getting new session", logError(err))
+		logger.ErrorContext(ctx, "error getting new session", logError(err))
 		return ctrl.sendError(ErrInternalServerError), nil
 	}
 
@@ -95,7 +97,7 @@ func (ctrl *Controller) getVerifyValidateRequest(
 ) (sql.AuthUser, TicketType, *url.URL, *APIError) {
 	redirectTo, err := url.Parse(req.Params.RedirectTo)
 	if err != nil {
-		logger.Error("error parsing redirect URL",
+		logger.ErrorContext(ctx, "error parsing redirect URL",
 			slog.String("redirectTo", req.Params.RedirectTo), logError(err))
 
 		return sql.AuthUser{}, "", nil, ErrInvalidRequest
@@ -105,12 +107,12 @@ func (ctrl *Controller) getVerifyValidateRequest(
 		RedirectTo: &req.Params.RedirectTo,
 	}
 
-	_, apiErr := ctrl.wf.ValidateOptionsRedirectTo(options, logger)
+	_, apiErr := ctrl.wf.ValidateOptionsRedirectTo(ctx, options, logger)
 	if apiErr != nil {
 		return sql.AuthUser{}, "", redirectTo, apiErr
 	}
 
-	ticketType, apiErr := getTicketType(req.Params.Ticket, logger)
+	ticketType, apiErr := getTicketType(ctx, req.Params.Ticket, logger)
 	if apiErr != nil {
 		return sql.AuthUser{}, "", redirectTo, apiErr
 	}

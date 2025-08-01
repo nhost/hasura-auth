@@ -74,10 +74,11 @@ func (c *Config) UnmarshalJSON(b []byte) error {
 	type Alias Config
 
 	aux := &struct { //nolint:exhaustruct
+		*Alias
+
 		ClientURL           string `json:"AUTH_CLIENT_URL"`
 		ServerURL           string `json:"AUTH_SERVER_URL"`
 		AllowedRedirectURLs string `json:"AUTH_ACCESS_CONTROL_ALLOWED_REDIRECT_URLS"`
-		*Alias
 	}{
 		Alias: (*Alias)(c),
 	}

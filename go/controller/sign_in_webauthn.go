@@ -13,13 +13,13 @@ import (
 )
 
 func webauthnCredentials(
-	keys []sql.AuthUserSecurityKey, logger *slog.Logger,
+	ctx context.Context, keys []sql.AuthUserSecurityKey, logger *slog.Logger,
 ) ([]webauthn.Credential, *APIError) {
 	creds := make([]webauthn.Credential, len(keys))
 	for i, key := range keys {
 		credID := make([]byte, base64.RawURLEncoding.DecodedLen(len(key.CredentialID)))
 		if _, err := base64.RawURLEncoding.Decode(credID, []byte(key.CredentialID)); err != nil {
-			logger.Error("failed to decode credential ID",
+			logger.ErrorContext(ctx, "failed to decode credential ID",
 				logError(err), slog.String("credential_id", key.CredentialID))
 
 			return nil, ErrInternalServerError
@@ -57,7 +57,7 @@ func (ctrl *Controller) SignInWebauthn( //nolint:ireturn
 	logger := middleware.LoggerFromContext(ctx)
 
 	if !ctrl.config.WebauthnEnabled {
-		logger.Error("webauthn is disabled")
+		logger.ErrorContext(ctx, "webauthn is disabled")
 		return ctrl.sendError(ErrDisabledEndpoint), nil
 	}
 
@@ -75,7 +75,7 @@ func (ctrl *Controller) SignInWebauthn( //nolint:ireturn
 		return ctrl.sendError(apiErr), nil
 	}
 
-	creds, apiErr := webauthnCredentials(keys, logger)
+	creds, apiErr := webauthnCredentials(ctx, keys, logger)
 	if apiErr != nil {
 		return ctrl.sendError(apiErr), nil
 	}

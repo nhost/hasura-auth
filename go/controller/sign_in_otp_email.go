@@ -30,7 +30,7 @@ func (ctrl *Controller) SignInOTPEmail( //nolint:ireturn
 
 	otp, _, err := GenerateOTP()
 	if err != nil {
-		logger.Error("error generating OTP", logError(err))
+		logger.ErrorContext(ctx, "error generating OTP", logError(err))
 		return ctrl.sendError(ErrInternalServerError), nil
 	}
 

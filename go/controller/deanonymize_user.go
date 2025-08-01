@@ -50,7 +50,7 @@ func (ctrl *Controller) postUserDeanonymizeValidateRequest( //nolint:cyclop
 	}
 
 	options, apiErr := ctrl.wf.ValidateSignUpOptions(
-		request.Body.Options, string(request.Body.Email), logger,
+		ctx, request.Body.Options, string(request.Body.Email), logger,
 	)
 	if apiErr != nil {
 		return uuid.UUID{}, "", nil, apiErr

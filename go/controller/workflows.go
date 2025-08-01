@@ -104,7 +104,7 @@ func (wf *Workflows) ValidatePassword(
 
 	if wf.config.PasswordHIBPEnabled {
 		if pwned, err := wf.hibp.IsPasswordPwned(ctx, password); err != nil {
-			logger.Error("error checking password with HIBP", logError(err))
+			logger.ErrorContext(ctx, "error checking password with HIBP", logError(err))
 			return ErrInternalServerError
 		} else if pwned {
 			logger.WarnContext(ctx, "password is in HIBP database")
@@ -256,7 +256,7 @@ func (wf *Workflows) GetUser(
 	}
 
 	if err != nil {
-		logger.Error("error getting user by email", logError(err))
+		logger.ErrorContext(ctx, "error getting user by email", logError(err))
 		return sql.AuthUser{}, ErrInternalServerError
 	}
 
@@ -279,7 +279,7 @@ func (wf *Workflows) UserByEmailExists(
 	}
 
 	if err != nil {
-		logger.Error("error getting user by email", logError(err))
+		logger.ErrorContext(ctx, "error getting user by email", logError(err))
 		return false, ErrInternalServerError
 	}
 
@@ -298,7 +298,7 @@ func (wf *Workflows) GetUserByEmail(
 	}
 
 	if err != nil {
-		logger.Error("error getting user by email", logError(err))
+		logger.ErrorContext(ctx, "error getting user by email", logError(err))
 		return sql.AuthUser{}, ErrInternalServerError
 	}
 
@@ -328,7 +328,7 @@ func (wf *Workflows) GetUserByProviderUserID(
 	}
 
 	if err != nil {
-		logger.Error("error getting user by provider id", logError(err))
+		logger.ErrorContext(ctx, "error getting user by provider id", logError(err))
 		return sql.AuthUser{}, ErrInternalServerError
 	}
 
@@ -353,7 +353,7 @@ func (wf *Workflows) GetUserByRefreshTokenHash(
 		},
 	)
 	if errors.Is(err, pgx.ErrNoRows) {
-		logger.Error("could not find user by refresh token")
+		logger.ErrorContext(ctx, "could not find user by refresh token")
 
 		if refreshTokenType == sql.RefreshTokenTypePAT {
 			return sql.AuthUser{}, ErrInvalidPat
@@ -363,7 +363,7 @@ func (wf *Workflows) GetUserByRefreshTokenHash(
 	}
 
 	if err != nil {
-		logger.Error("could not get user by refresh token", logError(err))
+		logger.ErrorContext(ctx, "could not get user by refresh token", logError(err))
 		return sql.AuthUser{}, ErrInternalServerError
 	}
 
@@ -386,7 +386,7 @@ func (wf *Workflows) GetUserByTicket(
 	}
 
 	if err != nil {
-		logger.Error("could not get user by ticket", logError(err))
+		logger.ErrorContext(ctx, "could not get user by ticket", logError(err))
 		return sql.AuthUser{}, ErrInternalServerError
 	}
 
@@ -416,7 +416,7 @@ func (wf *Workflows) GetUserByEmailAndTicket(
 	}
 
 	if err != nil {
-		logger.Error("could not get user by ticket", logError(err))
+		logger.ErrorContext(ctx, "could not get user by ticket", logError(err))
 		return sql.AuthUser{}, ErrInternalServerError
 	}
 
@@ -457,7 +457,7 @@ func (wf *Workflows) UpdateSession( //nolint:funlen
 	}
 
 	if err != nil {
-		logger.Error("error getting user roles by refresh token", logError(err))
+		logger.ErrorContext(ctx, "error getting user roles by refresh token", logError(err))
 		return nil, ErrInternalServerError
 	}
 
@@ -476,14 +476,14 @@ func (wf *Workflows) UpdateSession( //nolint:funlen
 		ctx, user.ID, user.IsAnonymous, allowedRoles, user.DefaultRole, nil, logger,
 	)
 	if err != nil {
-		logger.Error("error getting jwt", logError(err))
+		logger.ErrorContext(ctx, "error getting jwt", logError(err))
 		return nil, ErrInternalServerError
 	}
 
 	var metadata map[string]any
 	if len(user.Metadata) > 0 {
 		if err := json.Unmarshal(user.Metadata, &metadata); err != nil {
-			logger.Error("error unmarshalling user metadata", logError(err))
+			logger.ErrorContext(ctx, "error unmarshalling user metadata", logError(err))
 			return nil, ErrInternalServerError
 		}
 	}
@@ -590,7 +590,7 @@ func (wf *Workflows) GetJWTInContext(
 ) (uuid.UUID, *APIError) {
 	jwtToken, ok := wf.jwtGetter.FromContext(ctx)
 	if !ok {
-		logger.Error(
+		logger.ErrorContext(ctx,
 			"jwt token not found in context, this should not be possilble due to middleware",
 		)
 
@@ -599,7 +599,7 @@ func (wf *Workflows) GetJWTInContext(
 
 	sub, err := jwtToken.Claims.GetSubject()
 	if err != nil {
-		logger.Error("error getting user id from jwt token", logError(err))
+		logger.ErrorContext(ctx, "error getting user id from jwt token", logError(err))
 		return uuid.UUID{}, ErrInvalidRequest
 	}
 
@@ -607,7 +607,7 @@ func (wf *Workflows) GetJWTInContext(
 
 	userID, err := uuid.Parse(sub)
 	if err != nil {
-		logger.Error("error parsing user id from jwt token's subject", logError(err))
+		logger.ErrorContext(ctx, "error parsing user id from jwt token's subject", logError(err))
 		return uuid.UUID{}, ErrInvalidRequest
 	}
 
@@ -673,7 +673,7 @@ func (wf *Workflows) InsertRefreshtoken(
 	if metadata != nil {
 		b, err = json.Marshal(metadata)
 		if err != nil {
-			logger.Error("error marshalling metadata", logError(err))
+			logger.ErrorContext(ctx, "error marshalling metadata", logError(err))
 			return uuid.UUID{}, ErrInternalServerError
 		}
 	}
@@ -711,7 +711,7 @@ func (wf *Workflows) ChangeEmail(
 		},
 	)
 	if err != nil {
-		logger.Error("error updating user ticket", logError(err))
+		logger.ErrorContext(ctx, "error updating user ticket", logError(err))
 		return sql.AuthUser{}, ErrInternalServerError
 	}
 
@@ -730,7 +730,7 @@ func (wf *Workflows) ChangePassword(
 
 	hashedPassword, err := hashPassword(newPassord)
 	if err != nil {
-		logger.Error("error hashing password", logError(err))
+		logger.ErrorContext(ctx, "error hashing password", logError(err))
 		return ErrInternalServerError
 	}
 
@@ -741,7 +741,7 @@ func (wf *Workflows) ChangePassword(
 			PasswordHash: sql.Text(hashedPassword),
 		},
 	); err != nil {
-		logger.Error("error updating user password", logError(err))
+		logger.ErrorContext(ctx, "error updating user password", logError(err))
 		return ErrInternalServerError
 	}
 
@@ -768,7 +768,7 @@ func (wf *Workflows) SendEmail(
 		redirectTo,
 	)
 	if err != nil {
-		logger.Error("problem generating email verification link", logError(err))
+		logger.ErrorContext(ctx, "problem generating email verification link", logError(err))
 		return ErrInternalServerError
 	}
 
@@ -789,7 +789,7 @@ func (wf *Workflows) SendEmail(
 			ClientURL:   wf.config.ClientURL.String(),
 		},
 	); err != nil {
-		logger.Error("problem sending email", logError(err))
+		logger.ErrorContext(ctx, "problem sending email", logError(err))
 		return ErrInternalServerError
 	}
 
@@ -846,7 +846,7 @@ func (wf *Workflows) SignupUserWithSession( //nolint:funlen
 
 	metadata, err := json.Marshal(options.Metadata)
 	if err != nil {
-		logger.Error("error marshaling metadata", logError(err))
+		logger.ErrorContext(ctx, "error marshaling metadata", logError(err))
 		return nil, ErrInternalServerError
 	}
 
@@ -859,7 +859,7 @@ func (wf *Workflows) SignupUserWithSession( //nolint:funlen
 		gravatarURL,
 	)
 	if err != nil {
-		return nil, sqlErrIsDuplicatedEmail(err, logger)
+		return nil, sqlErrIsDuplicatedEmail(ctx, err, logger)
 	}
 
 	if wf.config.DisableNewUsers {
@@ -871,7 +871,7 @@ func (wf *Workflows) SignupUserWithSession( //nolint:funlen
 		ctx, userID, false, deptr(options.AllowedRoles), *options.DefaultRole, nil, logger,
 	)
 	if err != nil {
-		logger.Error("error getting jwt", logError(err))
+		logger.ErrorContext(ctx, "error getting jwt", logError(err))
 		return nil, ErrInternalServerError
 	}
 
@@ -914,7 +914,7 @@ func (wf *Workflows) SignupUserWithouthSession(
 
 	metadata, err := json.Marshal(options.Metadata)
 	if err != nil {
-		logger.Error("error marshaling metadata", logError(err))
+		logger.ErrorContext(ctx, "error marshaling metadata", logError(err))
 		return ErrInternalServerError
 	}
 
@@ -929,7 +929,7 @@ func (wf *Workflows) SignupUserWithouthSession(
 	}
 
 	if err := databaseWithoutSession(ticket, ticketExpiresAt, metadata, gravatarURL); err != nil {
-		return sqlErrIsDuplicatedEmail(err, logger)
+		return sqlErrIsDuplicatedEmail(ctx, err, logger)
 	}
 
 	if wf.config.DisableNewUsers {
@@ -976,7 +976,7 @@ func (wf *Workflows) SignupAnonymousUser( //nolint:funlen
 
 	metadata, err := json.Marshal(reqMetadata)
 	if err != nil {
-		logger.Error("error marshaling metadata", logError(err))
+		logger.ErrorContext(ctx, "error marshaling metadata", logError(err))
 		return nil, ErrInternalServerError
 	}
 
@@ -1001,7 +1001,7 @@ func (wf *Workflows) SignupAnonymousUser( //nolint:funlen
 		},
 	)
 	if err != nil {
-		logger.Error("error inserting user", logError(err))
+		logger.ErrorContext(ctx, "error inserting user", logError(err))
 		return nil, &APIError{api.InternalServerError}
 	}
 
@@ -1009,7 +1009,7 @@ func (wf *Workflows) SignupAnonymousUser( //nolint:funlen
 		ctx, resp.ID, true, []string{anonymousRole}, anonymousRole, nil, logger,
 	)
 	if err != nil {
-		logger.Error("error getting jwt", logError(err))
+		logger.ErrorContext(ctx, "error getting jwt", logError(err))
 		return nil, ErrInternalServerError
 	}
 
@@ -1049,7 +1049,7 @@ func (wf *Workflows) DeanonymizeUser(
 	logger *slog.Logger,
 ) *APIError {
 	if err := wf.db.DeleteUserRoles(ctx, userID); err != nil {
-		logger.Error("error deleting user roles", logError(err))
+		logger.ErrorContext(ctx, "error deleting user roles", logError(err))
 		return ErrInternalServerError
 	}
 
@@ -1061,14 +1061,14 @@ func (wf *Workflows) DeanonymizeUser(
 	if options.Metadata != nil {
 		metadatab, err = json.Marshal(options.Metadata)
 		if err != nil {
-			logger.Error("error marshalling metadata", logError(err))
+			logger.ErrorContext(ctx, "error marshalling metadata", logError(err))
 			return ErrInternalServerError
 		}
 	}
 
 	hashedPassword, err := hashPassword(password)
 	if err != nil {
-		logger.Error("error hashing password", logError(err))
+		logger.ErrorContext(ctx, "error hashing password", logError(err))
 		return ErrInternalServerError
 	}
 
@@ -1087,13 +1087,13 @@ func (wf *Workflows) DeanonymizeUser(
 			ID:              pgtype.UUID{Bytes: userID, Valid: true},
 		},
 	); err != nil {
-		logger.Error("error updating user", logError(err))
+		logger.ErrorContext(ctx, "error updating user", logError(err))
 		return ErrInternalServerError
 	}
 
 	if deleteRefreshTokens {
 		if err := wf.db.DeleteRefreshTokens(ctx, userID); err != nil {
-			logger.Error("error deleting refresh tokens", logError(err))
+			logger.ErrorContext(ctx, "error deleting refresh tokens", logError(err))
 			return ErrInternalServerError
 		}
 	}
@@ -1102,6 +1102,7 @@ func (wf *Workflows) DeanonymizeUser(
 }
 
 func (wf *Workflows) GetOIDCProfileFromIDToken(
+	ctx context.Context,
 	providerID api.IdTokenProvider,
 	idToken string,
 	pnonce *string,
@@ -1109,7 +1110,7 @@ func (wf *Workflows) GetOIDCProfileFromIDToken(
 ) (oidc.Profile, *APIError) {
 	idTokenValidator, apiError := wf.getIDTokenValidator(providerID)
 	if apiError != nil {
-		logger.Error("error getting id token validator", logError(apiError))
+		logger.ErrorContext(ctx, "error getting id token validator", logError(apiError))
 		return oidc.Profile{}, apiError
 	}
 
@@ -1120,13 +1121,13 @@ func (wf *Workflows) GetOIDCProfileFromIDToken(
 
 	token, err := idTokenValidator.Validate(idToken, nonce)
 	if err != nil {
-		logger.Error("error validating id token", logError(err))
+		logger.ErrorContext(ctx, "error validating id token", logError(err))
 		return oidc.Profile{}, ErrInvalidRequest
 	}
 
 	profile, err := idTokenValidator.GetProfile(token)
 	if err != nil {
-		logger.Error("error getting profile from token", logError(err))
+		logger.ErrorContext(ctx, "error getting profile from token", logError(err))
 		return oidc.Profile{}, ErrInvalidRequest
 	}
 
@@ -1173,11 +1174,11 @@ func (wf *Workflows) InsertUserProvider(
 	)
 	if err != nil {
 		if sqlIsDuplcateError(err, "user_providers_provider_id_provider_user_id_key") {
-			logger.Error("user provider id already in use", logError(err))
+			logger.ErrorContext(ctx, "user provider id already in use", logError(err))
 			return sql.AuthUserProvider{}, ErrUserProviderAlreadyLinked
 		}
 
-		logger.Error("error inserting user provider", logError(err))
+		logger.ErrorContext(ctx, "error inserting user provider", logError(err))
 
 		return sql.AuthUserProvider{}, ErrInternalServerError
 	}
@@ -1196,11 +1197,11 @@ func (wf *Workflows) UpdateUserConfirmChangeEmail(
 	)
 	if err != nil {
 		if sqlIsDuplcateError(err, "users_email_key") {
-			logger.Error("user email id already in use", logError(err))
+			logger.ErrorContext(ctx, "user email id already in use", logError(err))
 			return sql.AuthUser{}, ErrEmailAlreadyInUse
 		}
 
-		logger.Error("error updating user", logError(err))
+		logger.ErrorContext(ctx, "error updating user", logError(err))
 
 		return sql.AuthUser{}, ErrInternalServerError
 	}
@@ -1218,7 +1219,7 @@ func (wf *Workflows) UpdateUserVerifyEmail(
 		userID,
 	)
 	if err != nil {
-		logger.Error("error updating user", logError(err))
+		logger.ErrorContext(ctx, "error updating user", logError(err))
 		return sql.AuthUser{}, ErrInternalServerError
 	}
 
@@ -1237,7 +1238,7 @@ func (wf *Workflows) GetUserSecurityKeys(
 	}
 
 	if err != nil {
-		logger.Error("error getting security keys", logError(err))
+		logger.ErrorContext(ctx, "error getting security keys", logError(err))
 		return nil, ErrInternalServerError
 	}
 
@@ -1256,7 +1257,7 @@ func (wf *Workflows) GetUserByPhoneNumber(
 	}
 
 	if err != nil {
-		logger.Error("error getting user by phone number", logError(err))
+		logger.ErrorContext(ctx, "error getting user by phone number", logError(err))
 		return sql.AuthUser{}, ErrInternalServerError
 	}
 
@@ -1279,7 +1280,7 @@ func (wf *Workflows) DeleteUserRefreshTokens(
 	logger *slog.Logger,
 ) *APIError {
 	if err := wf.db.DeleteRefreshTokens(ctx, userID); err != nil {
-		logger.Error("error deleting user refresh tokens", logError(err))
+		logger.ErrorContext(ctx, "error deleting user refresh tokens", logError(err))
 		return ErrInternalServerError
 	}
 
@@ -1294,7 +1295,7 @@ func (wf *Workflows) DeleteRefreshToken(
 	if err := wf.db.DeleteRefreshToken(
 		ctx, sql.Text(hashRefreshToken([]byte(refreshToken))),
 	); err != nil {
-		logger.Error("error deleting refresh token", logError(err))
+		logger.ErrorContext(ctx, "error deleting refresh token", logError(err))
 		return ErrInternalServerError
 	}
 

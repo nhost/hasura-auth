@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -534,18 +535,18 @@ func (ctrl *Controller) respondWithError(err *APIError) ErrorResponse {
 	return ctrl.sendError(err)
 }
 
-func sqlErrIsDuplicatedEmail(err error, logger *slog.Logger) *APIError {
+func sqlErrIsDuplicatedEmail(ctx context.Context, err error, logger *slog.Logger) *APIError {
 	if err == nil {
 		return nil
 	}
 
 	if strings.Contains(err.Error(), "SQLSTATE 23505") &&
 		strings.Contains(err.Error(), "\"users_email_key\"") {
-		logger.Error("email already in use", logError(err))
+		logger.ErrorContext(ctx, "email already in use", logError(err))
 		return ErrEmailAlreadyInUse
 	}
 
-	logger.Error("error inserting user", logError(err))
+	logger.ErrorContext(ctx, "error inserting user", logError(err))
 
 	return &APIError{api.InternalServerError}
 }

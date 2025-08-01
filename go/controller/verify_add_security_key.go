@@ -17,7 +17,7 @@ func (ctrl *Controller) VerifyAddSecurityKey( //nolint:ireturn
 	logger := middleware.LoggerFromContext(ctx)
 
 	if !ctrl.config.WebauthnEnabled {
-		logger.Error("webauthn is disabled")
+		logger.ErrorContext(ctx, "webauthn is disabled")
 		return ctrl.sendError(ErrDisabledEndpoint), nil
 	}
 
@@ -28,7 +28,7 @@ func (ctrl *Controller) VerifyAddSecurityKey( //nolint:ireturn
 
 	credData, err := request.Body.Credential.Parse()
 	if err != nil {
-		logger.Error("error parsing credential data", logError(err))
+		logger.ErrorContext(ctx, "error parsing credential data", logError(err))
 		return ctrl.sendError(ErrInvalidRequest), nil
 	}
 
@@ -38,7 +38,7 @@ func (ctrl *Controller) VerifyAddSecurityKey( //nolint:ireturn
 	}
 
 	if webauthnUser.ID != user.ID {
-		logger.Error("webauthn user ID mismatch")
+		logger.ErrorContext(ctx, "webauthn user ID mismatch")
 		return ctrl.sendError(ErrInvalidRequest), nil
 	}
 
@@ -57,7 +57,7 @@ func (ctrl *Controller) VerifyAddSecurityKey( //nolint:ireturn
 		},
 	)
 	if err != nil {
-		logger.Error("error inserting security key", logError(err))
+		logger.ErrorContext(ctx, "error inserting security key", logError(err))
 		return ctrl.sendError(ErrInternalServerError), nil
 	}
 

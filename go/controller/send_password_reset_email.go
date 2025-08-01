@@ -17,7 +17,7 @@ func (ctrl *Controller) SendPasswordResetEmail( //nolint:ireturn
 	logger := middleware.LoggerFromContext(ctx).
 		With(slog.String("email", string(request.Body.Email)))
 
-	options, err := ctrl.wf.ValidateOptionsRedirectTo(request.Body.Options, logger)
+	options, err := ctrl.wf.ValidateOptionsRedirectTo(ctx, request.Body.Options, logger)
 	if err != nil {
 		return ctrl.respondWithError(err), nil
 	}

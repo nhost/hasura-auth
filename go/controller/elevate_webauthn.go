@@ -33,7 +33,7 @@ func (ctrl *Controller) ElevateWebauthn( //nolint:ireturn
 		return ctrl.sendError(ErrInvalidRequest), nil
 	}
 
-	creds, apiErr := webauthnCredentials(keys, logger)
+	creds, apiErr := webauthnCredentials(ctx, keys, logger)
 	if apiErr != nil {
 		return ctrl.sendError(apiErr), nil
 	}

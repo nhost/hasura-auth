@@ -70,12 +70,12 @@ func (wf *Workflows) SetTicket(
 		},
 	)
 	if errors.Is(err, pgx.ErrNoRows) {
-		logger.Error("user not found")
+		logger.ErrorContext(ctx, "user not found")
 		return ErrInvalidRequest
 	}
 
 	if err != nil {
-		logger.Error("error updating user ticket", logError(err))
+		logger.ErrorContext(ctx, "error updating user ticket", logError(err))
 		return ErrInternalServerError
 	}
 

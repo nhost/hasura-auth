@@ -18,7 +18,7 @@ func (ctrl *Controller) SendVerificationEmail( //nolint:ireturn
 	logger := middleware.LoggerFromContext(ctx).
 		With(slog.String("email", string(request.Body.Email)))
 
-	options, apiErr := ctrl.wf.ValidateOptionsRedirectTo(request.Body.Options, logger)
+	options, apiErr := ctrl.wf.ValidateOptionsRedirectTo(ctx, request.Body.Options, logger)
 	if apiErr != nil {
 		return ctrl.respondWithError(apiErr), nil
 	}

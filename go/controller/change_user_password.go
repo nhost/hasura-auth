@@ -19,7 +19,7 @@ func (ctrl *Controller) postUserPasswordAuthenticated( //nolint:ireturn
 
 	userID, err := ctrl.wf.jwtGetter.GetUserID(jwtToken)
 	if err != nil {
-		logger.Error("error getting user id from jwt token", logError(err))
+		logger.ErrorContext(ctx, "error getting user id from jwt token", logError(err))
 		return ctrl.sendError(ErrInvalidRequest), nil
 	}
 

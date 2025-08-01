@@ -13,7 +13,7 @@ func (ctrl *Controller) ChangeUserEmail( //nolint:ireturn
 ) (api.ChangeUserEmailResponseObject, error) {
 	logger := middleware.LoggerFromContext(ctx)
 
-	options, apiErr := ctrl.wf.ValidateOptionsRedirectTo(request.Body.Options, logger)
+	options, apiErr := ctrl.wf.ValidateOptionsRedirectTo(ctx, request.Body.Options, logger)
 	if apiErr != nil {
 		return ctrl.respondWithError(apiErr), nil
 	}

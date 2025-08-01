@@ -21,7 +21,7 @@ func (ctrl *Controller) postSignupEmailPasswordValidateRequest(
 		return api.SignUpEmailPasswordRequestObject{}, ErrSignupDisabled
 	}
 
-	if err := ctrl.wf.ValidateSignupEmail(req.Body.Email, logger); err != nil {
+	if err := ctrl.wf.ValidateSignupEmail(ctx, req.Body.Email, logger); err != nil {
 		return api.SignUpEmailPasswordRequestObject{}, err
 	}
 
@@ -30,7 +30,7 @@ func (ctrl *Controller) postSignupEmailPasswordValidateRequest(
 	}
 
 	options, err := ctrl.wf.ValidateSignUpOptions(
-		req.Body.Options, string(req.Body.Email), logger,
+		ctx, req.Body.Options, string(req.Body.Email), logger,
 	)
 	if err != nil {
 		return api.SignUpEmailPasswordRequestObject{}, err
@@ -54,7 +54,7 @@ func (ctrl *Controller) SignUpEmailPassword( //nolint:ireturn
 
 	hashedPassword, err := hashPassword(req.Body.Password)
 	if err != nil {
-		logger.Error("error hashing password", logError(err))
+		logger.ErrorContext(ctx, "error hashing password", logError(err))
 		return ctrl.sendError(ErrInternalServerError), nil
 	}
 

@@ -63,7 +63,7 @@ func (ctrl *Controller) signinEmailValidateRequest(
 		return nil, ErrInvalidEmailPassword
 	}
 
-	options, apiErr := ctrl.wf.ValidateSignUpOptions(options, email, logger)
+	options, apiErr := ctrl.wf.ValidateSignUpOptions(ctx, options, email, logger)
 	if apiErr != nil {
 		return nil, apiErr
 	}
@@ -98,7 +98,7 @@ func (ctrl *Controller) signinWithTicket(
 			return apiErr
 		}
 	case apiErr != nil:
-		logger.Error("error getting user by email", logError(apiErr))
+		logger.ErrorContext(ctx, "error getting user by email", logError(apiErr))
 		return apiErr
 	default:
 		if apiErr = ctrl.wf.SetTicket(ctx, user.ID, ticket, ticketExpiresAt, logger); apiErr != nil {

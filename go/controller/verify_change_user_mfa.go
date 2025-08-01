@@ -40,7 +40,7 @@ func (ctrl *Controller) postUserMfaDeactivate( //nolint:ireturn
 			ActiveMfaType: pgtype.Text{}, //nolint:exhaustruct
 		},
 	); err != nil {
-		logger.Error("failed to update active MFA type", logError(err))
+		logger.ErrorContext(ctx, "failed to update active MFA type", logError(err))
 		return ctrl.sendError(ErrInternalServerError)
 	}
 
@@ -77,7 +77,7 @@ func (ctrl *Controller) postUserMfaActivate( //nolint:ireturn
 			ActiveMfaType: sql.Text(api.Totp),
 		},
 	); err != nil {
-		logger.Error("failed to update TOTP secret", logError(err))
+		logger.ErrorContext(ctx, "failed to update TOTP secret", logError(err))
 		return ctrl.sendError(ErrInternalServerError)
 	}
 

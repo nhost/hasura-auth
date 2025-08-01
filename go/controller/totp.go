@@ -82,6 +82,7 @@ func (t *Totp) Validate(passcode string, secret string) bool {
 			Skew:      totpSkew,
 			Digits:    otp.DigitsSix,
 			Algorithm: otp.AlgorithmSHA1,
+			Encoder:   otp.EncoderDefault,
 		},
 	)
 

@@ -247,7 +247,11 @@ func (j *JWTGetter) GetToken(
 	if j.customClaimer != nil {
 		customClaims, err = j.customClaimer.GetClaims(ctx, userID.String())
 		if err != nil {
-			logger.Error("error getting custom claims", slog.String("error", err.Error()))
+			logger.ErrorContext(
+				ctx,
+				"error getting custom claims",
+				slog.String("error", err.Error()),
+			)
 
 			customClaims = map[string]any{}
 		}

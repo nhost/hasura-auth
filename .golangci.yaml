@@ -1,6 +1,9 @@
 version: "2"
 linters:
   default: all
+  settings:
+    funlen:
+      lines: 65
   disable:
     - canonicalheader
     - depguard

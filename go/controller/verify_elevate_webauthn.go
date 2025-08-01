@@ -19,7 +19,7 @@ func (ctrl *Controller) VerifyElevateWebauthn( //nolint:ireturn
 	logger := middleware.LoggerFromContext(ctx)
 
 	if !ctrl.config.WebauthnEnabled {
-		logger.Error("webauthn is disabled")
+		logger.ErrorContext(ctx, "webauthn is disabled")
 		return ctrl.sendError(ErrDisabledEndpoint), nil
 	}
 
@@ -31,7 +31,7 @@ func (ctrl *Controller) VerifyElevateWebauthn( //nolint:ireturn
 
 	credData, err := request.Body.Credential.Parse()
 	if err != nil {
-		logger.Error("error parsing credential data", logError(err))
+		logger.ErrorContext(ctx, "error parsing credential data", logError(err))
 		return ctrl.sendError(ErrInvalidRequest), nil
 	}
 
@@ -53,7 +53,7 @@ func (ctrl *Controller) VerifyElevateWebauthn( //nolint:ireturn
 		logger,
 	)
 	if err != nil {
-		logger.Error("failed to create elevated session", logError(err))
+		logger.ErrorContext(ctx, "failed to create elevated session", logError(err))
 		return ctrl.sendError(ErrInternalServerError), nil
 	}
 
@@ -75,7 +75,7 @@ func (ctrl *Controller) postElevateWebauthnVerifyUserHandler(
 			return nil, apiErr
 		}
 
-		creds, apiErr := webauthnCredentials(keys, logger)
+		creds, apiErr := webauthnCredentials(ctx, keys, logger)
 		if apiErr != nil {
 			return nil, apiErr
 		}

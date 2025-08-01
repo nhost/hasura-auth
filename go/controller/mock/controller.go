@@ -109,9 +109,9 @@ func (m *MockSMSer) SendVerificationCode(ctx context.Context, to, locale string)
 }
 
 // SendVerificationCode indicates an expected call of SendVerificationCode.
-func (mr *MockSMSerMockRecorder) SendVerificationCode(to, locale any) *gomock.Call {
+func (mr *MockSMSerMockRecorder) SendVerificationCode(ctx, to, locale any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendVerificationCode", reflect.TypeOf((*MockSMSer)(nil).SendVerificationCode), to, locale)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendVerificationCode", reflect.TypeOf((*MockSMSer)(nil).SendVerificationCode), ctx, to, locale)
 }
 
 // MockDBClientGetUser is a mock of DBClientGetUser interface.
