@@ -27,6 +27,7 @@ func (ctrl *Controller) ChangeUserMfa( //nolint:ireturn
 	if accountName == "" {
 		accountName = user.DisplayName
 	}
+
 	if accountName == "" {
 		accountName = user.ID.String()
 	}

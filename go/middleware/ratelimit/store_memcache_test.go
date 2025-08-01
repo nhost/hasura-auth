@@ -36,6 +36,7 @@ func TestNewMemcacheStore(t *testing.T) {
 	}
 
 	time.Sleep(time.Second)
+
 	if e := store.Get("key"); e != 0 {
 		t.Errorf("Expected 0, got %d", e)
 	}

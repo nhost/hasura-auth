@@ -73,6 +73,7 @@ type ErrorResponse api.ErrorResponse
 func (response ErrorResponse) visit(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(response.Status)
+
 	return json.NewEncoder(w).Encode(response) //nolint:wrapcheck
 }
 
@@ -266,6 +267,7 @@ func isSensitive(err api.ErrorResponseError) bool {
 		api.OauthProviderError:
 		return false
 	}
+
 	return false
 }
 
@@ -482,6 +484,7 @@ type ErrorRedirectResponse struct {
 func (response ErrorRedirectResponse) visit(w http.ResponseWriter) error {
 	w.Header().Set("Location", response.Headers.Location)
 	w.WriteHeader(http.StatusFound)
+
 	return nil
 }
 
@@ -543,6 +546,7 @@ func sqlErrIsDuplicatedEmail(err error, logger *slog.Logger) *APIError {
 	}
 
 	logger.Error("error inserting user", logError(err))
+
 	return &APIError{api.InternalServerError}
 }
 
@@ -563,6 +567,7 @@ func generateRedirectURL(
 	for k, v := range opts {
 		q.Set(k, v)
 	}
+
 	redirectTo.RawQuery = q.Encode()
 
 	return redirectTo

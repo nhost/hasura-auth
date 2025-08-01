@@ -21,6 +21,7 @@ func sendsEmail(path string, verifyEmailEnabled bool) bool {
 			"/user/deanonymize",
 		}, path)
 	}
+
 	return slices.Contains([]string{
 		"/signin/passwordless/email",
 		"/user/email/change",
@@ -65,8 +66,11 @@ func RateLimit( //nolint:cyclop,funlen
 ) gin.HandlerFunc {
 	perUserRL := NewSlidingWindow("user-global", globalLimit, globalInterval, store)
 
-	var globalEmailRL *SlidingWindow
-	var perUserEmailRL *SlidingWindow
+	var (
+		globalEmailRL  *SlidingWindow
+		perUserEmailRL *SlidingWindow
+	)
+
 	if emailIsGlobal {
 		globalEmailRL = NewSlidingWindow("global-email", emailLimit, emailInterval, store)
 	} else {

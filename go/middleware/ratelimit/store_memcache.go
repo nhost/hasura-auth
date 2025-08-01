@@ -36,6 +36,7 @@ func (m *MemcacheStore) Get(key string) int {
 	if err != nil {
 		return 0
 	}
+
 	v, err := strconv.Atoi(string(item.Value))
 	if err != nil {
 		return 0
@@ -57,10 +58,12 @@ func (m *MemcacheStore) Increment(key string, expire time.Duration) int {
 			m.logger.Error("error setting key", slog.String("error", err.Error()))
 			return 0
 		}
+
 		return 1
 	case err != nil:
 		m.logger.Error("error incrementing key", slog.String("error", err.Error()))
 		return 0
 	}
+
 	return int(newValue) //nolint:gosec
 }

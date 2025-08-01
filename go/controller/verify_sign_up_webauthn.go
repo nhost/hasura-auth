@@ -43,7 +43,9 @@ func (ctrl *Controller) postSignupWebauthnVerifyValidateRequest( //nolint:cyclop
 	}
 
 	options := ch.Options
+
 	var apiErr *APIError
+
 	if request.Body.Options != nil { //nolint:nestif
 		if request.Body.Options.AllowedRoles == nil {
 			options.AllowedRoles = request.Body.Options.AllowedRoles
@@ -110,7 +112,6 @@ func (ctrl *Controller) VerifySignUpWebauthn( //nolint:ireturn
 		),
 		logger,
 	)
-
 	if apiErr != nil {
 		return ctrl.sendError(apiErr), nil
 	}

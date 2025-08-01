@@ -27,6 +27,7 @@ func (ctrl *Controller) LinkIdToken( //nolint:ireturn,revive,stylecheck
 		logger.Error(
 			"jwt token not found in context, this should not be possilble due to middleware",
 		)
+
 		return ctrl.sendError(ErrInternalServerError), nil
 	}
 

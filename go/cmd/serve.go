@@ -1232,10 +1232,12 @@ func getGoServer( //nolint:funlen
 	router := gin.New()
 
 	loader := openapi3.NewLoader()
+
 	doc, err := loader.LoadFromData(docs.OpenAPISchema)
 	if err != nil {
 		return nil, fmt.Errorf("failed to load OpenAPI schema: %w", err)
 	}
+
 	doc.AddServer(&openapi3.Server{ //nolint:exhaustruct
 		URL: cCtx.String(flagAPIPrefix),
 	})
@@ -1289,6 +1291,7 @@ func getGoServer( //nolint:funlen
 	if err != nil {
 		return nil, fmt.Errorf("failed to create controller: %w", err)
 	}
+
 	handler := api.NewStrictHandler(ctrl, []api.StrictMiddlewareFunc{})
 	mw := api.MiddlewareFunc(ginmiddleware.OapiRequestValidatorWithOptions(
 		doc,
@@ -1358,7 +1361,9 @@ func serve(cCtx *cli.Context) error {
 
 	go func() {
 		defer cancel()
+
 		logger.Info("starting server", slog.String("port", cCtx.String(flagPort)))
+
 		if err := server.ListenAndServe(); err != nil {
 			logger.Error("server failed", slog.String("error", err.Error()))
 		}
@@ -1367,6 +1372,7 @@ func serve(cCtx *cli.Context) error {
 	<-ctx.Done()
 
 	logger.Info("shutting down server")
+
 	if err := server.Shutdown(ctx); err != nil {
 		return fmt.Errorf("failed to shutdown server: %w", err)
 	}

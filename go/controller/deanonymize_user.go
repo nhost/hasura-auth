@@ -21,6 +21,7 @@ func (ctrl *Controller) postUserDeanonymizeValidateRequest( //nolint:cyclop
 		logger.Error(
 			"jwt token not found in context, this should not be possilble due to middleware",
 		)
+
 		return uuid.UUID{}, "", nil, ErrInternalServerError
 	}
 
@@ -36,6 +37,7 @@ func (ctrl *Controller) postUserDeanonymizeValidateRequest( //nolint:cyclop
 	}
 
 	var password string
+
 	if request.Body.SignInMethod == api.EmailPassword && request.Body.Password == nil {
 		logger.Error("password is required for email/password sign in method")
 		return uuid.UUID{}, "", nil, ErrInvalidRequest
@@ -62,6 +64,7 @@ func (ctrl *Controller) postUserDeanonymizeValidateRequest( //nolint:cyclop
 	if apiErr != nil {
 		return uuid.UUID{}, "", nil, apiErr
 	}
+
 	if exists {
 		logger.Warn("email already exists")
 		return uuid.UUID{}, "", nil, ErrEmailAlreadyInUse
@@ -83,11 +86,15 @@ func (ctrl *Controller) DeanonymizeUser( //nolint:funlen
 		return ctrl.sendError(apiError), nil
 	}
 
-	var ticket string
-	var ticketExpiresAt time.Time
-	var linkType LinkType
-	var templateName notifications.TemplateName
+	var (
+		ticket          string
+		ticketExpiresAt time.Time
+		linkType        LinkType
+		templateName    notifications.TemplateName
+	)
+
 	deleteRefreshTokens := false
+
 	switch {
 	case request.Body.SignInMethod == api.Passwordless:
 		ticket = generateTicket(TicketTypePasswordLessEmail)
@@ -102,6 +109,7 @@ func (ctrl *Controller) DeanonymizeUser( //nolint:funlen
 		templateName = notifications.TemplateNameEmailVerify
 		deleteRefreshTokens = true
 	}
+
 	if apiError = ctrl.wf.DeanonymizeUser(
 		ctx,
 		userID,

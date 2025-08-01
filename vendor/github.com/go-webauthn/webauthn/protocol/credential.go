@@ -62,15 +62,15 @@ type ParsedCredentialCreationData struct {
 
 // ParseCredentialCreationResponse is a non-agnostic function for parsing a registration response from the http library
 // from stdlib. It handles some standard cleanup operations.
-func ParseCredentialCreationResponse(response *http.Request) (*ParsedCredentialCreationData, error) {
-	if response == nil || response.Body == nil {
+func ParseCredentialCreationResponse(request *http.Request) (*ParsedCredentialCreationData, error) {
+	if request == nil || request.Body == nil {
 		return nil, ErrBadRequest.WithDetails("No response given")
 	}
 
-	defer response.Body.Close()
-	defer io.Copy(io.Discard, response.Body)
+	defer request.Body.Close()
+	defer io.Copy(io.Discard, request.Body)
 
-	return ParseCredentialCreationResponseBody(response.Body)
+	return ParseCredentialCreationResponseBody(request.Body)
 }
 
 // ParseCredentialCreationResponseBody is an agnostic version of ParseCredentialCreationResponse. Implementers are
@@ -145,7 +145,7 @@ func (ccr CredentialCreationResponse) Parse() (pcc *ParsedCredentialCreationData
 // Verify the Client and Attestation data.
 //
 // Specification: §7.1. Registering a New Credential (https://www.w3.org/TR/webauthn/#sctn-registering-a-new-credential)
-func (pcc *ParsedCredentialCreationData) Verify(storedChallenge string, verifyUser bool, relyingPartyID string, rpOrigins, rpTopOrigins []string, rpTopOriginsVerify TopOriginVerificationMode, mds metadata.Provider) (clientDataHash []byte, err error) {
+func (pcc *ParsedCredentialCreationData) Verify(storedChallenge string, verifyUser bool, verifyUserPresence bool, relyingPartyID string, rpOrigins, rpTopOrigins []string, rpTopOriginsVerify TopOriginVerificationMode, mds metadata.Provider, credParams []CredentialParameter) (clientDataHash []byte, err error) {
 	// Handles steps 3 through 6 - Verifying the Client Data against the Relying Party's stored data
 	if err = pcc.Response.CollectedClientData.Verify(storedChallenge, CreateCeremony, rpOrigins, rpTopOrigins, rpTopOriginsVerify); err != nil {
 		return nil, err
@@ -161,7 +161,7 @@ func (pcc *ParsedCredentialCreationData) Verify(storedChallenge string, verifyUs
 
 	// We do the above step while parsing and decoding the CredentialCreationResponse
 	// Handle steps 9 through 14 - This verifies the attestation object.
-	if err = pcc.Response.AttestationObject.Verify(relyingPartyID, clientDataHash, verifyUser, mds); err != nil {
+	if err = pcc.Response.AttestationObject.Verify(relyingPartyID, clientDataHash, verifyUser, verifyUserPresence, mds, credParams); err != nil {
 		return clientDataHash, err
 	}
 

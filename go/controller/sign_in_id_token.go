@@ -256,6 +256,7 @@ func (ctrl *Controller) providerFlowSignupWithoutSession(
 		if err != nil {
 			return fmt.Errorf("error inserting user: %w", err)
 		}
+
 		return nil
 	}
 }

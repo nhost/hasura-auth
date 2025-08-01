@@ -126,7 +126,7 @@
           mockgen
           oapi-codegen
           sqlc
-          postgresql_17_4-client
+          postgresql_17_5-client
           vacuum-go
         ];
 

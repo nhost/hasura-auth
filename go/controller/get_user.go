@@ -37,6 +37,7 @@ func (ctrl *Controller) GetUser( //nolint:ireturn
 	var metadata map[string]any
 	if err := json.Unmarshal(user.Metadata, &metadata); err != nil {
 		logger.Error("error parsing user metadata", logError(err))
+
 		metadata = map[string]any{}
 	}
 

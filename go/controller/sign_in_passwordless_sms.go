@@ -35,12 +35,14 @@ func (ctrl *Controller) SignInPasswordlessSms( //nolint:ireturn
 	switch {
 	case errors.Is(apiErr, ErrUserPhoneNumberNotFound):
 		logger.Info("user does not exist, creating user")
+
 		if apiErr := ctrl.postSigninPasswordlessSmsSignup(
 			ctx, request.Body.PhoneNumber, options, logger,
 		); apiErr != nil {
 			logger.Error("error signing up user", logError(apiErr))
 			return ctrl.respondWithError(apiErr), nil
 		}
+
 		return api.SignInPasswordlessSms200JSONResponse(api.OK), nil
 	case apiErr != nil:
 		logger.Error("error getting user by phone number", logError(apiErr))

@@ -25,6 +25,7 @@ func (ctrl *Controller) VerifySignInWebauthnUserHandle(
 		if err != nil {
 			return nil, fmt.Errorf("failed to marshal user handle: %w", err)
 		}
+
 		userID, err := uuid.Parse(string(b))
 		if err != nil {
 			return nil, fmt.Errorf("failed to parse user ID: %w", err)

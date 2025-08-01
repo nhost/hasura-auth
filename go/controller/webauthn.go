@@ -153,6 +153,7 @@ func (w *Webauthn) BeginLogin(
 	w.cleanCache()
 
 	creds := user.WebAuthnCredentials()
+
 	allowList := make([]protocol.CredentialDescriptor, len(creds))
 	for i, cred := range creds {
 		allowList[i] = protocol.CredentialDescriptor{

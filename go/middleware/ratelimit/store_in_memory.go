@@ -34,6 +34,7 @@ func (i *InMemoryStore) get(key string) int {
 	if v, ok := i.data[key]; ok {
 		return v.v
 	}
+
 	return 0
 }
 

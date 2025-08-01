@@ -34,6 +34,7 @@ func (ctrl *Controller) getVerifyHandleTicketType(
 	ctx context.Context, user sql.AuthUser, ticketType TicketType, logger *slog.Logger,
 ) *APIError {
 	var apiErr *APIError
+
 	switch ticketType {
 	case TicketTypeEmailConfirmChange:
 		apiErr = ctrl.getVerifyEmailConfirmChange(ctx, user, logger)
@@ -46,6 +47,7 @@ func (ctrl *Controller) getVerifyHandleTicketType(
 		apiErr = ctrl.getVerifyEmail(ctx, user, logger)
 	case TicketTypeOTP:
 		logger.Error("OTP verification is not supported in this context")
+
 		apiErr = ErrInvalidRequest
 	}
 
@@ -95,12 +97,14 @@ func (ctrl *Controller) getVerifyValidateRequest(
 	if err != nil {
 		logger.Error("error parsing redirect URL",
 			slog.String("redirectTo", req.Params.RedirectTo), logError(err))
+
 		return sql.AuthUser{}, "", nil, ErrInvalidRequest
 	}
 
 	options := &api.OptionsRedirectTo{
 		RedirectTo: &req.Params.RedirectTo,
 	}
+
 	_, apiErr := ctrl.wf.ValidateOptionsRedirectTo(options, logger)
 	if apiErr != nil {
 		return sql.AuthUser{}, "", redirectTo, apiErr
@@ -141,6 +145,7 @@ func (ctrl *Controller) getVerifyEmailPasswordLessEmail(
 			return apiErr
 		}
 	}
+
 	return nil
 }
 
@@ -152,5 +157,6 @@ func (ctrl *Controller) getVerifyEmail(
 			return apiErr
 		}
 	}
+
 	return nil
 }

@@ -33,6 +33,7 @@ func (ctrl *Controller) SignInOTPEmail( //nolint:ireturn
 		logger.Error("error generating OTP", logError(err))
 		return ctrl.sendError(ErrInternalServerError), nil
 	}
+
 	ticketExpiresAt := time.Now().Add(time.Hour)
 
 	if apiErr := ctrl.signinWithTicket(

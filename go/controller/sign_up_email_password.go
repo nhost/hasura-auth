@@ -71,7 +71,6 @@ func (ctrl *Controller) SignUpEmailPassword( //nolint:ireturn
 		),
 		logger,
 	)
-
 	if apiErr != nil {
 		return ctrl.sendError(apiErr), nil
 	}
@@ -153,6 +152,7 @@ func (ctrl *Controller) postSignupEmailPasswordWithoutSession(
 		if err != nil {
 			return fmt.Errorf("error inserting user: %w", err)
 		}
+
 		return nil
 	}
 }

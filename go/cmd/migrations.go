@@ -23,6 +23,7 @@ func insertRoles(
 
 	roleSet := make(map[string]bool)
 	uniqueRoles := make([]string, 0)
+
 	for _, role := range defaultRoles {
 		if !roleSet[role] {
 			roleSet[role] = true

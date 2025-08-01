@@ -31,6 +31,7 @@ func checkIfWeNeedToMigrate(
 	).Scan(&exists); err != nil {
 		return 0, fmt.Errorf("error checking if migrations table exists: %w", err)
 	}
+
 	if exists {
 		return 0, nil
 	}
@@ -43,6 +44,7 @@ func checkIfWeNeedToMigrate(
 	).Scan(&exists); err != nil {
 		return 0, fmt.Errorf("error checking if migrations table exists: %w", err)
 	}
+
 	if !exists {
 		return 0, nil
 	}
@@ -94,6 +96,7 @@ func ApplyPostgresMigration(postgresURL string, logger *slog.Logger) error { //n
 
 	if versionToMigrate > 0 {
 		logger.Info("migrating migrations from node.js to go", "version", versionToMigrate)
+
 		if err := migration.Force(versionToMigrate); err != nil {
 			return fmt.Errorf("error forcing migration to version %d: %w", versionToMigrate, err)
 		}

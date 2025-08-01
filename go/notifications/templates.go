@@ -80,12 +80,14 @@ func (t *Templates) GetTemplate(
 	*fasttemplate.Template, *fasttemplate.Template, error,
 ) {
 	path := filepath.Join(locale, string(templateName), "body.html")
+
 	template, ok := t.templates[path]
 	if !ok {
 		return nil, nil, ErrTemplateNotFound
 	}
 
 	path = filepath.Join(locale, string(templateName), "subject.txt")
+
 	subject, ok := t.templates[path]
 	if !ok {
 		return nil, nil, ErrTemplateNotFound
@@ -96,10 +98,12 @@ func (t *Templates) GetTemplate(
 
 func (t *Templates) GetTemplateSMS(locale string) (*fasttemplate.Template, error) {
 	path := filepath.Join(locale, "signin-passwordless-sms", "body.txt")
+
 	template, ok := t.templates[path]
 	if !ok {
 		return nil, ErrTemplateNotFound
 	}
+
 	return template, nil
 }
 
@@ -146,6 +150,7 @@ func (t *Templates) Render(
 		locale = t.defaultLocale
 		bodyTemplate, subjectTemplate, err = t.GetTemplate("email-verify", locale)
 	}
+
 	if err != nil {
 		return "", "", fmt.Errorf("error getting email template: %w", err)
 	}
@@ -153,6 +158,7 @@ func (t *Templates) Render(
 	m := data.ToMap(map[string]any{"locale": locale})
 	body := bodyTemplate.ExecuteString(m)
 	subject := subjectTemplate.ExecuteString(m)
+
 	return body, subject, nil
 }
 
@@ -177,11 +183,13 @@ func (t *Templates) RenderSMS(
 		locale = t.defaultLocale
 		bodyTemplate, err = t.GetTemplateSMS(locale)
 	}
+
 	if err != nil {
 		return "", fmt.Errorf("error getting email template: %w", err)
 	}
 
 	m := data.ToMap()
 	body := bodyTemplate.ExecuteString(m)
+
 	return body, nil
 }

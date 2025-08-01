@@ -29,6 +29,7 @@ func (ctrl *Controller) postSigninAnonymousValidateRequest(
 	if req.Body.Locale == nil {
 		req.Body.Locale = ptr(ctrl.config.DefaultLocale)
 	}
+
 	if !slices.Contains(ctrl.config.AllowedLocales, deptr(req.Body.Locale)) {
 		logger.Warn(
 			"locale not allowed, using default",

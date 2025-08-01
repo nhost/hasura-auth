@@ -53,7 +53,8 @@ type AttestedCredentialData struct {
 	AAGUID       []byte `json:"aaguid"`
 	CredentialID []byte `json:"credential_id"`
 
-	// The raw credential public key bytes received from the attestation data.
+	// The raw credential public key bytes received from the attestation data. This is the CBOR representation of the
+	// credentials public key.
 	CredentialPublicKey []byte `json:"public_key"`
 }
 
@@ -65,6 +66,9 @@ type AttestedCredentialData struct {
 type CredentialMediationRequirement string
 
 const (
+	// MediationDefault lets the browser choose the mediation flow completely as if it wasn't specified at all.
+	MediationDefault CredentialMediationRequirement = ""
+
 	// MediationSilent indicates user mediation is suppressed for the given operation. If the operation can be performed
 	// without user involvement, wonderful. If user involvement is necessary, then the operation will return null rather
 	// than involving the user.
@@ -383,31 +387,31 @@ func ResidentKeyNotRequired() *bool {
 	return &required
 }
 
-// Verify on AuthenticatorData handles Steps 9 through 12 for Registration
-// and Steps 11 through 14 for Assertion.
-func (a *AuthenticatorData) Verify(rpIdHash []byte, appIDHash []byte, userVerificationRequired bool) error {
+// Verify on AuthenticatorData handles Steps 13 through 15 & 17 for Registration
+// and Steps 15 through 18 for Assertion.
+func (a *AuthenticatorData) Verify(rpIdHash []byte, appIDHash []byte, userVerificationRequired bool, userPresenceRequired bool) (err error) {
 
-	// Registration Step 9 & Assertion Step 11
+	// Registration Step 13 & Assertion Step 15
 	// Verify that the RP ID hash in authData is indeed the SHA-256
 	// hash of the RP ID expected by the RP.
 	if !bytes.Equal(a.RPIDHash[:], rpIdHash) && !bytes.Equal(a.RPIDHash[:], appIDHash) {
 		return ErrVerification.WithInfo(fmt.Sprintf("RP Hash mismatch. Expected %x and Received %x", a.RPIDHash, rpIdHash))
 	}
 
-	// Registration Step 10 & Assertion Step 12
+	// Registration Step 15 & Assertion Step 16
 	// Verify that the User Present bit of the flags in authData is set.
-	if !a.Flags.UserPresent() {
-		return ErrVerification.WithInfo(fmt.Sprintln("User presence flag not set by authenticator"))
+	if userPresenceRequired && !a.Flags.UserPresent() {
+		return ErrVerification.WithInfo("User presence required but flag not set by authenticator")
 	}
 
-	// Registration Step 11 & Assertion Step 13
+	// Registration Step 15 & Assertion Step 17
 	// If user verification is required for this assertion, verify that
 	// the User Verified bit of the flags in authData is set.
 	if userVerificationRequired && !a.Flags.UserVerified() {
-		return ErrVerification.WithInfo(fmt.Sprintln("User verification required but flag not set by authenticator"))
+		return ErrVerification.WithInfo("User verification required but flag not set by authenticator")
 	}
 
-	// Registration Step 12 & Assertion Step 14
+	// Registration Step 17 & Assertion Step 18
 	// Verify that the values of the client extension outputs in clientExtensionResults
 	// and the authenticator extension outputs in the extensions in authData are as
 	// expected, considering the client extension input values that were given as the

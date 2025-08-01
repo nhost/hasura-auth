@@ -107,5 +107,6 @@ func (ctrl *Controller) VerifyChangeUserMfa( //nolint:ireturn
 	}
 
 	logger.Warn("invalid mfa type, we shouldn't be here")
+
 	return ctrl.sendError(ErrInternalServerError), nil
 }

@@ -22,6 +22,7 @@ func (ctrl *Controller) SendVerificationEmail( //nolint:ireturn
 	if apiErr != nil {
 		return ctrl.respondWithError(apiErr), nil
 	}
+
 	request.Body.Options = options
 
 	user, apiErr := ctrl.wf.GetUserByEmail(ctx, string(request.Body.Email), logger)
@@ -35,6 +36,7 @@ func (ctrl *Controller) SendVerificationEmail( //nolint:ireturn
 	}
 
 	ticket := generateTicket(TicketTypeVerifyEmail)
+
 	expireAt := time.Now().Add(In30Days)
 	if apiErr = ctrl.wf.SetTicket(ctx, user.ID, ticket, expireAt, logger); apiErr != nil {
 		return ctrl.respondWithError(apiErr), nil

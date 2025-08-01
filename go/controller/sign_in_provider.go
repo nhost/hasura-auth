@@ -29,6 +29,7 @@ func (ctrl *Controller) getSigninProviderValidateRequest(
 	if err != nil {
 		logger.Error("error parsing redirect URL",
 			slog.String("redirectTo", *options.RedirectTo), logError(err))
+
 		return nil, ErrInvalidRequest
 	}
 
@@ -73,6 +74,7 @@ func (ctrl *Controller) SignInProvider( //nolint:ireturn
 	}
 
 	var url string
+
 	switch {
 	case provider.IsOauth1():
 		url, err = provider.Oauth1().AuthCodeURL(ctx, state)

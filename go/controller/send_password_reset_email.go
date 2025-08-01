@@ -21,6 +21,7 @@ func (ctrl *Controller) SendPasswordResetEmail( //nolint:ireturn
 	if err != nil {
 		return ctrl.respondWithError(err), nil
 	}
+
 	request.Body.Options = options
 
 	if !ctrl.wf.ValidateEmail(string(request.Body.Email)) {
@@ -34,6 +35,7 @@ func (ctrl *Controller) SendPasswordResetEmail( //nolint:ireturn
 	}
 
 	ticket := generateTicket(TicketTypePasswordReset)
+
 	expiresAt := time.Now().Add(time.Hour)
 	if apiErr := ctrl.wf.SetTicket(ctx, user.ID, ticket, expiresAt, logger); apiErr != nil {
 		return ctrl.respondWithError(apiErr), nil

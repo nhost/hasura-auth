@@ -51,6 +51,7 @@ func NewWorkflows(
 	gravatarURL func(string) string,
 ) (*Workflows, error) {
 	allowedURLs := make([]string, len(cfg.AllowedRedirectURLs)+1)
+
 	allowedURLs[0] = cfg.ClientURL.String()
 	for i, u := range cfg.AllowedRedirectURLs {
 		allowedURLs[i+1] = u
@@ -155,6 +156,7 @@ func (wf *Workflows) ValidateSignUpOptions( //nolint:cyclop
 	if options.Locale == nil {
 		options.Locale = ptr(wf.config.DefaultLocale)
 	}
+
 	if !slices.Contains(wf.config.AllowedLocales, deptr(options.Locale)) {
 		logger.Warn(
 			"locale not allowed, using default",
@@ -248,6 +250,7 @@ func (wf *Workflows) GetUser(
 		logger.Warn("user not found")
 		return sql.AuthUser{}, ErrInvalidEmailPassword
 	}
+
 	if err != nil {
 		logger.Error("error getting user by email", logError(err))
 		return sql.AuthUser{}, ErrInternalServerError
@@ -270,6 +273,7 @@ func (wf *Workflows) UserByEmailExists(
 		logger.Warn("user not found")
 		return false, nil
 	}
+
 	if err != nil {
 		logger.Error("error getting user by email", logError(err))
 		return false, ErrInternalServerError
@@ -288,6 +292,7 @@ func (wf *Workflows) GetUserByEmail(
 		logger.Warn("user not found")
 		return sql.AuthUser{}, ErrUserEmailNotFound
 	}
+
 	if err != nil {
 		logger.Error("error getting user by email", logError(err))
 		return sql.AuthUser{}, ErrInternalServerError
@@ -317,6 +322,7 @@ func (wf *Workflows) GetUserByProviderUserID(
 		logger.Warn("user provider not found")
 		return sql.AuthUser{}, ErrUserProviderNotFound
 	}
+
 	if err != nil {
 		logger.Error("error getting user by provider id", logError(err))
 		return sql.AuthUser{}, ErrInternalServerError
@@ -344,11 +350,14 @@ func (wf *Workflows) GetUserByRefreshTokenHash(
 	)
 	if errors.Is(err, pgx.ErrNoRows) {
 		logger.Error("could not find user by refresh token")
+
 		if refreshTokenType == sql.RefreshTokenTypePAT {
 			return sql.AuthUser{}, ErrInvalidPat
 		}
+
 		return sql.AuthUser{}, ErrInvalidRefreshToken
 	}
+
 	if err != nil {
 		logger.Error("could not get user by refresh token", logError(err))
 		return sql.AuthUser{}, ErrInternalServerError
@@ -371,6 +380,7 @@ func (wf *Workflows) GetUserByTicket(
 		logger.Warn("user not found")
 		return sql.AuthUser{}, ErrInvalidTicket
 	}
+
 	if err != nil {
 		logger.Error("could not get user by ticket", logError(err))
 		return sql.AuthUser{}, ErrInternalServerError
@@ -400,6 +410,7 @@ func (wf *Workflows) GetUserByEmailAndTicket(
 		logger.Warn("user not found")
 		return sql.AuthUser{}, ErrInvalidTicket
 	}
+
 	if err != nil {
 		logger.Error("could not get user by ticket", logError(err))
 		return sql.AuthUser{}, ErrInternalServerError
@@ -417,6 +428,7 @@ func pgtypeTextToOAPIEmail(pgemail pgtype.Text) *types.Email {
 	if pgemail.Valid {
 		email = ptr(types.Email(pgemail.String))
 	}
+
 	return email
 }
 
@@ -439,6 +451,7 @@ func (wf *Workflows) UpdateSession( //nolint:funlen
 		logger.Warn("invalid refresh token")
 		return &api.Session{}, ErrInvalidRefreshToken
 	}
+
 	if err != nil {
 		logger.Error("error getting user roles by refresh token", logError(err))
 		return nil, ErrInternalServerError
@@ -505,6 +518,7 @@ func (wf *Workflows) NewSession( //nolint:funlen
 	if err != nil {
 		return nil, fmt.Errorf("error getting roles by user id: %w", err)
 	}
+
 	allowedRoles := make([]string, 0, len(userRoles))
 	for _, role := range userRoles {
 		allowedRoles = append(allowedRoles, role.Role)
@@ -516,6 +530,7 @@ func (wf *Workflows) NewSession( //nolint:funlen
 
 	refreshToken := uuid.New()
 	expiresAt := time.Now().Add(time.Duration(wf.config.RefreshTokenExpiresIn) * time.Second)
+
 	refreshTokenID, apiErr := wf.InsertRefreshtoken(
 		ctx, user.ID, refreshToken.String(), expiresAt, sql.RefreshTokenTypeRegular, nil, logger,
 	)
@@ -540,6 +555,7 @@ func (wf *Workflows) NewSession( //nolint:funlen
 			return nil, fmt.Errorf("error unmarshalling user metadata: %w", err)
 		}
 	}
+
 	return &api.Session{
 		AccessToken:          accessToken,
 		AccessTokenExpiresIn: expiresIn,
@@ -573,6 +589,7 @@ func (wf *Workflows) GetJWTInContext(
 		logger.Error(
 			"jwt token not found in context, this should not be possilble due to middleware",
 		)
+
 		return uuid.UUID{}, ErrInvalidRequest
 	}
 
@@ -581,6 +598,7 @@ func (wf *Workflows) GetJWTInContext(
 		logger.Error("error getting user id from jwt token", logError(err))
 		return uuid.UUID{}, ErrInvalidRequest
 	}
+
 	logger = logger.With(slog.String("user_id", sub))
 
 	userID, err := uuid.Parse(sub)
@@ -643,8 +661,11 @@ func (wf *Workflows) InsertRefreshtoken(
 	metadata map[string]any,
 	logger *slog.Logger,
 ) (uuid.UUID, *APIError) {
-	var b []byte
-	var err error
+	var (
+		b   []byte
+		err error
+	)
+
 	if metadata != nil {
 		b, err = json.Marshal(metadata)
 		if err != nil {
@@ -896,6 +917,7 @@ func (wf *Workflows) SignupUserWithouthSession(
 	gravatarURL := wf.gravatarURL(email)
 
 	var ticket pgtype.Text
+
 	ticketExpiresAt := sql.TimestampTz(time.Now())
 	if sendConfirmationEmail {
 		ticket = sql.Text(generateTicket(TicketTypeVerifyEmail))
@@ -1027,8 +1049,11 @@ func (wf *Workflows) DeanonymizeUser(
 		return ErrInternalServerError
 	}
 
-	var metadatab []byte
-	var err error
+	var (
+		metadatab []byte
+		err       error
+	)
+
 	if options.Metadata != nil {
 		metadatab, err = json.Marshal(options.Metadata)
 		if err != nil {
@@ -1108,6 +1133,7 @@ func (wf *Workflows) getIDTokenValidator(
 	provider api.IdTokenProvider,
 ) (*oidc.IDTokenValidator, *APIError) {
 	var validator *oidc.IDTokenValidator
+
 	switch provider {
 	case api.IdTokenProviderApple:
 		validator = wf.idTokenValidator.AppleID
@@ -1148,6 +1174,7 @@ func (wf *Workflows) InsertUserProvider(
 		}
 
 		logger.Error("error inserting user provider", logError(err))
+
 		return sql.AuthUserProvider{}, ErrInternalServerError
 	}
 
@@ -1170,6 +1197,7 @@ func (wf *Workflows) UpdateUserConfirmChangeEmail(
 		}
 
 		logger.Error("error updating user", logError(err))
+
 		return sql.AuthUser{}, ErrInternalServerError
 	}
 
@@ -1203,6 +1231,7 @@ func (wf *Workflows) GetUserSecurityKeys(
 		logger.Warn("security keys not found")
 		return nil, ErrSecurityKeyNotFound
 	}
+
 	if err != nil {
 		logger.Error("error getting security keys", logError(err))
 		return nil, ErrInternalServerError
@@ -1221,6 +1250,7 @@ func (wf *Workflows) GetUserByPhoneNumber(
 		logger.Warn("user not found by phone number")
 		return sql.AuthUser{}, ErrUserPhoneNumberNotFound
 	}
+
 	if err != nil {
 		logger.Error("error getting user by phone number", logError(err))
 		return sql.AuthUser{}, ErrInternalServerError

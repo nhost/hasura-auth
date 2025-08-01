@@ -21,6 +21,7 @@ func webauthnCredentials(
 		if _, err := base64.RawURLEncoding.Decode(credID, []byte(key.CredentialID)); err != nil {
 			logger.Error("failed to decode credential ID",
 				logError(err), slog.String("credential_id", key.CredentialID))
+
 			return nil, ErrInternalServerError
 		}
 

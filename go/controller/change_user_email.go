@@ -17,6 +17,7 @@ func (ctrl *Controller) ChangeUserEmail( //nolint:ireturn
 	if apiErr != nil {
 		return ctrl.respondWithError(apiErr), nil
 	}
+
 	request.Body.Options = options
 
 	user, apiErr := ctrl.wf.GetUserFromJWTInContext(ctx, logger)
@@ -28,6 +29,7 @@ func (ctrl *Controller) ChangeUserEmail( //nolint:ireturn
 	if apiErr != nil {
 		return ctrl.respondWithError(apiErr), nil
 	}
+
 	if exists {
 		logger.Warn("email already exists")
 		return ctrl.sendError(ErrEmailAlreadyInUse), nil

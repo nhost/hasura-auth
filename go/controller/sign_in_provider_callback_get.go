@@ -84,6 +84,7 @@ func (ctrl *Controller) signinProviderProviderCallbackOauthFlow(
 	}
 
 	var profile oidc.Profile
+
 	switch {
 	case p.IsOauth1():
 		accessTokenValue, accessTokenSecret, err := p.Oauth1().AccessToken(

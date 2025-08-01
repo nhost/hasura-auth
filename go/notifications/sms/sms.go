@@ -23,6 +23,7 @@ func deptr[T any](v *T) T { //nolint:ireturn
 		var zero T
 		return zero
 	}
+
 	return *v
 }
 
