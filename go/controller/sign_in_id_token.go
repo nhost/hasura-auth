@@ -98,10 +98,10 @@ func (ctrl *Controller) providerSignInFlow(
 }
 
 func (ctrl *Controller) providerFlowSignUpValidateOptions(
-	options *api.SignUpOptions, profile oidc.Profile, logger *slog.Logger,
+	ctx context.Context, options *api.SignUpOptions, profile oidc.Profile, logger *slog.Logger,
 ) (*api.SignUpOptions, *APIError) {
 	if ctrl.config.DisableSignup {
-		logger.Warn("signup disabled")
+		logger.WarnContext(ctx, "signup disabled")
 		return nil, ErrSignupDisabled
 	}
 
@@ -136,9 +136,9 @@ func (ctrl *Controller) providerFlowSignUp(
 	options *api.SignUpOptions,
 	logger *slog.Logger,
 ) (*api.Session, *APIError) {
-	logger.Info("user doesn't exist, signing up")
+	logger.InfoContext(ctx, "user doesn't exist, signing up")
 
-	options, apiError := ctrl.providerFlowSignUpValidateOptions(options, profile, logger)
+	options, apiError := ctrl.providerFlowSignUpValidateOptions(ctx, options, profile, logger)
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -269,7 +269,7 @@ func (ctrl *Controller) providerFlowSignIn(
 	providerUserID string,
 	logger *slog.Logger,
 ) (*api.Session, *APIError) {
-	logger.Info("user found, signing in")
+	logger.InfoContext(ctx, "user found, signing in")
 
 	if !providerFound {
 		if _, apiErr := ctrl.wf.InsertUserProvider(

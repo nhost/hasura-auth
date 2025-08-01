@@ -32,7 +32,7 @@ func (ctrl *Controller) VerifyAddSecurityKey( //nolint:ireturn
 		return ctrl.sendError(ErrInvalidRequest), nil
 	}
 
-	credential, webauthnUser, apiErr := ctrl.Webauthn.FinishRegistration(credData, logger)
+	credential, webauthnUser, apiErr := ctrl.Webauthn.FinishRegistration(ctx, credData, logger)
 	if apiErr != nil {
 		return ctrl.sendError(apiErr), nil
 	}

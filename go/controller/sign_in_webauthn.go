@@ -40,9 +40,9 @@ func webauthnCredentials(
 }
 
 func (ctrl *Controller) postSigninWebauthnDiscoverableLogin( //nolint:ireturn
-	logger *slog.Logger,
+	ctx context.Context, logger *slog.Logger,
 ) (api.SignInWebauthnResponseObject, error) {
-	creation, apiErr := ctrl.Webauthn.BeginDiscoverableLogin(logger)
+	creation, apiErr := ctrl.Webauthn.BeginDiscoverableLogin(ctx, logger)
 	if apiErr != nil {
 		return ctrl.sendError(apiErr), nil
 	}
@@ -62,7 +62,7 @@ func (ctrl *Controller) SignInWebauthn( //nolint:ireturn
 	}
 
 	if request.Body.Email == nil {
-		return ctrl.postSigninWebauthnDiscoverableLogin(logger)
+		return ctrl.postSigninWebauthnDiscoverableLogin(ctx, logger)
 	}
 
 	user, apiErr := ctrl.wf.GetUserByEmail(ctx, string(*request.Body.Email), logger)
@@ -88,7 +88,7 @@ func (ctrl *Controller) SignInWebauthn( //nolint:ireturn
 		Discoverable: false,
 	}
 
-	creation, apiErr := ctrl.Webauthn.BeginLogin(waUser, logger)
+	creation, apiErr := ctrl.Webauthn.BeginLogin(ctx, waUser, logger)
 	if apiErr != nil {
 		return ctrl.sendError(apiErr), nil
 	}

@@ -42,7 +42,7 @@ func (ctrl *Controller) SignInEmailPassword( //nolint:ireturn
 	}
 
 	if !verifyHashPassword(request.Body.Password, user.PasswordHash.String) {
-		logger.Warn("password doesn't match")
+		logger.WarnContext(ctx, "password doesn't match")
 		return ctrl.sendError(ErrInvalidEmailPassword), nil
 	}
 

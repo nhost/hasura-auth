@@ -17,7 +17,7 @@ func (ctrl *Controller) postSignupEmailPasswordValidateRequest(
 	ctx context.Context, req api.SignUpEmailPasswordRequestObject, logger *slog.Logger,
 ) (api.SignUpEmailPasswordRequestObject, *APIError) {
 	if ctrl.config.DisableSignup {
-		logger.Warn("signup disabled")
+		logger.WarnContext(ctx, "signup disabled")
 		return api.SignUpEmailPasswordRequestObject{}, ErrSignupDisabled
 	}
 

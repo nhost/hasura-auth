@@ -234,7 +234,7 @@ func TestRenderEmailVerify(t *testing.T) {
 			}
 
 			body, subject, err := templates.Render(
-				tc.locale, notifications.TemplateNameEmailVerify, tc.data,
+				t.Context(), tc.locale, notifications.TemplateNameEmailVerify, tc.data,
 			)
 			if err != nil {
 				t.Fatalf("unexpected error: %s", err)

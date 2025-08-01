@@ -21,7 +21,7 @@ func (ctrl *Controller) SignInPasswordlessSms( //nolint:ireturn
 		With(slog.String("phoneNumber", request.Body.PhoneNumber))
 
 	if !ctrl.config.SMSPasswordlessEnabled {
-		logger.Warn("SMS passwordless signin is disabled")
+		logger.WarnContext(ctx, "SMS passwordless signin is disabled")
 		return ctrl.sendError(ErrDisabledEndpoint), nil
 	}
 
@@ -34,7 +34,7 @@ func (ctrl *Controller) SignInPasswordlessSms( //nolint:ireturn
 	user, apiErr := ctrl.wf.GetUserByPhoneNumber(ctx, request.Body.PhoneNumber, logger)
 	switch {
 	case errors.Is(apiErr, ErrUserPhoneNumberNotFound):
-		logger.Info("user does not exist, creating user")
+		logger.InfoContext(ctx, "user does not exist, creating user")
 
 		if apiErr := ctrl.postSigninPasswordlessSmsSignup(
 			ctx, request.Body.PhoneNumber, options, logger,
@@ -76,6 +76,7 @@ func (ctrl *Controller) postSigninPasswordlessSmsSignin(
 	logger *slog.Logger,
 ) *APIError {
 	otpHash, expiresAt, err := ctrl.wf.sms.SendVerificationCode(
+		ctx,
 		user.PhoneNumber.String,
 		user.Locale,
 	)
@@ -104,6 +105,7 @@ func (ctrl *Controller) postSigninPasswordlessSmsSignup(
 	logger *slog.Logger,
 ) *APIError {
 	ohash, expiresAt, err := ctrl.wf.sms.SendVerificationCode(
+		ctx,
 		phoneNumber,
 		deptr(options.Locale),
 	)

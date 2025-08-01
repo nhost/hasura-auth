@@ -1,6 +1,7 @@
 package migrations
 
 import (
+	"context"
 	"database/sql"
 	"embed"
 	"errors"
@@ -19,12 +20,14 @@ const schemaName = "auth"
 var postgresMigrations embed.FS
 
 func checkIfWeNeedToMigrate(
+	ctx context.Context,
 	db *sql.DB,
 ) (int, error) {
 	var exists bool
 
 	// we check if golang's migrations table already exists, nothing to do if it does
-	if err := db.QueryRow(
+	if err := db.QueryRowContext(
+		ctx,
 		"SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = $1 AND table_name = $2)",
 		schemaName,
 		"schema_migrations",
@@ -37,7 +40,8 @@ func checkIfWeNeedToMigrate(
 	}
 
 	// we check if Node.js's migrations table already exists, nothing to do if it doesn't
-	if err := db.QueryRow(
+	if err := db.QueryRowContext(
+		ctx,
 		"SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = $1 AND table_name = $2)",
 		schemaName,
 		"migrations",
@@ -50,8 +54,8 @@ func checkIfWeNeedToMigrate(
 	}
 
 	var highestVersion int
-	if err := db.QueryRow(
-		"SELECT MAX(id) FROM auth.migrations",
+	if err := db.QueryRowContext(
+		ctx, "SELECT MAX(id) FROM auth.migrations",
 	).Scan(&highestVersion); err != nil {
 		return 0, fmt.Errorf("error getting highest migration version: %w", err)
 	}
@@ -59,7 +63,9 @@ func checkIfWeNeedToMigrate(
 	return highestVersion, nil
 }
 
-func ApplyPostgresMigration(postgresURL string, logger *slog.Logger) error { //nolint:cyclop
+func ApplyPostgresMigration( //nolint:cyclop
+	ctx context.Context, postgresURL string, logger *slog.Logger,
+) error {
 	// for backward compatibility, we ensure that the postgresURL contains the sslmode parameter
 	// if it doesn't, we default to "disable"
 	if !strings.Contains(postgresURL, "sslmode") {
@@ -71,7 +77,7 @@ func ApplyPostgresMigration(postgresURL string, logger *slog.Logger) error { //n
 		return fmt.Errorf("problem connecting to postgres: %w", err)
 	}
 
-	versionToMigrate, err := checkIfWeNeedToMigrate(db)
+	versionToMigrate, err := checkIfWeNeedToMigrate(ctx, db)
 	if err != nil {
 		return err
 	}
@@ -95,7 +101,8 @@ func ApplyPostgresMigration(postgresURL string, logger *slog.Logger) error { //n
 	}
 
 	if versionToMigrate > 0 {
-		logger.Info("migrating migrations from node.js to go", "version", versionToMigrate)
+		logger.InfoContext(
+			ctx, "migrating migrations from node.js to go", "version", versionToMigrate)
 
 		if err := migration.Force(versionToMigrate); err != nil {
 			return fmt.Errorf("error forcing migration to version %d: %w", versionToMigrate, err)

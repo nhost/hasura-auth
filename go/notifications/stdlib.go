@@ -55,12 +55,12 @@ func sendMail( //nolint:funlen,cyclop
 			ServerName:         host,
 		}
 
-		conn, err = tls.Dial("tcp", addr, tlsconfig)
+		conn, err = tls.Dial("tcp", addr, tlsconfig) //nolint
 		if err != nil {
 			return err //nolint:wrapcheck
 		}
 	} else {
-		conn, err = net.Dial("tcp", addr)
+		conn, err = net.Dial("tcp", addr) //nolint
 		if err != nil {
 			return err //nolint:wrapcheck
 		}

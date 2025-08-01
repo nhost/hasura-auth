@@ -57,7 +57,7 @@ func (ctrl *Controller) SignUpWebauthn( //nolint:ireturn
 		Discoverable: false,
 	}
 
-	creation, apiErr := ctrl.Webauthn.BeginRegistration(user, options, logger)
+	creation, apiErr := ctrl.Webauthn.BeginRegistration(ctx, user, options, logger)
 	if apiErr != nil {
 		return ctrl.sendError(apiErr), nil
 	}

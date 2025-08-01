@@ -18,12 +18,12 @@ func (ctrl *Controller) SignInOTPEmail( //nolint:ireturn
 		With(slog.String("email", string(request.Body.Email)))
 
 	if !ctrl.config.OTPEmailEnabled {
-		logger.Warn("otp email signin is disabled")
+		logger.WarnContext(ctx, "otp email signin is disabled")
 		return ctrl.sendError(ErrDisabledEndpoint), nil
 	}
 
 	options, apiErr := ctrl.signinEmailValidateRequest(
-		string(request.Body.Email), request.Body.Options, logger)
+		ctx, string(request.Body.Email), request.Body.Options, logger)
 	if apiErr != nil {
 		return ctrl.respondWithError(apiErr), nil
 	}

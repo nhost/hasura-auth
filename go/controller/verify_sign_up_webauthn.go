@@ -94,7 +94,7 @@ func (ctrl *Controller) VerifySignUpWebauthn( //nolint:ireturn
 		return ctrl.sendError(apiErr), nil
 	}
 
-	credResult, webauthnUser, apiErr := ctrl.Webauthn.FinishRegistration(credData, logger)
+	credResult, webauthnUser, apiErr := ctrl.Webauthn.FinishRegistration(ctx, credData, logger)
 	if apiErr != nil {
 		return ctrl.sendError(apiErr), nil
 	}

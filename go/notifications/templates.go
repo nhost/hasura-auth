@@ -1,6 +1,7 @@
 package notifications
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"log/slog"
@@ -138,13 +139,14 @@ func (data TemplateData) ToMap(extra map[string]any) map[string]any {
 }
 
 func (t *Templates) Render(
+	ctx context.Context,
 	locale string,
 	templateName TemplateName,
 	data TemplateData,
 ) (string, string, error) {
 	bodyTemplate, subjectTemplate, err := t.GetTemplate(templateName, locale)
 	if errors.Is(err, ErrTemplateNotFound) {
-		t.logger.Warn("template not found, falling back to default locale",
+		t.logger.WarnContext(ctx, "template not found, falling back to default locale",
 			slog.String("template", string(templateName)),
 			slog.String("locale", locale))
 		locale = t.defaultLocale
@@ -173,12 +175,14 @@ func (data TemplateSMSData) ToMap() map[string]any {
 }
 
 func (t *Templates) RenderSMS(
+	ctx context.Context,
 	locale string,
 	data TemplateSMSData,
 ) (string, error) {
 	bodyTemplate, err := t.GetTemplateSMS(locale)
 	if errors.Is(err, ErrTemplateNotFound) {
-		t.logger.Warn("signin-passwordless-sms template not found, falling back to default locale",
+		t.logger.WarnContext(ctx,
+			"signin-passwordless-sms template not found, falling back to default locale",
 			slog.String("locale", locale))
 		locale = t.defaultLocale
 		bodyTemplate, err = t.GetTemplateSMS(locale)

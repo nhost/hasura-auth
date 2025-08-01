@@ -17,7 +17,7 @@ func (ctrl *Controller) AddSecurityKey( //nolint:ireturn
 	logger := middleware.LoggerFromContext(ctx)
 
 	if !ctrl.config.WebauthnEnabled {
-		logger.Error("webauthn is disabled")
+		logger.ErrorContext(ctx, "webauthn is disabled")
 		return ctrl.sendError(ErrDisabledEndpoint), nil
 	}
 
@@ -52,6 +52,7 @@ func (ctrl *Controller) AddSecurityKey( //nolint:ireturn
 	}
 
 	creation, apiErr := ctrl.Webauthn.BeginRegistration(
+		ctx,
 		waUser, nil, logger,
 		webauthn.WithExclusions(credsDescriptors),
 	)

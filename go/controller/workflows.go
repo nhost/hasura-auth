@@ -84,10 +84,10 @@ func NewWorkflows(
 }
 
 func (wf *Workflows) ValidateSignupEmail(
-	email types.Email, logger *slog.Logger,
+	ctx context.Context, email types.Email, logger *slog.Logger,
 ) *APIError {
 	if !wf.ValidateEmail(string(email)) {
-		logger.Warn("email didn't pass access control checks")
+		logger.WarnContext(ctx, "email didn't pass access control checks")
 		return ErrInvalidEmailPassword
 	}
 
@@ -98,7 +98,7 @@ func (wf *Workflows) ValidatePassword(
 	ctx context.Context, password string, logger *slog.Logger,
 ) *APIError {
 	if len(password) < wf.config.PasswordMinLength {
-		logger.Warn("password too short")
+		logger.WarnContext(ctx, "password too short")
 		return ErrPasswordTooShort
 	}
 
@@ -107,7 +107,7 @@ func (wf *Workflows) ValidatePassword(
 			logger.Error("error checking password with HIBP", logError(err))
 			return ErrInternalServerError
 		} else if pwned {
-			logger.Warn("password is in HIBP database")
+			logger.WarnContext(ctx, "password is in HIBP database")
 			return ErrPasswordInHibpDatabase
 		}
 	}
@@ -116,7 +116,7 @@ func (wf *Workflows) ValidatePassword(
 }
 
 func (wf *Workflows) ValidateSignUpOptions( //nolint:cyclop
-	options *api.SignUpOptions, defaultName string, logger *slog.Logger,
+	ctx context.Context, options *api.SignUpOptions, defaultName string, logger *slog.Logger,
 ) (*api.SignUpOptions, *APIError) {
 	if options == nil {
 		options = &api.SignUpOptions{} //nolint:exhaustruct
@@ -125,7 +125,7 @@ func (wf *Workflows) ValidateSignUpOptions( //nolint:cyclop
 	if options.RedirectTo == nil {
 		options.RedirectTo = ptr(wf.config.ClientURL.String())
 	} else if !wf.redirectURLValidator(deptr(options.RedirectTo)) {
-		logger.Warn("redirect URL not allowed", slog.String("redirectTo", deptr(options.RedirectTo)))
+		logger.WarnContext(ctx, "redirect URL not allowed", slog.String("redirectTo", deptr(options.RedirectTo)))
 		return nil, ErrRedirecToNotAllowed
 	}
 
@@ -138,14 +138,14 @@ func (wf *Workflows) ValidateSignUpOptions( //nolint:cyclop
 	} else {
 		for _, role := range deptr(options.AllowedRoles) {
 			if !slices.Contains(wf.config.DefaultAllowedRoles, role) {
-				logger.Warn("role not allowed", slog.String("role", role))
+				logger.WarnContext(ctx, "role not allowed", slog.String("role", role))
 				return options, ErrRoleNotAllowed
 			}
 		}
 	}
 
 	if !slices.Contains(deptr(options.AllowedRoles), deptr(options.DefaultRole)) {
-		logger.Warn("default role not in allowed roles")
+		logger.WarnContext(ctx, "default role not in allowed roles")
 		return options, ErrDefaultRoleMustBeInAllowedRoles
 	}
 
@@ -158,7 +158,8 @@ func (wf *Workflows) ValidateSignUpOptions( //nolint:cyclop
 	}
 
 	if !slices.Contains(wf.config.AllowedLocales, deptr(options.Locale)) {
-		logger.Warn(
+		logger.WarnContext(
+			ctx,
 			"locale not allowed, using default",
 			slog.String("locale", deptr(options.Locale)),
 		)
@@ -169,26 +170,27 @@ func (wf *Workflows) ValidateSignUpOptions( //nolint:cyclop
 }
 
 func (wf *Workflows) ValidateUser(
+	ctx context.Context,
 	user sql.AuthUser,
 	logger *slog.Logger,
 ) *APIError {
 	if !user.IsAnonymous && !wf.ValidateEmail(user.Email.String) {
-		logger.Warn("email didn't pass access control checks")
+		logger.WarnContext(ctx, "email didn't pass access control checks")
 		return ErrInvalidEmailPassword
 	}
 
 	if user.Disabled {
-		logger.Warn("user is disabled")
+		logger.WarnContext(ctx, "user is disabled")
 		return ErrDisabledUser
 	}
 
 	if !user.EmailVerified && wf.config.RequireEmailVerification {
-		logger.Warn("user is unverified")
+		logger.WarnContext(ctx, "user is unverified")
 		return ErrUnverifiedUser
 	}
 
 	if user.IsAnonymous {
-		logger.Warn("user is anonymous")
+		logger.WarnContext(ctx, "user is anonymous")
 		return ErrForbiddenAnonymous
 	}
 
@@ -196,26 +198,27 @@ func (wf *Workflows) ValidateUser(
 }
 
 func (wf *Workflows) ValidateUserEmailOptional(
+	ctx context.Context,
 	user sql.AuthUser,
 	logger *slog.Logger,
 ) *APIError {
 	if user.Email.Valid && !user.IsAnonymous && !wf.ValidateEmail(user.Email.String) {
-		logger.Warn("email didn't pass access control checks")
+		logger.WarnContext(ctx, "email didn't pass access control checks")
 		return ErrInvalidEmailPassword
 	}
 
 	if user.Disabled {
-		logger.Warn("user is disabled")
+		logger.WarnContext(ctx, "user is disabled")
 		return ErrDisabledUser
 	}
 
 	if user.Email.Valid && !user.EmailVerified && wf.config.RequireEmailVerification {
-		logger.Warn("user is unverified")
+		logger.WarnContext(ctx, "user is unverified")
 		return ErrUnverifiedUser
 	}
 
 	if user.IsAnonymous {
-		logger.Warn("user is anonymous")
+		logger.WarnContext(ctx, "user is anonymous")
 		return ErrForbiddenAnonymous
 	}
 
@@ -223,6 +226,7 @@ func (wf *Workflows) ValidateUserEmailOptional(
 }
 
 func (wf *Workflows) ValidateOptionsRedirectTo(
+	ctx context.Context,
 	options *api.OptionsRedirectTo,
 	logger *slog.Logger,
 ) (*api.OptionsRedirectTo, *APIError) {
@@ -233,7 +237,7 @@ func (wf *Workflows) ValidateOptionsRedirectTo(
 	if options.RedirectTo == nil {
 		options.RedirectTo = ptr(wf.config.ClientURL.String())
 	} else if !wf.redirectURLValidator(deptr(options.RedirectTo)) {
-		logger.Warn("redirect URL not allowed", slog.String("redirectTo", deptr(options.RedirectTo)))
+		logger.WarnContext(ctx, "redirect URL not allowed", slog.String("redirectTo", deptr(options.RedirectTo)))
 		return nil, ErrRedirecToNotAllowed
 	}
 
@@ -247,7 +251,7 @@ func (wf *Workflows) GetUser(
 ) (sql.AuthUser, *APIError) {
 	user, err := wf.db.GetUser(ctx, id)
 	if errors.Is(err, pgx.ErrNoRows) {
-		logger.Warn("user not found")
+		logger.WarnContext(ctx, "user not found")
 		return sql.AuthUser{}, ErrInvalidEmailPassword
 	}
 
@@ -256,7 +260,7 @@ func (wf *Workflows) GetUser(
 		return sql.AuthUser{}, ErrInternalServerError
 	}
 
-	if err := wf.ValidateUser(user, logger); err != nil {
+	if err := wf.ValidateUser(ctx, user, logger); err != nil {
 		return sql.AuthUser{}, err
 	}
 
@@ -270,7 +274,7 @@ func (wf *Workflows) UserByEmailExists(
 ) (bool, *APIError) {
 	_, err := wf.db.GetUserByEmail(ctx, sql.Text(email))
 	if errors.Is(err, pgx.ErrNoRows) {
-		logger.Warn("user not found")
+		logger.WarnContext(ctx, "user not found")
 		return false, nil
 	}
 
@@ -289,7 +293,7 @@ func (wf *Workflows) GetUserByEmail(
 ) (sql.AuthUser, *APIError) {
 	user, err := wf.db.GetUserByEmail(ctx, sql.Text(email))
 	if errors.Is(err, pgx.ErrNoRows) {
-		logger.Warn("user not found")
+		logger.WarnContext(ctx, "user not found")
 		return sql.AuthUser{}, ErrUserEmailNotFound
 	}
 
@@ -298,7 +302,7 @@ func (wf *Workflows) GetUserByEmail(
 		return sql.AuthUser{}, ErrInternalServerError
 	}
 
-	if err := wf.ValidateUser(user, logger); err != nil {
+	if err := wf.ValidateUser(ctx, user, logger); err != nil {
 		return user, err
 	}
 
@@ -319,7 +323,7 @@ func (wf *Workflows) GetUserByProviderUserID(
 		},
 	)
 	if errors.Is(err, pgx.ErrNoRows) {
-		logger.Warn("user provider not found")
+		logger.WarnContext(ctx, "user provider not found")
 		return sql.AuthUser{}, ErrUserProviderNotFound
 	}
 
@@ -328,7 +332,7 @@ func (wf *Workflows) GetUserByProviderUserID(
 		return sql.AuthUser{}, ErrInternalServerError
 	}
 
-	if err := wf.ValidateUserEmailOptional(user, logger); err != nil {
+	if err := wf.ValidateUserEmailOptional(ctx, user, logger); err != nil {
 		return user, err
 	}
 
@@ -363,7 +367,7 @@ func (wf *Workflows) GetUserByRefreshTokenHash(
 		return sql.AuthUser{}, ErrInternalServerError
 	}
 
-	if apiErr := wf.ValidateUser(user, logger); apiErr != nil {
+	if apiErr := wf.ValidateUser(ctx, user, logger); apiErr != nil {
 		return user, apiErr
 	}
 
@@ -377,7 +381,7 @@ func (wf *Workflows) GetUserByTicket(
 ) (sql.AuthUser, *APIError) {
 	user, err := wf.db.GetUserByTicket(ctx, sql.Text(ticket))
 	if errors.Is(err, pgx.ErrNoRows) {
-		logger.Warn("user not found")
+		logger.WarnContext(ctx, "user not found")
 		return sql.AuthUser{}, ErrInvalidTicket
 	}
 
@@ -386,7 +390,7 @@ func (wf *Workflows) GetUserByTicket(
 		return sql.AuthUser{}, ErrInternalServerError
 	}
 
-	if apiErr := wf.ValidateUser(user, logger); apiErr != nil {
+	if apiErr := wf.ValidateUser(ctx, user, logger); apiErr != nil {
 		return user, apiErr
 	}
 
@@ -407,7 +411,7 @@ func (wf *Workflows) GetUserByEmailAndTicket(
 		},
 	)
 	if errors.Is(err, pgx.ErrNoRows) {
-		logger.Warn("user not found")
+		logger.WarnContext(ctx, "user not found")
 		return sql.AuthUser{}, ErrInvalidTicket
 	}
 
@@ -416,7 +420,7 @@ func (wf *Workflows) GetUserByEmailAndTicket(
 		return sql.AuthUser{}, ErrInternalServerError
 	}
 
-	if apiErr := wf.ValidateUser(user, logger); apiErr != nil {
+	if apiErr := wf.ValidateUser(ctx, user, logger); apiErr != nil {
 		return user, apiErr
 	}
 
@@ -448,7 +452,7 @@ func (wf *Workflows) UpdateSession( //nolint:funlen
 		OldRefreshTokenHash: sql.Text(hashRefreshToken([]byte(oldRefreshToken))),
 	})
 	if errors.Is(err, pgx.ErrNoRows) || len(userRoles) == 0 {
-		logger.Warn("invalid refresh token")
+		logger.WarnContext(ctx, "invalid refresh token")
 		return &api.Session{}, ErrInvalidRefreshToken
 	}
 
@@ -624,7 +628,7 @@ func (wf *Workflows) GetUserFromJWTInContext(
 		return sql.AuthUser{}, apiErr
 	}
 
-	if apiErr := wf.ValidateUser(user, logger); apiErr != nil {
+	if apiErr := wf.ValidateUser(ctx, user, logger); apiErr != nil {
 		return sql.AuthUser{}, apiErr
 	}
 
@@ -632,7 +636,7 @@ func (wf *Workflows) GetUserFromJWTInContext(
 }
 
 func (wf *Workflows) VerifyJWTToken(
-	_ context.Context,
+	ctx context.Context,
 	token string,
 	logger *slog.Logger,
 ) *APIError {
@@ -640,12 +644,12 @@ func (wf *Workflows) VerifyJWTToken(
 
 	jwtToken, err := wf.jwtGetter.Validate(token)
 	if err != nil {
-		logger.Warn("invalid JWT token", logError(err))
+		logger.WarnContext(ctx, "invalid JWT token", logError(err))
 		return ErrUnauthenticatedUser
 	}
 
 	if !jwtToken.Valid {
-		logger.Warn("JWT token is not valid")
+		logger.WarnContext(ctx, "JWT token is not valid")
 		return ErrUnauthenticatedUser
 	}
 
@@ -832,7 +836,7 @@ func (wf *Workflows) SignupUserWithSession( //nolint:funlen
 	logger *slog.Logger,
 ) (*api.Session, *APIError) {
 	if wf.config.DisableSignup {
-		logger.Warn("signup disabled")
+		logger.WarnContext(ctx, "signup disabled")
 		return nil, ErrSignupDisabled
 	}
 
@@ -859,7 +863,7 @@ func (wf *Workflows) SignupUserWithSession( //nolint:funlen
 	}
 
 	if wf.config.DisableNewUsers {
-		logger.Warn("new user disabled")
+		logger.WarnContext(ctx, "new user disabled")
 		return nil, ErrDisabledUser
 	}
 
@@ -904,7 +908,7 @@ func (wf *Workflows) SignupUserWithouthSession(
 	logger *slog.Logger,
 ) *APIError {
 	if wf.config.DisableSignup {
-		logger.Warn("signup disabled")
+		logger.WarnContext(ctx, "signup disabled")
 		return ErrSignupDisabled
 	}
 
@@ -929,7 +933,7 @@ func (wf *Workflows) SignupUserWithouthSession(
 	}
 
 	if wf.config.DisableNewUsers {
-		logger.Warn("new user disabled")
+		logger.WarnContext(ctx, "new user disabled")
 		return ErrDisabledUser
 	}
 
@@ -962,7 +966,7 @@ func (wf *Workflows) SignupAnonymousUser( //nolint:funlen
 	logger *slog.Logger,
 ) (*api.Session, *APIError) {
 	if wf.config.DisableSignup {
-		logger.Warn("signup disabled")
+		logger.WarnContext(ctx, "signup disabled")
 		return nil, ErrSignupDisabled
 	}
 
@@ -1228,7 +1232,7 @@ func (wf *Workflows) GetUserSecurityKeys(
 ) ([]sql.AuthUserSecurityKey, *APIError) {
 	keys, err := wf.db.GetSecurityKeys(ctx, userID)
 	if errors.Is(err, pgx.ErrNoRows) || len(keys) == 0 {
-		logger.Warn("security keys not found")
+		logger.WarnContext(ctx, "security keys not found")
 		return nil, ErrSecurityKeyNotFound
 	}
 
@@ -1247,7 +1251,7 @@ func (wf *Workflows) GetUserByPhoneNumber(
 ) (sql.AuthUser, *APIError) {
 	user, err := wf.db.GetUserByPhoneNumber(ctx, sql.Text(phoneNumber))
 	if errors.Is(err, pgx.ErrNoRows) {
-		logger.Warn("user not found by phone number")
+		logger.WarnContext(ctx, "user not found by phone number")
 		return sql.AuthUser{}, ErrUserPhoneNumberNotFound
 	}
 
@@ -1257,12 +1261,12 @@ func (wf *Workflows) GetUserByPhoneNumber(
 	}
 
 	if user.Disabled {
-		logger.Warn("user is disabled")
+		logger.WarnContext(ctx, "user is disabled")
 		return sql.AuthUser{}, ErrDisabledUser
 	}
 
 	if user.IsAnonymous {
-		logger.Warn("user is anonymous")
+		logger.WarnContext(ctx, "user is anonymous")
 		return sql.AuthUser{}, ErrForbiddenAnonymous
 	}
 

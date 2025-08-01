@@ -84,6 +84,7 @@ func (ctrl *Controller) VerifySignInWebauthn( //nolint:ireturn
 	}
 
 	_, _, apiErr := ctrl.Webauthn.FinishLogin(
+		ctx,
 		credData,
 		ctrl.VerifySignInWebauthnUserHandle(ctx, credData, logger),
 		logger,

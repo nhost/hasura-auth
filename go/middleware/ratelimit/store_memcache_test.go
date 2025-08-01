@@ -19,7 +19,7 @@ func TestNewMemcacheStore(t *testing.T) {
 		t.Errorf("Expected 0, got %d", e)
 	}
 
-	if e := store.Increment("key", time.Second); e != 1 {
+	if e := store.Increment(t.Context(), "key", time.Second); e != 1 {
 		t.Errorf("Expected 1, got %d", e)
 	}
 
@@ -27,7 +27,7 @@ func TestNewMemcacheStore(t *testing.T) {
 		t.Errorf("Expected 1, got %d", e)
 	}
 
-	if e := store.Increment("key", time.Second); e != 2 {
+	if e := store.Increment(t.Context(), "key", time.Second); e != 2 {
 		t.Errorf("Expected 1, got %d", e)
 	}
 

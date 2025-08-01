@@ -25,7 +25,7 @@ func (ctrl *Controller) SendPasswordResetEmail( //nolint:ireturn
 	request.Body.Options = options
 
 	if !ctrl.wf.ValidateEmail(string(request.Body.Email)) {
-		logger.Warn("email didn't pass access control checks")
+		logger.WarnContext(ctx, "email didn't pass access control checks")
 		return ctrl.sendError(ErrInvalidEmailPassword), nil
 	}
 

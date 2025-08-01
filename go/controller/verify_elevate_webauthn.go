@@ -36,6 +36,7 @@ func (ctrl *Controller) VerifyElevateWebauthn( //nolint:ireturn
 	}
 
 	_, _, apiErr = ctrl.Webauthn.FinishLogin(
+		ctx,
 		credData,
 		ctrl.postElevateWebauthnVerifyUserHandler(ctx, user, credData, logger),
 		logger,

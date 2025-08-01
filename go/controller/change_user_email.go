@@ -31,7 +31,7 @@ func (ctrl *Controller) ChangeUserEmail( //nolint:ireturn
 	}
 
 	if exists {
-		logger.Warn("email already exists")
+		logger.WarnContext(ctx, "email already exists")
 		return ctrl.sendError(ErrEmailAlreadyInUse), nil
 	}
 

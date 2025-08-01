@@ -99,9 +99,9 @@ func (mr *MockSMSerMockRecorder) CheckVerificationCode(ctx, to, code any) *gomoc
 }
 
 // SendVerificationCode mocks base method.
-func (m *MockSMSer) SendVerificationCode(to, locale string) (string, time.Time, error) {
+func (m *MockSMSer) SendVerificationCode(ctx context.Context, to, locale string) (string, time.Time, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SendVerificationCode", to, locale)
+	ret := m.ctrl.Call(m, "SendVerificationCode", ctx, to, locale)
 	ret0, _ := ret[0].(string)
 	ret1, _ := ret[1].(time.Time)
 	ret2, _ := ret[2].(error)

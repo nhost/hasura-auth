@@ -10,15 +10,15 @@ import (
 )
 
 func (ctrl *Controller) postSigninAnonymousValidateRequest(
-	req api.SignInAnonymousRequestObject, logger *slog.Logger,
+	ctx context.Context, req api.SignInAnonymousRequestObject, logger *slog.Logger,
 ) (api.SignInAnonymousRequestObject, *APIError) {
 	if ctrl.config.DisableSignup {
-		logger.Warn("signup disabled")
+		logger.WarnContext(ctx, "signup disabled")
 		return api.SignInAnonymousRequestObject{}, ErrSignupDisabled
 	}
 
 	if !ctrl.config.AnonymousUsersEnabled {
-		logger.Warn("anonymous users disabled")
+		logger.WarnContext(ctx, "anonymous users disabled")
 		return api.SignInAnonymousRequestObject{}, ErrAnonymousUsersDisabled
 	}
 
@@ -31,7 +31,8 @@ func (ctrl *Controller) postSigninAnonymousValidateRequest(
 	}
 
 	if !slices.Contains(ctrl.config.AllowedLocales, deptr(req.Body.Locale)) {
-		logger.Warn(
+		logger.WarnContext(
+			ctx,
 			"locale not allowed, using default",
 			slog.String("locale", deptr(req.Body.Locale)),
 		)
@@ -50,7 +51,7 @@ func (ctrl *Controller) SignInAnonymous( //nolint:ireturn
 ) (api.SignInAnonymousResponseObject, error) {
 	logger := middleware.LoggerFromContext(ctx)
 
-	req, apiErr := ctrl.postSigninAnonymousValidateRequest(req, logger)
+	req, apiErr := ctrl.postSigninAnonymousValidateRequest(ctx, req, logger)
 	if apiErr != nil {
 		return ctrl.respondWithError(apiErr), nil
 	}

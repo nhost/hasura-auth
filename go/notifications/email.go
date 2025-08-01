@@ -100,9 +100,9 @@ func (sm *Email) Send(to, subject, contents string, headers map[string]string) e
 }
 
 func (sm *Email) SendEmail(
-	_ context.Context, to string, locale string, templateName TemplateName, data TemplateData,
+	ctx context.Context, to string, locale string, templateName TemplateName, data TemplateData,
 ) error {
-	body, subject, err := sm.templates.Render(locale, templateName, data)
+	body, subject, err := sm.templates.Render(ctx, locale, templateName, data)
 	if err != nil {
 		return fmt.Errorf("error rendering email template: %w", err)
 	}

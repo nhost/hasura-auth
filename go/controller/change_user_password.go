@@ -15,7 +15,7 @@ func (ctrl *Controller) postUserPasswordAuthenticated( //nolint:ireturn
 	jwtToken *jwt.Token,
 	logger *slog.Logger,
 ) (api.ChangeUserPasswordResponseObject, error) {
-	logger.Debug("authenticated request")
+	logger.DebugContext(ctx, "authenticated request")
 
 	userID, err := ctrl.wf.jwtGetter.GetUserID(jwtToken)
 	if err != nil {
@@ -39,7 +39,7 @@ func (ctrl *Controller) postUserPasswordUnauthenticated( //nolint:ireturn
 	request api.ChangeUserPasswordRequestObject,
 	logger *slog.Logger,
 ) (api.ChangeUserPasswordResponseObject, error) {
-	logger.Debug("unauthenticated request")
+	logger.DebugContext(ctx, "unauthenticated request")
 
 	if request.Body.Ticket == nil {
 		return ctrl.sendError(ErrInvalidRequest), nil

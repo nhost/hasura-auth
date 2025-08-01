@@ -43,7 +43,7 @@ type Emailer interface {
 }
 
 type SMSer interface {
-	SendVerificationCode(to string, locale string) (string, time.Time, error)
+	SendVerificationCode(ctx context.Context, to string, locale string) (string, time.Time, error)
 	CheckVerificationCode(ctx context.Context, to string, code string) (sql.AuthUser, error)
 }
 
