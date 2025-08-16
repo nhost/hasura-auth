@@ -111,6 +111,26 @@ func getSMS( //nolint:ireturn
 		return nil, nil //nolint:nilnil // SMS disabled, return nil client
 	}
 
+	provider := strings.ToLower(cCtx.String(flagSMSProvider))
+	if provider == "" {
+		provider = "twilio" // Default to Twilio for backward compatibility
+	}
+
+	switch provider {
+	case "modica":
+		return getModicaSMS(cCtx, templates, db, logger)
+	case "twilio":
+		return getTwilioSMS(cCtx, templates, db)
+	default:
+		return nil, fmt.Errorf("unsupported SMS provider: %s", provider) //nolint:err113
+	}
+}
+
+func getTwilioSMS( //nolint:ireturn
+	cCtx *cli.Context,
+	templates *notifications.Templates,
+	db *sql.Queries,
+) (controller.SMSer, error) {
 	accountSid := cCtx.String(flagSMSTwilioAccountSid)
 	authToken := cCtx.String(flagSMSTwilioAuthToken)
 	messagingServiceID := cCtx.String(flagSMSTwilioMessagingServiceID)
@@ -126,6 +146,30 @@ func getSMS( //nolint:ireturn
 		), nil
 	}
 
+	return sms.NewTwilioSMS(
+		templates,
+		controller.GenerateOTP,
+		controller.HashOTP,
+		accountSid,
+		authToken,
+		messagingServiceID,
+		db,
+	), nil
+}
+
+func getModicaSMS( //nolint:ireturn
+	cCtx *cli.Context,
+	templates *notifications.Templates,
+	db *sql.Queries,
+	logger *slog.Logger,
+) (controller.SMSer, error) {
+	username := cCtx.String(flagSMSModicaUsername)
+	password := cCtx.String(flagSMSModicaPassword)
+
+	if username == "" || password == "" {
+		return nil, errors.New("SMS is enabled but Modica credentials are missing") //nolint:err113
+	}
+
 	if templates == nil {
 		var err error
 
@@ -135,13 +179,12 @@ func getSMS( //nolint:ireturn
 		}
 	}
 
-	return sms.NewTwilioSMS(
+	return sms.NewModicaSMS(
 		templates,
 		controller.GenerateOTP,
 		controller.HashOTP,
-		accountSid,
-		authToken,
-		messagingServiceID,
+		username,
+		password,
 		db,
 	), nil
 }
