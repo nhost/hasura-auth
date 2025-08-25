@@ -11,17 +11,18 @@ import (
 type AzureAD struct {
 	*oauth2.Config
 
-	Tenant       string
 	ProfileURL   string
 	CustomParams map[string]string
+}
+
+func formatAzureADURL(tenant, path string) string {
+	return fmt.Sprintf("https://login.microsoftonline.com/%s%s", tenant, path)
 }
 
 func NewAzureadProvider(
 	clientID, clientSecret, authServerURL, tenant string,
 	scopes []string,
 ) *Provider {
-	baseURL := "https://login.microsoftonline.com/" + tenant + "/oauth2/v2.0"
-
 	azuread := &AzureAD{
 		Config: &oauth2.Config{
 			ClientID:     clientID,
@@ -29,12 +30,11 @@ func NewAzureadProvider(
 			RedirectURL:  authServerURL + "/signin/provider/azuread/callback",
 			Scopes:       scopes,
 			Endpoint: oauth2.Endpoint{ //nolint:exhaustruct
-				AuthURL:  baseURL + "/authorize",
-				TokenURL: baseURL + "/token",
+				AuthURL:  formatAzureADURL(tenant, "/oauth2/authorize"),
+				TokenURL: formatAzureADURL(tenant, "/oauth2/token"),
 			},
 		},
-		Tenant:       tenant,
-		ProfileURL:   "https://graph.microsoft.com/oidc/userinfo",
+		ProfileURL:   formatAzureADURL(tenant, "/openid/userinfo"),
 		CustomParams: map[string]string{"prompt": "select_account"},
 	}
 

@@ -1042,6 +1042,7 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 				Name:     flagAzureadTenant,
 				Usage:    "Azuread Tenant",
 				Category: "oauth-azuread",
+				Value:    "common",
 				EnvVars:  []string{"AUTH_PROVIDER_AZUREAD_TENANT"},
 			},
 			&cli.StringSliceFlag{ //nolint: exhaustruct
