@@ -30,7 +30,7 @@ func NewAzureadProvider(
 			RedirectURL:  authServerURL + "/signin/provider/azuread/callback",
 			Scopes:       scopes,
 			Endpoint: oauth2.Endpoint{ //nolint:exhaustruct
-				AuthURL:  formatAzureADURL(tenant, "/oauth2/authorize"),
+				AuthURL:  formatAzureADURL(tenant, "/oauth2/authorize?prompt=select_account"),
 				TokenURL: formatAzureADURL(tenant, "/oauth2/token"),
 			},
 		},
