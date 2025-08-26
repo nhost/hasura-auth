@@ -11,8 +11,7 @@ import (
 type AzureAD struct {
 	*oauth2.Config
 
-	ProfileURL   string
-	CustomParams map[string]string
+	ProfileURL string
 }
 
 func formatAzureADURL(tenant, path string) string {
@@ -34,8 +33,7 @@ func NewAzureadProvider(
 				TokenURL: formatAzureADURL(tenant, "/oauth2/token"),
 			},
 		},
-		ProfileURL:   formatAzureADURL(tenant, "/openid/userinfo"),
-		CustomParams: map[string]string{"prompt": "select_account"},
+		ProfileURL: formatAzureADURL(tenant, "/openid/userinfo"),
 	}
 
 	return NewOauth2Provider(azuread)

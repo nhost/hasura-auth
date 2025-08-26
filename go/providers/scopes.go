@@ -33,7 +33,7 @@ var (
 	DefaultWorkOSScopes = []string{""}
 
 	// DefaultAzureadScopes defines the default scopes for AzureAd OAuth2.
-	DefaultAzureadScopes = []string{"openid", "email", "profile"}
+	DefaultAzureadScopes = []string{"email", "profile", "openid", "offline_access"}
 
 	// DefaultFacebookScopes defines the default scopes for Facebook OAuth2.
 	DefaultFacebookScopes = []string{"email"}
