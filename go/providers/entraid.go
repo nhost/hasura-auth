@@ -14,13 +14,13 @@ type EntraID struct {
 	ProfileURL string
 }
 
-func NewEnrtaIDProvider(
+func NewEntraIDProvider(
 	clientID, clientSecret, authServerURL, tenant string,
 	scopes []string,
 ) *Provider {
 	baseURL := "https://login.microsoftonline.com/" + tenant + "/oauth2/v2.0"
 
-	entraid := &AzureAD{
+	entraid := &EntraID{
 		Config: &oauth2.Config{
 			ClientID:     clientID,
 			ClientSecret: clientSecret,
@@ -31,18 +31,17 @@ func NewEnrtaIDProvider(
 				TokenURL: baseURL + "/token",
 			},
 		},
-		ProfileURL: formatAzureADURL(tenant, "/openid/userinfo"),
+		ProfileURL: "https://graph.microsoft.com/oidc/userinfo",
 	}
 
 	return NewOauth2Provider(entraid)
 }
 
 type entraidUser struct {
-	OID    string `json:"oid"`
-	Email  string `json:"email"`
-	Name   string `json:"name"`
-	UPN    string `json:"upn"`
-	Prefer string `json:"preferred_username"`
+	Sub        string `json:"sub"`
+	GivenName  string `json:"givenname"`
+	FamilyName string `json:"familyname"`
+	Email      string `json:"email"`
 }
 
 func (a *EntraID) GetProfile(
@@ -61,20 +60,11 @@ func (a *EntraID) GetProfile(
 		return oidc.Profile{}, fmt.Errorf("EntraID API error: %w", err)
 	}
 
-	email := userProfile.Email
-	if email == "" {
-		email = userProfile.Prefer
-	}
-
-	if email == "" {
-		email = userProfile.UPN
-	}
-
 	return oidc.Profile{
-		ProviderUserID: userProfile.OID,
-		Email:          email,
-		EmailVerified:  email != "",
-		Name:           userProfile.Name,
+		ProviderUserID: userProfile.Sub,
+		Email:          userProfile.Email,
+		EmailVerified:  userProfile.Email != "",
+		Name:           userProfile.GivenName + " " + userProfile.FamilyName,
 		Picture:        "",
 	}, nil
 }
