@@ -35,7 +35,7 @@ func (ctrl *Controller) SendPasswordResetEmail( //nolint:ireturn
 	case errors.Is(apiErr, ErrInternalServerError):
 		return ctrl.respondWithError(apiErr), nil
 	case apiErr != nil:
-		return api.SendPasswordResetEmail200JSONResponse(api.OK), nil
+		return api.SendPasswordResetEmail200JSONResponse(api.OK), nil //nolint:nilerr
 	}
 
 	ticket := generateTicket(TicketTypePasswordReset)
