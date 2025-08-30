@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 )
 
 // EnumValue is a flag.Value that can be used to restrict the
@@ -15,7 +15,7 @@ type EnumValue struct {
 	selected string
 }
 
-func (e *EnumValue) Get() string {
+func (e *EnumValue) Get() any {
 	if e.selected == "" {
 		return e.Default
 	}
@@ -35,25 +35,33 @@ func (e *EnumValue) Set(value string) error {
 }
 
 func (e *EnumValue) String() string {
-	return e.Get()
+	if s, ok := e.Get().(string); ok {
+		return s
+	}
+
+	return ""
 }
 
-func GetEnumValue(c *cli.Context, flagName string) string {
-	g := GetGeneric[EnumValue](c, flagName)
+func GetEnumValue(cmd *cli.Command, flagName string) string {
+	g := GetGeneric[EnumValue](cmd, flagName)
 	if g == nil {
 		return ""
 	}
 
-	return g.Get()
+	if s, ok := g.Get().(string); ok {
+		return s
+	}
+
+	return ""
 }
 
-func GetGeneric[T any](c *cli.Context, name string) *T {
-	g := c.Generic(name)
+func GetGeneric[T any](cmd *cli.Command, name string) *T {
+	g := cmd.Generic(name)
 	if g == nil {
 		return nil
 	}
 
-	if v, ok := g.(*T); ok {
+	if v, ok := any(g).(*T); ok {
 		return v
 	}
 
