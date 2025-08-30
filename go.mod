@@ -21,11 +21,17 @@ require (
 	github.com/oapi-codegen/runtime v1.1.2
 	github.com/pquerna/otp v1.5.0
 	github.com/twilio/twilio-go v1.27.0
+	github.com/urfave/cli-docs/v3 v3.0.0-alpha6
 	github.com/valyala/fasttemplate v1.2.2
 	go.uber.org/mock v0.5.2
 	golang.org/x/crypto v0.40.0
 	golang.org/x/oauth2 v0.30.0
 	k8s.io/client-go v0.33.3
+)
+
+require (
+	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
+	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 )
 
 require (
