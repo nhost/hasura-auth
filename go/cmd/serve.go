@@ -327,7 +327,6 @@ func CommandServe() *cli.Command { //nolint:funlen,maintidx
 			&cli.StringFlag{ //nolint: exhaustruct
 				Name:     flagHasuraGraphqlJWTSecret,
 				Usage:    "Key used for generating JWTs. Must be `HMAC-SHA`-based and the same as configured in Hasura. More info: https://hasura.io/docs/latest/graphql/core/auth/authentication/jwt.html#running-with-jwt",
-				Required: true,
 				Category: "jwt",
 				Sources:  cli.EnvVars("HASURA_GRAPHQL_JWT_SECRET"),
 			},
