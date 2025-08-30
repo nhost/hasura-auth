@@ -40,7 +40,7 @@ func getSMTPEmailer(
 	case "CRAM-MD5":
 		auth = smtp.CRAMMD5Auth(user, password)
 	default:
-		return nil, fmt.Errorf("unknown SMTP auth method (%s)", cmd.String(flagSMTPAuthMethod))
+		return nil, errors.New("unsupported auth method") //nolint:err113
 	}
 
 	return notifications.NewEmail(
