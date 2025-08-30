@@ -7,6 +7,7 @@ import (
 	"github.com/nhost/hasura-auth/go/api"
 	"github.com/nhost/hasura-auth/go/controller"
 	"github.com/nhost/hasura-auth/go/controller/mock"
+	"github.com/nhost/hasura-auth/go/testhelpers"
 	"go.uber.org/mock/gomock"
 )
 
@@ -131,7 +132,8 @@ func TestSignInProvider(t *testing.T) {
 				tc.expectedResponse,
 				cmp.FilterPath(func(p cmp.Path) bool {
 					if last := p.Last(); last != nil {
-						return last.String() == ".Location" || last.String() == ".SetCookie"
+						return last.String() == testhelpers.LocationField ||
+							last.String() == testhelpers.SetCookieField
 					}
 
 					return false

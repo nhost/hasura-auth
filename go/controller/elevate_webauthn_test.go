@@ -13,6 +13,7 @@ import (
 	"github.com/nhost/hasura-auth/go/controller"
 	"github.com/nhost/hasura-auth/go/controller/mock"
 	"github.com/nhost/hasura-auth/go/sql"
+	"github.com/nhost/hasura-auth/go/testhelpers"
 	"go.uber.org/mock/gomock"
 )
 
@@ -79,7 +80,7 @@ func TestElevateWebauthn(t *testing.T) {
 								"307b758d-c0b0-4ce3-894b-f8ddec753c29",
 							),
 							UserID:       userID,
-							CredentialID: "EuKJAraRGDcmHon-EjDoqoU5Yvk",
+							CredentialID: testhelpers.TestCredentialID,
 							CredentialPublicKey: []byte{
 								165, 1, 2, 3, 38, 32, 1, 33, 88, 32, 252, 177, 134,
 								121, 67, 213, 214, 63, 237, 6, 140, 235, 18, 28, 108,

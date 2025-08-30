@@ -10,6 +10,7 @@ import (
 	"github.com/nhost/hasura-auth/go/controller"
 	"github.com/nhost/hasura-auth/go/controller/mock"
 	"github.com/nhost/hasura-auth/go/sql"
+	"github.com/nhost/hasura-auth/go/testhelpers"
 	"github.com/oapi-codegen/runtime/types"
 	"go.uber.org/mock/gomock"
 )
@@ -49,7 +50,7 @@ func TestSignInWebauthn(t *testing.T) {
 							UserID: uuid.MustParse(
 								"53b008ee-bafb-489c-bcea-9237e0b778a7",
 							),
-							CredentialID: "EuKJAraRGDcmHon-EjDoqoU5Yvk",
+							CredentialID: testhelpers.TestCredentialID,
 							CredentialPublicKey: []byte{
 								165,
 								1,

@@ -15,6 +15,7 @@ import (
 	"github.com/nhost/hasura-auth/go/controller"
 	"github.com/nhost/hasura-auth/go/controller/mock"
 	"github.com/nhost/hasura-auth/go/sql"
+	"github.com/nhost/hasura-auth/go/testhelpers"
 	"go.uber.org/mock/gomock"
 )
 
