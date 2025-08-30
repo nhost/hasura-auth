@@ -95,7 +95,7 @@ func getConfig(cmd *cli.Command) (controller.Config, error) { //nolint:funlen
 		DefaultLocale:               defaultLocale,
 		AllowedLocales:              allowedLocales,
 		GravatarEnabled:             cmd.Bool(flagGravatarEnabled),
-		GravatarDefault:             GetEnumValue(cmd, flagGravatarDefault),
+		GravatarDefault:             cmd.String(flagGravatarDefault),
 		GravatarRating:              cmd.String(flagGravatarRating),
 		PasswordMinLength:           cmd.Int(flagPasswordMinLength),
 		PasswordHIBPEnabled:         cmd.Bool(flagPasswordHIBPEnabled),
