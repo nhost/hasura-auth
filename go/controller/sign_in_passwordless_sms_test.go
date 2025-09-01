@@ -50,7 +50,7 @@ func TestSignInPasswordlessSms(t *testing.T) { //nolint:maintidx
 						DisplayName:       "+1234567890",
 						AvatarUrl:         "",
 						PhoneNumber:       sql.Text("+1234567890"),
-						OtpHash:           sql.Text("hashedOTP"),
+						Otp:               "otp",
 						OtpHashExpiresAt:  sql.TimestampTz(time.Now().Add(time.Minute * 5)),
 						OtpMethodLastUsed: sql.Text("sms"),
 						Email:             pgtype.Text{}, //nolint:exhaustruct
@@ -100,7 +100,7 @@ func TestSignInPasswordlessSms(t *testing.T) { //nolint:maintidx
 						t.Context(),
 						"+1234567890",
 						"en",
-					).Return("hashedOTP", time.Now().Add(time.Minute*5), nil)
+					).Return("otp", time.Now().Add(time.Minute*5), nil)
 
 					return mock
 				}),
@@ -183,7 +183,7 @@ func TestSignInPasswordlessSms(t *testing.T) { //nolint:maintidx
 						DisplayName:       "+1234567890",
 						AvatarUrl:         "",
 						PhoneNumber:       sql.Text("+1234567890"),
-						OtpHash:           sql.Text("hashedOTP"),
+						Otp:               "otp",
 						OtpHashExpiresAt:  sql.TimestampTz(time.Now().Add(time.Minute * 5)),
 						OtpMethodLastUsed: sql.Text("sms"),
 						Email:             pgtype.Text{}, //nolint:exhaustruct
@@ -240,7 +240,7 @@ func TestSignInPasswordlessSms(t *testing.T) { //nolint:maintidx
 						t.Context(),
 						"+1234567890",
 						"en",
-					).Return("hashedOTP", time.Now().Add(time.Minute*5), nil)
+					).Return("otp", time.Now().Add(time.Minute*5), nil)
 
 					return mock
 				}),
@@ -301,7 +301,7 @@ func TestSignInPasswordlessSms(t *testing.T) { //nolint:maintidx
 						DisplayName:       "Jane Doe",
 						AvatarUrl:         "",
 						PhoneNumber:       sql.Text("+1234567890"),
-						OtpHash:           sql.Text("hashedOTP"),
+						Otp:               "otp",
 						OtpHashExpiresAt:  sql.TimestampTz(time.Now().Add(time.Minute * 5)),
 						OtpMethodLastUsed: sql.Text("sms"),
 						Email:             pgtype.Text{}, //nolint:exhaustruct
@@ -358,7 +358,7 @@ func TestSignInPasswordlessSms(t *testing.T) { //nolint:maintidx
 						t.Context(),
 						"+1234567890",
 						"fr",
-					).Return("hashedOTP", time.Now().Add(time.Minute*5), nil)
+					).Return("otp", time.Now().Add(time.Minute*5), nil)
 
 					return mock
 				}),
@@ -403,7 +403,7 @@ func TestSignInPasswordlessSms(t *testing.T) { //nolint:maintidx
 						t.Context(),
 						"+1234567890",
 						"en",
-					).Return("hashedOTP", time.Now().Add(time.Minute*5), nil)
+					).Return("otp", time.Now().Add(time.Minute*5), nil)
 
 					return mock
 				}),
@@ -416,7 +416,7 @@ func TestSignInPasswordlessSms(t *testing.T) { //nolint:maintidx
 			db: func(ctrl *gomock.Controller) controller.DBClient {
 				mock := mock.NewMockDBClient(ctrl)
 
-				mock.EXPECT().GetUserByPhoneNumber(
+				mock.EXPECT().GetUserByPhoneNumber( //nolint:dupl
 					gomock.Any(),
 					sql.Text("+1234567890"),
 				).Return(sql.AuthUser{
@@ -451,7 +451,7 @@ func TestSignInPasswordlessSms(t *testing.T) { //nolint:maintidx
 					gomock.Any(),
 					cmpDBParams(sql.UpdateUserOTPHashParams{
 						ID:                userID,
-						OtpHash:           sql.Text("hashedOTP"),
+						Otp:               "otp",
 						OtpHashExpiresAt:  sql.TimestampTz(time.Now().Add(time.Minute * 5)),
 						OtpMethodLastUsed: sql.Text("sms"),
 					},
@@ -488,7 +488,7 @@ func TestSignInPasswordlessSms(t *testing.T) { //nolint:maintidx
 						t.Context(),
 						"+1234567890",
 						"en",
-					).Return("hashedOTP", time.Now().Add(time.Minute*5), nil)
+					).Return("otp", time.Now().Add(time.Minute*5), nil)
 
 					return mock
 				}),
@@ -501,7 +501,7 @@ func TestSignInPasswordlessSms(t *testing.T) { //nolint:maintidx
 			db: func(ctrl *gomock.Controller) controller.DBClient { //nolint:dupl
 				mock := mock.NewMockDBClient(ctrl)
 
-				mock.EXPECT().GetUserByPhoneNumber(
+				mock.EXPECT().GetUserByPhoneNumber( //nolint:dupl
 					gomock.Any(),
 					sql.Text("+1234567890"),
 				).Return(sql.AuthUser{
@@ -554,7 +554,7 @@ func TestSignInPasswordlessSms(t *testing.T) { //nolint:maintidx
 			db: func(ctrl *gomock.Controller) controller.DBClient { //nolint:dupl
 				mock := mock.NewMockDBClient(ctrl)
 
-				mock.EXPECT().GetUserByPhoneNumber(
+				mock.EXPECT().GetUserByPhoneNumber( //nolint:dupl
 					gomock.Any(),
 					sql.Text("+1234567890"),
 				).Return(sql.AuthUser{

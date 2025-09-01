@@ -77,7 +77,7 @@ func (ctrl *Controller) postSigninPasswordlessSmsSignin(
 	user sql.AuthUser,
 	logger *slog.Logger,
 ) *APIError {
-	otpHash, expiresAt, err := ctrl.wf.sms.SendVerificationCode(
+	otp, expiresAt, err := ctrl.wf.sms.SendVerificationCode(
 		ctx,
 		user.PhoneNumber.String,
 		user.Locale,
@@ -89,7 +89,7 @@ func (ctrl *Controller) postSigninPasswordlessSmsSignin(
 
 	if _, err := ctrl.wf.db.UpdateUserOTPHash(ctx, sql.UpdateUserOTPHashParams{
 		ID:                user.ID,
-		OtpHash:           sql.Text(otpHash),
+		Otp:               otp,
 		OtpHashExpiresAt:  sql.TimestampTz(expiresAt),
 		OtpMethodLastUsed: sql.Text("sms"),
 	}); err != nil {
@@ -106,7 +106,7 @@ func (ctrl *Controller) postSigninPasswordlessSmsSignup(
 	options *api.SignUpOptions,
 	logger *slog.Logger,
 ) *APIError {
-	ohash, expiresAt, err := ctrl.wf.sms.SendVerificationCode(
+	otp, expiresAt, err := ctrl.wf.sms.SendVerificationCode(
 		ctx,
 		phoneNumber,
 		deptr(options.Locale),
@@ -114,11 +114,6 @@ func (ctrl *Controller) postSigninPasswordlessSmsSignup(
 	if err != nil {
 		logger.ErrorContext(ctx, "error sending SMS verification code", logError(err))
 		return ErrCannotSendSMS
-	}
-
-	var otpHash pgtype.Text
-	if ohash != "" {
-		otpHash = sql.Text(ohash)
 	}
 
 	apiErr := ctrl.wf.SignupUserWithouthSession(
@@ -138,7 +133,7 @@ func (ctrl *Controller) postSigninPasswordlessSmsSignup(
 				DisplayName:       deptr(options.DisplayName),
 				AvatarUrl:         gravatarURL,
 				PhoneNumber:       sql.Text(phoneNumber),
-				OtpHash:           otpHash,
+				Otp:               otp,
 				OtpHashExpiresAt:  sql.TimestampTz(expiresAt),
 				OtpMethodLastUsed: sql.Text("sms"),
 				Email:             pgtype.Text{}, //nolint:exhaustruct
