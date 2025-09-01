@@ -41,7 +41,7 @@ func (ctrl *Controller) SignInEmailPassword( //nolint:ireturn
 		return ctrl.respondWithError(apiErr), nil
 	}
 
-	if !VerifyHashPassword(request.Body.Password, user.PasswordHash.String) {
+	if !verifyHashPassword(request.Body.Password, user.PasswordHash.String) {
 		logger.WarnContext(ctx, "password doesn't match")
 		return ctrl.sendError(ErrInvalidEmailPassword), nil
 	}
