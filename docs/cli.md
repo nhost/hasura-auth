@@ -111,7 +111,10 @@ auth
 [--refresh-token-expires-in]=[value]
 [--require-elevated-claim]=[value]
 [--server-url]=[value]
+[--sms-modica-password]=[value]
+[--sms-modica-username]=[value]
 [--sms-passwordless-enabled]
+[--sms-provider]=[value]
 [--sms-provider]=[value]
 [--sms-twilio-account-sid]=[value]
 [--sms-twilio-auth-token]=[value]
@@ -374,7 +377,13 @@ auth [GLOBAL OPTIONS] [command [COMMAND OPTIONS]] [ARGUMENTS...]
 
 **--server-url**="": Server URL of where Auth service is running. This value is to used as a callback in email templates and for the OAuth authentication process
 
+**--sms-modica-password**="": Modica password for SMS
+
+**--sms-modica-username**="": Modica username for SMS
+
 **--sms-passwordless-enabled**: Enable SMS passwordless authentication
+
+**--sms-provider**="": SMS provider (twilio or modica) (default: twilio)
 
 **--sms-provider**="": SMS provider (twilio or modica) (default: twilio)
 
