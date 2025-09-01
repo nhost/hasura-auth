@@ -12,7 +12,6 @@ import (
 	"github.com/nhost/hasura-auth/go/controller"
 	"github.com/nhost/hasura-auth/go/controller/mock"
 	"github.com/nhost/hasura-auth/go/sql"
-	"github.com/nhost/hasura-auth/go/testhelpers"
 	"go.uber.org/mock/gomock"
 )
 
@@ -572,7 +571,7 @@ func TestVerifyTicket(t *testing.T) { //nolint:maintidx
 				t.Context(), t, c.VerifyTicket, tc.request, tc.expectedResponse,
 				cmp.FilterPath(func(p cmp.Path) bool {
 					if last := p.Last(); last != nil {
-						return last.String() == testhelpers.LocationField
+						return last.String() == ".Location"
 					}
 
 					return false

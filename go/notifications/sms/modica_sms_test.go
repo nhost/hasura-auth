@@ -152,10 +152,7 @@ func TestModicaIntegration(t *testing.T) {
 
 	db := &mockDB{}
 
-	otpGen := func() (string, string, error) { return "123456", "123456", nil }
-	otpHash := func(s string) (string, error) { return s, nil }
-
-	smsClient := NewModicaSMS(templates, otpGen, otpHash, username, password, db)
+	smsClient := NewModicaSMS(templates, username, password, db)
 
 	_, _, err = smsClient.SendVerificationCode(context.Background(), testPhone, "en")
 	if err != nil {
