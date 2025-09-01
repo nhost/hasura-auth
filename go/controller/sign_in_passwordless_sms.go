@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
@@ -140,10 +141,10 @@ func (ctrl *Controller) postSigninPasswordlessSmsSignup(
 				OtpHash:           otpHash,
 				OtpHashExpiresAt:  sql.TimestampTz(expiresAt),
 				OtpMethodLastUsed: sql.Text("sms"),
-				Email:             pgtype.Text{},        //nolint:exhaustruct
-				PasswordHash:      pgtype.Text{},        //nolint:exhaustruct
-				Ticket:            pgtype.Text{},        //nolint:exhaustruct
-				TicketExpiresAt:   pgtype.Timestamptz{}, //nolint:exhaustruct
+				Email:             pgtype.Text{}, //nolint:exhaustruct
+				PasswordHash:      pgtype.Text{}, //nolint:exhaustruct
+				Ticket:            pgtype.Text{}, //nolint:exhaustruct
+				TicketExpiresAt:   sql.TimestampTz(time.Now()),
 				EmailVerified:     false,
 				Locale:            deptr(options.Locale),
 				DefaultRole:       deptr(options.DefaultRole),
