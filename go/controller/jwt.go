@@ -362,7 +362,7 @@ func (j *JWTGetter) ToContext(ctx context.Context, jwtToken *jwt.Token) context.
 	return context.WithValue(ctx, JWTContextKey, jwtToken) //nolint:revive,staticcheck
 }
 
-func (j *JWTGetter) verifyElevatedClaim(ctx context.Context, token *jwt.Token) (bool, error) {
+func (j *JWTGetter) verifyElevatedClaim(ctx context.Context, token *jwt.Token, requestPath string) (bool, error) {
 	if j.elevatedClaimMode == "disabled" {
 		return true, nil
 	}
@@ -372,20 +372,27 @@ func (j *JWTGetter) verifyElevatedClaim(ctx context.Context, token *jwt.Token) (
 		return false, fmt.Errorf("error getting user id from subject: %w", err)
 	}
 
-	if j.elevatedClaimMode == "recommended" {
-		userID, err := uuid.Parse(u)
-		if err != nil {
-			return false, fmt.Errorf("error parsing user id: %w", err)
-		}
+	userID, err := uuid.Parse(u)
+	if err != nil {
+		return false, fmt.Errorf("error parsing user id: %w", err)
+	}
 
-		n, err := j.db.CountSecurityKeysUser(ctx, userID)
-		if err != nil {
-			return false, fmt.Errorf("error checking if user has security keys: %w", err)
-		}
+	n, err := j.db.CountSecurityKeysUser(ctx, userID)
+	if err != nil {
+		return false, fmt.Errorf("error checking if user has security keys: %w", err)
+	}
 
-		if n == 0 {
+	// recommended: only require elevated claim if user has security keys
+	if j.elevatedClaimMode == "recommended" && n == 0 {
+		return true, nil
+	}
+
+	// required: allow adding first security key without elevated claim
+	if j.elevatedClaimMode == "required" && n == 0 {
+		if requestPath == "/user/webauthn/add" || requestPath == "/user/webauthn/verify" {
 			return true, nil
 		}
+		// all other endpoints still require elevated claim even for users with no security keys
 	}
 
 	elevatedClaim := j.GetCustomClaim(token, "x-hasura-auth-elevated")
@@ -413,7 +420,11 @@ func (j *JWTGetter) MiddlewareFunc(
 	}
 
 	if input.SecuritySchemeName == "BearerAuthElevated" {
-		found, err := j.verifyElevatedClaim(ctx, jwtToken)
+		var requestPath string
+		if input.RequestValidationInput.Request.URL != nil {
+			requestPath = input.RequestValidationInput.Request.URL.Path
+		}
+		found, err := j.verifyElevatedClaim(ctx, jwtToken, requestPath)
 		if err != nil {
 			return fmt.Errorf("error verifying elevated claim: %w", err)
 		}
