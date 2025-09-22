@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"log/slog"
 	"reflect"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -372,15 +373,20 @@ func (j *JWTGetter) verifyElevatedClaim(ctx context.Context, token *jwt.Token, r
 		return false, fmt.Errorf("error getting user id from subject: %w", err)
 	}
 
-	userID, err := uuid.Parse(u)
-	if err != nil {
-		return false, fmt.Errorf("error parsing user id: %w", err)
-	}
+	if j.isElevatedClaimOptional(requestPath) {
+		userID, err := uuid.Parse(u)
+		if err != nil {
+			return false, fmt.Errorf("error parsing user id: %w", err)
+		}
 
-	if required, err := j.elevatedClaimRequired(ctx, userID, requestPath); err != nil {
-		return false, err
-	} else if !required {
-		return true, nil
+		n, err := j.db.CountSecurityKeysUser(ctx, userID)
+		if err != nil {
+			return false, fmt.Errorf("error checking if user has security keys: %w", err)
+		}
+
+		if n == 0 {
+			return true, nil
+		}
 	}
 
 	elevatedClaim := j.GetCustomClaim(token, "x-hasura-auth-elevated")
@@ -388,32 +394,14 @@ func (j *JWTGetter) verifyElevatedClaim(ctx context.Context, token *jwt.Token, r
 	return elevatedClaim == u, nil
 }
 
-func (j *JWTGetter) elevatedClaimRequired(ctx context.Context, userID uuid.UUID, requestPath string) (bool, error) {
-	// for required mode, we need elevated claim except for webauthn/add when user has no keys
-	if j.elevatedClaimMode == "required" {
-		// only check DB for webauthn endpoints to see if we can allow without elevated claim
-		if requestPath == "/user/webauthn/add" || requestPath == "/user/webauthn/verify" {
-			n, err := j.db.CountSecurityKeysUser(ctx, userID)
-			if err != nil {
-				return false, fmt.Errorf("error checking if user has security keys: %w", err)
-			}
-			// allow adding first security key without elevated claim
-			return n > 0, nil
-		}
-		// all other endpoints in required mode need elevated claim
-		return true, nil
-	}
-
-	// for recommended mode, only require elevated claim if user has security keys
-	if j.elevatedClaimMode == "recommended" {
-		n, err := j.db.CountSecurityKeysUser(ctx, userID)
-		if err != nil {
-			return false, fmt.Errorf("error checking if user has security keys: %w", err)
-		}
-		return n > 0, nil
-	}
-
-	return false, nil
+func (j *JWTGetter) isElevatedClaimOptional(requestPath string) bool {
+	return j.elevatedClaimMode == "recommended" ||
+		slices.Contains(
+			[]string{
+				"/user/webauthn/add",
+				"/user/webauthn/verify",
+			},
+			requestPath)
 }
 
 func (j *JWTGetter) MiddlewareFunc(
