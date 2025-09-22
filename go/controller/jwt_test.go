@@ -544,7 +544,6 @@ func TestMiddlewareFunc(t *testing.T) { //nolint:maintidx
 			elevatedMode: "required",
 			db: func(ctrl *gomock.Controller) *mock.MockDBClient {
 				mock := mock.NewMockDBClient(ctrl)
-				mock.EXPECT().CountSecurityKeysUser(gomock.Any(), userID).Return(int64(0), nil)
 				return mock
 			},
 			//nolint:exhaustruct
@@ -617,7 +616,6 @@ func TestMiddlewareFunc(t *testing.T) { //nolint:maintidx
 			elevatedMode: "required",
 			db: func(ctrl *gomock.Controller) *mock.MockDBClient {
 				mock := mock.NewMockDBClient(ctrl)
-				mock.EXPECT().CountSecurityKeysUser(gomock.Any(), userID).Return(int64(1), nil)
 				return mock
 			},
 			//nolint:exhaustruct
