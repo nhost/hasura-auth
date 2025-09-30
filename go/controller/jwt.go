@@ -363,7 +363,11 @@ func (j *JWTGetter) ToContext(ctx context.Context, jwtToken *jwt.Token) context.
 	return context.WithValue(ctx, JWTContextKey, jwtToken) //nolint:revive,staticcheck
 }
 
-func (j *JWTGetter) verifyElevatedClaim(ctx context.Context, token *jwt.Token, requestPath string) (bool, error) {
+func (j *JWTGetter) verifyElevatedClaim(
+	ctx context.Context,
+	token *jwt.Token,
+	requestPath string,
+) (bool, error) {
 	if j.elevatedClaimMode == "disabled" {
 		return true, nil
 	}
@@ -428,6 +432,7 @@ func (j *JWTGetter) MiddlewareFunc(
 		if input.RequestValidationInput.Request.URL != nil {
 			requestPath = input.RequestValidationInput.Request.URL.Path
 		}
+
 		found, err := j.verifyElevatedClaim(ctx, jwtToken, requestPath)
 		if err != nil {
 			return fmt.Errorf("error verifying elevated claim: %w", err)
