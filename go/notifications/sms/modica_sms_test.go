@@ -142,10 +142,17 @@ func TestModicaIntegration(t *testing.T) {
 	}
 
 	// Create a proper logger for templates
-	logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelWarn}))
+	logger := slog.New(slog.NewTextHandler(
+		os.Stdout,
+		&slog.HandlerOptions{Level: slog.LevelWarn}), //nolint:exhaustruct
+	)
 
 	// Initialize templates properly from filesystem
-	templates, err := notifications.NewTemplatesFromFilesystem("../../../email-templates", "en", logger)
+	templates, err := notifications.NewTemplatesFromFilesystem(
+		"../../../email-templates",
+		"en",
+		logger,
+	)
 	if err != nil {
 		t.Fatalf("Failed to create templates: %v", err)
 	}
@@ -171,10 +178,14 @@ func TestRealAPICall(t *testing.T) {
 	testPhone := os.Getenv("MODICA_TEST_PHONE")
 
 	if username == "" || password == "" || testPhone == "" {
-		t.Skip("Skip real API call test - set MODICA_SMS_USERNAME, MODICA_SMS_PASSWORD, and MODICA_TEST_PHONE")
+		t.Skip(
+			"Skip real API call test - set MODICA_SMS_USERNAME, MODICA_SMS_PASSWORD, and MODICA_TEST_PHONE",
+		)
 	}
 
-	jsonData := []byte(`{"destination":"` + testPhone + `","content":"Direct API test message from Hasura Auth"}`)
+	jsonData := []byte(
+		`{"destination":"` + testPhone + `","content":"Direct API test message from Hasura Auth"}`,
+	)
 
 	req, err := http.NewRequestWithContext(
 		context.Background(),
