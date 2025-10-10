@@ -1,3 +1,5 @@
+NOTE: This repository is deprecated. All development has moved to https://github.com/nhost/nhost
+
 <h1 align="center">Hasura Auth</h1>
 <h2 align="center">Authentication for Hasura</h2>
 
